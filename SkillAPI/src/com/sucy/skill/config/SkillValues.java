@@ -32,25 +32,6 @@ public enum SkillValues {
      */
     DESCRIPTION ("description"),
 
-    /**
-     * Cooldown for the skill
-     */
-    COOLDOWN ("Cooldown"),
-
-    /**
-     * Mana cost for the skill
-     */
-    MANA ("Mana"),
-
-    /**
-     * Level requirement
-     */
-    LEVEL ("Level"),
-
-    /**
-     * Point cost to unlock
-     */
-    COST ("Cost"),
     ;
 
     private final String key;

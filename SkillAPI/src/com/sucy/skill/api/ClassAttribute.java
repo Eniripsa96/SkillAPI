@@ -3,7 +3,7 @@ package com.sucy.skill.api;
 /**
  * <p>Attribute names for class attributes</p>
  */
-public class ClassAttributes {
+public class ClassAttribute {
 
     public static final String
 

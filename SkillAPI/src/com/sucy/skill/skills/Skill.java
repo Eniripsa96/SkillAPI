@@ -1,8 +1,8 @@
 package com.sucy.skill.skills;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.util.AttributeHelper;
 import com.sucy.skill.api.skill.ClassSkill;
+import com.sucy.skill.api.skill.SkillAttribute;
 import com.sucy.skill.language.SkillNodes;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,7 +45,7 @@ public final class Skill implements Comparable<Skill> {
 
         skill = plugin.getRegisteredSkill(name);
         if (skill != null) {
-            for (String attribute : AttributeHelper.getAllAttributes(skill)) {
+            for (String attribute : skill.getAttributeNames()) {
                 skill.setBase(attribute, config.getInt(attribute + "-base"));
                 skill.setScale(attribute, config.getInt(attribute + "-scale"));
             }
@@ -72,46 +72,6 @@ public final class Skill implements Comparable<Skill> {
      */
     public ClassSkill getClassSkill() {
         return skill;
-    }
-
-    /**
-     * Calculates the skill cost when at the given level
-     *
-     * @param level current skill level
-     * @return      cost to next level
-     */
-    public int getCost(int level) {
-        return skill.getBase(SkillValues.COST.getKey()) + skill.getScale(SkillValues.COST.getKey()) * level;
-    }
-
-    /**
-     * Calculates the level required to upgrade this skill
-     *
-     * @param level current skill level
-     * @return      class level required for next skill level
-     */
-    public int getLevelReq(int level) {
-        return skill.getBase(SkillValues.LEVEL.getKey()) + skill.getScale(SkillValues.LEVEL.getKey()) * level;
-    }
-
-    /**
-     * Gets the cost to cast this skill
-     *
-     * @param level level of the skill
-     * @return      mana cost
-     */
-    public int getManaCost(int level) {
-        return AttributeHelper.calculate(skill, SkillValues.MANA.getKey(), level);
-    }
-
-    /**
-     * Gets the cooldown of the skill
-     *
-     * @param level level of the skill
-     * @return      cooldown
-     */
-    public double getCooldown(int level) {
-        return AttributeHelper.calculate(skill, SkillValues.COOLDOWN.getKey(), level);
     }
 
     /**
@@ -163,24 +123,24 @@ public final class Skill implements Comparable<Skill> {
 
             // Requirement Filter
             if (line.contains("{requirements}")) {
-                int requiredLevel = AttributeHelper.calculate(cs, SkillValues.LEVEL.getKey(), level + 1);
+                int requiredLevel = cs.getAttribute(SkillAttribute.LEVEL, level + 1);
                 String levelString = language.getString(
                         requiredLevel > level ?
                             SkillNodes.REQUIREMENT_NOT_MET
                             : SkillNodes.REQUIREMENT_MET);
 
-                levelString = levelString.replace("{name}", SkillValues.LEVEL.getKey())
+                levelString = levelString.replace("{name}", SkillAttribute.LEVEL)
                                          .replace("{value}", requiredLevel + "");
 
                 line = line.replace("{requirements}", levelString);
 
-                int requiredPoints = AttributeHelper.calculate(cs, SkillValues.COST.getKey(), level + 1);
+                int requiredPoints = cs.getAttribute(SkillAttribute.COST, level + 1);
                 String pointString = language.getString(
                         requiredPoints > player.getPoints() ?
                             SkillNodes.REQUIREMENT_NOT_MET
                             : SkillNodes.REQUIREMENT_MET);
 
-                pointString = pointString.replace("{name}", SkillValues.COST.getKey())
+                pointString = pointString.replace("{name}", SkillAttribute.COST)
                                          .replace("{value}", requiredPoints + "");
 
                 results.add(pointString);
@@ -192,13 +152,13 @@ public final class Skill implements Comparable<Skill> {
                 boolean useLine = true;
 
                 // Go through each attribute
-                for (String attribute : AttributeHelper.getAllAttributes(cs)) {
-                    if (attribute.equals(SkillValues.COST.getKey()) || attribute.equals(SkillValues.LEVEL.getKey()))
+                for (String attribute : cs.getAttributeNames()) {
+                    if (attribute.equals(SkillAttribute.COST) || attribute.equals(SkillAttribute.LEVEL))
                         continue;
 
                     // Get the values
-                    int oldValue = AttributeHelper.calculate(cs, attribute, level);
-                    int newValue = AttributeHelper.calculate(cs, attribute, level + 1);
+                    int oldValue = cs.getAttribute(attribute, level);
+                    int newValue = cs.getAttribute(attribute, level + 1);
 
                     // Level 0 doesn't count
                     if (level == 0) oldValue = newValue;
@@ -293,13 +253,15 @@ public final class Skill implements Comparable<Skill> {
      */
     @Override
     public int compareTo(Skill skill) {
+        ClassSkill thisSkill = this.skill;
+        ClassSkill thatSkill = skill.skill;
         return
             skillReq != null && skill.skillReq == null ? 1
             : skillReq == null && skill.skillReq != null ? -1
-            : getLevelReq(0) > skill.getLevelReq(0) ? 1
-            : getLevelReq(0) < skill.getLevelReq(0) ? -1
-            : getCost(0) > skill.getCost(0) ? 1
-            : getCost(0) < skill.getCost(0) ? -1
+            : thisSkill.getBase(SkillAttribute.LEVEL) > thatSkill.getBase(SkillAttribute.LEVEL) ? 1
+            : thisSkill.getBase(SkillAttribute.LEVEL) < thatSkill.getBase(SkillAttribute.LEVEL) ? -1
+            : thisSkill.getBase(SkillAttribute.COST) > thatSkill.getBase(SkillAttribute.COST) ? 1
+            : thisSkill.getBase(SkillAttribute.COST) < thatSkill.getBase(SkillAttribute.COST) ? -1
             : name.compareTo(skill.name);
     }
 }

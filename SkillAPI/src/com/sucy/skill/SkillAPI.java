@@ -1,9 +1,10 @@
 package com.sucy.skill;
 
-import com.rit.sucy.scoreboard.BoardManager;
 import com.sucy.skill.api.*;
 import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.api.util.AttributeHelper;
+import com.sucy.skill.api.skill.SkillAttribute;
+import com.sucy.skill.api.skill.SkillShot;
+import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.command.ClassCommander;
 import com.sucy.skill.command.TextSizer;
 import com.sucy.skill.config.*;
@@ -20,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +53,6 @@ public class SkillAPI extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-
         saveDefaultConfig();
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
@@ -265,6 +266,14 @@ public class SkillAPI extends JavaPlugin {
             return;
         }
 
+        // Make sure the right attributes are there
+        skill.checkDefault(SkillAttribute.LEVEL, 1, 0);
+        skill.checkDefault(SkillAttribute.COST, 1, 0);
+        if (skill instanceof SkillShot || skill instanceof TargetSkill) {
+            skill.checkDefault(SkillAttribute.MANA, 0, 0);
+            skill.checkDefault(SkillAttribute.COOLDOWN, 0, 0);
+        }
+
         // Detect if default values are needed
         Config configFile = new Config(this, "skill\\" + skill.getName());
         ConfigurationSection config = configFile.getConfig();
@@ -278,7 +287,7 @@ public class SkillAPI extends JavaPlugin {
                 config.set(SkillValues.INDICATOR.getKey(), skill.getIndicator().name());
             if (skill.getSkillReq() != null && !neededOnly)
                 config.set(SkillValues.SKILL_REQ.getKey(), skill.getSkillReq());
-            for (String attribute : AttributeHelper.getAllAttributes(skill)) {
+            for (String attribute : skill.getAttributeNames()) {
                 if (!config.contains(attribute + "-base"))
                     config.set(attribute + "-base", skill.getBase(attribute));
                 if (!config.contains(attribute + "-scale"))
@@ -341,6 +350,10 @@ public class SkillAPI extends JavaPlugin {
             return;
         }
 
+        // Make sure the class has the right attributes
+        customClass.checkDefault(ClassAttribute.HEALTH, 20, 0);
+        customClass.checkDefault(ClassAttribute.MANA, 100, 0);
+
         // Detect if default values are needed
         Config configFile = new Config(this, "class\\" + customClass.getName());
         ConfigurationSection config = configFile.getConfig();
@@ -357,13 +370,13 @@ public class SkillAPI extends JavaPlugin {
             if (customClass.getInheritance() != null && customClass.getInheritance().size() > 0 && !neededOnly)
                 config.set(TreeValues.INHERIT, customClass.getInheritance());
             if (!config.contains(TreeValues.HEALTH_BASE))
-                config.set(TreeValues.HEALTH_BASE, customClass.getBase(ClassAttributes.HEALTH));
+                config.set(TreeValues.HEALTH_BASE, customClass.getBase(ClassAttribute.HEALTH));
             if (!config.contains(TreeValues.HEALTH_BONUS))
-                config.set(TreeValues.HEALTH_BONUS, customClass.getScale(ClassAttributes.HEALTH));
+                config.set(TreeValues.HEALTH_BONUS, customClass.getScale(ClassAttribute.HEALTH));
             if (!config.contains(TreeValues.MANA_BASE))
-                config.set(TreeValues.MANA_BASE, customClass.getBase(ClassAttributes.MANA));
+                config.set(TreeValues.MANA_BASE, customClass.getBase(ClassAttribute.MANA));
             if (!config.contains(TreeValues.MANA_BONUS))
-                config.set(TreeValues.MANA_BONUS, customClass.getScale(ClassAttributes.MANA));
+                config.set(TreeValues.MANA_BONUS, customClass.getScale(ClassAttribute.MANA));
             if (!config.contains(TreeValues.SKILLS))
                 config.set(TreeValues.SKILLS, customClass.getSkills());
 

@@ -3,12 +3,12 @@ package com.sucy.skill.skills;
 import com.rit.sucy.scoreboard.StatHolder;
 import com.sucy.skill.PrefixManager;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.ClassAttributes;
+import com.sucy.skill.api.ClassAttribute;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.PassiveSkill;
-import com.sucy.skill.api.util.AttributeHelper;
+import com.sucy.skill.api.skill.SkillAttribute;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatNodes;
 import org.bukkit.ChatColor;
@@ -77,7 +77,6 @@ public final class PlayerSkills implements StatHolder {
             }
 
             if (plugin.getServer().getPlayer(player) != null) {
-                plugin.getLogger().info("Player Name: " + player);
                 PrefixManager.setPrefix(this, tree.prefix, tree.braceColor);
             }
             if (skillConfig != null) {
@@ -170,7 +169,7 @@ public final class PlayerSkills implements StatHolder {
         if (event.isCancelled()) return;
 
         CustomClass c = plugin.getRegisteredClass(tree);
-        int maxMana = c == null ? 0 : AttributeHelper.calculate(c, ClassAttributes.MANA, level);
+        int maxMana = c == null ? 0 : c.getAttribute(ClassAttribute.MANA, level);
         mana -= event.getMana();
         if (mana < 0) mana = 0;
         if (mana > maxMana) mana = maxMana;
@@ -209,11 +208,11 @@ public final class PlayerSkills implements StatHolder {
             return false;
 
         // Level requirement isn't met
-        if (this.level < skill.getLevelReq(level))
+        if (this.level < skill.getClassSkill().getAttribute(SkillAttribute.LEVEL, level))
             return false;
 
         // Skill cost isn't met
-        if (points < skill.getCost(level))
+        if (points < skill.getClassSkill().getAttribute(SkillAttribute.COST, level))
             return false;
 
         // Apply passive skill effects
@@ -222,7 +221,7 @@ public final class PlayerSkills implements StatHolder {
             ((PassiveSkill) classSkill).onUpgrade(plugin.getServer().getPlayer(getName()), level + 1);
 
         // Upgrade the skill
-        this.points -= skill.getCost(level);
+        this.points -= skill.getClassSkill().getAttribute(SkillAttribute.COST, level);
         skills.put(skill.getName().toLowerCase(), level + 1);
 
         // If first level, call the unlock event
@@ -297,7 +296,7 @@ public final class PlayerSkills implements StatHolder {
 
         // Set mana if just starting
         if (prevTree == null) {
-            mana = AttributeHelper.calculate(plugin.getRegisteredClass(this.tree), ClassAttributes.MANA, level);
+            mana = plugin.getRegisteredClass(this.tree).getAttribute(ClassAttribute.MANA, level);
         }
 
         // Set the new prefix for the class
@@ -316,9 +315,7 @@ public final class PlayerSkills implements StatHolder {
         if (tree == null) {
             setMaxHealth(20);
         }
-        else {
-            setMaxHealth(AttributeHelper.calculate(plugin.getRegisteredClass(tree), ClassAttributes.HEALTH, level));
-        }
+        else setMaxHealth(plugin.getRegisteredClass(tree).getAttribute(ClassAttribute.HEALTH, level));
     }
 
     /**
@@ -328,6 +325,7 @@ public final class PlayerSkills implements StatHolder {
      */
     public void setMaxHealth(int amount) {
         Player p = plugin.getServer().getPlayer(player);
+        if (p == null) return;
 
         double prevMax = p.getMaxHealth();
         double prevHealth = p.getHealth();

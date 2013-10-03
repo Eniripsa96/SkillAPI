@@ -3,7 +3,7 @@ package com.sucy.skill.api.skill;
 /**
  * <p>Names of default attributes for skills</p>
  */
-public class DefaultAttribute {
+public class SkillAttribute {
 
     public static final String
 

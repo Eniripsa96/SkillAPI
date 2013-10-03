@@ -22,7 +22,7 @@ public abstract class Attributed {
      * @param scale value scale
      * @throws IllegalArgumentException if attribute is already defined
      */
-    protected void setAttribute(String name, int base, int scale) {
+    public void setAttribute(String name, int base, int scale) {
         if (this.base.containsKey(name)) throw new IllegalArgumentException("Attribute is already defined: " + name);
 
         this.base.put(name, base);
@@ -34,8 +34,11 @@ public abstract class Attributed {
      *
      * @param attribute attribute name
      * @return          base value
+     * @throws IllegalArgumentException if the attribute is not defined
      */
     public int getBase(String attribute) {
+        if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined: " + attribute);
+
         return base.get(attribute);
     }
 
@@ -44,8 +47,11 @@ public abstract class Attributed {
      *
      * @param attribute attribute name
      * @return          change in value per skill level (adding, can be negative value)
+     * @throws IllegalArgumentException if the attribute is not defined
      */
     public int getScale(String attribute) {
+        if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined: " + attribute);
+
         return scale.get(attribute);
     }
 
@@ -60,7 +66,7 @@ public abstract class Attributed {
      * @throws IllegalArgumentException if attribute is not defined
      */
     public void setBase(String attribute, int value) {
-        if (!base.containsKey(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
+        if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
 
         base.put(attribute, value);
     }
@@ -76,7 +82,7 @@ public abstract class Attributed {
      * @throws IllegalArgumentException if attribute is not defined
      */
     public void setScale(String attribute, int value) {
-        if (!scale.containsKey(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
+        if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
 
         scale.put(attribute, value);
     }
@@ -92,5 +98,41 @@ public abstract class Attributed {
      */
     public List<String> getAttributeNames() {
         return new ArrayList<String>(base.keySet());
+    }
+
+    /**
+     * Checks if the attribute is defined
+     *
+     * @param name name of the attribute
+     * @return     true if defined, false otherwise
+     */
+    public boolean hasAttribute(String name) {
+        return base.containsKey(name);
+    }
+
+    /**
+     * <p>Calculates a value for an attribute at a given level</p>
+     *
+     * @param attribute  attribute name
+     * @param level      level of the skill
+     * @return           attribute value
+     * @throws IllegalArgumentException if the attribute is not defined
+     */
+    public int getAttribute(String attribute, int level) {
+        if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined: " + attribute);
+
+        return getBase(attribute) + getScale(attribute) * (level - 1);
+    }
+
+    /**
+     * Checks to make sure the attributed object has a default attribute
+     *
+     * @param attribute    attribute to check
+     * @param defaultBase  default base value
+     * @param defaultScale default scale value
+     */
+    public void checkDefault(String attribute, int defaultBase, int defaultScale) {
+        if (!hasAttribute(attribute))
+            setAttribute(attribute, defaultBase, defaultScale);
     }
 }

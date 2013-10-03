@@ -3,7 +3,6 @@ package com.sucy.skill.command;
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skill.*;
-import com.sucy.skill.api.util.AttributeHelper;
 import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.skills.PlayerSkills;
 import org.bukkit.command.CommandSender;
@@ -70,8 +69,8 @@ public class CmdCast implements ICommand {
                     List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.CAST, true);
                     for (String message : messages) {
                         message = message.replace("{skill}", classSkill.getName())
-                                         .replace("{mana}", AttributeHelper.calculate(classSkill, DefaultAttribute.MANA, player.getSkillLevel(classSkill.getName())) + "")
-                                         .replace("{cooldown}", AttributeHelper.calculate(classSkill, DefaultAttribute.COOLDOWN, player.getSkillLevel(classSkill.getName())) + "");
+                                         .replace("{mana}", classSkill.getAttribute(SkillAttribute.MANA, player.getSkillLevel(classSkill.getName())) + "")
+                                         .replace("{cooldown}", classSkill.getAttribute(SkillAttribute.COOLDOWN, player.getSkillLevel(classSkill.getName())) + "");
                         sender.sendMessage(message);
                     }
                 }

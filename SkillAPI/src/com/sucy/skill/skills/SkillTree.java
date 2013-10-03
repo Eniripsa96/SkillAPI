@@ -1,7 +1,7 @@
 package com.sucy.skill.skills;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.ClassAttributes;
+import com.sucy.skill.api.ClassAttribute;
 import com.sucy.skill.api.CustomClass;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -51,13 +51,13 @@ public final class SkillTree implements InventoryHolder {
         // Update configuration data
         CustomClass c = plugin.getRegisteredClass(name);
         if (config.contains(TreeValues.HEALTH_BASE))
-            c.setBase(ClassAttributes.HEALTH, config.getInt(TreeValues.HEALTH_BASE));
+            c.setBase(ClassAttribute.HEALTH, config.getInt(TreeValues.HEALTH_BASE));
         if (config.contains(TreeValues.HEALTH_BONUS))
-            c.setScale(ClassAttributes.HEALTH, config.getInt(TreeValues.HEALTH_BONUS));
+            c.setScale(ClassAttribute.HEALTH, config.getInt(TreeValues.HEALTH_BONUS));
         if (config.contains(TreeValues.MANA_BASE))
-            c.setBase(ClassAttributes.MANA, config.getInt(TreeValues.MANA_BASE));
+            c.setBase(ClassAttribute.MANA, config.getInt(TreeValues.MANA_BASE));
         if (config.contains(TreeValues.MANA_BONUS))
-             c.setScale(ClassAttributes.MANA, config.getInt(TreeValues.MANA_BONUS));
+             c.setScale(ClassAttribute.MANA, config.getInt(TreeValues.MANA_BONUS));
 
         ArrayList<Skill> skills = new ArrayList<Skill>();
 

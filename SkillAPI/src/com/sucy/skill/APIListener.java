@@ -3,14 +3,10 @@ package com.sucy.skill;
 import com.sucy.skill.api.*;
 import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
-import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.api.skill.PassiveSkill;
-import com.sucy.skill.api.skill.SkillShot;
-import com.sucy.skill.api.skill.TargetSkill;
+import com.sucy.skill.api.skill.*;
 import com.sucy.skill.api.util.Protection;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.skills.*;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -76,7 +72,7 @@ public class APIListener implements Listener {
                         if (((SkillShot) skill).cast(player, data.getSkillLevel(skill.getName()))) {
 
                             // Use mana if successful
-                            if (plugin.isManaEnabled()) data.useMana(plugin.getSkill(skill.getName()).getManaCost(level));
+                            if (plugin.isManaEnabled()) data.useMana(plugin.getSkill(skill.getName()).getClassSkill().getAttribute(SkillAttribute.MANA, level));
                         }
 
                         // If the skill didn't work, remove the cooldown
@@ -122,7 +118,7 @@ public class APIListener implements Listener {
                             !Protection.canAttack(player, (LivingEntity) event.getRightClicked()))) {
 
                         // Use mana if successful
-                        if (plugin.isManaEnabled()) data.useMana(plugin.getSkill(skill.getName()).getManaCost(level));
+                        if (plugin.isManaEnabled()) data.useMana(plugin.getSkill(skill.getName()).getClassSkill().getAttribute(SkillAttribute.MANA, level));
                     }
 
                     // If not successful, remove the cooldown
@@ -343,7 +339,7 @@ public class APIListener implements Listener {
         }
 
         long passed = System.currentTimeMillis() - timers.get(player).get(skill);
-        long cd = (long)(1000 * plugin.getSkill(skill).getCooldown(level));
+        long cd = (long)(1000 * plugin.getSkill(skill).getClassSkill().getAttribute(SkillAttribute.COOLDOWN, level));
 
         // If the skill is still on cooldown, provide a message
         if (passed < cd) {
@@ -370,7 +366,7 @@ public class APIListener implements Listener {
      * @return          true if there's enough mana, false otherwise
      */
     private boolean checkMana(PlayerSkills player, String skillName) {
-        int cost = plugin.getSkill(skillName).getManaCost(player.getSkillLevel(skillName));
+        int cost = plugin.getSkill(skillName).getClassSkill().getAttribute(SkillAttribute.MANA, player.getSkillLevel(skillName));
 
         // Make sure mana is enabled
         if (!plugin.isManaEnabled()) return true;

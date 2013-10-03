@@ -1,0 +1,141 @@
+# ---------------------------------------------- #
+#             Language Configuration             #
+# ---------------------------------------------- #
+# If you are unsure of how to use this file,     #
+# but would like to change how the plugin shows  #
+# text, visit the BukkitDev page at:             #
+# http://dev.bukkit.org/bukkit-plugins/skillapi/ #
+# and look at the tutorials section for the      #
+# configuration tutorials.                       #
+# ---------------------------------------------- #
+Skill Tree:
+  title: '{name} ({level}/{max})'
+  type: '&2Skill Type: &6{name}'
+  requirement:
+    met: '&2{name}: &6{value}'
+    not-met: '&4{name}: &6{value}'
+  attribute:
+    changing: '&2{name}: &6{value} -> {new}'
+    not-changing: '&2{name}: &6{value}'
+    no-attributes: '&8No Attributes'
+  description:
+    first: '&7{line}'
+    other: '&7{line}'
+    no-description: '&8No Description'
+  layout:
+  - '{title}'
+  - '{type}'
+  - ''
+  - '{requirements}'
+  - ''
+  - '{attributes}'
+  - ''
+  - '{description}'
+Commands:
+  arguments:
+    bind: '<skill>'
+    cast: '<skill>'
+    info-console: '<player>'
+    info-player: '&a[player]'
+    options: ''
+    profess: '<class>'
+    reset: ''
+    skills: ''
+  complete:
+    bind:
+    - '&6{skill} &2has been bound to the item &6{item}'
+    cast: []
+    info-console:
+      has-class:
+      - '&8{break}'
+      - '&2   Player - &6{player}'
+      - '&7    Class - &6{class}'
+      - '&7    Level - &6{level}'
+      - '&7      Exp - &6{exp}'
+      - '&7   Points - &6{points}'
+      - '&8{break}'
+      no-class:
+      - '&8{break}'
+      - '&2   Player - &6{player}'
+      - '&7    Class - None'
+      - '&8{break}'
+    info-player:
+      has-class:
+      - '&8{break}'
+      - '{expandFront(39,&2Player)} &7- &6{player}'
+      - '{expandFront(39,&7Class)} - &6{class}'
+      - '{expandFront(39,&7Level)} - &6{level}'
+      - '{expandFront(39,&7Exp)} - &6{exp}'
+      - '{expandFront(39,&7Points)} - &6{points}'
+      - '&8{break}'
+      no-class:
+      - '&8{break}'
+      - '{expandFront(39,&2Player)} &7- &6{player}'
+      - '{expandFront(39,&7Class)} - None'
+      - '&8{break}'
+    options:
+      has-options:
+      - '&8{break}'
+      - '&2Class Options &7- Available at level {level}'
+      - '   &7- &6{option}'
+      - '&8{break}'
+      no-options:
+      - '&8{break}'
+      - '&2Class Options &7- None'
+      - '&8{break}'
+    profess:
+      - '&2You are now a &6{class}'
+    reset:
+      confirmed:
+      - '&4You have cleared all of your stats'
+      not-confirmed:
+      - '&6THIS WILL CLEAR ALL OF YOUR STATS &7(you will be Lv1)'
+      - '&7If you are sure, type &6/class reset confirm'
+    skills: []
+  description:
+    bind: 'Binds skill to held item'
+    cast: 'Casts the skill'
+    info-player: 'Views details of player'
+    info-console: 'Views details of player'
+    options: 'View profession options'
+    profess: 'Professes as the class'
+    reset: 'Resets all stats'
+    skills: 'Opens skill tree'
+  error:
+    cannot-be-cast: '&4That skill cannot be cast'
+    cannot-profess: '&4You cannot profess at this time'
+    no-class: '&4You have not chosen a class yet'
+    no-held-item: '&4You do not have a held item'
+    not-a-class: '&4Invalid class name'
+    not-a-player: '&4Invalid player name'
+    not-a-skill: '&4Invalid skill name'
+    skill-not-owned: '&4You do not have that skill'
+  name:
+    bind: 'bind'
+    cast: 'cast'
+    info-player: 'info'
+    info-console: 'info'
+    options: 'options'
+    profess: 'profess'
+    reset: 'reset'
+    skills: 'skills'
+Stats:
+  health: '&2Health'
+  mana: '&2Mana'
+  points: '&2Points'
+  level: '&2Level'
+  exp: '&2Exp'
+Skill Types:
+  skill-shot: 'Skill Shot'
+  target: 'Target'
+  skill-shot-aoe: 'Skill Shot AOE'
+  target-aoe: 'Target AOE'
+  passive: 'Passive'
+Other:
+  level-up:
+  - '&2You leveled up! You are now &6level {level}'
+  - '&7You now have &6{points} skill points &7to spend'
+  on-cooldown:
+  - '&6{skill} &4 cooldown - &6{cooldown} &4seconds left'
+  no-mana:
+  - '&4You need &6{missing} &4more mana'

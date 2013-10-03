@@ -1,0 +1,35 @@
+# ---------------------------------------------- #
+#              General Configuration             #
+# ---------------------------------------------- #
+# If you are unsure of how to use this file,     #
+# but would like to change how the plugin shows  #
+# text, visit the BukkitDev page at:             #
+# http://dev.bukkit.org/bukkit-plugins/skillapi/ #
+# and look at the tutorials section for the      #
+# configuration tutorials.                       #
+# ---------------------------------------------- #
+profess-reset: true
+mana-enabled: true
+scoreboard-enabled: true
+mana-gain-freq: 1
+mana-gain-amount: 2
+kills:
+  blaze: 10
+  cavespider: 5
+  creeper: 3
+  enderdragon: 400
+  enderman: 5
+  ghast: 5
+  giant: 20
+  irongolem: 10
+  magmacube: 1
+  pigzombie: 5
+  player: 5
+  silverfish: 2
+  skeleton: 3
+  slime: 1
+  spider: 3
+  witch: 3
+  wither: 500
+  witherskeleton: 5
+  zombie: 2

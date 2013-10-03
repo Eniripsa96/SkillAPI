@@ -1,0 +1,10 @@
+name: SkillAPI
+main: com.sucy.skill.SkillAPI
+version: 0.6
+commands:
+    class:
+        description: interacts with class and skill functionality
+permissions:
+    skillapi.basic:
+        description: access to skill trees and using skills
+        default: true

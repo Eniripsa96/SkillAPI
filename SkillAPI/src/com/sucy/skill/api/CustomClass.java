@@ -25,6 +25,7 @@ public abstract class CustomClass extends Attributed {
     private final String parent;
     private final String prefix;
     private final int professLevel;
+    private final int maxLevel;
 
     /**
      * @param name         class name
@@ -32,11 +33,12 @@ public abstract class CustomClass extends Attributed {
      * @param prefix       class prefix
      * @param professLevel level to profess
      */
-    public CustomClass(String name, String parent, String prefix, int professLevel) {
+    public CustomClass(String name, String parent, String prefix, int professLevel, int maxLevel) {
         this.name = name;
         this.parent = parent;
         this.prefix = prefix;
         this.professLevel = professLevel;
+        this.maxLevel = maxLevel;
     }
 
     /**
@@ -65,6 +67,13 @@ public abstract class CustomClass extends Attributed {
      */
     public int getProfessLevel() {
         return professLevel;
+    }
+
+    /**
+     * @return max level of the class
+     */
+    public int getMaxLevel() {
+        return maxLevel;
     }
 
     /**

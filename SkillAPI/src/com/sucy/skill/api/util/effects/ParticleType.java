@@ -27,7 +27,8 @@ public enum ParticleType {
 
     /**
      * Enum constructor
-     * @param effect
+     *
+     * @param effect effect the particle is linked to
      */
     private ParticleType(Effect effect) {
         this.effect = effect;

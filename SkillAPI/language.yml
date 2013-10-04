@@ -37,6 +37,8 @@ Commands:
     cast: '<skill>'
     info-console: '<player>'
     info-player: '&a[player]'
+    level-console: '<amount> <player>'
+    level-player: '<amount> &a[player]'
     options: ''
     profess: '<class>'
     reset: ''
@@ -65,7 +67,7 @@ Commands:
       - '{expandFront(39,&2Player)} &7- &6{player}'
       - '{expandFront(39,&7Class)} - &6{class}'
       - '{expandFront(39,&7Level)} - &6{level}'
-      - '{expandFront(39,&7Exp)} - &6{exp}'
+      - '{expandFront(39,&7Exp)} - &6{exp} &7/ &6{req-exp}'
       - '{expandFront(39,&7Points)} - &6{points}'
       - '&8{break}'
       no-class:
@@ -73,6 +75,10 @@ Commands:
       - '{expandFront(39,&2Player)} &7- &6{player}'
       - '{expandFront(39,&7Class)} - None'
       - '&8{break}'
+    level-console:
+    - '&6{player} &2gained &6{amount} &2levels'
+    level-player:
+    - '&6{player} &2gained &6{amount} &2levels'
     options:
       has-options:
       - '&8{break}'
@@ -97,24 +103,32 @@ Commands:
     cast: 'Casts the skill'
     info-player: 'Views details of player'
     info-console: 'Views details of player'
+    level-console: 'Levels a player up'
+    level-player: 'Levels a player up'
     options: 'View profession options'
     profess: 'Professes as the class'
     reset: 'Resets all stats'
     skills: 'Opens skill tree'
   error:
     cannot-be-cast: '&4That skill cannot be cast'
+    cannot-level: '&4That player needs a class before leveling up'
     cannot-profess: '&4You cannot profess at this time'
+    max-level: '&4That player is already at the max level'
     no-class: '&4You have not chosen a class yet'
     no-held-item: '&4You do not have a held item'
+    no-target: '&4There is no target in range'
     not-a-class: '&4Invalid class name'
     not-a-player: '&4Invalid player name'
     not-a-skill: '&4Invalid skill name'
+    not-positive: '&4{value} must be a positive number'
     skill-not-owned: '&4You do not have that skill'
   name:
     bind: 'bind'
     cast: 'cast'
     info-player: 'info'
     info-console: 'info'
+    level-console: 'level'
+    level-player: 'level'
     options: 'options'
     profess: 'profess'
     reset: 'reset'
@@ -139,3 +153,5 @@ Other:
   - '&6{skill} &4 cooldown - &6{cooldown} &4seconds left'
   no-mana:
   - '&4You need &6{missing} &4more mana'
+  max-level:
+  - '&2You have reached the maximum level for your class'

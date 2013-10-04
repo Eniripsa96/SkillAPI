@@ -1,7 +1,10 @@
-package com.sucy.skill.command;
+package com.sucy.skill.command.basic;
 
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.command.CommandHandler;
+import com.sucy.skill.command.ICommand;
+import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.skills.PlayerSkills;
 import org.bukkit.command.CommandSender;
@@ -12,7 +15,7 @@ import java.util.List;
 /**
  * Command to bind a skill to an item
  */
-public class CmdReset implements ICommand {
+public class CmdOptions implements ICommand {
 
     /**
      * Executes the command
@@ -27,32 +30,28 @@ public class CmdReset implements ICommand {
 
         SkillAPI api = (SkillAPI)plugin;
         PlayerSkills player = api.getPlayer(sender.getName());
+        int level = player.getProfessionLevel();
 
-        // Requires a class to reset
-        if (player.getTree() != null) {
+        // Get the messages
+        List<String> messages;
+        String base = CommandNodes.COMPLETE + CommandNodes.OPTIONS;
+        if (level < 1) messages = api.getMessages(base + CommandNodes.NO_OPTIONS, true);
+        else messages = api.getMessages(base + CommandNodes.HAS_OPTIONS, true);
 
-            List<String> messages;
-            String base = CommandNodes.COMPLETE + CommandNodes.RESET;
+        // Filter and send the messages
+        for (String string : messages) {
+            string = string.replace("{level}", level + "");
 
-            // If confirmed, reset their stats
-            if (args.length > 1 && args[1].equalsIgnoreCase("confirm")) {
-                player.setClass(null);
-                messages = api.getMessages(base + CommandNodes.CONFIRMED, true);
+            // Option filters display all options
+            if (string.contains("{option}")) {
+                for (String tree : api.getChildren(player.getClassName())) {
+                    string = string.replace("{option}", tree);
+                    sender.sendMessage(string);
+                }
             }
 
-            // Otherwise prompt for them to confirm
-            else messages = api.getMessages(base + CommandNodes.NOT_CONFIRMED, true);
-
-            // Display the messages
-            for (String message : messages) {
-                sender.sendMessage(message);
-            }
-        }
-
-        // No class
-        else {
-            String error = api.getMessage(CommandNodes.NO_CHOSEN_CLASS, true);
-            sender.sendMessage(error);
+            // Without the option filter, display the message normally
+            else sender.sendMessage(string);
         }
     }
 
@@ -69,7 +68,7 @@ public class CmdReset implements ICommand {
      */
     @Override
     public String getArgsString(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.RESET, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.OPTIONS, true);
     }
 
     /**
@@ -77,7 +76,7 @@ public class CmdReset implements ICommand {
      */
     @Override
     public String getDescription(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.RESET, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.OPTIONS, true);
     }
 
     /**

@@ -1,7 +1,10 @@
-package com.sucy.skill.command;
+package com.sucy.skill.command.basic;
 
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.command.CommandHandler;
+import com.sucy.skill.command.ICommand;
+import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.skills.PlayerSkills;
 import org.bukkit.command.CommandSender;

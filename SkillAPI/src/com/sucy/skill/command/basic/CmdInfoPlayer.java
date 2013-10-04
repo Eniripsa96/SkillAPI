@@ -1,7 +1,10 @@
-package com.sucy.skill.command;
+package com.sucy.skill.command.basic;
 
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.command.CommandHandler;
+import com.sucy.skill.command.ICommand;
+import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.skills.PlayerSkills;
 import org.bukkit.command.CommandSender;
@@ -50,16 +53,18 @@ public class CmdInfoPlayer implements ICommand {
             // Get the messages
             List<String> messages;
             String base = CommandNodes.COMPLETE + CommandNodes.INFO_PLAYER;
-            if (player.getTree() == null) messages = api.getMessages(base + CommandNodes.NO_CLASS, true);
+            if (player.getClassName() == null) messages = api.getMessages(base + CommandNodes.NO_CLASS, true);
             else messages = api.getMessages(base + CommandNodes.HAS_CLASS, true);
 
             // Filter and send the messages
             for (String string : messages) {
                 string = string.replace("{player}", player.getName());
-                if (player.getTree() != null)
-                    string = string.replace("{class}", player.getTree())
+                if (player.getClassName() != null)
+                    string = string.replace("{class}", player.getClassName())
                                    .replace("{level}", player.getLevel() + "")
                                    .replace("{exp}", player.getExp() + "")
+                                   .replace("{req-exp}", player.getRequiredExp() + "")
+                                   .replace("{exp-left}", player.getExpToNextLevel() + "")
                                    .replace("{points}", player.getPoints() + "");
 
                 sender.sendMessage(string);

@@ -5,50 +5,39 @@ package com.sucy.skill.config;
  * <p>This is primarily for the API saving data. You shouldn't need
  * to use these values at all.</p>
  */
-public enum SkillValues {
+public class SkillValues {
+
+    public static final String
 
     /**
      * Root path for skills
      */
-    ROOT ("skills"),
+    ROOT = "skills",
 
     /**
      * Maximum skill level
      */
-    MAX_LEVEL ("max-level"),
+    MAX_LEVEL = "max-level",
 
     /**
      * Skill prerequisite
      */
-    SKILL_REQ ("skill-req"),
+    SKILL_REQ = "skill-req",
+
+    /**
+     * Level needed for the required skill
+     */
+    SKILL_REQ_LEVEL = "skill-req-level",
 
     /**
      * Item type for representation in skill trees
      */
-    INDICATOR ("indicator"),
+    INDICATOR = "indicator",
 
     /**
      * Description for use in skill trees
      */
-    DESCRIPTION ("description"),
+    DESCRIPTION = "description"
 
     ;
-
-    private final String key;
-
-    /**
-     * Private constructor
-     *
-     * @param key key for the value
-     */
-    private SkillValues(String key) {
-        this.key = key;
-    }
-
-    /**
-     * @return config key
-     */
-    public String getKey() {
-        return key;
-    }
 }

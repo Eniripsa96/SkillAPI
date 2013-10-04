@@ -21,7 +21,7 @@ public class PlayerSkillUnlockEvent extends Event {
      * @param unlockedSkill the skill that was unlocked
      */
     public PlayerSkillUnlockEvent(PlayerSkills playerData, Skill unlockedSkill) {
-        this.player = player;
+        this.player = playerData;
         this.unlockedSkill = unlockedSkill;
     }
 

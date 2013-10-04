@@ -27,5 +27,10 @@ public class SkillAttribute {
     /**
      * <p>Skill point cost attribute of a skill</p>
      */
-    COST = "Cost";
+    COST = "Cost",
+
+    /**
+     * Range of a target skill
+     */
+    RANGE = "Range";
 }

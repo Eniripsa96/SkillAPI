@@ -5,7 +5,7 @@ package com.sucy.skill.config;
  * <p>This is primarily for the API saving data. You shouldn't need
  * to use these values at all.</p>
  */
-public class TreeValues {
+public class ClassValues {
 
     public static final String
 
@@ -57,5 +57,10 @@ public class TreeValues {
     /**
      * Bonus mana per level
      */
-    MANA_BONUS = "mana-scale";
+    MANA_BONUS = "mana-scale",
+
+    /**
+     * Maximum level of the class
+     */
+    MAX_LEVEL = "max-level";
 }

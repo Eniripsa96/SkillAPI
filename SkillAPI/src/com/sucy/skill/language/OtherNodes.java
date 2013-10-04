@@ -27,5 +27,10 @@ public class OtherNodes {
     /**
      * Player doesn't have enough mana to use a skill
      */
-    NO_MANA = BASE + "no-mana";
+    NO_MANA = BASE + "no-mana",
+
+    /**
+     * Player reached the maximum level for their class
+     */
+    MAX_LEVEL = BASE + "max-level";
 }

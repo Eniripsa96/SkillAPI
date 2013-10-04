@@ -1,4 +1,4 @@
-package com.sucy.skill;
+package com.sucy.skill.mccore;
 
 import com.rit.sucy.chat.Chat;
 import com.rit.sucy.chat.Prefix;
@@ -20,15 +20,11 @@ public class PrefixManager {
      * @param player player name
      */
     public static void clearPrefix(String player) {
-        if (!isCoreEnabled()) return;
-
         Chat.getPlayerData(player).clearPluginPrefix("SkillAPI");
         BoardManager.getPlayerBoards(player).removeBoards("SkillAPI");
     }
 
     public static void clearAll() {
-        if (!isCoreEnabled()) return;
-
         BoardManager.clearPluginBoards("SkillAPI");
     }
 
@@ -40,23 +36,12 @@ public class PrefixManager {
      * @param braceColor color of braces
      */
     public static void setPrefix(PlayerSkills player, String prefix, ChatColor braceColor) {
-        if (!isCoreEnabled()) return;
-
         Chat.getPlayerData(player.getName()).setPluginPrefix(
                 new Prefix("SkillAPI", prefix, braceColor)
         );
         BoardManager.getPlayerBoards(player.getName()).removeBoards("SkillAPI");
         StatBoard board = new StatBoard(player.getPrefix(), "SkillAPI");
-        board.addStats(player);
+        board.addStats(new PlayerStats(player));
         BoardManager.getPlayerBoards(player.getName()).addBoard(board);
-    }
-
-    /**
-     * Checks if ChatAPI is installed
-     *
-     * @return true if installed, false otherwise
-     */
-    public static boolean isCoreEnabled() {
-        return Bukkit.getPluginManager().getPlugin("MCCore") != null;
     }
 }

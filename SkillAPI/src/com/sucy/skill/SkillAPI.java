@@ -8,6 +8,8 @@ import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.command.ClassCommander;
 import com.sucy.skill.command.TextSizer;
 import com.sucy.skill.config.*;
+import com.sucy.skill.mccore.CoreChecker;
+import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.skills.*;
 import com.sucy.skill.skills.SkillTree;
 import org.bukkit.ChatColor;
@@ -21,7 +23,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,7 +104,8 @@ public class SkillAPI extends JavaPlugin {
         HandlerList.unregisterAll(this);
 
         // Clear scoreboards
-        PrefixManager.clearAll();
+        if (CoreChecker.isCoreActive())
+            PrefixManager.clearAll();
 
         // Clear all data
         skills.clear();
@@ -272,6 +274,9 @@ public class SkillAPI extends JavaPlugin {
         if (skill instanceof SkillShot || skill instanceof TargetSkill) {
             skill.checkDefault(SkillAttribute.MANA, 0, 0);
             skill.checkDefault(SkillAttribute.COOLDOWN, 0, 0);
+            if (skill instanceof TargetSkill) {
+                skill.checkDefault(SkillAttribute.RANGE, 6, 0);
+            }
         }
 
         // Detect if default values are needed
@@ -281,22 +286,24 @@ public class SkillAPI extends JavaPlugin {
 
         // Save default values
         try {
-            if (!config.contains(SkillValues.MAX_LEVEL.getKey()))
-                config.set(SkillValues.MAX_LEVEL.getKey(), skill.getMaxLevel() < 1 ? 1 : skill.getMaxLevel());
-            if (!config.contains(SkillValues.INDICATOR.getKey()))
-                config.set(SkillValues.INDICATOR.getKey(), skill.getIndicator().name());
-            if (skill.getSkillReq() != null && !neededOnly)
-                config.set(SkillValues.SKILL_REQ.getKey(), skill.getSkillReq());
+            if (!config.contains(SkillValues.MAX_LEVEL))
+                config.set(SkillValues.MAX_LEVEL, skill.getMaxLevel() < 1 ? 1 : skill.getMaxLevel());
+            if (!config.contains(SkillValues.INDICATOR))
+                config.set(SkillValues.INDICATOR, skill.getIndicator().name());
+            if (skill.getSkillReq() != null && !neededOnly) {
+                config.set(SkillValues.SKILL_REQ, skill.getSkillReq());
+                config.set(SkillValues.SKILL_REQ_LEVEL, skill.getSkillReqLevel());
+            }
             for (String attribute : skill.getAttributeNames()) {
                 if (!config.contains(attribute + "-base"))
                     config.set(attribute + "-base", skill.getBase(attribute));
                 if (!config.contains(attribute + "-scale"))
                     config.set(attribute + "-scale", skill.getScale(attribute));
             }
-            if (!config.contains(SkillValues.DESCRIPTION.getKey())) {
+            if (!config.contains(SkillValues.DESCRIPTION)) {
                 if (skill.getDescription() == null)
-                    config.set(SkillValues.DESCRIPTION.getKey(), new ArrayList<String>());
-                else config.set(SkillValues.DESCRIPTION.getKey(), skill.getDescription());
+                    config.set(SkillValues.DESCRIPTION, new ArrayList<String>());
+                else config.set(SkillValues.DESCRIPTION, skill.getDescription());
             }
 
             // Add it to the list
@@ -311,7 +318,7 @@ public class SkillAPI extends JavaPlugin {
         }
         catch (Exception e) {
             getLogger().severe("Failed to register skill: " + skill.getName() + " - invalid returned values");
-            config.set(SkillValues.ROOT.getKey() + "." + skill.getName(), null);
+            config.set(SkillValues.ROOT + "." + skill.getName(), null);
         }
     }
 
@@ -361,24 +368,26 @@ public class SkillAPI extends JavaPlugin {
 
         // Save values to config
         try {
-            if (!config.contains(TreeValues.PREFIX))
-                config.set(TreeValues.PREFIX, customClass.getPrefix().replace(ChatColor.COLOR_CHAR, '&'));
+            if (!config.contains(ClassValues.PREFIX))
+                config.set(ClassValues.PREFIX, customClass.getPrefix().replace(ChatColor.COLOR_CHAR, '&'));
             if (customClass.getParent() != null && !neededOnly)
-                config.set(TreeValues.PARENT, customClass.getParent());
-            if (!config.contains(TreeValues.LEVEL))
-                config.set(TreeValues.LEVEL, customClass.getProfessLevel());
+                config.set(ClassValues.PARENT, customClass.getParent());
+            if (!config.contains(ClassValues.LEVEL))
+                config.set(ClassValues.LEVEL, customClass.getProfessLevel());
             if (customClass.getInheritance() != null && customClass.getInheritance().size() > 0 && !neededOnly)
-                config.set(TreeValues.INHERIT, customClass.getInheritance());
-            if (!config.contains(TreeValues.HEALTH_BASE))
-                config.set(TreeValues.HEALTH_BASE, customClass.getBase(ClassAttribute.HEALTH));
-            if (!config.contains(TreeValues.HEALTH_BONUS))
-                config.set(TreeValues.HEALTH_BONUS, customClass.getScale(ClassAttribute.HEALTH));
-            if (!config.contains(TreeValues.MANA_BASE))
-                config.set(TreeValues.MANA_BASE, customClass.getBase(ClassAttribute.MANA));
-            if (!config.contains(TreeValues.MANA_BONUS))
-                config.set(TreeValues.MANA_BONUS, customClass.getScale(ClassAttribute.MANA));
-            if (!config.contains(TreeValues.SKILLS))
-                config.set(TreeValues.SKILLS, customClass.getSkills());
+                config.set(ClassValues.INHERIT, customClass.getInheritance());
+            if (!config.contains(ClassValues.HEALTH_BASE))
+                config.set(ClassValues.HEALTH_BASE, customClass.getBase(ClassAttribute.HEALTH));
+            if (!config.contains(ClassValues.HEALTH_BONUS))
+                config.set(ClassValues.HEALTH_BONUS, customClass.getScale(ClassAttribute.HEALTH));
+            if (!config.contains(ClassValues.MANA_BASE))
+                config.set(ClassValues.MANA_BASE, customClass.getBase(ClassAttribute.MANA));
+            if (!config.contains(ClassValues.MANA_BONUS))
+                config.set(ClassValues.MANA_BONUS, customClass.getScale(ClassAttribute.MANA));
+            if (!config.contains(ClassValues.SKILLS))
+                config.set(ClassValues.SKILLS, customClass.getSkills());
+            if (!config.contains(ClassValues.MAX_LEVEL))
+                config.set(ClassValues.MAX_LEVEL, customClass.getMaxLevel());
 
             // Add to table
             registeredClasses.put(customClass.getName().toLowerCase(), customClass);
@@ -386,7 +395,7 @@ public class SkillAPI extends JavaPlugin {
         }
         catch (Exception e) {
             getLogger().severe("Failed to register class - " + customClass.getName() + " - Invalid values");
-            config.set(TreeValues.ROOT + "." + customClass.getName(), null);
+            config.set(ClassValues.ROOT + "." + customClass.getName(), null);
         }
     }
 
@@ -534,14 +543,6 @@ public class SkillAPI extends JavaPlugin {
     }
 
     // ----------------------------- Language Methods -------------------------------------- //
-
-    /**
-     * @return language configuration
-     */
-    public ConfigurationSection getLanguageConfig() {
-        languageConfig.reloadConfig();
-        return languageConfig.getConfig();
-    }
 
     /**
      * Gets a message from the language file

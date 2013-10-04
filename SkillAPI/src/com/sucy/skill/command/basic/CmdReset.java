@@ -1,10 +1,12 @@
-package com.sucy.skill.command;
+package com.sucy.skill.command.basic;
 
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.command.CommandHandler;
+import com.sucy.skill.command.ICommand;
+import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.skills.PlayerSkills;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -13,7 +15,7 @@ import java.util.List;
 /**
  * Command to bind a skill to an item
  */
-public class CmdSkills implements ICommand {
+public class CmdReset implements ICommand {
 
     /**
      * Executes the command
@@ -29,15 +31,31 @@ public class CmdSkills implements ICommand {
         SkillAPI api = (SkillAPI)plugin;
         PlayerSkills player = api.getPlayer(sender.getName());
 
-        // View the skills and if it failed, they didn't have any skills to view
-        if (player.viewSkills()) {
-            List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.SKILLS, true);
+        // Requires a class to reset
+        if (player.getClassName() != null) {
+
+            List<String> messages;
+            String base = CommandNodes.COMPLETE + CommandNodes.RESET;
+
+            // If confirmed, reset their stats
+            if (args.length > 1 && args[1].equalsIgnoreCase("confirm")) {
+                player.setClass(null);
+                messages = api.getMessages(base + CommandNodes.CONFIRMED, true);
+            }
+
+            // Otherwise prompt for them to confirm
+            else messages = api.getMessages(base + CommandNodes.NOT_CONFIRMED, true);
+
+            // Display the messages
             for (String message : messages) {
                 sender.sendMessage(message);
             }
         }
+
+        // No class
         else {
-            sender.sendMessage(ChatColor.DARK_RED + "You don't have any skills to view");
+            String error = api.getMessage(CommandNodes.NO_CHOSEN_CLASS, true);
+            sender.sendMessage(error);
         }
     }
 
@@ -54,7 +72,7 @@ public class CmdSkills implements ICommand {
      */
     @Override
     public String getArgsString(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.SKILLS, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.RESET, true);
     }
 
     /**
@@ -62,7 +80,7 @@ public class CmdSkills implements ICommand {
      */
     @Override
     public String getDescription(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.SKILLS, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.RESET, true);
     }
 
     /**

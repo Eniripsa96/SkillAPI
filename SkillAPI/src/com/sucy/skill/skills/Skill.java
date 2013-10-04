@@ -27,6 +27,7 @@ public final class Skill implements Comparable<Skill> {
     private List<String> description;
     private ClassSkill skill;
     private int maxLevel;
+    private int skillReqLevel;
 
     /**
      * Constructor
@@ -37,11 +38,16 @@ public final class Skill implements Comparable<Skill> {
     public Skill(SkillAPI plugin, String name, ConfigurationSection config) {
         this.plugin = plugin;
         this.name = name;
-        maxLevel = config.getInt(SkillValues.MAX_LEVEL.getKey());
-        indicator = Material.getMaterial(config.getString(SkillValues.INDICATOR.getKey()).toUpperCase());
-        description = config.getStringList(SkillValues.DESCRIPTION.getKey());
-        if (config.contains(SkillValues.SKILL_REQ.getKey()))
-            skillReq = config.getString(SkillValues.SKILL_REQ.getKey());
+        maxLevel = config.getInt(SkillValues.MAX_LEVEL);
+        indicator = Material.getMaterial(config.getString(SkillValues.INDICATOR).toUpperCase());
+        description = config.getStringList(SkillValues.DESCRIPTION);
+        if (config.contains(SkillValues.SKILL_REQ)) {
+            skillReq = config.getString(SkillValues.SKILL_REQ);
+            if (config.contains(SkillValues.SKILL_REQ_LEVEL)) {
+                skillReqLevel = config.getInt(SkillValues.SKILL_REQ_LEVEL);
+            }
+            else skillReqLevel = 1;
+        }
 
         skill = plugin.getRegisteredSkill(name);
         if (skill != null) {
@@ -82,6 +88,13 @@ public final class Skill implements Comparable<Skill> {
     }
 
     /**
+     * @return level needed for the required skill
+     */
+    public int getSkillReqLevel() {
+        return skillReqLevel;
+    }
+
+    /**
      * Generates a new indicator item stack for the given skill level
      *
      * @param level current skill level
@@ -89,8 +102,7 @@ public final class Skill implements Comparable<Skill> {
      */
     public ItemStack getIndicator(PlayerSkills player, int level) {
 
-        ConfigurationSection language = plugin.getLanguageConfig();
-        List<String> layout = language.getStringList(SkillNodes.LAYOUT);
+        List<String> layout = plugin.getMessages(SkillNodes.LAYOUT, false);
         boolean first = true;
 
         ItemStack item = new ItemStack(indicator);
@@ -105,7 +117,7 @@ public final class Skill implements Comparable<Skill> {
 
             // Title filter
             if (line.contains("{title}")) {
-                String title = language.getString(SkillNodes.TITLE);
+                String title = plugin.getMessage(SkillNodes.TITLE, false);
 
                 title = title.replace("{name}", name)
                              .replace("{level}", level + "")
@@ -116,34 +128,26 @@ public final class Skill implements Comparable<Skill> {
 
             // Type filter
             if (line.contains("{type}")) {
-                String type = language.getString(SkillNodes.TYPE);
+                String type = plugin.getMessage(SkillNodes.TYPE, false);
                 type = type.replace("{name}", plugin.getMessage(cs.getType().getNode(), false));
                 line = line.replace("{type}", type);
             }
 
             // Requirement Filter
             if (line.contains("{requirements}")) {
+
                 int requiredLevel = cs.getAttribute(SkillAttribute.LEVEL, level + 1);
-                String levelString = language.getString(
-                        requiredLevel > level ?
-                            SkillNodes.REQUIREMENT_NOT_MET
-                            : SkillNodes.REQUIREMENT_MET);
-
-                levelString = levelString.replace("{name}", SkillAttribute.LEVEL)
-                                         .replace("{value}", requiredLevel + "");
-
-                line = line.replace("{requirements}", levelString);
+                line = line.replace("{requirements}",
+                        getRequirementString(SkillAttribute.LEVEL, requiredLevel, player.getLevel() >= requiredLevel));
 
                 int requiredPoints = cs.getAttribute(SkillAttribute.COST, level + 1);
-                String pointString = language.getString(
-                        requiredPoints > player.getPoints() ?
-                            SkillNodes.REQUIREMENT_NOT_MET
-                            : SkillNodes.REQUIREMENT_MET);
+                results.add(getRequirementString(SkillAttribute.COST, requiredPoints, player.getPoints() >= requiredPoints));
 
-                pointString = pointString.replace("{name}", SkillAttribute.COST)
-                                         .replace("{value}", requiredPoints + "");
-
-                results.add(pointString);
+                String skillReq = cs.getSkillReq();
+                if (skillReq != null) {
+                    results.add(getRequirementString(skillReq, skillReqLevel,
+                            player.hasSkill(skillReq) && player.getSkillLevel(skillReq) >= skillReqLevel));
+                }
             }
 
             // Attributes filter
@@ -162,18 +166,19 @@ public final class Skill implements Comparable<Skill> {
 
                     // Level 0 doesn't count
                     if (level == 0) oldValue = newValue;
+                    if (level == maxLevel) newValue = oldValue;
 
                     String attLine;
 
                     // Changing attribute
                     if (oldValue != newValue) {
 
-                        attLine = language.getString(SkillNodes.ATTRIBUTE_CHANGING);
+                        attLine = plugin.getMessage(SkillNodes.ATTRIBUTE_CHANGING, false);
                         attLine = attLine.replace("{new}", newValue + "");
                     }
 
                     // Not changing attribute
-                    else attLine = language.getString(SkillNodes.ATTRIBUTE_NOT_CHANGING);
+                    else attLine = plugin.getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, false);
 
                     attLine = attLine.replace("{value}", oldValue + "")
                                      .replace("{name}", attribute);
@@ -190,7 +195,7 @@ public final class Skill implements Comparable<Skill> {
 
                 // No attributes present
                 if (useLine) {
-                    line = line.replace("{attributes}", language.getString(SkillNodes.ATTRIBUTE_NONE));
+                    line = line.replace("{attributes}", plugin.getMessage(SkillNodes.ATTRIBUTE_NONE, false));
                 }
             }
 
@@ -199,19 +204,19 @@ public final class Skill implements Comparable<Skill> {
 
                 // No description
                 if (description.size() == 0) {
-                    line = line.replace("{description}", language.getString(SkillNodes.DESCRIPTION_NONE));
+                    line = line.replace("{description}", plugin.getMessage(SkillNodes.DESCRIPTION_NONE, false));
                 }
 
                 // Go through each line
                     else {
 
                     // First line
-                    String descFirst = language.getString(SkillNodes.DESCRIPTION_FIRST);
+                    String descFirst = plugin.getMessage(SkillNodes.DESCRIPTION_FIRST, false);
                     descFirst = descFirst.replace("{line}", description.get(0));
                     line = line.replace("{description}", descFirst);
 
                     // Other lines
-                    String descLine = language.getString(SkillNodes.DESCRIPTION_OTHER);
+                    String descLine = plugin.getMessage(SkillNodes.DESCRIPTION_OTHER, false);
                     for (int i = 1; i < description.size(); i++) {
                         results.add(descLine.replace("{line}", description.get(i)));
                     }
@@ -239,6 +244,23 @@ public final class Skill implements Comparable<Skill> {
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    /**
+     * Gets the requirement string for the skill icon
+     *
+     * @param name      requirement name
+     * @param value     requirement value
+     * @param satisfied whether or not it is satisfied
+     * @return          requirement string
+     */
+    private String getRequirementString(String name, int value, boolean satisfied) {
+        String reqString = plugin.getMessage(satisfied ?
+                        SkillNodes.REQUIREMENT_MET
+                        : SkillNodes.REQUIREMENT_NOT_MET, true);
+
+        return reqString.replace("{name}", name)
+                        .replace("{value}", value + "");
     }
 
     /**

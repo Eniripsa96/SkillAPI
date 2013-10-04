@@ -1,9 +1,13 @@
-package com.sucy.skill.command;
+package com.sucy.skill.command.basic;
 
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.command.CommandHandler;
+import com.sucy.skill.command.ICommand;
+import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.skills.PlayerSkills;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -12,7 +16,7 @@ import java.util.List;
 /**
  * Command to bind a skill to an item
  */
-public class CmdOptions implements ICommand {
+public class CmdSkills implements ICommand {
 
     /**
      * Executes the command
@@ -27,28 +31,16 @@ public class CmdOptions implements ICommand {
 
         SkillAPI api = (SkillAPI)plugin;
         PlayerSkills player = api.getPlayer(sender.getName());
-        int level = player.getProfessionLevel();
 
-        // Get the messages
-        List<String> messages;
-        String base = CommandNodes.COMPLETE + CommandNodes.OPTIONS;
-        if (level < 1) messages = api.getMessages(base + CommandNodes.NO_OPTIONS, true);
-        else messages = api.getMessages(base + CommandNodes.HAS_OPTIONS, true);
-
-        // Filter and send the messages
-        for (String string : messages) {
-            string = string.replace("{level}", level + "");
-
-            // Option filters display all options
-            if (string.contains("{option}")) {
-                for (String tree : api.getChildren(player.getTree())) {
-                    string = string.replace("{option}", tree);
-                    sender.sendMessage(string);
-                }
+        // View the skills and if it failed, they didn't have any skills to view
+        if (player.viewSkills()) {
+            List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.SKILLS, true);
+            for (String message : messages) {
+                sender.sendMessage(message);
             }
-
-            // Without the option filter, display the message normally
-            else sender.sendMessage(string);
+        }
+        else {
+            sender.sendMessage(ChatColor.DARK_RED + "You don't have any skills to view");
         }
     }
 
@@ -65,7 +57,7 @@ public class CmdOptions implements ICommand {
      */
     @Override
     public String getArgsString(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.OPTIONS, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.SKILLS, true);
     }
 
     /**
@@ -73,7 +65,7 @@ public class CmdOptions implements ICommand {
      */
     @Override
     public String getDescription(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.OPTIONS, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.SKILLS, true);
     }
 
     /**

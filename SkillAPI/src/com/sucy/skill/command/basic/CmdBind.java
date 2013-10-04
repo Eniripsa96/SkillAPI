@@ -1,11 +1,15 @@
-package com.sucy.skill.command;
+package com.sucy.skill.command.basic;
 
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.skill.*;
+import com.sucy.skill.command.CommandHandler;
+import com.sucy.skill.command.ICommand;
+import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.skills.PlayerSkills;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -13,7 +17,7 @@ import java.util.List;
 /**
  * Command to bind a skill to an item
  */
-public class CmdCast implements ICommand {
+public class CmdBind implements ICommand {
 
     /**
      * Executes the command
@@ -29,7 +33,7 @@ public class CmdCast implements ICommand {
         SkillAPI api = (SkillAPI)plugin;
         PlayerSkills player = api.getPlayer(sender.getName());
 
-        // Requires at least one argument
+        // Requires at least 1 argument
         if (args.length >= 1) {
 
             // Get the skill name
@@ -50,34 +54,25 @@ public class CmdCast implements ICommand {
                 sender.sendMessage(error);
             }
 
-            // Cast the skill
+            // No held item
+            else if (((Player) sender).getItemInHand().getType() == Material.AIR) {
+                String error = api.getMessage(CommandNodes.NO_HELD_ITEM, true);
+                sender.sendMessage(error);
+            }
+
+            // Bind the skill to the held item
             else {
-                ClassSkill classSkill = api.getRegisteredSkill(skill);
-
-                // Cannot cast a passive ability
-                if (classSkill instanceof PassiveSkill || classSkill instanceof TargetSkill) {
-                    String error = api.getMessage(CommandNodes.CANNOT_BE_CAST, true);
-                    error = error.replace("{skill}", classSkill.getName());
-                    sender.sendMessage(error);
-                }
-
-                // Cast the skill shot
-                else {
-                    ((SkillShot) classSkill).cast(plugin.getServer().getPlayer(sender.getName()),
-                            player.getSkillLevel(classSkill.getName()));
-
-                    List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.CAST, true);
-                    for (String message : messages) {
-                        message = message.replace("{skill}", classSkill.getName())
-                                         .replace("{mana}", classSkill.getAttribute(SkillAttribute.MANA, player.getSkillLevel(classSkill.getName())) + "")
-                                         .replace("{cooldown}", classSkill.getAttribute(SkillAttribute.COOLDOWN, player.getSkillLevel(classSkill.getName())) + "");
-                        sender.sendMessage(message);
-                    }
+                player.bind(((Player) sender).getItemInHand().getType(), skill);
+                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.BIND, true);
+                for (String message : messages) {
+                    message = message.replace("{skill}", skill)
+                                     .replace("{item}", ((Player) sender).getItemInHand().getType().name());
+                    sender.sendMessage(message);
                 }
             }
         }
 
-        // Invalid arguments
+        // Incorrect arguments
         else handler.displayUsage(sender);
     }
 
@@ -94,7 +89,7 @@ public class CmdCast implements ICommand {
      */
     @Override
     public String getArgsString(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.CAST, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.BIND, true);
     }
 
     /**
@@ -102,7 +97,7 @@ public class CmdCast implements ICommand {
      */
     @Override
     public String getDescription(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.CAST, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.BIND, true);
     }
 
     /**

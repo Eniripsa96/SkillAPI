@@ -12,5 +12,10 @@ public class PermissionNodes {
         /**
          * Basic permission to use the class system
          */
-        BASIC = BASE + "basic";
+        BASIC = BASE + "basic",
+
+        /**
+         * Permission to give players levels
+         */
+        LEVEL = BASE + "level";
 }

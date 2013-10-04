@@ -1,7 +1,7 @@
 package com.sucy.skill.skills;
 
-import com.rit.sucy.scoreboard.StatHolder;
-import com.sucy.skill.PrefixManager;
+import com.sucy.skill.mccore.CoreChecker;
+import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ClassAttribute;
 import com.sucy.skill.api.CustomClass;
@@ -10,7 +10,6 @@ import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.PassiveSkill;
 import com.sucy.skill.api.skill.SkillAttribute;
 import com.sucy.skill.language.OtherNodes;
-import com.sucy.skill.language.StatNodes;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,7 +25,7 @@ import java.util.*;
  * via the SkillAPI.getPlayer(String) method however to modify
  * the stats of a player.</p>
  */
-public final class PlayerSkills implements StatHolder {
+public final class PlayerSkills {
 
     private Hashtable<String, Integer> skills = new Hashtable<String, Integer>();
     private Hashtable<Material, String> binds = new Hashtable<Material, String>();
@@ -76,7 +75,7 @@ public final class PlayerSkills implements StatHolder {
                 return;
             }
 
-            if (plugin.getServer().getPlayer(player) != null) {
+            if (plugin.getServer().getPlayer(player) != null && CoreChecker.isCoreActive()) {
                 PrefixManager.setPrefix(this, tree.prefix, tree.braceColor);
             }
             if (skillConfig != null) {
@@ -202,21 +201,25 @@ public final class PlayerSkills implements StatHolder {
             return false;
 
         int level = getSkillLevel(skill.getName());
+        ClassSkill classSkill = skill.getClassSkill();
 
         // Skill is already maxed
         if (level >= skill.getMaxLevel())
             return false;
 
         // Level requirement isn't met
-        if (this.level < skill.getClassSkill().getAttribute(SkillAttribute.LEVEL, level))
+        if (this.level < classSkill.getAttribute(SkillAttribute.LEVEL, level))
             return false;
 
         // Skill cost isn't met
-        if (points < skill.getClassSkill().getAttribute(SkillAttribute.COST, level))
+        if (points < classSkill.getAttribute(SkillAttribute.COST, level))
+            return false;
+
+        // Doesn't have prerequisite
+        if (classSkill.getSkillReq() != null && getSkillLevel(classSkill.getSkillReq()) < classSkill.getSkillReqLevel())
             return false;
 
         // Apply passive skill effects
-        ClassSkill classSkill = plugin.getRegisteredSkill(skill.getName());
         if (classSkill instanceof PassiveSkill)
             ((PassiveSkill) classSkill).onUpgrade(plugin.getServer().getPlayer(getName()), level + 1);
 
@@ -264,7 +267,8 @@ public final class PlayerSkills implements StatHolder {
             stopPassiveAbilities();
             skills.clear();
             binds.clear();
-            PrefixManager.clearPrefix(player);
+            if (CoreChecker.isCoreActive())
+                PrefixManager.clearPrefix(player);
             updateHealth();
 
             plugin.getServer().getPluginManager().callEvent(
@@ -300,7 +304,8 @@ public final class PlayerSkills implements StatHolder {
         }
 
         // Set the new prefix for the class
-        PrefixManager.setPrefix(this, tree.prefix, tree.braceColor);
+        if (CoreChecker.isCoreActive())
+            PrefixManager.setPrefix(this, tree.prefix, tree.braceColor);
 
         updateHealth();
         plugin.getServer().getPluginManager().callEvent(
@@ -311,7 +316,6 @@ public final class PlayerSkills implements StatHolder {
      * Updates the health of the player to match the class details
      */
     public void updateHealth() {
-        Player p = plugin.getServer().getPlayer(player);
         if (tree == null) {
             setMaxHealth(20);
         }
@@ -348,16 +352,9 @@ public final class PlayerSkills implements StatHolder {
     }
 
     /**
-     * @return skill binding data
-     */
-    public Hashtable<Material, String> getBinds() {
-        return binds;
-    }
-
-    /**
      * @return skill tree name
      */
-    public String getTree() {
+    public String getClassName() {
         return tree;
     }
 
@@ -387,8 +384,8 @@ public final class PlayerSkills implements StatHolder {
      * @param name skill name
      * @return     true if upgraded
      */
-    public boolean hasSkillUpgraded(String name) {
-        return skills.containsKey(name.toLowerCase()) && skills.get(name.toLowerCase()) > 0;
+    public boolean hasSkillUnlocked(String name) {
+        return hasSkill(name) && getSkillLevel(name) > 0;
     }
 
     /**
@@ -468,29 +465,58 @@ public final class PlayerSkills implements StatHolder {
         exp += event.getExp();
 
         // Level up if there's enough exp
-        boolean leveled = exp > requiredExp();
-        while (exp > requiredExp()) {
-            exp -= requiredExp();
-            level++;
-            points++;
-            updateHealth();
+        int levels = 0;
+        while (exp >= getRequiredExp()) {
+            exp -= getRequiredExp();
+            levels++;
         }
 
-        // Send message if leveled up at least once
-        // This is separated in case of large amounts of exp gain
-        if (leveled) {
-            Player p = plugin.getServer().getPlayer(player);
-            List<String> messages = plugin.getMessages(OtherNodes.LEVEL_UP, true);
+        // Level the player up
+        if (levels > 0) levelUp(levels);
+    }
+
+    /**
+     * Levels the player up the given amount of times
+     *
+     * @param amount amount of levels to go up
+     */
+    public void levelUp(int amount) {
+        if (tree == null) throw new IllegalArgumentException("Player cannot level up while not having a class");
+
+        SkillTree skillTree = plugin.getClass(tree);
+        if (amount + level > skillTree.getMaxLevel()) amount = skillTree.getMaxLevel() - level;
+        if (amount <= 0) return;
+
+        // Add to stats
+        level += amount;
+        points += amount;
+        updateHealth();
+
+        // Display a message
+        Player p = plugin.getServer().getPlayer(player);
+        List<String> messages = plugin.getMessages(OtherNodes.LEVEL_UP, true);
+        for (String message : messages) {
+            message = message.replace("{level}", level + "")
+                    .replace("{points}", points + "")
+                    .replace("{class}", tree);
+
+            p.sendMessage(message);
+        }
+
+        // Display max level message if applicable
+        if (level >= skillTree.getMaxLevel()) {
+            messages = plugin.getMessages(OtherNodes.MAX_LEVEL, true);
             for (String message : messages) {
                 message = message.replace("{level}", level + "")
-                                 .replace("{points}", points + "")
-                                 .replace("{class}", tree);
+                                 .replace("{class}", skillTree.getName());
 
                 p.sendMessage(message);
             }
-            plugin.getServer().getPluginManager().callEvent(
-                    new PlayerLevelUpEvent(this));
         }
+
+        // Call the event
+        plugin.getServer().getPluginManager().callEvent(
+                new PlayerLevelUpEvent(this));
     }
 
     /**
@@ -509,8 +535,34 @@ public final class PlayerSkills implements StatHolder {
     /**
      * @return amount of experience required for the next level
      */
-    public int requiredExp() {
+    public int getRequiredExp() {
+        return getRequiredExp(level);
+    }
+
+    /**
+     * Calculates the required experience for a level
+     *
+     * @param level level to calculate for
+     * @return      amount of experience needed
+     */
+    public static int getRequiredExp(int level) {
         return (level + 4) * (level + 4) / 10 * 10;
+    }
+
+    /**
+     * @return experience to the next level
+     */
+    public int getExpToNextLevel() {
+        return getRequiredExp() - exp;
+    }
+
+    /**
+     * Gets the API reference
+     *
+     * @return api reference
+     */
+    public SkillAPI getAPI() {
+        return plugin;
     }
 
     /**
@@ -531,19 +583,5 @@ public final class PlayerSkills implements StatHolder {
         for (Map.Entry<Material, String> entry : binds.entrySet()) {
             config.set(path + PlayerValues.BIND + "." + entry.getKey().name(), entry.getValue());
         }
-    }
-
-    /**
-     * @return map of stats for the scoreboard
-     */
-    @Override
-    public Map<String, Integer> getStats() {
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
-        map.put(plugin.getMessage(StatNodes.HEALTH, true), (int)plugin.getServer().getPlayer(player).getHealth());
-        if (plugin.isManaEnabled()) map.put(plugin.getMessage(StatNodes.MANA, true), mana);
-        map.put(plugin.getMessage(StatNodes.POINTS, true), points);
-        map.put(plugin.getMessage(StatNodes.LEVEL, true), level);
-        map.put(plugin.getMessage(StatNodes.EXP, true), exp);
-        return map;
     }
 }

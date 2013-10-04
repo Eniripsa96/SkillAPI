@@ -91,6 +91,16 @@ public class CommandNodes {
     INFO_CONSOLE = "info-console",
 
     /**
+     * Level console command key
+     */
+    LEVEL_CONSOLE = "level-console",
+
+    /**
+     * Level player command key
+     */
+    LEVEL_PLAYER = "level-player",
+
+    /**
      * Options command key
      */
     OPTIONS = "options",
@@ -123,9 +133,19 @@ public class CommandNodes {
     CANNOT_BE_CAST = ERROR_BASE + "cannot-be-cast",
 
     /**
+     * When a player doesn't have a class to level up with
+     */
+    CANNOT_LEVEL = ERROR_BASE + "cannot-level",
+
+    /**
      * A player cannot profess into a new class
      */
     CANNOT_PROFESS = ERROR_BASE + "cannot-profess",
+
+    /**
+     * Player already is the maximum level
+     */
+    MAX_LEVEL = ERROR_BASE + "max-level",
 
     /**
      * A player doesn't have a class
@@ -136,6 +156,11 @@ public class CommandNodes {
      * A player doesn't have a held item
      */
     NO_HELD_ITEM = ERROR_BASE + "no-held-item",
+
+    /**
+     * No target for a targeted skill
+     */
+    NO_TARGET = "no-target",
 
     /**
      * The argument isn't the name of a valid class
@@ -151,6 +176,11 @@ public class CommandNodes {
      * The argument isn't the name of a valid skill
      */
     NOT_A_SKILL = ERROR_BASE + "not-a-skill",
+
+    /**
+     * A value is not a positive number when it should be
+     */
+    NOT_POSITIVE = ERROR_BASE + "not-positive",
 
     /**
      * A player doesn't own the skill

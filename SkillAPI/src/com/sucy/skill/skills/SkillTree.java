@@ -3,10 +3,10 @@ package com.sucy.skill.skills;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ClassAttribute;
 import com.sucy.skill.api.CustomClass;
+import com.sucy.skill.config.ClassValues;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
-import com.sucy.skill.config.TreeValues;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ public final class SkillTree implements InventoryHolder {
     String name;
     int width;
     int level;
+    int maxLevel;
 
     /**
      * Constructor
@@ -39,30 +40,31 @@ public final class SkillTree implements InventoryHolder {
     public SkillTree(SkillAPI plugin, String name, ConfigurationSection config) throws SkillTreeException {
         this.name = name;
         this.plugin = plugin;
-        this.prefix = config.getString(TreeValues.PREFIX).replace('&', ChatColor.COLOR_CHAR);
+        this.prefix = config.getString(ClassValues.PREFIX).replace('&', ChatColor.COLOR_CHAR);
+        this.level = config.getInt(ClassValues.LEVEL);
+        this.maxLevel = config.getInt(ClassValues.MAX_LEVEL);
         if (ChatColor.getLastColors(prefix).length() > 0)
             braceColor = ChatColor.getByChar(ChatColor.getLastColors(prefix).charAt(1));
         else braceColor = ChatColor.WHITE;
-        if (config.contains(TreeValues.PARENT))
-            parent = config.getString(TreeValues.PARENT);
-        if (config.contains(TreeValues.LEVEL))
-            level = config.getInt(TreeValues.LEVEL);
+        if (config.contains(ClassValues.PARENT))
+            parent = config.getString(ClassValues.PARENT);
+
 
         // Update configuration data
         CustomClass c = plugin.getRegisteredClass(name);
-        if (config.contains(TreeValues.HEALTH_BASE))
-            c.setBase(ClassAttribute.HEALTH, config.getInt(TreeValues.HEALTH_BASE));
-        if (config.contains(TreeValues.HEALTH_BONUS))
-            c.setScale(ClassAttribute.HEALTH, config.getInt(TreeValues.HEALTH_BONUS));
-        if (config.contains(TreeValues.MANA_BASE))
-            c.setBase(ClassAttribute.MANA, config.getInt(TreeValues.MANA_BASE));
-        if (config.contains(TreeValues.MANA_BONUS))
-             c.setScale(ClassAttribute.MANA, config.getInt(TreeValues.MANA_BONUS));
+        if (config.contains(ClassValues.HEALTH_BASE))
+            c.setBase(ClassAttribute.HEALTH, config.getInt(ClassValues.HEALTH_BASE));
+        if (config.contains(ClassValues.HEALTH_BONUS))
+            c.setScale(ClassAttribute.HEALTH, config.getInt(ClassValues.HEALTH_BONUS));
+        if (config.contains(ClassValues.MANA_BASE))
+            c.setBase(ClassAttribute.MANA, config.getInt(ClassValues.MANA_BASE));
+        if (config.contains(ClassValues.MANA_BONUS))
+             c.setScale(ClassAttribute.MANA, config.getInt(ClassValues.MANA_BONUS));
 
         ArrayList<Skill> skills = new ArrayList<Skill>();
 
         // Inheritance
-        for (String tree : config.getStringList(TreeValues.INHERIT)) {
+        for (String tree : config.getStringList(ClassValues.INHERIT)) {
             if (!plugin.hasTree(tree))
                 throw new SkillTreeException("Invalid tree inheritance - parent:" + name + ", child:" + tree);
             for (Skill skill : plugin.getClass(tree).skillSlots.values()) {
@@ -71,7 +73,7 @@ public final class SkillTree implements InventoryHolder {
         }
 
         // Included skills
-        for (String skill : config.getStringList(TreeValues.SKILLS)) {
+        for (String skill : config.getStringList(ClassValues.SKILLS)) {
             if (!plugin.hasSkill(skill))
                 throw new SkillTreeException("Invalid skill name: " + skill);
             skills.add(plugin.getSkill(skill));
@@ -93,6 +95,13 @@ public final class SkillTree implements InventoryHolder {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @return max level for the class
+     */
+    public int getMaxLevel() {
+        return maxLevel;
     }
 
     /**

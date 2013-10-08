@@ -1,7 +1,6 @@
 package com.sucy.skill.command;
 
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.language.CommandNodes;
+import com.sucy.skill.api.util.TextSizer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

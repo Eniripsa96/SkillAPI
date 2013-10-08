@@ -116,11 +116,6 @@ public abstract class ClassSkill extends Attributed {
         // Get the skill level
         int level = player.getSkillLevel(name);
 
-        // Make sure they have a timer
-        if (!timers.containsKey(player.getName())) {
-            timers.put(player.getName(), 0L);
-        }
-
         // See if it is on cooldown
         if (getCooldown(player) > 0) return SkillStatus.ON_COOLDOWN;
 
@@ -160,6 +155,12 @@ public abstract class ClassSkill extends Attributed {
      * @return       time left on cooldown (0 if off cooldown)
      */
     public int getCooldown(PlayerSkills player) {
+
+        // Make sure they have a timer
+        if (!timers.containsKey(player.getName())) {
+            timers.put(player.getName(), 0L);
+        }
+
         int level = player.getSkillLevel(name);
         long passed = System.currentTimeMillis() - timers.get(player.getName());
         long cd = (long)(1000 * getAttribute(SkillAttribute.COOLDOWN, level));

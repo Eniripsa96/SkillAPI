@@ -252,7 +252,7 @@ public final class PlayerSkills {
         // Reset stats if applicable
         if (plugin.doProfessionsReset()) {
             level = 1;
-            points = 1;
+            points = plugin.getStartingPoints();
             exp = 0;
             stopPassiveAbilities();
             skills.clear();
@@ -262,7 +262,7 @@ public final class PlayerSkills {
         // If the player was reverted to no class, clear all data
         if (this.tree == null) {
             level = 1;
-            points = 0;
+            points = plugin.getStartingPoints();
             exp = 0;
             stopPassiveAbilities();
             skills.clear();

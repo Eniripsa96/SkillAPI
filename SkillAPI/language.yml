@@ -155,3 +155,5 @@ Other:
   - '&4You need &6{missing} &4more mana'
   max-level:
   - '&2You have reached the maximum level for your class'
+  cannot-use-item:
+  - '&4You cannot use that item'

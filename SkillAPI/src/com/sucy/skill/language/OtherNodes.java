@@ -32,5 +32,10 @@ public class OtherNodes {
     /**
      * Player reached the maximum level for their class
      */
-    MAX_LEVEL = BASE + "max-level";
+    MAX_LEVEL = BASE + "max-level",
+
+    /**
+     * Player cannot use an item due to class/level restrictions
+     */
+    CANNOT_USE_ITEM = BASE + "cannot-use-item";
 }

@@ -38,7 +38,7 @@ public class CmdReset implements ICommand {
             String base = CommandNodes.COMPLETE + CommandNodes.RESET;
 
             // If confirmed, reset their stats
-            if (args.length > 1 && args[1].equalsIgnoreCase("confirm")) {
+            if (args.length == 1 && args[0].equalsIgnoreCase("confirm")) {
                 player.setClass(null);
                 messages = api.getMessages(base + CommandNodes.CONFIRMED, true);
             }

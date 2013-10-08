@@ -6,12 +6,14 @@ import com.sucy.skill.api.skill.SkillAttribute;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.command.ClassCommander;
-import com.sucy.skill.command.TextSizer;
+import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.config.*;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.skills.*;
 import com.sucy.skill.skills.SkillTree;
+import com.sucy.skill.task.InventoryTask;
+import com.sucy.skill.task.ManaTask;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -40,12 +42,14 @@ public class SkillAPI extends JavaPlugin {
     private Hashtable<String, ClassSkill> registeredSkills = new Hashtable<String, ClassSkill>();
     private Hashtable<String, CustomClass> registeredClasses = new Hashtable<String, CustomClass>();
     private RegisterMode mode = RegisterMode.DONE;
+    private InventoryTask invTask;
     private Config playerConfig;
     private Config languageConfig;
-    private ManaTask task;
+    private ManaTask manaTask;
     private boolean sbEnabled;
     private boolean mana;
     private boolean reset;
+    private int startingPoints;
 
     // ----------------------------- Plugin Methods -------------------------------------- //
 
@@ -97,8 +101,10 @@ public class SkillAPI extends JavaPlugin {
     private void clear() {
 
         // Tasks
-        if (task != null)
-            task.cancel();
+        if (manaTask != null)
+            manaTask.cancel();
+        if (invTask != null)
+            invTask.cancel();
 
         // Clear listeners
         HandlerList.unregisterAll(this);
@@ -153,11 +159,16 @@ public class SkillAPI extends JavaPlugin {
         reset = getConfig().getBoolean("profess-reset");
         mana = getConfig().getBoolean("mana-enabled");
         sbEnabled = getConfig().getBoolean("scoreboard-enabled");
+        startingPoints = getConfig().getInt("starting-points");
 
         // Set up the mana task
         int manaFreq = getConfig().getInt("mana-gain-freq");
         int manaGain = getConfig().getInt("mana-gain-amount");
-        if (mana) task = new ManaTask(this, manaFreq, manaGain);
+        if (mana) manaTask = new ManaTask(this, manaFreq, manaGain);
+
+        // Set up the inventory tassk
+        int playersPerTick = getConfig().getInt("players-per-check");
+        invTask = new InventoryTask(this, playersPerTick);
 
         // Load experience yields
         if (getConfig().contains("kills")) {
@@ -230,6 +241,13 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean doProfessionsReset() {
         return reset;
+    }
+
+    /**
+     * @return number of skill points players start with
+     */
+    public int getStartingPoints() {
+        return startingPoints;
     }
 
     /**
@@ -496,6 +514,7 @@ public class SkillAPI extends JavaPlugin {
      * @return     class skill
      */
     public ClassSkill getRegisteredSkill(String name) {
+        if (name == null) return null;
         return registeredSkills.get(name.toLowerCase());
     }
 
@@ -506,6 +525,7 @@ public class SkillAPI extends JavaPlugin {
      * @return     class
      */
     public CustomClass getRegisteredClass(String name) {
+        if (name == null) return null;
         return registeredClasses.get(name.toLowerCase());
     }
 

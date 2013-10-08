@@ -124,13 +124,13 @@ public abstract class CustomClass extends Attributed {
         // Custom damage if applicable
         if (damage.containsKey(mat)) {
             int dmg = damage.get(mat);
-            return dmg == 0 ? 0 : dmg + bonusDamage.get(player.toLowerCase());
+            return dmg == 0 ? 0 : dmg + getBonusDamage(player);
         }
 
         // Default damages higher than 1
         else if (defaultDamage.containsKey(mat)) {
             int dmg = defaultDamage.get(mat);
-            return dmg == 0 ? 0 : dmg + bonusDamage.get(player.toLowerCase());
+            return dmg == 0 ? 0 : dmg + getBonusDamage(player);
         }
 
         // Otherwise just 1 damage
@@ -180,6 +180,7 @@ public abstract class CustomClass extends Attributed {
      * @return       bonus damage
      */
     public int getBonusDamage(String player) {
+        if (!bonusDamage.containsKey(player.toLowerCase())) return 0;
         return bonusDamage.get(player.toLowerCase());
     }
 

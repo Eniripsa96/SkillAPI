@@ -44,7 +44,7 @@ public class CmdOptions implements ICommand {
 
             // Option filters display all options
             if (string.contains("{option}")) {
-                for (String tree : api.getChildren(player.getClassName())) {
+                for (String tree : api.getChildren(player.getClassName(), plugin.getServer().getPlayer(player.getName()))) {
                     string = string.replace("{option}", tree);
                     sender.sendMessage(string);
                 }

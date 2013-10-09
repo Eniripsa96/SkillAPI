@@ -1,18 +1,19 @@
 package com.sucy.skill.skills;
 
+import com.sucy.skill.api.skill.*;
+import com.sucy.skill.api.util.Protection;
+import com.sucy.skill.api.util.TargetHelper;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ClassAttribute;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.event.*;
-import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.api.skill.PassiveSkill;
-import com.sucy.skill.api.skill.SkillAttribute;
 import com.sucy.skill.language.OtherNodes;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import com.sucy.skill.config.PlayerValues;
 
@@ -316,7 +317,7 @@ public final class PlayerSkills {
      * Updates the health of the player to match the class details
      */
     public void updateHealth() {
-        if (tree == null) {
+        if (tree == null || plugin.oldHealthEnabled()) {
             setMaxHealth(20);
         }
         else setMaxHealth(plugin.getRegisteredClass(tree).getAttribute(ClassAttribute.HEALTH, level));
@@ -336,6 +337,7 @@ public final class PlayerSkills {
 
         p.setMaxHealth(amount);
         p.setHealth(Math.max(1, prevHealth + amount - prevMax));
+        plugin.getLogger().info("Max Health for " + p.getName() + ": " + p.getMaxHealth());
     }
 
     /**
@@ -529,6 +531,7 @@ public final class PlayerSkills {
         SkillTree skillTree = plugin.getClass(target);
         if (tree == null) return skillTree.parent == null;
         else if (getProfessionLevel() < 1) return false;
+        else if (!plugin.hasPermission(plugin.getServer().getPlayer(player), skillTree)) return false;
         return skillTree.parent != null && skillTree.parent.equalsIgnoreCase(tree) && plugin.getClass(tree).level <= level;
     }
 
@@ -563,6 +566,80 @@ public final class PlayerSkills {
      */
     public SkillAPI getAPI() {
         return plugin;
+    }
+
+    /**
+     * Casts a skill
+     *
+     * @param skillName skill to cast
+     */
+    public void castSkill(String skillName) {
+        ClassSkill skill = plugin.getRegisteredSkill(skillName);
+
+        // Invalid skill
+        if (skill == null) throw new IllegalArgumentException("Invalid skill: " + skillName);
+
+        SkillStatus status = skill.checkStatus(this, plugin.isManaEnabled());
+        int level = getSkillLevel(skill.getName());
+
+        // Skill is on cooldown
+        if (status == SkillStatus.ON_COOLDOWN) {
+            List<String> messages = plugin.getMessages(OtherNodes.ON_COOLDOWN, true);
+            for (String message : messages) {
+                message = message.replace("{cooldown}", skill.getCooldown(this) + "")
+                        .replace("{skill}", skill.getName());
+
+                plugin.getServer().getPlayer(player).sendMessage(message);
+            }
+        }
+
+        // Skill requires more mana
+        else if (status == SkillStatus.MISSING_MANA) {
+            List<String> messages = plugin.getMessages(OtherNodes.NO_MANA, true);
+            int cost = skill.getAttribute(SkillAttribute.MANA, level);
+            for (String message : messages) {
+                message = message.replace("{missing}", (cost - getMana()) + "")
+                        .replace("{mana}", getMana() + "")
+                        .replace("{cost}", cost + "")
+                        .replace("{skill}", skill.getName());
+
+                plugin.getServer().getPlayer(player).sendMessage(message);
+            }
+        }
+
+        // Check for skill shots
+        else if (skill instanceof SkillShot) {
+
+            // Try to cast the skill
+            if (((SkillShot) skill).cast(plugin.getServer().getPlayer(player), getSkillLevel(skill.getName()))) {
+
+                // Start the cooldown
+                skill.startCooldown(this);
+
+                // Use mana if successful
+                if (plugin.isManaEnabled()) useMana(plugin.getSkill(skill.getName()).getClassSkill().getAttribute(SkillAttribute.MANA, level));
+            }
+        }
+
+        // Check for Target Skills
+        else if (skill instanceof TargetSkill) {
+
+            // Must have a target
+            Player p = plugin.getServer().getPlayer(player);
+            LivingEntity target = TargetHelper.getLivingTarget(p, skill.getAttribute(SkillAttribute.RANGE, level));
+            if (target != null) {
+
+                // Try to cast the skill
+                if (((TargetSkill) skill).cast(p, target, level, Protection.isAlly(p, target))) {
+
+                    // Apply the cooldown
+                    skill.startCooldown(this);
+
+                    // Use mana if successful
+                    if (plugin.isManaEnabled()) useMana(plugin.getSkill(skill.getName()).getClassSkill().getAttribute(SkillAttribute.MANA, level));
+                }
+            }
+        }
     }
 
     /**

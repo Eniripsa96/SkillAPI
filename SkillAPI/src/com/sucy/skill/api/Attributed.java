@@ -88,6 +88,16 @@ public abstract class Attributed {
     }
 
     /**
+     * Adds to an attribute
+     *
+     * @param attribute attribute to add to
+     * @param amount    amount to add
+     */
+    public void addAttribute(String attribute, int amount) {
+        setBase(attribute, getBase(attribute) + amount);
+    }
+
+    /**
      * <p>Gets the list of the names of all attributes
      * defined for this skill. Normally you should
      * have the names of attributes already and don't

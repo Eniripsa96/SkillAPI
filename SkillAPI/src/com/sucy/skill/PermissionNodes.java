@@ -17,5 +17,15 @@ public class PermissionNodes {
         /**
          * Permission to give players levels
          */
-        LEVEL = BASE + "level";
+        LEVEL = BASE + "level",
+
+        /**
+         * Reloading the plugin
+         */
+        RELOAD = BASE + "reload",
+
+        /**
+         * Access to all classes
+         */
+        CLASS = BASE + "class";
 }

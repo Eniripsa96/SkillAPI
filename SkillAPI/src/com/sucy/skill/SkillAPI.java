@@ -43,12 +43,13 @@ public class SkillAPI extends JavaPlugin {
     private Hashtable<String, CustomClass> registeredClasses = new Hashtable<String, CustomClass>();
     private RegisterMode mode = RegisterMode.DONE;
     private InventoryTask invTask;
+    private ManaTask manaTask;
     private Config playerConfig;
     private Config languageConfig;
-    private ManaTask manaTask;
     private boolean sbEnabled;
     private boolean mana;
     private boolean reset;
+    private boolean oldHealth;
     private int startingPoints;
 
     // ----------------------------- Plugin Methods -------------------------------------- //
@@ -58,83 +59,12 @@ public class SkillAPI extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+
+        reloadConfig();
         saveDefaultConfig();
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
         languageConfig.saveDefaultConfig();
-        reload();
-        getLogger().info("Loaded " + skills.size() + " skills and " + trees.size() + " skill trees");
-
-        new ClassCommander(this);
-    }
-
-    /**
-     * Clears all plugin data after saving
-     */
-    @Override
-    public void onDisable() {
-
-        // Save player data
-        for (String key : playerConfig.getConfig().getKeys(false)) {
-            playerConfig.getConfig().set(key, null);
-        }
-        for (String player : players.keySet()) {
-            savePlayer(player);
-        }
-        playerConfig.saveConfig();
-
-        // Stop passive abilities
-        for (PlayerSkills player : players.values()) {
-            player.stopPassiveAbilities();
-            player.setMaxHealth(20);
-        }
-
-        clear();
-        players.clear();
-    }
-
-    // ----------------------------- Data Management Methods -------------------------------------- //
-
-    /**
-     * Clears all plugin data
-     */
-    private void clear() {
-
-        // Tasks
-        if (manaTask != null)
-            manaTask.cancel();
-        if (invTask != null)
-            invTask.cancel();
-
-        // Clear listeners
-        HandlerList.unregisterAll(this);
-
-        // Clear scoreboards
-        if (CoreChecker.isCoreActive())
-            PrefixManager.clearAll();
-
-        // Clear all data
-        skills.clear();
-        trees.clear();
-    }
-
-    /**
-     * Saves player data to the config
-     *
-     * @param player player name
-     */
-    public void savePlayer(String player) {
-        player = player.toLowerCase();
-        if (!players.containsKey(player)) return;
-        players.get(player).save(playerConfig.getConfig(), PlayerValues.ROOT + "." + player + ".");
-    }
-
-    /**
-     * Loads all data for the plugin
-     */
-    public void reload() {
-
-        clear();
 
         // Request skills first
         mode = RegisterMode.SKILL;
@@ -160,13 +90,14 @@ public class SkillAPI extends JavaPlugin {
         mana = getConfig().getBoolean("mana-enabled");
         sbEnabled = getConfig().getBoolean("scoreboard-enabled");
         startingPoints = getConfig().getInt("starting-points");
+        oldHealth = getConfig().getBoolean("old-health-bar");
 
         // Set up the mana task
         int manaFreq = getConfig().getInt("mana-gain-freq");
         int manaGain = getConfig().getInt("mana-gain-amount");
         if (mana) manaTask = new ManaTask(this, manaFreq, manaGain);
 
-        // Set up the inventory tassk
+        // Set up the inventory task
         int playersPerTick = getConfig().getInt("players-per-check");
         invTask = new InventoryTask(this, playersPerTick);
 
@@ -201,12 +132,14 @@ public class SkillAPI extends JavaPlugin {
             }
         }
 
+        getLogger().info("Loaded " + skills.size() + " skills and " + trees.size() + " skill trees");
+
         // Load player data
         if (playerConfig.getConfig().contains(PlayerValues.ROOT) && playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false) != null) {
             for (String player : playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false)) {
-                players.put(player.toLowerCase(), new PlayerSkills(this, player, playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT + "." + player)));
-                if (getServer().getPlayer(player) != null)
-                    players.get(player.toLowerCase()).updateHealth();
+                PlayerSkills data = new PlayerSkills(this, player, playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT + "." + player));
+                players.put(player.toLowerCase(), data);
+                data.updateHealth();
             }
         }
 
@@ -216,8 +149,69 @@ public class SkillAPI extends JavaPlugin {
                 players.put(player.getName().toLowerCase(), new PlayerSkills(this, player.getName()));
         }
 
-        // Listener
+        // Listeners and Commands
         new APIListener(this);
+        new ClassCommander(this);
+    }
+
+    /**
+     * Clears all plugin data after saving
+     */
+    @Override
+    public void onDisable() {
+
+        // Clear listeners
+        HandlerList.unregisterAll(this);
+
+        // Tasks
+        if (manaTask != null) {
+            manaTask.cancel();
+            manaTask = null;
+        }
+        if (invTask != null) {
+            invTask.cancel();
+            invTask = null;
+        }
+
+        // Save player data
+        for (String key : playerConfig.getConfig().getKeys(false)) {
+            playerConfig.getConfig().set(key, null);
+        }
+        for (String player : players.keySet()) {
+            savePlayer(player);
+        }
+        playerConfig.saveConfig();
+
+        // Stop passive abilities
+        for (PlayerSkills player : players.values()) {
+            player.stopPassiveAbilities();
+            player.setMaxHealth(20);
+        }
+
+        // Clear scoreboards
+        if (CoreChecker.isCoreActive())
+            PrefixManager.clearAll();
+
+        // Clear all data
+        skills.clear();
+        trees.clear();
+        registeredSkills.clear();
+        registeredClasses.clear();
+        exp.clear();
+        players.clear();
+    }
+
+    // ----------------------------- Data Management Methods -------------------------------------- //
+
+    /**
+     * Saves player data to the config
+     *
+     * @param player player name
+     */
+    public void savePlayer(String player) {
+        player = player.toLowerCase();
+        if (!players.containsKey(player)) return;
+        players.get(player).save(playerConfig.getConfig(), PlayerValues.ROOT + "." + player + ".");
     }
 
     // ----------------------------- Settings Accessor Methods -------------------------------------- //
@@ -259,6 +253,13 @@ public class SkillAPI extends JavaPlugin {
     public int getExp(String mob) {
         if (!exp.containsKey(mob.toLowerCase())) return 0;
         return exp.get(mob.toLowerCase());
+    }
+
+    /**
+     * @return whether or not old health bar mechanics are enabled
+     */
+    public boolean oldHealthEnabled() {
+        return oldHealth;
     }
 
     // ----------------------------- Registration methods -------------------------------------- //
@@ -560,6 +561,42 @@ public class SkillAPI extends JavaPlugin {
             }
         }
         return children;
+    }
+
+    /**
+     * Gets the children for the skill tree considering the player's permissions
+     *
+     * @param tree   parent skill tree
+     * @param player player to check for
+     * @return       list of available child skill trees
+     */
+    public ArrayList<String> getChildren(String tree, Player player) {
+        ArrayList<String> children = new ArrayList<String>();
+        for (SkillTree t : trees.values()) {
+            if (tree == null) {
+                if (t.getParent() == null && hasPermission(player, t)) children.add(t.getName());
+            }
+            else {
+                if (t.getName().equalsIgnoreCase(tree)) continue;
+                if (t.getParent() == null) continue;
+                if (!hasPermission(player, t)) continue;
+                if (t.getParent().equalsIgnoreCase(tree)) {
+                    children.add(t.getName());
+                }
+            }
+        }
+        return children;
+    }
+
+    /**
+     * Checks if the player has permission to use the given class
+     *
+     * @param player player to check for
+     * @param t      class to check
+     * @return       true if the player has permission, false otherwise
+     */
+    public boolean hasPermission(Player player, SkillTree t) {
+        return player.hasPermission(PermissionNodes.CLASS) || player.hasPermission(PermissionNodes.CLASS + "." + t.getName());
     }
 
     // ----------------------------- Language Methods -------------------------------------- //

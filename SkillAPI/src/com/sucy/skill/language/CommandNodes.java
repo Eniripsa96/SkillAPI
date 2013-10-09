@@ -120,6 +120,11 @@ public class CommandNodes {
      */
     SKILLS = "skills",
 
+    /**
+     * Reloads the plugin data
+     */
+    RELOAD = "reload",
+
     // ------------------- Error Messages ------------------------ //
 
     /**

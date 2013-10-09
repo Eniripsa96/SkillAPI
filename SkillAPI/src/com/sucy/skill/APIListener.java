@@ -4,12 +4,10 @@ import com.sucy.skill.api.*;
 import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
 import com.sucy.skill.api.skill.*;
-import com.sucy.skill.api.util.Protection;
-import com.sucy.skill.api.util.TargetHelper;
-import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.skills.*;
+
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -21,12 +19,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,67 +63,8 @@ public class APIListener implements Listener {
         if (heldItem == null || data.getBound(heldItem) == null || !plugin.isSkillRegistered(data.getBound(heldItem)))
             return;
 
-        ClassSkill skill = plugin.getRegisteredSkill(data.getBound(heldItem));
-        SkillStatus status = skill.checkStatus(data, plugin.isManaEnabled());
-        int level = data.getSkillLevel(skill.getName());
-
-        // Skill is on cooldown
-        if (status == SkillStatus.ON_COOLDOWN) {
-            List<String> messages = plugin.getMessages(OtherNodes.ON_COOLDOWN, true);
-            for (String message : messages) {
-                message = message.replace("{cooldown}", skill.getCooldown(data) + "")
-                        .replace("{skill}", skill.getName());
-
-                plugin.getServer().getPlayer(player.getName()).sendMessage(message);
-            }
-        }
-
-        // Skill requires more mana
-        else if (status == SkillStatus.MISSING_MANA) {
-            List<String> messages = plugin.getMessages(OtherNodes.NO_MANA, true);
-            int cost = skill.getAttribute(SkillAttribute.MANA, level);
-            for (String message : messages) {
-                message = message.replace("{missing}", (cost - data.getMana()) + "")
-                        .replace("{mana}", data.getMana() + "")
-                        .replace("{cost}", cost + "")
-                        .replace("{skill}", skill.getName());
-
-                plugin.getServer().getPlayer(player.getName()).sendMessage(message);
-            }
-        }
-
-        // Check for skill shots
-        else if (skill instanceof SkillShot) {
-
-            // Try to cast the skill
-            if (((SkillShot) skill).cast(player, data.getSkillLevel(skill.getName()))) {
-
-                // Start the cooldown
-                skill.startCooldown(data);
-
-                // Use mana if successful
-                if (plugin.isManaEnabled()) data.useMana(plugin.getSkill(skill.getName()).getClassSkill().getAttribute(SkillAttribute.MANA, level));
-            }
-        }
-
-        // Check for Target Skills
-        else if (skill instanceof TargetSkill) {
-
-            // Must have a target
-            LivingEntity target = TargetHelper.getLivingTarget(player, skill.getAttribute(SkillAttribute.RANGE, level));
-            if (target != null) {
-
-                // Try to cast the skill
-                if (((TargetSkill) skill).cast(player, target, level, Protection.isAlly(player, target))) {
-
-                    // Apply the cooldown
-                    skill.startCooldown(data);
-
-                    // Use mana if successful
-                    if (plugin.isManaEnabled()) data.useMana(plugin.getSkill(skill.getName()).getClassSkill().getAttribute(SkillAttribute.MANA, level));
-                }
-            }
-        }
+        // Cast the skill
+        data.castSkill(data.getBound(heldItem));
     }
 
     /**
@@ -146,20 +80,20 @@ public class APIListener implements Listener {
             Projectile projectile = (Projectile)event.getDamager();
             LivingEntity shooter = projectile.getShooter();
             if (shooter != null && shooter instanceof Player) {
-                PlayerSkills data = plugin.getPlayer(((Player) shooter).getName());
-                if (data != null && data.getClassName() != null) {
-                    CustomClass playerClass = plugin.getRegisteredClass(data.getClassName());
+                PlayerSkills player = plugin.getPlayer(((Player) shooter).getName());
+                if (player != null && player.getClassName() != null) {
+                    CustomClass playerClass = plugin.getRegisteredClass(player.getClassName());
 
                     // When the default damage isn't 0, set the damage relative
                     // to the default damage to account for varied damages
                     if (CustomClass.getDefaultDamage(projectile.getClass()) != 0) {
-                        int damage = (int)event.getDamage() * playerClass.getDamage(projectile.getClass(), data.getName()) / CustomClass.getDefaultDamage(projectile.getClass());
+                        int damage = (int)event.getDamage() * playerClass.getDamage(projectile.getClass(), player.getName()) / CustomClass.getDefaultDamage(projectile.getClass());
                         event.setDamage(damage < 1 ? 1 : damage);
                     }
 
                     // Otherwise, just set the damage normally
                     else {
-                        int damage = playerClass.getDamage(projectile.getClass(), data.getName());
+                        int damage = playerClass.getDamage(projectile.getClass(), player.getName());
                         int defaultDamage = CustomClass.getDefaultDamage(projectile.getClass());
                         event.setDamage(event.getDamage() + damage - defaultDamage);
                     }
@@ -180,6 +114,26 @@ public class APIListener implements Listener {
                 int damage = playerClass.getDamage(mat, player.getName());
                 int defaultDamage = CustomClass.getDefaultDamage(mat);
                 event.setDamage(event.getDamage() + damage - defaultDamage);
+            }
+        }
+    }
+
+    /**
+     * Adjust the damage taken depending on the health bar mode
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onDamaged(EntityDamageEvent event) {
+        // Adjust damage taken for players if old settings are enabled
+        if (plugin.oldHealthEnabled() && event.getEntity() instanceof Player) {
+            String name = ((Player) event.getEntity()).getName();
+            PlayerSkills player = plugin.getPlayer(name);
+
+            // Only occurs when the player has a class
+            if (player.getClassName() != null) {
+                CustomClass playerClass = plugin.getRegisteredClass(player.getClassName());
+                event.setDamage(event.getDamage() * 20.0 / playerClass.getAttribute(ClassAttribute.HEALTH, player.getLevel()));
             }
         }
     }

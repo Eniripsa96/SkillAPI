@@ -41,6 +41,7 @@ Commands:
     level-player: '<amount> &a[player]'
     options: ''
     profess: '<class>'
+    reload: ''
     reset: ''
     skills: ''
   complete:
@@ -90,7 +91,9 @@ Commands:
       - '&2Class Options &7- None'
       - '&8{break}'
     profess:
-      - '&2You are now a &6{class}'
+    - '&2You are now a &6{class}'
+    reload:
+    - '&2The plugin data has been reloaded'
     reset:
       confirmed:
       - '&4You have cleared all of your stats'
@@ -107,6 +110,7 @@ Commands:
     level-player: 'Levels a player up'
     options: 'View profession options'
     profess: 'Professes as the class'
+    reload: 'Reloads the plugin'
     reset: 'Resets all stats'
     skills: 'Opens skill tree'
   error:
@@ -131,6 +135,7 @@ Commands:
     level-player: 'level'
     options: 'options'
     profess: 'profess'
+    reload: 'reload'
     reset: 'reset'
     skills: 'skills'
 Stats:

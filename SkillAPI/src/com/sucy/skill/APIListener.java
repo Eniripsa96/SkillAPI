@@ -4,6 +4,7 @@ import com.sucy.skill.api.*;
 import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
 import com.sucy.skill.api.skill.*;
+import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.skills.*;
@@ -125,13 +126,24 @@ public class APIListener implements Listener {
      */
     @EventHandler
     public void onDamaged(EntityDamageEvent event) {
-        // Adjust damage taken for players if old settings are enabled
-        if (plugin.oldHealthEnabled() && event.getEntity() instanceof Player) {
+
+        // Adjust damage taken and apply statuses for players
+        if (event.getEntity() instanceof Player) {
             String name = ((Player) event.getEntity()).getName();
             PlayerSkills player = plugin.getPlayer(name);
 
-            // Only occurs when the player has a class
-            if (player.getClassName() != null) {
+            // If stunned or disarmed, cancel it completely
+            if (player.hasStatus(Status.STUN) || player.hasStatus(Status.DISARM)) {
+                event.setCancelled(true);
+
+                // Send a message
+                Player p = (Player)event.getEntity();
+                if (player.hasStatus(Status.STUN)) plugin.sendStatusMessage(p, StatusNodes.STUNNED, player.getTimeLeft(Status.STUN));
+                else plugin.sendStatusMessage(p, StatusNodes.DISARMED, player.getTimeLeft(Status.DISARM));
+            }
+
+            // Damage modifications only occur when the player has a class and old health bars are enabled
+            else if (plugin.oldHealthEnabled() && player.getClassName() != null) {
                 CustomClass playerClass = plugin.getRegisteredClass(player.getClassName());
                 event.setDamage(event.getDamage() * 20.0 / playerClass.getAttribute(ClassAttribute.HEALTH, player.getLevel()));
             }
@@ -143,7 +155,7 @@ public class APIListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler (priority =  EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler (priority =  EventPriority.HIGHEST, ignoreCancelled = true)
     public void onHit (EntityDamageByEntityEvent event) {
 
         // Make sure its the correct causes to avoid infinite loops with the protection checks
@@ -169,6 +181,35 @@ public class APIListener implements Listener {
                 PlayerOnDamagedEvent e = new PlayerOnDamagedEvent((Player)damaged, damager, (int)event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
                 event.setDamage(e.getDamage());
+            }
+        }
+
+        // Status effects
+        if (event.getEntity() instanceof Player) {
+            PlayerSkills player = plugin.getPlayer(((Player) event.getEntity()).getName());
+
+            // Absorb
+            if (player.hasStatus(Status.ABSORB)) {
+                event.setCancelled(true);
+                Player p = (Player)event.getEntity();
+                double health = p.getHealth() + event.getDamage();
+                if (health > p.getMaxHealth()) health = p.getMaxHealth();
+                p.setHealth(health);
+            }
+
+            // Invincible
+            else if (player.hasStatus(Status.INVINCIBLE)) {
+
+                // Send a message if applicable
+                Player damager = null;
+                if (event.getDamager() instanceof Player) damager = (Player)event.getDamager();
+                else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+                    damager = (Player)((Projectile) event.getDamager()).getShooter();
+                }
+                if (damager != null) plugin.sendStatusMessage(damager, StatusNodes.INVINCIBLE, player.getTimeLeft(Status.INVINCIBLE));
+
+                // Cancel any damage
+                event.setCancelled(true);
             }
         }
     }
@@ -209,7 +250,7 @@ public class APIListener implements Listener {
     }
 
     /**
-     * Cancels passive abiltiies upon quitting the game
+     * Cancels passive abilities upon quitting the game
      *
      * @param event event details
      */
@@ -231,6 +272,28 @@ public class APIListener implements Listener {
             PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller().getName());
             player.giveExp(plugin.getExp(getName(event.getEntity())));
         }
+    }
+
+    /**
+     * Applies stun/root status effects
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        PlayerSkills player = plugin.getPlayer(event.getPlayer().getName());
+        if (player != null && (player.hasStatus(Status.STUN) ||  player.hasStatus(Status.ROOT))) {
+            event.getPlayer().teleport(event.getFrom());
+
+            // Send a message
+            if (player.hasStatus(Status.STUN)) {
+                plugin.sendStatusMessage(event.getPlayer(), StatusNodes.STUNNED, player.getTimeLeft(Status.STUN));
+            }
+            else {
+                plugin.sendStatusMessage(event.getPlayer(), StatusNodes.ROOTED, player.getTimeLeft(Status.ROOT));
+            }
+        }
+
     }
 
     /**

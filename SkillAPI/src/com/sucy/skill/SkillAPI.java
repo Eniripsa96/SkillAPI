@@ -649,6 +649,19 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * Sends a status message to a player
+     *
+     * @param player   player to send to
+     * @param node     message node
+     * @param duration duration left on the status
+     */
+    public void sendStatusMessage(Player player, String node, int duration) {
+        String message = getMessage(node, true);
+        message = message.replace("{duration}", "" + duration);
+        player.sendMessage(message);
+    }
+
+    /**
      * Applies the global filters to the string
      *
      * @param message message to filter

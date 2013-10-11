@@ -1,8 +1,10 @@
 package com.sucy.skill.skills;
 
+import com.sucy.skill.api.Status;
 import com.sucy.skill.api.skill.*;
 import com.sucy.skill.api.util.Protection;
 import com.sucy.skill.api.util.TargetHelper;
+import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.SkillAPI;
@@ -30,6 +32,7 @@ public final class PlayerSkills {
 
     private Hashtable<String, Integer> skills = new Hashtable<String, Integer>();
     private Hashtable<Material, String> binds = new Hashtable<Material, String>();
+    private Hashtable<Status, Long> statuses = new Hashtable<Status, Long>();
     private SkillAPI plugin;
     private String player;
     private String tree;
@@ -536,6 +539,30 @@ public final class PlayerSkills {
     }
 
     /**
+     * Heals the player while considering status effects and max health
+     *
+     * @param amount amount to heal
+     */
+    public void heal(int amount) {
+        if (hasStatus(Status.CURSE)) amount *= -1;
+        if (hasStatus(Status.INVINCIBLE) && amount < 0) return;
+
+        Player p = plugin.getServer().getPlayer(player);
+        double health;
+
+        // Adjust the health depending on if the old health bar is enabled
+        if (plugin.oldHealthEnabled() && tree != null) {
+            CustomClass playerClass = plugin.getRegisteredClass(tree);
+            health = p.getHealth() + amount * 20 / playerClass.getAttribute(ClassAttribute.HEALTH, level);
+        }
+        else health = p.getHealth() + amount;
+
+            if (health > p.getMaxHealth()) health = p.getMaxHealth();
+        if (health < 0) health = 0;
+        p.setHealth(health);
+    }
+
+    /**
      * @return amount of experience required for the next level
      */
     public int getRequiredExp() {
@@ -569,6 +596,53 @@ public final class PlayerSkills {
     }
 
     /**
+     * Applies a status to the player
+     *
+     * @param status   status to apply
+     * @param duration duration of the status in seconds
+     */
+    public void applyStatus(Status status, int duration) {
+
+        PlayerStatusEvent event = new PlayerStatusEvent(this, status, duration);
+        plugin.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+
+        long time = System.currentTimeMillis() + (int)(event.getDuration() * 1000);
+        if (statuses.containsKey(status) && statuses.get(status) >= time) return;
+        statuses.put(status, time);
+    }
+
+
+    /**
+     * Removes a status from the player
+     *
+     * @param status status to remove
+     */
+    public void removeStatus(Status status) {
+        statuses.remove(status);
+    }
+
+    /**
+     * Checks if the player is afflicted with a status
+     *
+     * @param status status to check for
+     * @return       true if afflicted, false otherwise
+     */
+    public boolean hasStatus(Status status) {
+        return getTimeLeft(status) > 0;
+    }
+
+    /**
+     * Gets the time left on a status applied to the player
+     *
+     * @param status status to check
+     * @return       time remaining on the status
+     */
+    public int getTimeLeft(Status status) {
+        return statuses.containsKey(status) ? Math.max(0, (int) (statuses.get(status) - System.currentTimeMillis() + 999) / 1000) : 0;
+    }
+
+    /**
      * Casts a skill
      *
      * @param skillName skill to cast
@@ -582,8 +656,23 @@ public final class PlayerSkills {
         SkillStatus status = skill.checkStatus(this, plugin.isManaEnabled());
         int level = getSkillLevel(skill.getName());
 
+        // Silenced
+        if (hasStatus(Status.SILENCE) || hasStatus(Status.STUN)) {
+            String node;
+            int left;
+            if (hasStatus(Status.STUN)) {
+                node = StatusNodes.STUNNED;
+                left = getTimeLeft(Status.STUN);
+            }
+            else {
+                node = StatusNodes.SILENCED;
+                left = getTimeLeft(Status.SILENCE);
+            }
+            plugin.sendStatusMessage(plugin.getServer().getPlayer(player), node, left);
+        }
+
         // Skill is on cooldown
-        if (status == SkillStatus.ON_COOLDOWN) {
+        else if (status == SkillStatus.ON_COOLDOWN) {
             List<String> messages = plugin.getMessages(OtherNodes.ON_COOLDOWN, true);
             for (String message : messages) {
                 message = message.replace("{cooldown}", skill.getCooldown(this) + "")

@@ -150,6 +150,12 @@ Skill Types:
   skill-shot-aoe: 'Skill Shot AOE'
   target-aoe: 'Target AOE'
   passive: 'Passive'
+Status:
+  silenced: '&4You are silenced for another &6{duration} &4seconds'
+  stunned: '&4You are stunned for another &6{duration} &4seconds'
+  rooted: '&4You are rooted for another &6{duration} &4seconds'
+  disarmed: '&4You are disarmed for another &6{duration} &4seconds'
+  invincible: '&4That target is invincible for another &6{duration} &4seconds'
 Other:
   level-up:
   - '&2You leveled up! You are now &6level {level}'

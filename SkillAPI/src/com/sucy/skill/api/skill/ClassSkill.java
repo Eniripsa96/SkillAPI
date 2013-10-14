@@ -1,7 +1,9 @@
 package com.sucy.skill.api.skill;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Attributed;
 import com.sucy.skill.skills.PlayerSkills;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public abstract class ClassSkill extends Attributed {
     private int maxLevel;
 
     protected final ArrayList<String> description = new ArrayList<String>();
+    protected final SkillAPI api;
 
     /**
      * Constructor
@@ -53,6 +56,7 @@ public abstract class ClassSkill extends Attributed {
         this.maxLevel = maxLevel;
         this.skillReq = skillReq;
         this.skillReqLevel = skillReqLevel;
+        api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
     }
 
     /**

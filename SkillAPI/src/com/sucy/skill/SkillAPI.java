@@ -51,6 +51,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean reset;
     private boolean oldHealth;
     private int startingPoints;
+    private int pointsPerLevel;
 
     // ----------------------------- Plugin Methods -------------------------------------- //
 
@@ -61,7 +62,6 @@ public class SkillAPI extends JavaPlugin {
     public void onEnable() {
 
         reloadConfig();
-        saveDefaultConfig();
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
         languageConfig.saveDefaultConfig();
@@ -85,30 +85,37 @@ public class SkillAPI extends JavaPlugin {
         // Done registering everything
         mode = RegisterMode.DONE;
 
+        // Make sure default config values are set
+        for (SettingValues value : SettingValues.values()) {
+            getLogger().info(value.name() + " - " + getConfig().isSet(value.path()));
+            if (!getConfig().isSet(value.path())) {
+                getConfig().set(value.path(), getConfig().get(value.path()));
+            }
+        }
+        saveConfig();
+
         // Load options
-        reset = getConfig().getBoolean("profess-reset");
-        mana = getConfig().getBoolean("mana-enabled");
-        sbEnabled = getConfig().getBoolean("scoreboard-enabled");
-        startingPoints = getConfig().getInt("starting-points");
-        oldHealth = getConfig().getBoolean("old-health-bar");
+        reset = getConfig().getBoolean(SettingValues.PROFESS_RESET.path());
+        mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path());
+        sbEnabled = getConfig().getBoolean(SettingValues.SCOREBOARD_ENABLED.path());
+        startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path());
+        pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path());
+        oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path());
 
         // Set up the mana task
-        int manaFreq = getConfig().getInt("mana-gain-freq");
-        int manaGain = getConfig().getInt("mana-gain-amount");
+        int manaFreq = getConfig().getInt(SettingValues.MANA_GAIN_FREQ.path());
+        int manaGain = getConfig().getInt(SettingValues.MANA_GAIN_AMOUNT.path());
         if (mana) manaTask = new ManaTask(this, manaFreq, manaGain);
 
         // Set up the inventory task
-        int playersPerTick = getConfig().getInt("players-per-check");
+        int playersPerTick = getConfig().getInt(SettingValues.PLAYERS_PER_CHECK.path());
         invTask = new InventoryTask(this, playersPerTick);
 
         // Load experience yields
-        if (getConfig().contains("kills")) {
-            ConfigurationSection section = getConfig().getConfigurationSection("kills");
-            for (String mob : section.getKeys(false)) {
-                exp.put(mob, section.getInt(mob));
-            }
+        ConfigurationSection section = getConfig().getConfigurationSection(SettingValues.KILLS.path());
+        for (String mob : section.getKeys(false)) {
+            exp.put(mob, section.getInt(mob));
         }
-        else getLogger().severe("No experience yields found! - Players will not be able to level up!");
 
         // Load skill data
         for (ClassSkill skill : registeredSkills.values()) {
@@ -185,7 +192,7 @@ public class SkillAPI extends JavaPlugin {
         // Stop passive abilities
         for (PlayerSkills player : players.values()) {
             player.stopPassiveAbilities();
-            player.setMaxHealth(20);
+            player.applyMaxHealth(20);
         }
 
         // Clear scoreboards
@@ -242,6 +249,13 @@ public class SkillAPI extends JavaPlugin {
      */
     public int getStartingPoints() {
         return startingPoints;
+    }
+
+    /**
+     * @return number of points gained each level
+     */
+    public int getPointsPerLevel() {
+        return pointsPerLevel;
     }
 
     /**

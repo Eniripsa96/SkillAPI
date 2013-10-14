@@ -5,6 +5,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,15 +14,16 @@ import java.util.List;
 public class TargetHelper {
 
     /**
-     * <p>Gets the entity the player is looking at</p>
+     * <p>Gets all entities the player is looking at within the range</p>
      * <p>Has a little bit of tolerance to make targeting easier</p>
      *
      * @param player player to check
      * @param range  maximum range to check
-     * @return       entity player is looking at or null if not found
+     * @return       all entities in the player's vision line
      */
-    public static LivingEntity getLivingTarget(Player player, int range) {
+    public static List<LivingEntity> getLivingTargets(Player player, int range) {
         List<Entity> list = player.getNearbyEntities(range, range, range);
+        List<LivingEntity> targets = new ArrayList<LivingEntity>();
 
         Vector facing = player.getLocation().getDirection();
         double fLengthSq = facing.lengthSquared();
@@ -39,10 +41,33 @@ public class TargetHelper {
             double dSquared = relative.lengthSquared() * sinSquared;
 
             // If close enough to vision line, return the entity
-            if (dSquared < 4) return (LivingEntity) entity;
+            if (dSquared < 4) targets.add((LivingEntity)entity);
         }
 
-        return null;
+        return targets;
+    }
+
+    /**
+     * <p>Gets the entity the player is looking at</p>
+     * <p>Has a little bit of tolerance to make targeting easier</p>
+     *
+     * @param player player to check
+     * @param range  maximum range to check
+     * @return       entity player is looing at or null if not found
+     */
+    public static LivingEntity getLivingTarget(Player player, int range) {
+        List<LivingEntity> targets = getLivingTargets(player, range);
+        if (targets.size() == 0) return null;
+        LivingEntity target = targets.get(0);
+        double minDistance = target.getLocation().distanceSquared(player.getLocation());
+        for (LivingEntity entity : targets) {
+            double distance = entity.getLocation().distanceSquared(player.getLocation());
+            if (distance < minDistance) {
+                minDistance = distance;
+                target = entity;
+            }
+        }
+        return target;
     }
 
     /**

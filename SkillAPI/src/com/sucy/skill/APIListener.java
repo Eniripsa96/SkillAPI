@@ -258,7 +258,7 @@ public class APIListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
         skills.stopPassiveAbilities();
-        skills.setMaxHealth(20);
+        skills.applyMaxHealth(20);
     }
 
     /**

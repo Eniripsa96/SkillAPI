@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 1.0
+version: 1.4
 commands:
   class:
     description: interacts with class and skill functionality

@@ -9,10 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>Class data for classes</p>
@@ -129,7 +126,7 @@ public final class SkillTree implements InventoryHolder {
      * @param skills skill level data
      * @return       skill tree inventory
      */
-    public Inventory getInventory(PlayerSkills player, Hashtable<String, Integer> skills) {
+    public Inventory getInventory(PlayerSkills player, HashMap<String, Integer> skills) {
         Inventory inv = plugin.getServer().createInventory(this, width * 9, name);
 
         for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet()) {

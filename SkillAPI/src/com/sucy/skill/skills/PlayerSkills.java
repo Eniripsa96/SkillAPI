@@ -30,9 +30,10 @@ import java.util.*;
  */
 public final class PlayerSkills {
 
-    private Hashtable<String, Integer> skills = new Hashtable<String, Integer>();
-    private Hashtable<Material, String> binds = new Hashtable<Material, String>();
-    private Hashtable<Status, Long> statuses = new Hashtable<Status, Long>();
+    private HashMap<String, Integer> values = new HashMap<String, Integer>();
+    private HashMap<String, Integer> skills = new HashMap<String, Integer>();
+    private HashMap<Material, String> binds = new HashMap<Material, String>();
+    private HashMap<Status, Long> statuses = new HashMap<Status, Long>();
     private SkillAPI plugin;
     private String player;
     private String tree;
@@ -111,7 +112,7 @@ public final class PlayerSkills {
      *
      * @return skill data
      */
-    public Hashtable<String, Integer> getSkills() {
+    public HashMap<String, Integer> getSkills() {
         return skills;
     }
 
@@ -317,13 +318,24 @@ public final class PlayerSkills {
     }
 
     /**
+     * Adds max health to the player
+     *
+     * @param amount amount of health to give to the player
+     */
+    public void addMaxHealth(int amount) {
+        CustomClass c = plugin.getRegisteredClass(tree);
+        if (c != null) c.addAttribute(ClassAttribute.HEALTH, amount);
+        updateHealth();
+    }
+
+    /**
      * Updates the health of the player to match the class details
      */
     public void updateHealth() {
         if (tree == null || plugin.oldHealthEnabled()) {
-            setMaxHealth(20);
+            applyMaxHealth(20);
         }
-        else setMaxHealth(plugin.getRegisteredClass(tree).getAttribute(ClassAttribute.HEALTH, level));
+        else applyMaxHealth(plugin.getRegisteredClass(tree).getAttribute(ClassAttribute.HEALTH, level));
     }
 
     /**
@@ -331,7 +343,7 @@ public final class PlayerSkills {
      *
      * @param amount new max health
      */
-    public void setMaxHealth(int amount) {
+    public void applyMaxHealth(int amount) {
         Player p = plugin.getServer().getPlayer(player);
         if (p == null) return;
 
@@ -494,7 +506,7 @@ public final class PlayerSkills {
 
         // Add to stats
         level += amount;
-        points += amount;
+        points += amount * plugin.getPointsPerLevel();
         updateHealth();
 
         // Display a message
@@ -640,6 +652,57 @@ public final class PlayerSkills {
      */
     public int getTimeLeft(Status status) {
         return statuses.containsKey(status) ? Math.max(0, (int) (statuses.get(status) - System.currentTimeMillis() + 999) / 1000) : 0;
+    }
+
+    /**
+     * Gets a value from the player
+     *
+     * @param key value key
+     * @return    value
+     */
+    public int getValue(String key) {
+        return values.get(key);
+    }
+
+    /**
+     * Sets a value for the player
+     *
+     * @param key   value key
+     * @param value value
+     */
+    public void setValue(String key, int value) {
+        values.put(key, value);
+    }
+
+    /**
+     * Adds to a value for the player
+     *
+     * @param key   value key
+     * @param value amount to add
+     */
+    public void addValue(String key, int value) {
+        values.put(key, values.get(key) + value);
+    }
+
+    /**
+     * Subtracts from a value for the player
+     *
+     * @param key   value key
+     * @param value amount to subtract
+     */
+    public void subtractValue(String key, int value) {
+        values.put(key, values.get(key) - value);
+    }
+
+    /**
+     * Checks if the player's value has at least the deignated amount
+     *
+     * @param key   value key
+     * @param value amount required
+     * @return      true if has at least that much, false otherwise
+     */
+    public boolean hasValue(String key, int value) {
+        return values.get(key) >= value;
     }
 
     /**

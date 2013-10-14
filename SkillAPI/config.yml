@@ -14,6 +14,7 @@ scoreboard-enabled: true
 mana-gain-freq: 1
 mana-gain-amount: 2
 starting-points: 1
+points-per-level: 1
 players-per-check: 1
 old-health-bar: false
 kills:

@@ -2,7 +2,7 @@ package com.sucy.skill.task;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.language.OtherNodes;
-import com.sucy.skill.skills.PlayerSkills;
+import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

@@ -6,7 +6,7 @@ import com.sucy.skill.command.CommandHandler;
 import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
-import com.sucy.skill.skills.PlayerSkills;
+import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -43,6 +43,7 @@ public class CmdProfess implements ICommand {
 
             // Profess
             else if (player.canProfess(args[0])) {
+                args[0] = api.getClass(args[0]).getName();
                 player.setClass(args[0]);
                 List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.PROFESS, true);
                 for (String message : messages) {

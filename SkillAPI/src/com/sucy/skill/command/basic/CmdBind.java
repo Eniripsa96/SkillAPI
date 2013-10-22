@@ -6,7 +6,7 @@ import com.sucy.skill.command.CommandHandler;
 import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
-import com.sucy.skill.skills.PlayerSkills;
+import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

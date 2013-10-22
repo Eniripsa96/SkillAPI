@@ -1,4 +1,4 @@
-package com.sucy.skill.skills;
+package com.sucy.skill.api;
 
 /**
  * Exception for generating skill trees

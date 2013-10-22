@@ -1,7 +1,7 @@
 package com.sucy.skill.api.event;
 
-import com.sucy.skill.skills.PlayerSkills;
-import com.sucy.skill.skills.Skill;
+import com.sucy.skill.api.skill.ClassSkill;
+import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -12,7 +12,7 @@ public class PlayerSkillUpgradeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     private PlayerSkills player;
-    private Skill upgradedSkill;
+    private ClassSkill upgradedSkill;
 
     /**
      * Constructor
@@ -20,7 +20,7 @@ public class PlayerSkillUpgradeEvent extends Event {
      * @param playerData    data of the player unlocking the skill
      * @param unlockedSkill the skill that was unlocked
      */
-    public PlayerSkillUpgradeEvent(PlayerSkills playerData, Skill unlockedSkill) {
+    public PlayerSkillUpgradeEvent(PlayerSkills playerData, ClassSkill unlockedSkill) {
         this.player = playerData;
         this.upgradedSkill = unlockedSkill;
     }
@@ -35,7 +35,7 @@ public class PlayerSkillUpgradeEvent extends Event {
     /**
      * @return skill that was unlocked
      */
-    public Skill getUpgradedSkill() {
+    public ClassSkill getUpgradedSkill() {
         return upgradedSkill;
     }
 

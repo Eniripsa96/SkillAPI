@@ -48,6 +48,13 @@ public class Config {
     }
 
     /**
+     * @return file of the config
+     */
+    public File getConfigFile() {
+        return configFile;
+    }
+
+    /**
      * Reloads the config
      */
     public void reloadConfig() {

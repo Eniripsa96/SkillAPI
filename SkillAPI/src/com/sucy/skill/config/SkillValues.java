@@ -37,7 +37,12 @@ public class SkillValues {
     /**
      * Description for use in skill trees
      */
-    DESCRIPTION = "description"
+    DESCRIPTION = "description",
+
+    /**
+     * Type of the skill
+     */
+    TYPE = "type"
 
     ;
 }

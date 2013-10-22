@@ -1,6 +1,6 @@
 package com.sucy.skill.api.event;
 
-import com.sucy.skill.skills.PlayerSkills;
+import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

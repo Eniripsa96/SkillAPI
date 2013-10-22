@@ -5,7 +5,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ClassAttribute;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.language.StatNodes;
-import com.sucy.skill.skills.PlayerSkills;
+import com.sucy.skill.api.PlayerSkills;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class PlayerStats implements StatHolder {
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         double health = plugin.getServer().getPlayer(player.getName()).getHealth();
         if (plugin.oldHealthEnabled() && player.getClassName() != null) {
-            CustomClass playerClass = plugin.getRegisteredClass(player.getClassName());
+            CustomClass playerClass = plugin.getClass(player.getClassName());
             health *= playerClass.getAttribute(ClassAttribute.HEALTH, player.getLevel()) / 20.0;
         }
         map.put(plugin.getMessage(StatNodes.HEALTH, true), (int)health);

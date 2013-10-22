@@ -7,7 +7,6 @@ import com.sucy.skill.api.skill.*;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
-import com.sucy.skill.skills.*;
 
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -76,46 +75,76 @@ public class APIListener implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent event) {
 
-        // Projectile damage
-        if (event.getDamager() instanceof Projectile) {
-            Projectile projectile = (Projectile)event.getDamager();
-            LivingEntity shooter = projectile.getShooter();
-            if (shooter != null && shooter instanceof Player) {
-                PlayerSkills player = plugin.getPlayer(((Player) shooter).getName());
+        LivingEntity target = convertEntity(event.getEntity());
+        LivingEntity damager = convertEntity(event.getDamager());
+
+        // Statuses
+        // If stunned or disarmed, cancel it completely
+        if (damager != null) {
+            StatusHolder holder = plugin.getStatusHolder(damager);
+            if (holder.hasStatus(Status.STUN) || holder.hasStatus(Status.DISARM)) {
+                event.setCancelled(true);
+
+                // Send a message if its a player
+                if (damager instanceof Player) {
+                    Player p = (Player)damager;
+                    if (holder.hasStatus(Status.STUN)) plugin.sendStatusMessage(p, StatusNodes.STUNNED, holder.getTimeLeft(Status.STUN));
+                    else plugin.sendStatusMessage(p, StatusNodes.DISARMED, holder.getTimeLeft(Status.DISARM));
+                }
+
+                return;
+            }
+        }
+
+        // Player class damage
+        if (damager instanceof Player) {
+
+            // Projectile damage
+            if (event.getDamager() instanceof Projectile) {
+                Projectile projectile = (Projectile) event.getDamager();
+                PlayerSkills player = plugin.getPlayer(((Player) damager).getName());
                 if (player != null && player.getClassName() != null) {
-                    CustomClass playerClass = plugin.getRegisteredClass(player.getClassName());
+                    CustomClass playerClass = plugin.getClass(player.getClassName());
 
                     // When the default damage isn't 0, set the damage relative
                     // to the default damage to account for varied damages
                     if (CustomClass.getDefaultDamage(projectile.getClass()) != 0) {
-                        int damage = (int)event.getDamage() * playerClass.getDamage(projectile.getClass(), player.getName()) / CustomClass.getDefaultDamage(projectile.getClass());
-                        event.setDamage(damage < 1 ? 1 : damage);
+                        double damage = event.getDamage() * playerClass.getDamage(projectile.getClass()) / CustomClass.getDefaultDamage(projectile.getClass());
+                        event.setDamage(damage < 0 ? 0 : damage);
                     }
 
                     // Otherwise, just set the damage normally
                     else {
-                        int damage = playerClass.getDamage(projectile.getClass(), player.getName());
+                        double damage = playerClass.getDamage(projectile.getClass());
                         int defaultDamage = CustomClass.getDefaultDamage(projectile.getClass());
-                        event.setDamage(event.getDamage() + damage - defaultDamage);
+                        damage = event.getDamage() + damage - defaultDamage;
+                        event.setDamage(damage < 0 ? 0 : damage);
                     }
+                }
+            }
+
+            // Melee damage
+            else {
+                PlayerSkills player = plugin.getPlayer(((Player) event.getDamager()).getName());
+                if (player != null && player.getClassName() != null) {
+                    CustomClass playerClass = plugin.getClass(player.getClassName());
+
+                    // Set the damage normally
+                    Material mat = ((Player) event.getDamager()).getItemInHand() == null ?
+                            Material.AIR : ((Player) event.getDamager()).getItemInHand().getType();
+                    int damage = playerClass.getDamage(mat);
+                    int defaultDamage = CustomClass.getDefaultDamage(mat);
+                    event.setDamage(event.getDamage() + damage - defaultDamage);
                 }
             }
         }
 
-        // Melee damage
-        else if (event.getDamager() instanceof Player) {
-            PlayerSkills player = plugin.getPlayer(((Player) event.getDamager()).getName());
-            if (player != null && player.getClassName() != null) {
-                CustomClass playerClass = plugin.getRegisteredClass(player.getClassName());
-
-                // Set the damage normally
-                Material mat = ((Player) event.getDamager()).getItemInHand() == null ?
-                        Material.AIR
-                        : ((Player) event.getDamager()).getItemInHand().getType();
-                int damage = playerClass.getDamage(mat, player.getName());
-                int defaultDamage = CustomClass.getDefaultDamage(mat);
-                event.setDamage(event.getDamage() + damage - defaultDamage);
-            }
+        // Damage modifiers
+        if (damager != null) {
+            event.setDamage(plugin.getStatusHolder(damager).modifyDamageDealt(event.getDamage()));
+        }
+        if (target != null) {
+            event.setDamage(plugin.getStatusHolder(target).modifyDamageTaken(event.getDamage()));
         }
     }
 
@@ -124,7 +153,7 @@ public class APIListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onDamaged(EntityDamageEvent event) {
 
         // Adjust damage taken and apply statuses for players
@@ -132,19 +161,9 @@ public class APIListener implements Listener {
             String name = ((Player) event.getEntity()).getName();
             PlayerSkills player = plugin.getPlayer(name);
 
-            // If stunned or disarmed, cancel it completely
-            if (player.hasStatus(Status.STUN) || player.hasStatus(Status.DISARM)) {
-                event.setCancelled(true);
-
-                // Send a message
-                Player p = (Player)event.getEntity();
-                if (player.hasStatus(Status.STUN)) plugin.sendStatusMessage(p, StatusNodes.STUNNED, player.getTimeLeft(Status.STUN));
-                else plugin.sendStatusMessage(p, StatusNodes.DISARMED, player.getTimeLeft(Status.DISARM));
-            }
-
             // Damage modifications only occur when the player has a class and old health bars are enabled
-            else if (plugin.oldHealthEnabled() && player.getClassName() != null) {
-                CustomClass playerClass = plugin.getRegisteredClass(player.getClassName());
+            if (plugin.oldHealthEnabled() && player.getClassName() != null) {
+                CustomClass playerClass = plugin.getClass(player.getClassName());
                 event.setDamage(event.getDamage() * 20.0 / playerClass.getAttribute(ClassAttribute.HEALTH, player.getLevel()));
             }
         }
@@ -163,11 +182,8 @@ public class APIListener implements Listener {
                 || event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE) {
 
             // Get the involved entities in terms of living entities considering projectiles
-            LivingEntity damaged = event.getEntity() instanceof LivingEntity ? (LivingEntity) event.getEntity()
-                    : null;
-            LivingEntity damager = event.getDamager() instanceof LivingEntity ? (LivingEntity) event.getDamager()
-                    : event.getDamager() instanceof Projectile ? ((Projectile) event.getDamager()).getShooter()
-                    : null;
+            LivingEntity damaged = convertEntity(event.getEntity());
+            LivingEntity damager = convertEntity(event.getDamager());
 
             // Call an event when a player dealt damage
             if (damager != null && damager instanceof Player && damaged != null) {
@@ -185,20 +201,20 @@ public class APIListener implements Listener {
         }
 
         // Status effects
-        if (event.getEntity() instanceof Player) {
-            PlayerSkills player = plugin.getPlayer(((Player) event.getEntity()).getName());
+        LivingEntity damaged = convertEntity(event.getEntity());
+        if (damaged != null) {
+            StatusHolder holder = plugin.getStatusHolder((LivingEntity)event.getEntity());
 
             // Absorb
-            if (player.hasStatus(Status.ABSORB)) {
+            if (holder.hasStatus(Status.ABSORB)) {
                 event.setCancelled(true);
-                Player p = (Player)event.getEntity();
-                double health = p.getHealth() + event.getDamage();
-                if (health > p.getMaxHealth()) health = p.getMaxHealth();
-                p.setHealth(health);
+                double health = damaged.getHealth() + event.getDamage();
+                if (health > damaged.getMaxHealth()) health = damaged.getMaxHealth();
+                damaged.setHealth(health);
             }
 
             // Invincible
-            else if (player.hasStatus(Status.INVINCIBLE)) {
+            else if (holder.hasStatus(Status.INVINCIBLE)) {
 
                 // Send a message if applicable
                 Player damager = null;
@@ -206,7 +222,7 @@ public class APIListener implements Listener {
                 else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
                     damager = (Player)((Projectile) event.getDamager()).getShooter();
                 }
-                if (damager != null) plugin.sendStatusMessage(damager, StatusNodes.INVINCIBLE, player.getTimeLeft(Status.INVINCIBLE));
+                if (damager != null) plugin.sendStatusMessage(damager, StatusNodes.INVINCIBLE, holder.getTimeLeft(Status.INVINCIBLE));
 
                 // Cancel any damage
                 event.setCancelled(true);
@@ -241,12 +257,28 @@ public class APIListener implements Listener {
             // Apply passive skills
             for (Map.Entry<String, Integer> entry : skills.getSkills().entrySet()) {
                 if (entry.getValue() >= 1) {
-                    ClassSkill s = plugin.getRegisteredSkill(entry.getKey());
+                    ClassSkill s = plugin.getSkill(entry.getKey());
                     if (s != null && s instanceof PassiveSkill)
                         ((PassiveSkill) s).onInitialize(event.getPlayer(), entry.getValue());
                 }
             }
         }
+    }
+
+    /**
+     * Converts an entity to a living entity
+     *
+     * @param entity entity to convert
+     * @return       living entity of null if not compatible
+     */
+    private LivingEntity convertEntity(Entity entity) {
+        if (entity == null) return null;
+        if (entity instanceof LivingEntity) return (LivingEntity)entity;
+        if (entity instanceof Projectile) {
+            Projectile projectile = (Projectile)entity;
+            return projectile.getShooter();
+        }
+        return null;
     }
 
     /**
@@ -305,8 +337,8 @@ public class APIListener implements Listener {
     public void onClick(InventoryClickEvent event) {
 
         // Make sure its a skill tree inventory
-        SkillTree tree = plugin.getClass(event.getInventory().getTitle());
-        if (tree != null && event.getInventory().getHolder() instanceof SkillTree) {
+        CustomClass tree = plugin.getClass(event.getInventory().getTitle());
+        if (tree != null && event.getInventory().getHolder() instanceof CustomClass) {
 
             // Do nothing when clicking outside the inventory
             if (event.getSlot() == -999) return;
@@ -317,7 +349,7 @@ public class APIListener implements Listener {
             if (top) {
                 event.setCancelled(true);
                 PlayerSkills player = plugin.getPlayer(event.getWhoClicked().getName());
-                Skill skill = tree.getSkill(event.getSlot());
+                ClassSkill skill = tree.getSkill(event.getSlot());
 
                 // If they clicked on a skill, try upgrading it
                 if (skill != null) {

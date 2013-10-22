@@ -4,8 +4,7 @@ import com.rit.sucy.chat.Chat;
 import com.rit.sucy.chat.Prefix;
 import com.rit.sucy.scoreboard.BoardManager;
 import com.rit.sucy.scoreboard.StatBoard;
-import com.sucy.skill.skills.PlayerSkills;
-import org.bukkit.Bukkit;
+import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.ChatColor;
 
 /**

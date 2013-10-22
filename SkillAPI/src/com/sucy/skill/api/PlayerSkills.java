@@ -1,6 +1,5 @@
-package com.sucy.skill.skills;
+package com.sucy.skill.api;
 
-import com.sucy.skill.api.Status;
 import com.sucy.skill.api.skill.*;
 import com.sucy.skill.api.util.Protection;
 import com.sucy.skill.api.util.TargetHelper;
@@ -8,8 +7,6 @@ import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.ClassAttribute;
-import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.language.OtherNodes;
 import org.bukkit.ChatColor;
@@ -28,12 +25,10 @@ import java.util.*;
  * via the SkillAPI.getPlayer(String) method however to modify
  * the stats of a player.</p>
  */
-public final class PlayerSkills {
+public final class PlayerSkills extends Valued {
 
-    private HashMap<String, Integer> values = new HashMap<String, Integer>();
     private HashMap<String, Integer> skills = new HashMap<String, Integer>();
     private HashMap<Material, String> binds = new HashMap<Material, String>();
-    private HashMap<Status, Long> statuses = new HashMap<Status, Long>();
     private SkillAPI plugin;
     private String player;
     private String tree;
@@ -74,26 +69,26 @@ public final class PlayerSkills {
         // Class skill tree
         ConfigurationSection skillConfig = config.getConfigurationSection(PlayerValues.SKILLS);
         if (this.tree != null) {
-            SkillTree tree = plugin.getClass(this.tree);
+            CustomClass tree = plugin.getClass(this.tree);
             if (tree == null) {
                 setClass(null);
                 return;
             }
 
             if (plugin.getServer().getPlayer(player) != null && CoreChecker.isCoreActive()) {
-                PrefixManager.setPrefix(this, tree.prefix, tree.braceColor);
+                PrefixManager.setPrefix(this, tree.getPrefix(), tree.getBraceColor());
             }
             if (skillConfig != null) {
                 for (String skill : skillConfig.getKeys(false)) {
-                    if (tree.skillSlots.contains(plugin.getSkill(skill)))
+                    if (tree.hasSkill(plugin.getSkill(skill)))
                         skills.put(skill, skillConfig.getInt(skill));
                 }
             }
 
             // Load new skills in the tree if any
-            for (Skill skill : tree.skillSlots.values()) {
-                if (!skills.containsKey(skill.getName().toLowerCase())) {
-                    skills.put(skill.getName().toLowerCase(), 0);
+            for (String skill : tree.getSkills()) {
+                if (!skills.containsKey(skill.toLowerCase())) {
+                    skills.put(skill.toLowerCase(), 0);
                 }
             }
         }
@@ -159,7 +154,7 @@ public final class PlayerSkills {
             return ChatColor.GRAY + "No Class";
         }
         else {
-            return plugin.getClass(tree).prefix;
+            return plugin.getClass(tree).getPrefix();
         }
     }
 
@@ -172,7 +167,7 @@ public final class PlayerSkills {
         plugin.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
-        CustomClass c = plugin.getRegisteredClass(tree);
+        CustomClass c = plugin.getClass(tree);
         int maxMana = c == null ? 0 : c.getAttribute(ClassAttribute.MANA, level);
         mana -= event.getMana();
         if (mana < 0) mana = 0;
@@ -183,14 +178,16 @@ public final class PlayerSkills {
      * @param amount amount of mana to gain
      */
     public void gainMana(int amount) {
+        if (!hasClass()) return;
 
         PlayerManaGainEvent event = new PlayerManaGainEvent(this, amount);
         plugin.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
+        int maxMana = getAPI().getClass(tree).getAttribute(ClassAttribute.MANA, level);
         mana += event.getMana();
         if (mana < 0) mana = 0;
-        if (mana > 100) mana = 100;
+        if (mana > maxMana) mana = maxMana;
     }
 
     /**
@@ -199,37 +196,36 @@ public final class PlayerSkills {
      * @param skill skill to upgrade
      * @return      true if upgraded, false otherwise
      */
-    public boolean upgradeSkill(Skill skill) {
+    public boolean upgradeSkill(ClassSkill skill) {
 
         // Skill isn't available
         if (!hasSkill(skill.getName()))
             return false;
 
         int level = getSkillLevel(skill.getName());
-        ClassSkill classSkill = skill.getClassSkill();
 
         // Skill is already maxed
         if (level >= skill.getMaxLevel())
             return false;
 
         // Level requirement isn't met
-        if (this.level < classSkill.getAttribute(SkillAttribute.LEVEL, level))
+        if (this.level < skill.getAttribute(SkillAttribute.LEVEL, level))
             return false;
 
         // Skill cost isn't met
-        if (points < classSkill.getAttribute(SkillAttribute.COST, level))
+        if (points < skill.getAttribute(SkillAttribute.COST, level))
             return false;
 
         // Doesn't have prerequisite
-        if (classSkill.getSkillReq() != null && getSkillLevel(classSkill.getSkillReq()) < classSkill.getSkillReqLevel())
+        if (skill.getSkillReq() != null && getSkillLevel(skill.getSkillReq()) < skill.getSkillReqLevel())
             return false;
 
         // Apply passive skill effects
-        if (classSkill instanceof PassiveSkill)
-            ((PassiveSkill) classSkill).onUpgrade(plugin.getServer().getPlayer(getName()), level + 1);
+        if (skill instanceof PassiveSkill)
+            ((PassiveSkill) skill).onUpgrade(plugin.getServer().getPlayer(getName()), level + 1);
 
         // Upgrade the skill
-        this.points -= skill.getClassSkill().getAttribute(SkillAttribute.COST, level);
+        this.points -= skill.getAttribute(SkillAttribute.COST, level);
         skills.put(skill.getName().toLowerCase(), level + 1);
 
         // If first level, call the unlock event
@@ -277,18 +273,26 @@ public final class PlayerSkills {
             updateHealth();
 
             plugin.getServer().getPluginManager().callEvent(
-                    new PlayerClassChangeEvent(this, plugin.getRegisteredClass(prevTree), null));
+                    new PlayerClassChangeEvent(this, plugin.getClass(prevTree), null));
             return;
         }
 
-        SkillTree tree = plugin.getClass(className);
+        CustomClass tree = plugin.getClass(className);
 
         // If not resetting, simply remove any skills no longer in the tree
         if (!plugin.doProfessionsReset()) {
+            List<String> list = new ArrayList<String>();
             for (String skill : skills.keySet()) {
-                if (tree.skillSlots.contains(skill.toLowerCase()))
-                    continue;
-                skills.remove(skill);
+                if (tree.hasSkill(skill)) continue;
+                list.add(skill);
+                ClassSkill s = getAPI().getSkill(skill);
+                int level = getSkillLevel(skill);
+                for (int i = 1; i <= level; i++) {
+                    points += s.getAttribute(SkillAttribute.COST, i);
+                }
+                if (s instanceof PassiveSkill) {
+                    ((PassiveSkill)s).stopEffects(plugin.getServer().getPlayer(player), level);
+                }
                 ArrayList<Material> keys = new ArrayList<Material>();
                 for (Map.Entry<Material, String> entry : binds.entrySet())
                     if (entry.getValue().equalsIgnoreCase(skill))
@@ -296,25 +300,28 @@ public final class PlayerSkills {
                 for (Material mat : keys)
                     binds.remove(mat);
             }
+            for (String skill : list) {
+                skills.remove(skill);
+            }
         }
 
         // Add any new skills from the skill tree
-        for (Skill skill : tree.skillSlots.values()) {
-            skills.put(skill.getName().toLowerCase(), 0);
+        for (String skill : tree.getSkills()) {
+            skills.put(skill.toLowerCase(), 0);
         }
 
         // Set mana if just starting
         if (prevTree == null) {
-            mana = plugin.getRegisteredClass(this.tree).getAttribute(ClassAttribute.MANA, level);
+            mana = plugin.getClass(this.tree).getAttribute(ClassAttribute.MANA, level);
         }
 
         // Set the new prefix for the class
         if (CoreChecker.isCoreActive())
-            PrefixManager.setPrefix(this, tree.prefix, tree.braceColor);
+            PrefixManager.setPrefix(this, tree.getPrefix(), tree.getBraceColor());
 
         updateHealth();
         plugin.getServer().getPluginManager().callEvent(
-                new PlayerClassChangeEvent(this, plugin.getRegisteredClass(prevTree), plugin.getRegisteredClass(className)));
+                new PlayerClassChangeEvent(this, plugin.getClass(prevTree), plugin.getClass(className)));
     }
 
     /**
@@ -323,7 +330,7 @@ public final class PlayerSkills {
      * @param amount amount of health to give to the player
      */
     public void addMaxHealth(int amount) {
-        CustomClass c = plugin.getRegisteredClass(tree);
+        CustomClass c = plugin.getClass(tree);
         if (c != null) c.addAttribute(ClassAttribute.HEALTH, amount);
         updateHealth();
     }
@@ -335,7 +342,7 @@ public final class PlayerSkills {
         if (tree == null || plugin.oldHealthEnabled()) {
             applyMaxHealth(20);
         }
-        else applyMaxHealth(plugin.getRegisteredClass(tree).getAttribute(ClassAttribute.HEALTH, level));
+        else applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level));
     }
 
     /**
@@ -352,7 +359,6 @@ public final class PlayerSkills {
 
         p.setMaxHealth(amount);
         p.setHealth(Math.max(1, prevHealth + amount - prevMax));
-        plugin.getLogger().info("Max Health for " + p.getName() + ": " + p.getMaxHealth());
     }
 
     /**
@@ -361,7 +367,7 @@ public final class PlayerSkills {
     public void stopPassiveAbilities() {
         for (Map.Entry<String, Integer> entry : getSkills().entrySet()) {
             if (entry.getValue() >= 1) {
-                ClassSkill s = plugin.getRegisteredSkill(entry.getKey());
+                ClassSkill s = plugin.getSkill(entry.getKey());
                 if (s != null && s instanceof PassiveSkill)
                     ((PassiveSkill) s).stopEffects(plugin.getServer().getPlayer(player), entry.getValue());
             }
@@ -376,13 +382,20 @@ public final class PlayerSkills {
     }
 
     /**
+     * @return true if the player has a class, false otherwise
+     */
+    public boolean hasClass() {
+        return tree != null;
+    }
+
+    /**
      * @return level the player is able to profess, less than 1 if unable to profess
      */
     public int getProfessionLevel() {
         if (tree == null) return 1;
 
-        SkillTree tree = plugin.getClass(this.tree);
-        return tree.level;
+        CustomClass tree = plugin.getClass(this.tree);
+        return tree.getProfessLevel();
     }
 
     /**
@@ -500,7 +513,7 @@ public final class PlayerSkills {
     public void levelUp(int amount) {
         if (tree == null) throw new IllegalArgumentException("Player cannot level up while not having a class");
 
-        SkillTree skillTree = plugin.getClass(tree);
+        CustomClass skillTree = plugin.getClass(tree);
         if (amount + level > skillTree.getMaxLevel()) amount = skillTree.getMaxLevel() - level;
         if (amount <= 0) return;
 
@@ -543,11 +556,11 @@ public final class PlayerSkills {
      * @return       true if able, false otherwise
      */
     public boolean canProfess(String target) {
-        SkillTree skillTree = plugin.getClass(target);
-        if (tree == null) return skillTree.parent == null;
+        CustomClass skillTree = plugin.getClass(target);
+        if (tree == null) return skillTree.getParent() == null;
         else if (getProfessionLevel() < 1) return false;
         else if (!plugin.hasPermission(plugin.getServer().getPlayer(player), skillTree)) return false;
-        return skillTree.parent != null && skillTree.parent.equalsIgnoreCase(tree) && plugin.getClass(tree).level <= level;
+        return skillTree.getParent() != null && skillTree.getParent().equalsIgnoreCase(tree) && plugin.getClass(tree).getProfessLevel() <= level;
     }
 
     /**
@@ -564,7 +577,7 @@ public final class PlayerSkills {
 
         // Adjust the health depending on if the old health bar is enabled
         if (plugin.oldHealthEnabled() && tree != null) {
-            CustomClass playerClass = plugin.getRegisteredClass(tree);
+            CustomClass playerClass = plugin.getClass(tree);
             health = p.getHealth() + amount * 20 / playerClass.getAttribute(ClassAttribute.HEALTH, level);
         }
         else health = p.getHealth() + amount;
@@ -619,11 +632,16 @@ public final class PlayerSkills {
         plugin.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
-        long time = System.currentTimeMillis() + (int)(event.getDuration() * 1000);
-        if (statuses.containsKey(status) && statuses.get(status) >= time) return;
-        statuses.put(status, time);
+        long time = (long)(event.getDuration() * 1000);
+        getStatusData().addStatus(status, time);
     }
 
+    /**
+     * @return status data for the player
+     */
+    public StatusHolder getStatusData() {
+        return getAPI().getStatusHolder(getAPI().getServer().getPlayer(player));
+    }
 
     /**
      * Removes a status from the player
@@ -631,7 +649,7 @@ public final class PlayerSkills {
      * @param status status to remove
      */
     public void removeStatus(Status status) {
-        statuses.remove(status);
+        getStatusData().removeStatus(status);
     }
 
     /**
@@ -651,58 +669,7 @@ public final class PlayerSkills {
      * @return       time remaining on the status
      */
     public int getTimeLeft(Status status) {
-        return statuses.containsKey(status) ? Math.max(0, (int) (statuses.get(status) - System.currentTimeMillis() + 999) / 1000) : 0;
-    }
-
-    /**
-     * Gets a value from the player
-     *
-     * @param key value key
-     * @return    value
-     */
-    public int getValue(String key) {
-        return values.get(key);
-    }
-
-    /**
-     * Sets a value for the player
-     *
-     * @param key   value key
-     * @param value value
-     */
-    public void setValue(String key, int value) {
-        values.put(key, value);
-    }
-
-    /**
-     * Adds to a value for the player
-     *
-     * @param key   value key
-     * @param value amount to add
-     */
-    public void addValue(String key, int value) {
-        values.put(key, values.get(key) + value);
-    }
-
-    /**
-     * Subtracts from a value for the player
-     *
-     * @param key   value key
-     * @param value amount to subtract
-     */
-    public void subtractValue(String key, int value) {
-        values.put(key, values.get(key) - value);
-    }
-
-    /**
-     * Checks if the player's value has at least the deignated amount
-     *
-     * @param key   value key
-     * @param value amount required
-     * @return      true if has at least that much, false otherwise
-     */
-    public boolean hasValue(String key, int value) {
-        return values.get(key) >= value;
+        return getStatusData().getTimeLeft(status);
     }
 
     /**
@@ -711,7 +678,7 @@ public final class PlayerSkills {
      * @param skillName skill to cast
      */
     public void castSkill(String skillName) {
-        ClassSkill skill = plugin.getRegisteredSkill(skillName);
+        ClassSkill skill = plugin.getSkill(skillName);
 
         // Invalid skill
         if (skill == null) throw new IllegalArgumentException("Invalid skill: " + skillName);
@@ -769,7 +736,7 @@ public final class PlayerSkills {
                 skill.startCooldown(this);
 
                 // Use mana if successful
-                if (plugin.isManaEnabled()) useMana(plugin.getSkill(skill.getName()).getClassSkill().getAttribute(SkillAttribute.MANA, level));
+                if (plugin.isManaEnabled()) useMana(skill.getAttribute(SkillAttribute.MANA, level));
             }
         }
 
@@ -788,7 +755,7 @@ public final class PlayerSkills {
                     skill.startCooldown(this);
 
                     // Use mana if successful
-                    if (plugin.isManaEnabled()) useMana(plugin.getSkill(skill.getName()).getClassSkill().getAttribute(SkillAttribute.MANA, level));
+                    if (plugin.isManaEnabled()) useMana(plugin.getSkill(skill.getName()).getAttribute(SkillAttribute.MANA, level));
                 }
             }
         }

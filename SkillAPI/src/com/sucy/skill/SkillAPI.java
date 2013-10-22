@@ -1,6 +1,8 @@
 package com.sucy.skill;
 
 import com.sucy.skill.api.*;
+import com.sucy.skill.api.dynamic.DynamicClass;
+import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.SkillAttribute;
 import com.sucy.skill.api.skill.SkillShot;
@@ -10,21 +12,20 @@ import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.config.*;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
-import com.sucy.skill.skills.*;
-import com.sucy.skill.skills.SkillTree;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,18 +36,27 @@ import java.util.regex.Pattern;
  */
 public class SkillAPI extends JavaPlugin {
 
-    private Hashtable<String, Skill> skills = new Hashtable<String, Skill>();
-    private Hashtable<String, SkillTree> trees = new Hashtable<String, SkillTree>();
+    // Data
     private Hashtable<String, PlayerSkills> players = new Hashtable<String, PlayerSkills>();
     private Hashtable<String, Integer> exp = new Hashtable<String, Integer>();
-    private Hashtable<String, ClassSkill> registeredSkills = new Hashtable<String, ClassSkill>();
-    private Hashtable<String, CustomClass> registeredClasses = new Hashtable<String, CustomClass>();
+    private Hashtable<String, ClassSkill> skills = new Hashtable<String, ClassSkill>();
+    private Hashtable<String, CustomClass> classes = new Hashtable<String, CustomClass>();
+    private final HashMap<Integer, StatusHolder> holders = new HashMap<Integer, StatusHolder>();
+
+    // Register mode
     private RegisterMode mode = RegisterMode.DONE;
+
+    // Tasks
     private InventoryTask invTask;
     private ManaTask manaTask;
+
+    // Configurations
     private Config playerConfig;
     private Config languageConfig;
-    private boolean sbEnabled;
+    private Config skillConfig;
+    private Config classConfig;
+
+    // Settings
     private boolean mana;
     private boolean reset;
     private boolean oldHealth;
@@ -64,13 +74,26 @@ public class SkillAPI extends JavaPlugin {
         reloadConfig();
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
+        skillConfig = new Config(this, "dynamic/skills");
+        classConfig = new Config(this, "dynamic/classes");
         languageConfig.saveDefaultConfig();
+
+        // Make sure dynamic files are created
+        if (!skillConfig.getConfigFile().exists()) skillConfig.saveConfig();
+        if (!classConfig.getConfigFile().exists()) classConfig.saveConfig();
 
         // Request skills first
         mode = RegisterMode.SKILL;
         for (Plugin plugin : getServer().getPluginManager().getPlugins()) {
             if (plugin instanceof SkillPlugin) {
                 ((SkillPlugin) plugin).registerSkills(this);
+            }
+        }
+
+        // Load dynamic skills
+        for (String key : skillConfig.getConfig().getKeys(false)) {
+            if (!skills.containsKey(key.toLowerCase())) {
+                skills.put(key.toLowerCase(), new DynamicSkill(key));
             }
         }
 
@@ -82,12 +105,18 @@ public class SkillAPI extends JavaPlugin {
             }
         }
 
+        // Load dynamic classes
+        for (String key : classConfig.getConfig().getKeys(false)) {
+            if (!classes.containsKey(key.toLowerCase())) {
+                classes.put(key.toLowerCase(), new DynamicClass(key));
+            }
+        }
+
         // Done registering everything
         mode = RegisterMode.DONE;
 
         // Make sure default config values are set
         for (SettingValues value : SettingValues.values()) {
-            getLogger().info(value.name() + " - " + getConfig().isSet(value.path()));
             if (!getConfig().isSet(value.path())) {
                 getConfig().set(value.path(), getConfig().get(value.path()));
             }
@@ -97,7 +126,6 @@ public class SkillAPI extends JavaPlugin {
         // Load options
         reset = getConfig().getBoolean(SettingValues.PROFESS_RESET.path());
         mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path());
-        sbEnabled = getConfig().getBoolean(SettingValues.SCOREBOARD_ENABLED.path());
         startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path());
         pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path());
         oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path());
@@ -118,28 +146,40 @@ public class SkillAPI extends JavaPlugin {
         }
 
         // Load skill data
-        for (ClassSkill skill : registeredSkills.values()) {
+        for (ClassSkill skill : skills.values()) {
             try {
-                Config skillConfig = new Config(this, "skill\\" + skill.getName());
-                skills.put(skill.getName().toLowerCase(), new Skill(this, skill.getName(), skillConfig.getConfig()));
+                if (skill instanceof DynamicSkill) {
+                    skill.update(skillConfig.getConfig().getConfigurationSection(skill.getName()));
+                }
+                else skill.update(new Config(this, "skill\\" + skill.getName()).getConfig());
             }
             catch (Exception e) {
                 getLogger().severe("Failed to load skill: " + skill);
+                e.printStackTrace();
             }
         }
 
         // Load skill tree data
-        for (CustomClass tree : registeredClasses.values()) {
-            try {
-                Config treeConfig = new Config(this, "class\\" + tree.getName());
-                trees.put(tree.getName().toLowerCase(), new SkillTree(this, tree.getName(), treeConfig.getConfig()));
+        for (CustomClass tree : classes.values()) {
+            if (tree instanceof DynamicClass) {
+                tree.update(classConfig.getConfig().getConfigurationSection(tree.getName()));
             }
-            catch (SkillTreeException e) {
-                getLogger().warning("Failed to load skill tree - " + tree + " - Reason: " + e.getMessage());
+            else tree.update(new Config(this, "class\\" + tree.getName()).getConfig());
+        }
+
+        // Arrange skill trees
+        List<CustomClass> classList = new ArrayList<CustomClass>(this.classes.values());
+        for (CustomClass tree : classList) {
+            try {
+                tree.arrange();
+            }
+            catch (Exception ex) {
+                getLogger().severe("Failed to arrange skill tree for the class " + tree.getName() + " - " + ex.getMessage());
+                classes.remove(tree.getName().toLowerCase());
             }
         }
 
-        getLogger().info("Loaded " + skills.size() + " skills and " + trees.size() + " skill trees");
+        getLogger().info("Loaded " + skills.size() + " skills and " + classes.size() + " skill trees");
 
         // Load player data
         if (playerConfig.getConfig().contains(PlayerValues.ROOT) && playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false) != null) {
@@ -180,6 +220,24 @@ public class SkillAPI extends JavaPlugin {
             invTask = null;
         }
 
+        // Save dynamic skills
+        for (Map.Entry<String, ClassSkill> entry : skills.entrySet()) {
+            if (entry.getValue() instanceof DynamicSkill) {
+                DynamicSkill skill = (DynamicSkill)entry.getValue();
+                skill.save(skillConfig.getConfig().createSection(skill.getName()));
+            }
+        }
+        skillConfig.saveConfig();
+
+        // Save dynamic classes
+        for (Map.Entry<String, CustomClass> entry : classes.entrySet()) {
+            if (entry.getValue() instanceof DynamicClass) {
+                DynamicClass c = (DynamicClass)entry.getValue();
+                c.save(classConfig.getConfig().createSection(c.getName()));
+            }
+        }
+        classConfig.saveConfig();
+
         // Save player data
         for (String key : playerConfig.getConfig().getKeys(false)) {
             playerConfig.getConfig().set(key, null);
@@ -201,9 +259,7 @@ public class SkillAPI extends JavaPlugin {
 
         // Clear all data
         skills.clear();
-        trees.clear();
-        registeredSkills.clear();
-        registeredClasses.clear();
+        classes.clear();
         exp.clear();
         players.clear();
     }
@@ -228,13 +284,6 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean isManaEnabled() {
         return mana;
-    }
-
-    /**
-     * @return whether or not scoreboards are enabled
-     */
-    public boolean areScoreboardsEnabled() {
-        return sbEnabled;
     }
 
     /**
@@ -296,7 +345,7 @@ public class SkillAPI extends JavaPlugin {
         }
 
         // Don't allow duplicate names
-        else if (registeredSkills.containsKey(skill.getName().toLowerCase())) {
+        else if (skills.containsKey(skill.getName().toLowerCase())) {
             getLogger().severe("Duplicate skill names detected! - " + skill.getName());
             return;
         }
@@ -340,7 +389,7 @@ public class SkillAPI extends JavaPlugin {
             }
 
             // Add it to the list
-            registeredSkills.put(skill.getName().toLowerCase(), skill);
+            skills.put(skill.getName().toLowerCase(), skill);
             configFile.saveConfig();
 
             // Register any listeners for skills
@@ -385,7 +434,7 @@ public class SkillAPI extends JavaPlugin {
         }
 
         // Don't allow duplicate names
-        else if (registeredClasses.containsKey(customClass.getName().toLowerCase())) {
+        else if (classes.containsKey(customClass.getName().toLowerCase())) {
             getLogger().severe("Duplicate class names detected! - " + customClass.getName());
             return;
         }
@@ -423,7 +472,7 @@ public class SkillAPI extends JavaPlugin {
                 config.set(ClassValues.MAX_LEVEL, customClass.getMaxLevel());
 
             // Add to table
-            registeredClasses.put(customClass.getName().toLowerCase(), customClass);
+            classes.put(customClass.getName().toLowerCase(), customClass);
             configFile.saveConfig();
         }
         catch (Exception e) {
@@ -468,33 +517,13 @@ public class SkillAPI extends JavaPlugin {
     // ----------------------------- Data Accessor Methods -------------------------------------- //
 
     /**
-     * <p>Gets the Class data that manages the skill tree of the class</p>
-     *
-     * @param name class name
-     * @return     class skill tree
-     */
-    public SkillTree getClass(String name) {
-        return trees.get(name.toLowerCase());
-    }
-
-    /**
      * Checks if the class with the given name is loaded
      *
      * @param name class name
      * @return     true if loaded, false otherwise
      */
-    public boolean hasTree(String name){
-        return trees.containsKey(name.toLowerCase());
-    }
-
-    /**
-     * Gets the config skill
-     *
-     * @param name skill name
-     * @return     config data
-     */
-    public Skill getSkill(String name) {
-        return skills.get(name.toLowerCase());
+    public boolean hasClass(String name){
+        return classes.containsKey(name.toLowerCase());
     }
 
     /**
@@ -503,9 +532,9 @@ public class SkillAPI extends JavaPlugin {
      * @param name skill name
      * @return     all child skills
      */
-    public ArrayList<Skill> getChildSkills(String name) {
-        ArrayList<Skill> skills = new ArrayList<Skill>();
-        for (Skill skill : skills) {
+    public ArrayList<ClassSkill> getChildSkills(String name) {
+        ArrayList<ClassSkill> skills = new ArrayList<ClassSkill>();
+        for (ClassSkill skill : skills) {
             if (skill.getSkillReq() != null && skill.getSkillReq().equalsIgnoreCase(name))
                 skills.add(skill);
         }
@@ -526,11 +555,23 @@ public class SkillAPI extends JavaPlugin {
      * Gets the registered ClassSkill
      *
      * @param name skill name
-     * @return     class skill
+     * @return     config data
      */
-    public ClassSkill getRegisteredSkill(String name) {
+    public ClassSkill getSkill(String name) {
         if (name == null) return null;
-        return registeredSkills.get(name.toLowerCase());
+        return skills.get(name.toLowerCase());
+    }
+
+    /**
+     * Gets the registered ClassSkill
+     *
+     * @param name skill name
+     * @return     class skill
+     * @deprecated use getSkill(String) instead
+     */
+    @Deprecated
+    public ClassSkill getRegisteredSkill(String name) {
+        return getSkill(name);
     }
 
     /**
@@ -539,9 +580,21 @@ public class SkillAPI extends JavaPlugin {
      * @param name class name
      * @return     class
      */
-    public CustomClass getRegisteredClass(String name) {
+    public CustomClass getClass(String name) {
         if (name == null) return null;
-        return registeredClasses.get(name.toLowerCase());
+        return classes.get(name.toLowerCase());
+    }
+
+    /**
+     * Gets the registered CustomClass
+     *
+     * @param name class name
+     * @return     class
+     * @deprecated use getClass(String) instead
+     */
+    @Deprecated
+    public CustomClass getRegisteredClass(String name) {
+        return getClass(name);
     }
 
     /**
@@ -551,30 +604,17 @@ public class SkillAPI extends JavaPlugin {
      * @return     true if registered, false otherwise
      */
     public boolean isSkillRegistered(String name) {
-        return registeredSkills.containsKey(name.toLowerCase());
+        return skills.containsKey(name.toLowerCase());
     }
 
     /**
      * Gets the children for the skill tree
      *
-     * @param tree tree name
+     * @param name tree name
      * @return     name of all children
      */
-    public ArrayList<String> getChildren(String tree) {
-        ArrayList<String> children = new ArrayList<String>();
-        for (SkillTree t : trees.values()) {
-            if (tree == null) {
-                if (t.getParent() == null) children.add(t.getName());
-            }
-            else {
-                if (t.getName().equalsIgnoreCase(tree)) continue;
-                if (t.getParent() == null) continue;
-                if (t.getParent().equalsIgnoreCase(tree)) {
-                    children.add(t.getName());
-                }
-            }
-        }
-        return children;
+    public ArrayList<String> getChildren(String name) {
+        return getChildren(name, Bukkit.getConsoleSender());
     }
 
     /**
@@ -585,15 +625,26 @@ public class SkillAPI extends JavaPlugin {
      * @return       list of available child skill trees
      */
     public ArrayList<String> getChildren(String tree, Player player) {
+        return getChildren(tree, (CommandSender)player);
+    }
+
+    /**
+     * Gets the children for the skill tree considering the sender's permissions
+     *
+     * @param tree   parent skill tree
+     * @param sender sender to check permissions
+     * @return       list of available child skill trees
+     */
+    private ArrayList<String> getChildren(String tree, CommandSender sender) {
         ArrayList<String> children = new ArrayList<String>();
-        for (SkillTree t : trees.values()) {
+        for (CustomClass t : classes.values()) {
             if (tree == null) {
-                if (t.getParent() == null && hasPermission(player, t)) children.add(t.getName());
+                if (t.getParent() == null && hasPermission(sender, t)) children.add(t.getName());
             }
             else {
                 if (t.getName().equalsIgnoreCase(tree)) continue;
                 if (t.getParent() == null) continue;
-                if (!hasPermission(player, t)) continue;
+                if (!hasPermission(sender, t)) continue;
                 if (t.getParent().equalsIgnoreCase(tree)) {
                     children.add(t.getName());
                 }
@@ -609,8 +660,30 @@ public class SkillAPI extends JavaPlugin {
      * @param t      class to check
      * @return       true if the player has permission, false otherwise
      */
-    public boolean hasPermission(Player player, SkillTree t) {
+    public boolean hasPermission(CommandSender player, CustomClass t) {
         return player.hasPermission(PermissionNodes.CLASS) || player.hasPermission(PermissionNodes.CLASS + "." + t.getName());
+    }
+
+    /**
+     * Retrieves the status data for an entity
+     *
+     * @param entity entity to retrieve for
+     * @return       status data
+     */
+    public StatusHolder getStatusHolder(LivingEntity entity) {
+        if (!holders.containsKey(entity.getEntityId())) {
+            holders.put(entity.getEntityId(), new StatusHolder());
+        }
+        return holders.get(entity.getEntityId());
+    }
+
+    /**
+     * Removes the status data for an entity
+     *
+     * @param entity entity to remove for
+     */
+    public void clearStatusHolder(LivingEntity entity) {
+        holders.remove(entity.getEntityId());
     }
 
     // ----------------------------- Language Methods -------------------------------------- //

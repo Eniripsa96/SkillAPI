@@ -1,10 +1,16 @@
 package com.sucy.skill.api;
 
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class Attributed {
+/**
+ * Base class for objects with dynamic data
+ */
+public abstract class Attributed extends Valued {
 
     private final HashMap<String, Integer> base = new HashMap<String, Integer>();
     private final HashMap<String, Integer> scale = new HashMap<String, Integer>();
@@ -67,7 +73,6 @@ public abstract class Attributed {
      */
     public void setBase(String attribute, int value) {
         if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
-
         base.put(attribute, value);
     }
 
@@ -83,7 +88,6 @@ public abstract class Attributed {
      */
     public void setScale(String attribute, int value) {
         if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
-
         scale.put(attribute, value);
     }
 
@@ -121,6 +125,16 @@ public abstract class Attributed {
     }
 
     /**
+     * Removes an attribute from the object
+     *
+     * @param name name of the attribute
+     */
+    public void removeAttribute(String name) {
+        base.remove(name);
+        scale.remove(name);
+    }
+
+    /**
      * <p>Calculates a value for an attribute at a given level</p>
      *
      * @param attribute  attribute name
@@ -144,5 +158,33 @@ public abstract class Attributed {
     public void checkDefault(String attribute, int defaultBase, int defaultScale) {
         if (!hasAttribute(attribute))
             setAttribute(attribute, defaultBase, defaultScale);
+    }
+
+    /**
+     * Saves attributes to a configuration section
+     *
+     * @param config configuration section to save to
+     */
+    public void saveAttributes(ConfigurationSection config) {
+        for (String key : base.keySet()) {
+            ConfigurationSection section = config.createSection(key);
+            section.set("base", base.get(key));
+            section.set("scale", scale.get(key));
+        }
+    }
+
+    /**
+     * Loads attributes from a configuration section
+     *
+     * @param config configuration section to load from
+     */
+    public void loadAttributes(ConfigurationSection config) {
+        if (config == null) return;
+
+        for (String key : config.getKeys(false)) {
+            ConfigurationSection section = config.getConfigurationSection(key);
+            base.put(key, section.getInt("base"));
+            scale.put(key, section.getInt("scale"));
+        }
     }
 }

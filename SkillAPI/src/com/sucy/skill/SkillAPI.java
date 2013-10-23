@@ -72,18 +72,6 @@ public class SkillAPI extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        int index = -1;
-        for (PotionEffectType type : PotionEffectType.values()) {
-            index++;
-            if (type == null) continue;
-            getLogger().info("[" + index + "] " + type.getName());
-        }
-        getLogger().info("[" + index + "] " + PotionEffectType.values()[index]);
-        index = 0;
-        for (Status status : Status.values()) {
-            getLogger().info("[" + index++ + "] " + status.name());
-        }
-
         reloadConfig();
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
@@ -167,8 +155,7 @@ public class SkillAPI extends JavaPlugin {
                 else skill.update(new Config(this, "skill\\" + skill.getName()).getConfig());
             }
             catch (Exception e) {
-                getLogger().severe("Failed to load skill: " + skill);
-                e.printStackTrace();
+                getLogger().severe("Failed to load skill: " + skill.getName());
             }
         }
 

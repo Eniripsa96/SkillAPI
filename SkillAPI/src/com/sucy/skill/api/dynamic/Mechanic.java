@@ -2,6 +2,7 @@ package com.sucy.skill.api.dynamic;
 
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.mechanic.*;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -50,9 +51,9 @@ public class Mechanic {
     public Mechanic(DynamicSkill skill, ConfigurationSection config, String prefix) {
         this.skill = skill;
         this.prefix = prefix;
-        this.target = Target.valueOf(config.getString(TARGET));
-        this.group = Group.valueOf(config.getString(GROUP));
-        this.mechanic = MECHANICS.get(config.getString(EFFECT));
+        this.target = Target.valueOf(config.getString(TARGET).toUpperCase());
+        this.group = Group.valueOf(config.getString(GROUP).toUpperCase());
+        this.mechanic = MECHANICS.get(config.getString(EFFECT).toUpperCase());
     }
 
     /**
@@ -130,14 +131,14 @@ public class Mechanic {
     }
 
     public static final HashMap<String, IMechanic> MECHANICS = new HashMap<String, IMechanic>() {{
-        put("Damage", new DamageMechanic());
-        put("Fire", new FireMechanic());
-        put("Heal", new HealMechanic());
-        put("Launch", new LaunchMechanic());
-        put("Potion", new PotionMechanic());
-        put("Pull", new PullMechanic());
-        put("Push", new PushMechanic());
-        put("Status", new StatusMechanic());
-        put("Taunt", new TauntMechanic());
+        put("DAMAGE", new DamageMechanic());
+        put("FIRE", new FireMechanic());
+        put("HEAL", new HealMechanic());
+        put("LAUNCH", new LaunchMechanic());
+        put("POTION", new PotionMechanic());
+        put("PULL", new PullMechanic());
+        put("PUSH", new PushMechanic());
+        put("STATUS", new StatusMechanic());
+        put("TAUNT", new TauntMechanic());
     }};
 }

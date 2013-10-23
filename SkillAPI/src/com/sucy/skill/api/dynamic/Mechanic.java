@@ -130,26 +130,9 @@ public class Mechanic {
         config.set(GROUP, Arrays.asList(Group.values()).indexOf(group));
     }
 
-    /**
-     * Gets the attributes for a dynamic skill accounting for prefixes and aliases
-     *
-     * @param mechanic mechanic to retrieve for
-     * @param level    level of the skill
-     * @return         attributes for the mechanic
-     */
-    public HashMap<String, Integer> getModifiedAttributes(IMechanic mechanic, int level) {
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
-        for (String attribute : mechanic.getAttributeNames()) {
-            if (skill.isAliased(prefix + attribute)) {
-                 map.put(attribute, skill.getAttribute(prefix + target.getAlias(skill, attribute), level));
-            }
-            else map.put(attribute, skill.getAttribute(prefix + attribute, level));
-        }
-        return map;
-    }
-
     public static final HashMap<String, IMechanic> MECHANICS = new HashMap<String, IMechanic>() {{
         put("Damage", new DamageMechanic());
+        put("Fire", new FireMechanic());
         put("Heal", new HealMechanic());
         put("Launch", new LaunchMechanic());
         put("Potion", new PotionMechanic());

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -60,6 +61,9 @@ public class PotionMechanic implements IMechanic {
     public void applyDefaults(DynamicSkill skill, String prefix) {
         skill.checkDefault(DURATION, 5, 2);
         skill.checkDefault(TIER, 0, 0);
+        if (!POTION_TYPES.containsKey(skill.getValue(TYPE))) {
+            skill.setValue(TYPE, 1);
+        }
     }
 
     /**
@@ -69,4 +73,28 @@ public class PotionMechanic implements IMechanic {
     public String[] getAttributeNames() {
         return new String[] { DURATION, TIER };
     }
+
+    private static final HashMap<Integer, PotionEffectType> POTION_TYPES = new HashMap<Integer, PotionEffectType>() {{
+        put(1, PotionEffectType.SPEED);
+        put(2, PotionEffectType.SLOW);
+        put(3, PotionEffectType.FAST_DIGGING);
+        put(4, PotionEffectType.SLOW_DIGGING);
+        put(5, PotionEffectType.INCREASE_DAMAGE);
+        put(8, PotionEffectType.JUMP);
+        put(9, PotionEffectType.CONFUSION);
+        put(10, PotionEffectType.REGENERATION);
+        put(11, PotionEffectType.DAMAGE_RESISTANCE);
+        put(12, PotionEffectType.FIRE_RESISTANCE);
+        put(13, PotionEffectType.WATER_BREATHING);
+        put(14, PotionEffectType.INVISIBILITY);
+        put(15, PotionEffectType.BLINDNESS);
+        put(16, PotionEffectType.NIGHT_VISION);
+        put(17, PotionEffectType.HUNGER);
+        put(18, PotionEffectType.WEAKNESS);
+        put(19, PotionEffectType.POISON);
+        put(20, PotionEffectType.WITHER);
+        put(21, PotionEffectType.HEALTH_BOOST);
+        put(22, PotionEffectType.ABSORPTION);
+        put(23, PotionEffectType.SATURATION);
+    }};
 }

@@ -1,6 +1,5 @@
 package com.sucy.skill.mechanic;
 
-import com.sucy.skill.api.Status;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
@@ -8,20 +7,17 @@ import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
- * Mechanic for applying status effects to all targets
+ * Mechanic for setting targets on fire
  */
-public class StatusMechanic implements IMechanic {
+public class FireMechanic implements IMechanic {
 
-    private static final String
-            TYPE = "Status",
-            LENGTH = "Length";
+    private static final String DURATION = "Fire";
 
     /**
-     * Applies a status to all targets
+     * Ignites all targets
      *
      * @param player  player using the skill
      * @param data    data of the player using the skill
@@ -33,20 +29,16 @@ public class StatusMechanic implements IMechanic {
     @Override
     public boolean resolve(Player player, PlayerSkills data, DynamicSkill skill, Target target, List<LivingEntity> targets) {
 
-        // Get attributes
-        int level = data.getSkillLevel(skill.getName());
-        Status status = STATUSES.get(skill.getValue(TYPE));
-        int duration = skill.getAttribute(LENGTH, target, level);
+        if (targets.size() == 0) return false;
 
-        // Apply  potion effect to all
-        boolean worked = false;
+        // Damage all targets
+        int level = data.getSkillLevel(skill.getName());
+        int duration = skill.getAttribute(DURATION, target, level);
         for (LivingEntity t : targets) {
-            if (t instanceof Player) {
-                data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, duration);
-                worked = true;
-            }
+            t.setFireTicks(duration * 20);
         }
-        return worked;
+
+        return true;
     }
 
     /**
@@ -57,10 +49,7 @@ public class StatusMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(LENGTH, 3, 1);
-        if (!STATUSES.containsKey(skill.getValue(TYPE))) {
-            skill.setValue(TYPE, 0);
-        }
+        skill.checkDefault(DURATION, 5, 2);
     }
 
     /**
@@ -68,16 +57,6 @@ public class StatusMechanic implements IMechanic {
      */
     @Override
     public String[] getAttributeNames() {
-        return new String[] { LENGTH };
+        return new String[] { DURATION };
     }
-
-    private static final HashMap<Integer, Status> STATUSES = new HashMap<Integer, Status>() {{
-        put(0, Status.STUN);
-        put(1, Status.ROOT);
-        put(2, Status.SILENCE);
-        put(3, Status.DISARM);
-        put(4, Status.CURSE);
-        put(5, Status.ABSORB);
-        put(6, Status.INVINCIBLE);
-    }};
 }

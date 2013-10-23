@@ -24,6 +24,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -70,6 +71,18 @@ public class SkillAPI extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+
+        int index = -1;
+        for (PotionEffectType type : PotionEffectType.values()) {
+            index++;
+            if (type == null) continue;
+            getLogger().info("[" + index + "] " + type.getName());
+        }
+        getLogger().info("[" + index + "] " + PotionEffectType.values()[index]);
+        index = 0;
+        for (Status status : Status.values()) {
+            getLogger().info("[" + index++ + "] " + status.name());
+        }
 
         reloadConfig();
         playerConfig = new Config(this, "players");

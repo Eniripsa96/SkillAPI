@@ -6,7 +6,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,8 +50,8 @@ public class Mechanic {
     public Mechanic(DynamicSkill skill, ConfigurationSection config, String prefix) {
         this.skill = skill;
         this.prefix = prefix;
-        this.target = Target.values()[config.getInt(TARGET)];
-        this.group = Group.values()[config.getInt(GROUP)];
+        this.target = Target.valueOf(config.getString(TARGET));
+        this.group = Group.valueOf(config.getString(GROUP));
         this.mechanic = MECHANICS.get(config.getString(EFFECT));
     }
 
@@ -126,8 +125,8 @@ public class Mechanic {
      */
     public void save(ConfigurationSection config) {
         config.set(EFFECT, mechanic.getClass().getSimpleName().replace("Mechanic", ""));
-        config.set(TARGET, Arrays.asList(Target.values()).indexOf(target));
-        config.set(GROUP, Arrays.asList(Group.values()).indexOf(group));
+        config.set(TARGET, target.name());
+        config.set(GROUP, group.name());
     }
 
     public static final HashMap<String, IMechanic> MECHANICS = new HashMap<String, IMechanic>() {{

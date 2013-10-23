@@ -12,11 +12,6 @@ import java.util.List;
 public enum Group {
 
     /**
-     * Only the caster
-     */
-    SELF,
-
-    /**
      * Allies of the caster including themselves
      */
     ALLY,
@@ -50,8 +45,7 @@ public enum Group {
 
             // See if its in the group
             boolean inGroup;
-            if (this == SELF) inGroup = (caster == target);
-            else if (this == ALLY) inGroup = (caster == target || Protection.isAlly(caster, target));
+            if (this == ALLY) inGroup = (caster == target || Protection.isAlly(caster, target));
             else if (this == ENEMY) inGroup = !Protection.isAlly(caster, target);
             else if (this == OTHERS) inGroup = (caster != target);
             else if (this == ALL) inGroup = true;

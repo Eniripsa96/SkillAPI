@@ -24,14 +24,19 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         PASSIVE = "passive",
         ACTIVE = "active",
         ALIASED = "aliased",
+        EMBED = "embed",
+        ITEM_REQ = "item-req",
         PERIOD = "Period";
+
+    public final List<Mechanic> activeMechanics = new ArrayList<Mechanic>();
+    public final List<Mechanic> passiveMechanics = new ArrayList<Mechanic>();
+    public final List<Mechanic> embedMechanics = new ArrayList<Mechanic>();
+    public String prefix = "";
 
     private final HashMap<String, PassiveTask> tasks = new HashMap<String, PassiveTask>();
     private final HashMap<String, Boolean> aliased = new HashMap<String, Boolean>();
-    private final List<Mechanic> activeMechanics = new ArrayList<Mechanic>();
-    private final List<Mechanic> passiveMechanics = new ArrayList<Mechanic>();
 
-    private boolean passive = false;
+    private String itemReq;
 
     /**
      * Constructor from config data
@@ -61,6 +66,10 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         skillReqLevel = config.getInt(SkillValues.SKILL_REQ_LEVEL, skillReqLevel);
         description.clear();
         description.addAll(config.getStringList(SkillValues.DESCRIPTION));
+
+        // Required items
+        itemReq = config.getString(ITEM_REQ, null);
+        if (itemReq != null) itemReq = itemReq.replace(" ", "_").toUpperCase();
 
         // Load attributes
         loadAttributes(config.getConfigurationSection(ATTRIBUTES));
@@ -98,6 +107,18 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
             }
         }
 
+        // Load embedded mechanics
+        ConfigurationSection embedSection = config.getConfigurationSection(EMBED);
+        if (embedSection != null) {
+            for (String key : embedSection.getKeys(false)) {
+                Mechanic mechanic = new Mechanic(this, embedSection.getConfigurationSection(key), "Embed ");
+                if (mechanic.getTarget() == Target.LINEAR) continue;
+                checkConflicts(embedMechanics, mechanic, "Embed ");
+                embedMechanics.add(mechanic);
+                mechanic.getTarget().applyDefaults(this);
+            }
+        }
+
         // If passive abilities, make sure there's a period
         if (passiveMechanics.size() > 0) {
             checkDefault(PERIOD, 3, 1);
@@ -113,10 +134,10 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      * @return       attribute value at the level
      */
     public int getAttribute(String key, Target target, int level) {
-        String prefix = "";
-        if (passive && !key.equals("Range") && !key.equals("Radius")) prefix = "Passive ";
-        key = target.getAlias(this, key);
-        return super.getAttribute(prefix + key, level);
+        String modified = key;
+        if (!key.equals("Range") && !key.equals("Radius")) modified = this.prefix + target.getAlias(this, key);
+        else modified = target.getAlias(this, key);
+        return super.getAttribute(modified, level);
     }
 
     /**
@@ -145,6 +166,21 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         checkConflicts(passiveMechanics, passive, "Passive ");
         target.applyDefaults(this);
         passiveMechanics.add(passive);
+    }
+
+    /**
+     * Adds a new embedded mechanic to the skill
+     *
+     * @param mechanic mechanic to add
+     * @param target   target of the mechanic
+     * @param group    group of the mechanic
+     */
+    public void addEmbedMechanic(IMechanic mechanic, Target target, Group group) {
+        if (target == Target.LINEAR) return;
+        Mechanic embed = new Mechanic(this, mechanic, target, group, "Embed ");
+        checkConflicts(embedMechanics, embed, "Embed ");
+        target.applyDefaults(this);
+        embedMechanics.add(embed);
     }
 
     /**
@@ -248,6 +284,9 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      */
     @Override
     public boolean cast(Player player, int level) {
+        if (!hasItemReq(player)) return false;
+
+        prefix = "";
         PlayerSkills data = api.getPlayer(player.getName());
         boolean successful = false;
         for (Mechanic mechanic : activeMechanics) {
@@ -268,6 +307,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         config.set(SkillValues.SKILL_REQ, getSkillReq());
         config.set(SkillValues.SKILL_REQ_LEVEL, getSkillReqLevel());
         config.set(SkillValues.DESCRIPTION, description);
+        config.set(ITEM_REQ, itemReq);
         saveAttributes(config.createSection(ATTRIBUTES));
         saveValues(config.createSection(VALUES));
 
@@ -290,6 +330,42 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         for (Mechanic mechanic : activeMechanics) {
             mechanic.save(activeSection.createSection("m" + index++));
         }
+
+        // Embedded
+        ConfigurationSection embedSection = config.createSection(EMBED);
+        index = 0;
+        for (Mechanic mechanic : embedMechanics) {
+            mechanic.save(embedSection.createSection("m" + index++));
+        }
+    }
+
+    /**
+     * Checks if a player meets the item requirement
+     *
+     * @param player player to check
+     * @return       true if met, false otherwise
+     */
+    private boolean hasItemReq(Player player) {
+        if (itemReq == null) return true;
+
+        String[] items;
+        if (itemReq.contains(",")) items = itemReq.split(",");
+        else items = new String[] { itemReq };
+
+        boolean validItem = false;
+        for (String item : items) {
+            try {
+                Material mat = Material.valueOf(item);
+                validItem = true;
+                if (player.getItemInHand().getType() == mat) {
+                    return true;
+                }
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+        }
+        return !validItem;
     }
 
     /**
@@ -319,11 +395,17 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
          */
         @Override
         public void run() {
-            skill.passive = true;
+
+            // Cannot use the effect
+            if (!player.isValid() || !skill.hasItemReq(player)) {
+                return;
+            }
+
+            // Use the effect
+            prefix = "Passive ";
             for (Mechanic mechanic : skill.passiveMechanics) {
                 mechanic.resolve(player, data, skill);
             }
-            skill.passive = false;
         }
     }
 }

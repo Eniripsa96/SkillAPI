@@ -13,7 +13,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.List;
 
 /**
- * Command to bind a skill to an item
+ * Command to level a player up
  */
 public class CmdLevelPlayer implements ICommand {
 

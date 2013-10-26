@@ -6,21 +6,18 @@ import com.sucy.skill.api.dynamic.Target;
 import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 
 /**
- * Mechanic for making targets dash forward
+ * Mechanic for giving mana to targets
  */
-public class LaunchMechanic implements IMechanic {
+public class ManaMechanic implements IMechanic {
 
-    private static final String
-            V_SPEED = "Vertical Speed",
-            H_SPEED = "Horizontal Speed";
+    private static final String MANA = "Mana";
 
     /**
-     * Forces all targets to dash
+     * Gives mana to all targets
      *
      * @param player  player using the skill
      * @param data    data of the player using the skill
@@ -32,21 +29,17 @@ public class LaunchMechanic implements IMechanic {
     @Override
     public boolean resolve(Player player, PlayerSkills data, DynamicSkill skill, Target target, List<LivingEntity> targets) {
 
-        // Get attributes
+        // Change mana of all player targets
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int vSpeed = skill.getAttribute(V_SPEED, target, level);
-        int hSpeed = skill.getAttribute(H_SPEED, target, level);
-
-        // Make all targets dash forward
+        int amount = skill.getAttribute(MANA, target, level);
         for (LivingEntity t : targets) {
-            Vector vel = player.getLocation().getDirection();
-            if (vel.lengthSquared() == 0) continue;
-            vel.setY(0);
-            vel.multiply(hSpeed / vel.length());
-            vel.setY(vSpeed + 0.5);
-            t.setVelocity(vel);
-            worked = true;
+            if (t instanceof Player) {
+                PlayerSkills p = skill.getAPI().getPlayer(((Player) t).getName());
+                int prevMana = p.getMana();
+                p.gainMana(amount);
+                worked = worked || (p.getMana() != prevMana);
+            }
         }
 
         return worked;
@@ -60,8 +53,7 @@ public class LaunchMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(prefix + V_SPEED, 0, 0);
-        skill.checkDefault(prefix + H_SPEED, 3, 1);
+        skill.checkDefault(prefix + MANA, 4, 2);
     }
 
     /**
@@ -69,6 +61,6 @@ public class LaunchMechanic implements IMechanic {
      */
     @Override
     public String[] getAttributeNames() {
-        return new String[] { H_SPEED, V_SPEED };
+        return new String[] { MANA };
     }
 }

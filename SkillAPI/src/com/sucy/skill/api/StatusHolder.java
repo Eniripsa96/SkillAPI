@@ -17,7 +17,7 @@ public class StatusHolder {
      * Adds a status to the holder
      *
      * @param status   status of the holder
-     * @param duration duration of the status
+     * @param duration duration of the status in milliseconds
      */
     public void addStatus(Status status, long duration) {
         duration += System.currentTimeMillis();

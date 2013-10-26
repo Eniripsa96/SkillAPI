@@ -58,7 +58,7 @@ public class HealMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(HEAL, 4, 2);
+        skill.checkDefault(prefix + HEAL, 4, 2);
     }
 
     /**

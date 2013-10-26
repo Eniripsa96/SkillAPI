@@ -59,9 +59,9 @@ public class PotionMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(DURATION, 5, 2);
-        skill.checkDefault(TIER, 0, 0);
-        if (!POTION_TYPES.containsKey(skill.getValue(TYPE))) {
+        skill.checkDefault(prefix + DURATION, 5, 2);
+        skill.checkDefault(prefix + TIER, 0, 0);
+        if (!skill.isSet(TYPE) || !POTION_TYPES.containsKey(skill.getValue(TYPE))) {
             skill.setValue(TYPE, 1);
         }
     }

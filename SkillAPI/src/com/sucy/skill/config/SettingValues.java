@@ -55,6 +55,11 @@ public enum SettingValues {
      */
     KILLS,
 
+    /**
+     * Formula for experience requirements
+     */
+    EXP_FORMULA,
+
     ;
 
     /**

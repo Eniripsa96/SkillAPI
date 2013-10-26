@@ -82,12 +82,28 @@ public enum Target {
         return new ArrayList<LivingEntity>();
     }
 
+    /**
+     * Self target
+     *
+     * @param skill  skill with the effect
+     * @param caster caster of the skill
+     * @param level  level of the skill
+     * @return       caster
+     */
     private List<LivingEntity> self(DynamicSkill skill, Player caster, int level) {
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(caster);
         return targets;
     }
 
+    /**
+     * Target facing toward
+     *
+     * @param skill  skill with the effect
+     * @param caster caster of the skill
+     * @param level  level of the skill
+     * @return       target looking at
+     */
     private List<LivingEntity> target(DynamicSkill skill, Player caster, int level) {
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
         LivingEntity target = TargetHelper.getLivingTarget(caster, skill.getAttribute(getAlias(skill, RANGE), level));

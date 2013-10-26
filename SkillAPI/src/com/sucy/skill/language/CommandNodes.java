@@ -81,6 +81,16 @@ public class CommandNodes {
     CAST = "cast",
 
     /**
+     * Experience command by the console
+     */
+    EXP_CONSOLE = "exp-console",
+
+    /**
+     * Experience command by the player
+     */
+    EXP_PLAYER = "exp-player",
+
+    /**
      * Info player command key
      */
     INFO_PLAYER = "info-player",

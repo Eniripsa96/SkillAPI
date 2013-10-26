@@ -591,17 +591,7 @@ public final class PlayerSkills extends Valued {
      * @return amount of experience required for the next level
      */
     public int getRequiredExp() {
-        return getRequiredExp(level);
-    }
-
-    /**
-     * Calculates the required experience for a level
-     *
-     * @param level level to calculate for
-     * @return      amount of experience needed
-     */
-    public static int getRequiredExp(int level) {
-        return (level + 4) * (level + 4) / 10 * 10;
+        return plugin.getRequiredExp(level);
     }
 
     /**

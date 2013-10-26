@@ -49,7 +49,7 @@ public class FireMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(DURATION, 5, 2);
+        skill.checkDefault(prefix + DURATION, 5, 2);
     }
 
     /**

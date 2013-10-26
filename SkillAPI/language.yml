@@ -35,6 +35,8 @@ Commands:
   arguments:
     bind: '<skill>'
     cast: '<skill>'
+    exp-console: '<amount> <player>'
+    exp-player: '<amount> &a[player]'
     info-console: '<player>'
     info-player: '&a[player]'
     level-console: '<amount> <player>'
@@ -48,6 +50,10 @@ Commands:
     bind:
     - '&6{skill} &2has been bound to the item &6{item}'
     cast: []
+    exp-console:
+    - '&6{player} &2gained &6{amount} &2experience'
+    exp-player:
+    - '&6{player} &2gained &6{amount} &2experience'
     info-console:
       has-class:
       - '&8{break}'
@@ -104,6 +110,8 @@ Commands:
   description:
     bind: 'Binds skill to held item'
     cast: 'Casts the skill'
+    exp-console: 'Gives a player exp'
+    exp-player: 'Gives a player exp'
     info-player: 'Views details of player'
     info-console: 'Views details of player'
     level-console: 'Levels a player up'
@@ -129,6 +137,8 @@ Commands:
   name:
     bind: 'bind'
     cast: 'cast'
+    exp-console: 'exp'
+    exp-player: 'exp'
     info-player: 'info'
     info-console: 'info'
     level-console: 'level'

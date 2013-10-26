@@ -24,7 +24,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -63,6 +62,10 @@ public class SkillAPI extends JavaPlugin {
     private boolean oldHealth;
     private int startingPoints;
     private int pointsPerLevel;
+    private int x;
+    private int y;
+    private int z;
+    private int w;
 
     // ----------------------------- Plugin Methods -------------------------------------- //
 
@@ -131,6 +134,13 @@ public class SkillAPI extends JavaPlugin {
         pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path());
         oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path());
 
+        // Experience formula
+        ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
+        x = formula.getInt("x");
+        y = formula.getInt("y");
+        z = formula.getInt("z");
+        w = formula.getInt("w");
+
         // Set up the mana task
         int manaFreq = getConfig().getInt(SettingValues.MANA_GAIN_FREQ.path());
         int manaGain = getConfig().getInt(SettingValues.MANA_GAIN_AMOUNT.path());
@@ -179,6 +189,24 @@ public class SkillAPI extends JavaPlugin {
             }
         }
 
+        // Save dynamic skills
+        for (Map.Entry<String, ClassSkill> entry : skills.entrySet()) {
+            if (entry.getValue() instanceof DynamicSkill) {
+                DynamicSkill skill = (DynamicSkill)entry.getValue();
+                skill.save(skillConfig.getConfig().createSection(skill.getName()));
+            }
+        }
+        skillConfig.saveConfig();
+
+        // Save dynamic classes
+        for (Map.Entry<String, CustomClass> entry : classes.entrySet()) {
+            if (entry.getValue() instanceof DynamicClass) {
+                DynamicClass c = (DynamicClass)entry.getValue();
+                c.save(classConfig.getConfig().createSection(c.getName()));
+            }
+        }
+        classConfig.saveConfig();
+
         getLogger().info("Loaded " + skills.size() + " skills and " + classes.size() + " skill trees");
 
         // Load player data
@@ -219,24 +247,6 @@ public class SkillAPI extends JavaPlugin {
             invTask.cancel();
             invTask = null;
         }
-
-        // Save dynamic skills
-        for (Map.Entry<String, ClassSkill> entry : skills.entrySet()) {
-            if (entry.getValue() instanceof DynamicSkill) {
-                DynamicSkill skill = (DynamicSkill)entry.getValue();
-                skill.save(skillConfig.getConfig().createSection(skill.getName()));
-            }
-        }
-        skillConfig.saveConfig();
-
-        // Save dynamic classes
-        for (Map.Entry<String, CustomClass> entry : classes.entrySet()) {
-            if (entry.getValue() instanceof DynamicClass) {
-                DynamicClass c = (DynamicClass)entry.getValue();
-                c.save(classConfig.getConfig().createSection(c.getName()));
-            }
-        }
-        classConfig.saveConfig();
 
         // Save player data
         for (String key : playerConfig.getConfig().getKeys(false)) {
@@ -323,6 +333,17 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean oldHealthEnabled() {
         return oldHealth;
+    }
+
+    /**
+     * Calculates the required experience for a level
+     *
+     * @param level level
+     * @return      required exp
+     */
+    public int getRequiredExp(int level) {
+        int value = level + y;
+        return x * value * value + z * value + w;
     }
 
     // ----------------------------- Registration methods -------------------------------------- //

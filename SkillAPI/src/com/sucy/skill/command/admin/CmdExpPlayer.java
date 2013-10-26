@@ -13,9 +13,9 @@ import org.bukkit.plugin.Plugin;
 import java.util.List;
 
 /**
- * Command to level a player up
+ * Command to give a player experience
  */
-public class CmdLevelConsole implements ICommand {
+public class CmdExpPlayer implements ICommand {
 
     /**
      * Executes the command
@@ -31,11 +31,12 @@ public class CmdLevelConsole implements ICommand {
         SkillAPI api = (SkillAPI)plugin;
 
         // Requires at least 1 argument
-        if (args.length >= 2) {
+        if (args.length >= 1) {
             PlayerSkills player;
 
             // Get the target
-            player = api.getPlayer(args[1]);
+            if (args.length == 1) player = api.getPlayer(sender.getName());
+            else player = api.getPlayer(args[1]);
 
             // Get the amount
             int amount = 0;
@@ -71,21 +72,21 @@ public class CmdLevelConsole implements ICommand {
             else if (player.getLevel() >= api.getClass(player.getClassName()).getMaxLevel()) {
                 String error = api.getMessage(CommandNodes.MAX_LEVEL, true);
                 error = error.replace("{player}", player.getName())
-                             .replace("{level}", player.getLevel() + "");
+                        .replace("{level}", player.getLevel() + "");
 
                 sender.sendMessage(error);
             }
 
             // Give them the levels
             else {
-                player.levelUp(amount);
+                player.giveExp(amount);
 
                 // Confirmation message
-                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.LEVEL_CONSOLE, true);
+                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.EXP_PLAYER, true);
                 for (String message : messages) {
                     message = message.replace("{player}", player.getName())
-                                     .replace("{amount}", amount + "")
-                                     .replace("{level}", player.getLevel() + "");
+                            .replace("{amount}", amount + "")
+                            .replace("{level}", player.getLevel() + "");
 
                     sender.sendMessage(message);
                 }
@@ -109,7 +110,7 @@ public class CmdLevelConsole implements ICommand {
      */
     @Override
     public String getArgsString(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.LEVEL_CONSOLE, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.EXP_PLAYER, true);
     }
 
     /**
@@ -117,7 +118,7 @@ public class CmdLevelConsole implements ICommand {
      */
     @Override
     public String getDescription(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.LEVEL_CONSOLE, true);
+        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.EXP_PLAYER, true);
     }
 
     /**
@@ -125,6 +126,6 @@ public class CmdLevelConsole implements ICommand {
      */
     @Override
     public SenderType getSenderType() {
-        return SenderType.CONSOLE_ONLY;
+        return SenderType.PLAYER_ONLY;
     }
 }

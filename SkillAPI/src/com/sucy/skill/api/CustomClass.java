@@ -1,8 +1,8 @@
 package com.sucy.skill.api;
 
-import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skill.ClassSkill;
+import com.sucy.skill.api.util.TextFormatter;
 import com.sucy.skill.config.ClassValues;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

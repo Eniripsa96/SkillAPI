@@ -2,7 +2,6 @@ package com.sucy.skill.api.dynamic;
 
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.mechanic.*;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -120,6 +119,20 @@ public class Mechanic {
     }
 
     /**
+     * Resolves the mechanic with custom targets
+     *
+     * @param player  player using the skill
+     * @param data    data of the player using the skill
+     * @param skill   skill being used
+     * @param targets targets of the skill
+     * @return        true if successfully used, false otherwise
+     */
+    public boolean resolve(Player player, PlayerSkills data, DynamicSkill skill, List<LivingEntity> targets) {
+        group.filterTargets(player, targets);
+        return targets.size() > 0 && mechanic.resolve(player, data, skill, target, targets);
+    }
+
+    /**
      * Saves the mechanic details to a configuration section
      *
      * @param config configuration section to save to
@@ -132,10 +145,17 @@ public class Mechanic {
 
     public static final HashMap<String, IMechanic> MECHANICS = new HashMap<String, IMechanic>() {{
         put("DAMAGE", new DamageMechanic());
+        put("DAMAGEBONUS", new DamageBonusMechanic());
+        put("DAMAGEPERCENT", new DamagePercentMechanic());
+        put("DAMAGEPERCENTREDUCTION", new DamagePercentReductionMechanic());
+        put("DAMAGEREDUCTION", new DamageReductionMechanic());
         put("FIRE", new FireMechanic());
         put("HEAL", new HealMechanic());
         put("LAUNCH", new LaunchMechanic());
+        put("MANA", new ManaMechanic());
+        put("MANADAMAGE", new ManaDamageMechanic());
         put("POTION", new PotionMechanic());
+        put("PROJECTILE", new ProjectileMechanic());
         put("PULL", new PullMechanic());
         put("PUSH", new PushMechanic());
         put("STATUS", new StatusMechanic());

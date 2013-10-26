@@ -56,7 +56,7 @@ public class PullMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(SPEED, 3, 1);
+        skill.checkDefault(prefix + SPEED, 3, 1);
     }
 
     /**

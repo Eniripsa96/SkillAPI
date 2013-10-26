@@ -33,6 +33,16 @@ public abstract class Valued {
     }
 
     /**
+     * Checks if the value is set
+     *
+     * @param key value key
+     * @return    true if set, false otherwise
+     */
+    public boolean isSet(String key) {
+        return values.containsKey(key);
+    }
+
+    /**
      * Adds to a value for the player
      *
      * @param key   value key

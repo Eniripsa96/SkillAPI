@@ -42,7 +42,7 @@ public class DamagePercentMechanic implements IMechanic {
 
         // Add damage modifiers
         for (LivingEntity entity : targets) {
-            data.getAPI().getStatusHolder(entity).addDamageModifier(new DamageModifier(1 + bonus / 100.0, duration));
+            data.getAPI().getStatusHolder(entity).addDamageModifier(new DamageModifier(1 + bonus / 100.0, duration * 1000));
         }
 
         return true;
@@ -56,8 +56,8 @@ public class DamagePercentMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(PERCENT, 10, 5);
-        skill.checkDefault(DURATION, 5, 0);
+        skill.checkDefault(prefix + PERCENT, 10, 5);
+        skill.checkDefault(prefix + DURATION, 5, 0);
     }
 
     /**

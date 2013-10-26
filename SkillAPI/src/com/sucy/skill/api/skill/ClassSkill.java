@@ -67,6 +67,13 @@ public abstract class ClassSkill extends Attributed implements Comparable<ClassS
     }
 
     /**
+     * @return API reference
+     */
+    public SkillAPI getAPI() {
+        return api;
+    }
+
+    /**
      * @return skill name
      */
     public String getName() {

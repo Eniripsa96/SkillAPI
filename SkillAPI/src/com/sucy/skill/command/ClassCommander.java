@@ -1,9 +1,7 @@
 package com.sucy.skill.command;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.command.admin.CmdLevelConsole;
-import com.sucy.skill.command.admin.CmdLevelPlayer;
-import com.sucy.skill.command.admin.CmdReload;
+import com.sucy.skill.command.admin.*;
 import com.sucy.skill.command.basic.*;
 import com.sucy.skill.language.CommandNodes;
 
@@ -39,6 +37,8 @@ public class ClassCommander extends CommandHandler {
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.SKILLS, false), new CmdSkills());
 
         // Admin commands
+        registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.EXP_CONSOLE, false), new CmdExpConsole());
+        registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.EXP_PLAYER, false), new CmdExpPlayer());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.LEVEL_CONSOLE, false), new CmdLevelConsole());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.LEVEL_PLAYER, false), new CmdLevelPlayer());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.RELOAD, false), new CmdReload());

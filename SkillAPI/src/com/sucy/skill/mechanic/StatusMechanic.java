@@ -42,7 +42,7 @@ public class StatusMechanic implements IMechanic {
         boolean worked = false;
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
-                data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, duration);
+                data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, duration * 1000);
                 worked = true;
             }
         }
@@ -57,8 +57,8 @@ public class StatusMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(LENGTH, 3, 1);
-        if (!STATUSES.containsKey(skill.getValue(TYPE))) {
+        skill.checkDefault(prefix + LENGTH, 3, 1);
+        if (!skill.isSet(TYPE) || !STATUSES.containsKey(skill.getValue(TYPE))) {
             skill.setValue(TYPE, 0);
         }
     }

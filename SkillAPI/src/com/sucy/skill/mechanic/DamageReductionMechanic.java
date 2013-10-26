@@ -11,16 +11,16 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 /**
- * Mechanic for granting bonus damage
+ * Mechanic for granting damage reduction
  */
-public class DamageBonusMechanic implements IMechanic {
+public class DamageReductionMechanic implements IMechanic {
 
     private static final String
-        BONUS = "Bonus",
-        DURATION = "Bonus Duration";
+            REDUCTION = "Reduction",
+            DURATION = "Reduction Duration";
 
     /**
-     * Grants a temporary damage bonus to the targets
+     * Grants a temporary damage reduction buff to the targets
      *
      * @param player  player using the skill
      * @param data    data of the player using the skill
@@ -37,12 +37,12 @@ public class DamageBonusMechanic implements IMechanic {
 
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
-        int bonus = skill.getAttribute(BONUS, target, level);
+        int reduction = skill.getAttribute(REDUCTION, target, level);
         int duration = skill.getAttribute(DURATION, target, level);
 
         // Add damage modifiers
         for (LivingEntity entity : targets) {
-            data.getAPI().getStatusHolder(entity).addDamageModifier(new DamageModifier(bonus, duration * 1000));
+            data.getAPI().getStatusHolder(entity).addDefenseModifier(new DamageModifier(reduction, duration * 1000));
         }
 
         return true;
@@ -56,7 +56,7 @@ public class DamageBonusMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(prefix + BONUS, 2, 1);
+        skill.checkDefault(prefix + REDUCTION, 1, 1);
         skill.checkDefault(prefix + DURATION, 5, 0);
     }
 
@@ -65,6 +65,6 @@ public class DamageBonusMechanic implements IMechanic {
      */
     @Override
     public String[] getAttributeNames() {
-        return new String[] { BONUS, DURATION };
+        return new String[] { REDUCTION, DURATION };
     }
 }

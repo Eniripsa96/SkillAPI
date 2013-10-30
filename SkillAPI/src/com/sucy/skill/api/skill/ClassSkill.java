@@ -21,7 +21,7 @@ import java.util.List;
  * <p>For a detailed tutorial on how to use this class, visit
  * <a href="http://dev.bukkit.org/bukkit-plugins/skillapi/pages/skill-tutorial/"/></p>
  */
-public abstract class ClassSkill extends Attributed implements Comparable<ClassSkill> {
+public abstract class ClassSkill extends Attributed {
 
     private final HashMap<String, Long> timers = new HashMap<String, Long>();
     private final String name;
@@ -328,28 +328,6 @@ public abstract class ClassSkill extends Attributed implements Comparable<ClassS
     }
 
     /**
-     * Compares skills based on their stats for skill tree arrangement
-     *  -> Skills with no prerequisite skills come first
-     *  -> Then its skills with lower level requirements
-     *  -> Then its skills with lower costs
-     *  -> Then its skills alphabetically
-     *
-     * @param skill skill to compare to
-     * @return      -1, 0, or 1
-     */
-    @Override
-    public int compareTo(ClassSkill skill) {
-        return getSkillReq() != null && skill.getSkillReq() == null ? 1
-            : getSkillReq() == null && skill.getSkillReq() != null ? -1
-            : getBase(SkillAttribute.LEVEL) > skill.getBase(SkillAttribute.LEVEL) ? 1
-            : getBase(SkillAttribute.LEVEL) < skill.getBase(SkillAttribute.LEVEL) ? -1
-            : getBase(SkillAttribute.COST) > skill.getBase(SkillAttribute.COST) ? 1
-            : getBase(SkillAttribute.COST) < skill.getBase(SkillAttribute.COST) ? -1
-            : getName().compareTo(skill.getName());
-    }
-
-
-    /**
      * Checks the availability status of the skill for the player
      *
      * @param player      player to check for
@@ -449,6 +427,12 @@ public abstract class ClassSkill extends Attributed implements Comparable<ClassS
         if (description != null) {
             this.description.clear();
             this.description.addAll(description);
+        }
+
+        // Skill Requirement
+        if (config.contains(SkillValues.SKILL_REQ)) {
+            skillReq = config.getString(SkillValues.SKILL_REQ);
+            skillReqLevel = config.getInt(SkillValues.SKILL_REQ_LEVEL, 1);
         }
 
         // Icon

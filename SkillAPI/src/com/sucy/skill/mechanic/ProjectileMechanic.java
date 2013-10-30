@@ -6,9 +6,7 @@ import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
 import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -17,6 +15,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -25,6 +24,7 @@ import java.util.List;
 public class ProjectileMechanic implements IMechanic, Listener {
 
     private static final String
+            PROJECTILE = "Projectile",
             SPEED = "Speed",
             ANGLE = "Angle",
             SPREAD = "Spread",
@@ -59,9 +59,13 @@ public class ProjectileMechanic implements IMechanic, Listener {
         int amount = skill.getAttribute(QUANTITY, target, level);
         int angle = skill.getAttribute(ANGLE, target, level);
         int spread = skill.getValue(SPREAD);
+        int projectileId = skill.getValue(PROJECTILE);
+        Class<? extends Projectile> projectile;
+        if (PROJECTILES.containsKey(projectileId)) projectile = PROJECTILES.get(projectileId);
+        else projectile = Arrow.class;
 
         List<Integer> list;
-        list = launchHorizontalCircle(player, amount, angle, speed);
+        list = launchHorizontalCircle(player, projectile, amount, angle, speed);
 
         for (int id : list) {
             projectiles.put(id, new EmbedData(player, data, skill));
@@ -70,7 +74,7 @@ public class ProjectileMechanic implements IMechanic, Listener {
         return worked;
     }
 
-    private List<Integer> launchHorizontalCircle(Player source, int amount, int angle, int speed) {
+    private List<Integer> launchHorizontalCircle(Player source, Class<? extends Projectile> projectileType, int amount, int angle, int speed) {
         List<Integer> list = new ArrayList<Integer>();
 
         Vector vel = source.getLocation().getDirection();
@@ -79,23 +83,23 @@ public class ProjectileMechanic implements IMechanic, Listener {
 
         // Fire one straight ahead if odd
         if (amount % 2 == 1) {
-            Arrow arrow = source.launchProjectile(Arrow.class);
-            arrow.setVelocity(vel);
-            list.add(arrow.getEntityId());
+            Projectile projectile = source.launchProjectile(projectileType);
+            projectile.setVelocity(vel);
+            list.add(projectile.getEntityId());
         }
 
         double a = (double)angle / (amount - 1);
         for (int i = 0; i < (amount - 1) / 2; i++) {
             for (int j = -1; j <= 1; j += 2) {
                 double b = angle / 2 * j - a * i * j;
-                Arrow arrow = source.launchProjectile(Arrow.class);
+                Projectile projectile = source.launchProjectile(projectileType);
                 Vector v = vel.clone();
                 double cos = Math.cos(b * Math.PI / 180);
                 double sin = Math.sin(b * Math.PI / 180);
                 v.setX(v.getX() * cos - v.getZ() * sin);
                 v.setZ(v.getX() * sin + v.getZ() * cos);
-                arrow.setVelocity(v);
-                list.add(arrow.getEntityId());
+                projectile.setVelocity(v);
+                list.add(projectile.getEntityId());
             }
         }
 
@@ -153,4 +157,13 @@ public class ProjectileMechanic implements IMechanic, Listener {
     public String[] getAttributeNames() {
         return new String[] { SPEED, QUANTITY };
     }
+
+    private static final HashMap<Integer, Class<? extends Projectile>> PROJECTILES = new LinkedHashMap<Integer, Class<? extends Projectile>>() {{
+        put(0, Arrow.class);
+        put(1, Snowball.class);
+        put(2, Egg.class);
+        put(3, SmallFireball.class);
+        put(4, LargeFireball.class);
+        put(5, WitherSkull.class);
+    }};
 }

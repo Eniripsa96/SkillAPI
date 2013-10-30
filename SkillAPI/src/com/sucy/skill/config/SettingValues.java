@@ -11,6 +11,11 @@ public enum SettingValues {
     PROFESS_RESET,
 
     /**
+     * Type of the skill tree to use
+     */
+    TREE_TYPE,
+
+    /**
      * Whether or not the mana system is enabled
      */
     MANA_ENABLED,

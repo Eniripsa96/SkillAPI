@@ -8,13 +8,13 @@ import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 
+import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -338,30 +338,24 @@ public class APIListener implements Listener {
     public void onClick(InventoryClickEvent event) {
 
         // Make sure its a skill tree inventory
-        CustomClass tree = plugin.getClass(event.getInventory().getTitle());
-        if (tree != null && event.getInventory().getHolder() instanceof CustomClass) {
+        if (event.getInventory().getHolder() instanceof SkillTree) {
+            SkillTree tree = (SkillTree)event.getInventory().getHolder();
 
             // Do nothing when clicking outside the inventory
             if (event.getSlot() == -999) return;
 
             boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
 
-            // Always cancel the event when clicking in the top region
+            // Interact with the skill tree when clicking in the top region
             if (top) {
-                event.setCancelled(true);
-                PlayerSkills player = plugin.getPlayer(event.getWhoClicked().getName());
-                ClassSkill skill = tree.getSkill(event.getSlot());
+                event.setCancelled(tree.checkClick(event.getSlot()));
 
                 // If they clicked on a skill, try upgrading it
-                if (skill != null) {
-                    if (player.upgradeSkill(skill)) {
+                if (tree.isSkill(event.getSlot())) {
+                    PlayerSkills player = plugin.getPlayer(event.getWhoClicked().getName());
+                    if (player.upgradeSkill(tree.getSkill(event.getSlot()))) {
                         tree.update(event.getInventory(), player);
                     }
-                }
-
-                // Allow players to take back their items they glitched into the inventory
-                else if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
-                    event.setCancelled(false);
                 }
             }
 

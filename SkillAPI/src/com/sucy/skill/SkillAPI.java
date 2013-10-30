@@ -57,6 +57,7 @@ public class SkillAPI extends JavaPlugin {
     private Config classConfig;
 
     // Settings
+    private String treeType;
     private boolean mana;
     private boolean reset;
     private boolean oldHealth;
@@ -128,11 +129,12 @@ public class SkillAPI extends JavaPlugin {
         saveConfig();
 
         // Load options
-        reset = getConfig().getBoolean(SettingValues.PROFESS_RESET.path());
-        mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path());
-        startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path());
-        pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path());
-        oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path());
+        treeType = getConfig().getString(SettingValues.TREE_TYPE.path(), "requirement");
+        reset = getConfig().getBoolean(SettingValues.PROFESS_RESET.path(), false);
+        mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path(), true);
+        startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path(), 1);
+        pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path(), 1);
+        oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path(), false);
 
         // Experience formula
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
@@ -181,7 +183,7 @@ public class SkillAPI extends JavaPlugin {
         List<CustomClass> classList = new ArrayList<CustomClass>(this.classes.values());
         for (CustomClass tree : classList) {
             try {
-                tree.arrange();
+                tree.getTree().arrange();
             }
             catch (Exception ex) {
                 getLogger().severe("Failed to arrange skill tree for the class " + tree.getName() + " - " + ex.getMessage());
@@ -288,6 +290,13 @@ public class SkillAPI extends JavaPlugin {
     }
 
     // ----------------------------- Settings Accessor Methods -------------------------------------- //
+
+    /**
+     * @return tree type
+     */
+    public String getTreeType() {
+        return treeType;
+    }
 
     /**
      * @return whether or not mana is enabled
@@ -569,7 +578,7 @@ public class SkillAPI extends JavaPlugin {
      * @return     true if loaded, false otherwise
      */
     public boolean hasSkill(String name) {
-        return skills.containsKey(name.toLowerCase());
+        return skills.get(name.toLowerCase()) != null;
     }
 
     /**

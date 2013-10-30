@@ -8,7 +8,8 @@
 # and look at the tutorials section for the      #
 # configuration tutorials.                       #
 # ---------------------------------------------- #
-profess-reset: true
+profess-reset: false
+tree-type: Requirement
 mana-enabled: true
 scoreboard-enabled: true
 mana-gain-freq: 1

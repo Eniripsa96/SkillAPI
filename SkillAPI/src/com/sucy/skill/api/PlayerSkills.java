@@ -443,7 +443,7 @@ public final class PlayerSkills extends Valued {
         Player p = plugin.getServer().getPlayer(player);
         if (p.getOpenInventory() != null)
             p.closeInventory();
-        p.openInventory(plugin.getClass(tree).getInventory(this, skills));
+        p.openInventory(plugin.getClass(tree).getTree().getInventory(this, skills));
         return true;
     }
 

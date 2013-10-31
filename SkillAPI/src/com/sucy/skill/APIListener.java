@@ -21,6 +21,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,6 +31,8 @@ import java.util.Map;
 public class APIListener implements Listener {
 
     private final SkillAPI plugin;
+
+    private final HashMap<Integer, Long> timers = new HashMap<Integer, Long>();
 
     /**
      * Constructor
@@ -73,7 +76,7 @@ public class APIListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler (priority = EventPriority.LOW)
     public void onDamage(EntityDamageByEntityEvent event) {
 
         LivingEntity target = convertEntity(event.getEntity());
@@ -150,56 +153,12 @@ public class APIListener implements Listener {
     }
 
     /**
-     * Adjust the damage taken depending on the health bar mode
-     *
-     * @param event event details
-     */
-    @EventHandler (ignoreCancelled = true)
-    public void onDamaged(EntityDamageEvent event) {
-
-        // Adjust damage taken and apply statuses for players
-        if (event.getEntity() instanceof Player) {
-            String name = ((Player) event.getEntity()).getName();
-            PlayerSkills player = plugin.getPlayer(name);
-
-            // Damage modifications only occur when the player has a class and old health bars are enabled
-            if (plugin.oldHealthEnabled() && player.getClassName() != null) {
-                CustomClass playerClass = plugin.getClass(player.getClassName());
-                event.setDamage(event.getDamage() * 20.0 / playerClass.getAttribute(ClassAttribute.HEALTH, player.getLevel()));
-            }
-        }
-    }
-
-    /**
      * Calls events for on-hit effects
      *
      * @param event event details
      */
-    @EventHandler (priority =  EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onHit (EntityDamageByEntityEvent event) {
-
-        // Make sure its the correct causes to avoid infinite loops with the protection checks
-        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK
-                || event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE) {
-
-            // Get the involved entities in terms of living entities considering projectiles
-            LivingEntity damaged = convertEntity(event.getEntity());
-            LivingEntity damager = convertEntity(event.getDamager());
-
-            // Call an event when a player dealt damage
-            if (damager != null && damager instanceof Player && damaged != null) {
-                PlayerOnHitEvent e = new PlayerOnHitEvent((Player)damager, damaged, (int)event.getDamage());
-                plugin.getServer().getPluginManager().callEvent(e);
-                event.setDamage(e.getDamage());
-            }
-
-            // Call an event when a player received damage
-            if (damaged != null && damaged instanceof Player && damager != null) {
-                PlayerOnDamagedEvent e = new PlayerOnDamagedEvent((Player)damaged, damager, (int)event.getDamage());
-                plugin.getServer().getPluginManager().callEvent(e);
-                event.setDamage(e.getDamage());
-            }
-        }
+    @EventHandler (priority =  EventPriority.HIGH, ignoreCancelled = true)
+    public void onStatusHit (EntityDamageByEntityEvent event) {
 
         // Status effects
         LivingEntity damaged = convertEntity(event.getEntity());
@@ -229,6 +188,57 @@ public class APIListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    /**
+     * Launches events when things are hit involving a player
+     *
+     * @param event event details
+     */
+    @EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onHit (EntityDamageByEntityEvent event) {
+
+        // Make sure its the correct causes to avoid infinite loops with the protection checks
+        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK
+                || event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE) {
+
+            // Get the involved entities in terms of living entities considering projectiles
+            LivingEntity damaged = convertEntity(event.getEntity());
+            LivingEntity damager = convertEntity(event.getDamager());
+
+            // Neither can be null
+            if (damaged == null || damager == null) return;
+
+            // Make sure it doesn't run too often
+            if (timers.containsKey(damaged.getEntityId())
+                    && System.currentTimeMillis() - timers.get(damaged.getEntityId()) < 500) {
+                return;
+            }
+
+            // Call an event when a player dealt damage
+            if (damager instanceof Player) {
+                PlayerOnHitEvent e = new PlayerOnHitEvent((Player)damager, damaged, (int)event.getDamage());
+                plugin.getServer().getPluginManager().callEvent(e);
+                event.setDamage(e.getDamage());
+            }
+
+            // Call an event when a player received damage
+            if (damaged instanceof Player) {
+                PlayerOnDamagedEvent e = new PlayerOnDamagedEvent((Player)damaged, damager, (int)event.getDamage());
+                plugin.getServer().getPluginManager().callEvent(e);
+                event.setDamage(e.getDamage());
+            }
+        }
+    }
+
+    /**
+     * Updates timers when entities take damage
+     *
+     * @param event event details
+     */
+    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHitUpdate(EntityDamageByEntityEvent event) {
+        timers.put(event.getEntity().getEntityId(), System.currentTimeMillis());
     }
 
     /**

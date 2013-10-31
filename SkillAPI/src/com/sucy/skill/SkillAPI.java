@@ -295,6 +295,7 @@ public class SkillAPI extends JavaPlugin {
      * @return tree type
      */
     public String getTreeType() {
+        if (treeType == null) return "Requirement";
         return treeType;
     }
 

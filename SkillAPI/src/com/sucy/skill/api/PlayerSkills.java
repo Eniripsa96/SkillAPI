@@ -339,10 +339,11 @@ public final class PlayerSkills extends Valued {
      * Updates the health of the player to match the class details
      */
     public void updateHealth() {
+        if (plugin.getServer().getPlayer(player) == null) return;
         if (tree == null || plugin.oldHealthEnabled()) {
-            applyMaxHealth(20);
+            plugin.getServer().getPlayer(player).setHealthScale(20.0);
         }
-        else applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level));
+        applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level));
     }
 
     /**

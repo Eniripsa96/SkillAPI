@@ -160,5 +160,7 @@ public class Mechanic {
         put("PUSH", new PushMechanic());
         put("STATUS", new StatusMechanic());
         put("TAUNT", new TauntMechanic());
+        put("TELEPORT", new TeleportMechanic());
+        put("TELEPORTTARGET", new TeleportTargetMechanic());
     }};
 }

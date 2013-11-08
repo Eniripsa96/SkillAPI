@@ -1,6 +1,8 @@
 package com.sucy.skill.task;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.CustomClass;
+import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -32,8 +34,14 @@ public class ManaTask extends BukkitRunnable {
      */
     public void run() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (plugin.getPlayer(player.getName()) != null) {
-                plugin.getPlayer(player.getName()).gainMana(amount);
+            PlayerSkills data = plugin.getPlayer(player.getName());
+            if (data != null) {
+                if (data.hasClass()) {
+                    CustomClass c = plugin.getClass(data.getClassName());
+                    if (c.gainsMana()) {
+                        plugin.getPlayer(player.getName()).gainMana(amount);
+                    }
+                }
             }
         }
     }

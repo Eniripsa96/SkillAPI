@@ -59,8 +59,8 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
     public void update(ConfigurationSection config) {
 
         // Basic values
-        type = SkillType.valueOf(config.getString(SkillValues.TYPE, type.name()).toUpperCase());
-        indicator = Material.valueOf(config.getString(SkillValues.INDICATOR, indicator.name()).toUpperCase());
+        type = SkillType.valueOf(config.getString(SkillValues.TYPE, type.name()).toUpperCase().replace(" ", "_"));
+        indicator = Material.valueOf(config.getString(SkillValues.INDICATOR, indicator.name()).toUpperCase().replace(" ", "_"));
         maxLevel = config.getInt(SkillValues.MAX_LEVEL, maxLevel);
         skillReq = config.getString(SkillValues.SKILL_REQ, skillReq);
         skillReqLevel = config.getInt(SkillValues.SKILL_REQ_LEVEL, skillReqLevel);

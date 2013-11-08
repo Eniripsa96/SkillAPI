@@ -10,6 +10,12 @@ public enum SkillType {
      */
     SKILL_SHOT ("skill-shot"),
 
+
+    /**
+     * A skill that imbues normal attacks with extra effects
+     */
+    ATTACK_IMBUEMENT ("attack-imbuement"),
+
     /**
      * A single target targeted skill
      */

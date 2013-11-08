@@ -83,6 +83,22 @@ public class SkillAPI extends JavaPlugin {
         classConfig = new Config(this, "dynamic/classes");
         languageConfig.saveDefaultConfig();
 
+        // Make sure default config values are set
+        for (SettingValues value : SettingValues.values()) {
+            if (!getConfig().isSet(value.path())) {
+                getConfig().set(value.path(), getConfig().get(value.path()));
+            }
+        }
+        saveConfig();
+
+        // Load options
+        treeType = getConfig().getString(SettingValues.TREE_TYPE.path(), "requirement");
+        reset = getConfig().getBoolean(SettingValues.PROFESS_RESET.path(), false);
+        mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path(), true);
+        startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path(), 1);
+        pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path(), 1);
+        oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path(), false);
+
         // Make sure dynamic files are created
         if (!skillConfig.getConfigFile().exists()) skillConfig.saveConfig();
         if (!classConfig.getConfigFile().exists()) classConfig.saveConfig();
@@ -120,22 +136,6 @@ public class SkillAPI extends JavaPlugin {
         // Done registering everything
         mode = RegisterMode.DONE;
 
-        // Make sure default config values are set
-        for (SettingValues value : SettingValues.values()) {
-            if (!getConfig().isSet(value.path())) {
-                getConfig().set(value.path(), getConfig().get(value.path()));
-            }
-        }
-        saveConfig();
-
-        // Load options
-        treeType = getConfig().getString(SettingValues.TREE_TYPE.path(), "requirement");
-        reset = getConfig().getBoolean(SettingValues.PROFESS_RESET.path(), false);
-        mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path(), true);
-        startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path(), 1);
-        pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path(), 1);
-        oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path(), false);
-
         // Experience formula
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
         x = formula.getInt("x");
@@ -168,6 +168,7 @@ public class SkillAPI extends JavaPlugin {
             }
             catch (Exception e) {
                 getLogger().severe("Failed to load skill: " + skill.getName());
+                e.printStackTrace();
             }
         }
 
@@ -501,6 +502,10 @@ public class SkillAPI extends JavaPlugin {
                 config.set(ClassValues.SKILLS, customClass.getSkills());
             if (!config.contains(ClassValues.MAX_LEVEL))
                 config.set(ClassValues.MAX_LEVEL, customClass.getMaxLevel());
+            if (!config.contains(ClassValues.MANA_NAME))
+                config.set(ClassValues.MANA_NAME, customClass.getManaName());
+            if (!config.contains(ClassValues.PASSIVE_MANA_GAIN))
+                config.set(ClassValues.PASSIVE_MANA_GAIN, customClass.gainsMana());
 
             // Add to table
             classes.put(customClass.getName().toLowerCase(), customClass);

@@ -16,7 +16,7 @@ public class PlayerOnHitEvent extends Event {
     private Hashtable<String, Object> flags = new Hashtable<String, Object>();
     private Player player;
     private LivingEntity target;
-    private int damage;
+    private double damage;
 
     /**
      * Constructor - you shouldn't need to use this
@@ -25,7 +25,7 @@ public class PlayerOnHitEvent extends Event {
      * @param entity mob or player taking damage
      * @param damage amount of damage dealt
      */
-    public PlayerOnHitEvent(Player player, LivingEntity entity, int damage) {
+    public PlayerOnHitEvent(Player player, LivingEntity entity, double damage) {
         this.player = player;
         this.target = entity;
         this.damage = damage;
@@ -48,7 +48,7 @@ public class PlayerOnHitEvent extends Event {
     /**
      * @return the damage dealt
      */
-    public int getDamage() {
+    public double getDamage() {
         return damage;
     }
 
@@ -57,7 +57,7 @@ public class PlayerOnHitEvent extends Event {
      *
      * @param amount new amount of damage
      */
-    public void setDamage(int amount) {
+    public void setDamage(double amount) {
         damage = amount;
     }
 

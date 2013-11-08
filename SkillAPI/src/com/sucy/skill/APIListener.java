@@ -103,10 +103,12 @@ public class APIListener implements Listener {
         // Player class damage
         if (damager instanceof Player) {
 
+            Player p = (Player)event.getDamager();
+
             // Projectile damage
             if (event.getDamager() instanceof Projectile) {
                 Projectile projectile = (Projectile) event.getDamager();
-                PlayerSkills player = plugin.getPlayer(((Player) damager).getName());
+                PlayerSkills player = plugin.getPlayer(p.getName());
                 if (player != null && player.getClassName() != null) {
                     CustomClass playerClass = plugin.getClass(player.getClassName());
 
@@ -129,16 +131,19 @@ public class APIListener implements Listener {
 
             // Melee damage
             else {
-                PlayerSkills player = plugin.getPlayer(((Player) event.getDamager()).getName());
+                PlayerSkills player = plugin.getPlayer(p.getName());
                 if (player != null && player.getClassName() != null) {
                     CustomClass playerClass = plugin.getClass(player.getClassName());
 
+
+
                     // Set the damage normally
-                    Material mat = ((Player) event.getDamager()).getItemInHand() == null ?
-                            Material.AIR : ((Player) event.getDamager()).getItemInHand().getType();
-                    int damage = playerClass.getDamage(mat);
-                    int defaultDamage = CustomClass.getDefaultDamage(mat);
-                    event.setDamage(event.getDamage() + damage - defaultDamage);
+                    Material mat = p.getItemInHand() == null ?
+                            Material.AIR : p.getItemInHand().getType();
+                    double damage = 1;
+                    if (mat != null) damage = event.getDamage() + playerClass.getDamage(mat) - CustomClass.getDefaultDamage(mat);
+                    else if (p.getItemInHand() != null) damage = Math.max(damage, playerClass.getDamage(p.getItemInHand().getTypeId()));
+                    event.setDamage(damage);
                 }
             }
         }
@@ -215,16 +220,19 @@ public class APIListener implements Listener {
                 return;
             }
 
+            // Update the timer
+            timers.put(damaged.getEntityId(), System.currentTimeMillis());
+
             // Call an event when a player dealt damage
             if (damager instanceof Player) {
-                PlayerOnHitEvent e = new PlayerOnHitEvent((Player)damager, damaged, (int)event.getDamage());
+                PlayerOnHitEvent e = new PlayerOnHitEvent((Player)damager, damaged, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
                 event.setDamage(e.getDamage());
             }
 
             // Call an event when a player received damage
             if (damaged instanceof Player) {
-                PlayerOnDamagedEvent e = new PlayerOnDamagedEvent((Player)damaged, damager, (int)event.getDamage());
+                PlayerOnDamagedEvent e = new PlayerOnDamagedEvent((Player)damaged, damager, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
                 event.setDamage(e.getDamage());
             }

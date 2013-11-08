@@ -4,9 +4,8 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.util.TextFormatter;
 import com.sucy.skill.config.ClassValues;
-import com.sucy.skill.tree.BasicHorizontalTree;
-import com.sucy.skill.tree.RequirementTree;
-import com.sucy.skill.tree.SkillTree;
+import com.sucy.skill.language.StatNodes;
+import com.sucy.skill.tree.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,6 +23,7 @@ public abstract class CustomClass extends Attributed {
 
     private final HashMap<Class<? extends Projectile>, Integer> projectileDamage = new HashMap<Class<? extends Projectile>, Integer>();
     private final HashMap<Material, Integer> damage = new HashMap<Material, Integer>();
+    private final HashMap<Integer, Integer> idDamage = new HashMap<Integer, Integer>();
 
     private final List<String> inheritance = new ArrayList<String>();
     private final List<String> skills = new ArrayList<String>();
@@ -32,10 +32,12 @@ public abstract class CustomClass extends Attributed {
     private final SkillTree tree;
     private final String name;
 
-    protected String parent;
-    protected String prefix;
-    protected int professLevel;
-    protected int maxLevel;
+    private String parent;
+    private String prefix;
+    private String manaName;
+    private boolean gainMana;
+    private int professLevel;
+    private int maxLevel;
 
     /**
      * @param name         class name
@@ -44,14 +46,20 @@ public abstract class CustomClass extends Attributed {
      * @param professLevel level to profess
      */
     public CustomClass(String name, String parent, String prefix, int professLevel, int maxLevel) {
-        this.api = (SkillAPI)Bukkit.getPluginManager().getPlugin("SkillAPI");
         this.name = name;
         this.parent = parent;
         this.prefix = prefix;
         this.professLevel = professLevel;
         this.maxLevel = maxLevel;
 
+        api = (SkillAPI)Bukkit.getPluginManager().getPlugin("SkillAPI");
+        manaName = api.getMessage(StatNodes.MANA, false);
+        gainMana = true;
+
         if (api.getTreeType().equalsIgnoreCase("BasicHorizontal")) this.tree = new BasicHorizontalTree(api, this);
+        else if (api.getTreeType().equalsIgnoreCase("BasicVertical")) this.tree = new BasicVerticalTree(api, this);
+        else if (api.getTreeType().equalsIgnoreCase("LevelVertical")) this.tree = new LevelVerticalTree(api, this);
+        else if (api.getTreeType().equalsIgnoreCase("LevelHorizontal")) this.tree = new LevelHorizontalTree(api, this);
         else this.tree = new RequirementTree(api, this);
     }
 
@@ -81,6 +89,38 @@ public abstract class CustomClass extends Attributed {
      */
     public String getPrefix() {
         return prefix;
+    }
+
+    /**
+     * @return display name for mana
+     */
+    public String getManaName() {
+        return manaName;
+    }
+
+    /**
+     * @return whether or not this class gains mana passively
+     */
+    public boolean gainsMana() {
+        return gainMana;
+    }
+
+    /**
+     * Sets the display name for the class's mana
+     *
+     * @param name display name for the class's mana
+     */
+    public void setManaName(String name) {
+        manaName = name;
+    }
+
+    /**
+     * Sets whether or not this class gains mana passively
+     *
+     * @param gainsMana whether or not the class gains mana passively
+     */
+    public void setGainsMana(boolean gainsMana) {
+        this.gainMana = gainsMana;
     }
 
     /**
@@ -228,6 +268,10 @@ public abstract class CustomClass extends Attributed {
         inheritance.clear();
         inheritance.addAll(config.getStringList(ClassValues.INHERIT));
 
+        // Options
+        manaName = TextFormatter.colorString(config.getString(ClassValues.MANA_NAME, "Mana"));
+        gainMana = config.getBoolean(ClassValues.PASSIVE_MANA_GAIN);
+
         // Stats
         if (hasAttribute(ClassAttribute.HEALTH)) {
             if (config.contains(ClassValues.HEALTH_BASE))
@@ -260,6 +304,17 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
+     * Sets damage for an item ID
+     *
+     * @param matId  item ID
+     * @param damage damage dealt
+     */
+    @Deprecated
+    protected void setDamage(int matId, int damage) {
+        this.idDamage.put(matId, damage);
+    }
+
+    /**
      * Gets the damage of an item type
      *
      * @param mat item type
@@ -275,6 +330,23 @@ public abstract class CustomClass extends Attributed {
         // Default damages higher than 1
         else if (defaultDamage.containsKey(mat)) {
             return defaultDamage.get(mat);
+        }
+
+        // Otherwise just 1 damage
+        else return 1;
+    }
+
+    /**
+     * Retrieves the damage for an item
+     *
+     * @param matId item ID
+     * @return      damage for the item
+     */
+    public int getDamage(int matId) {
+
+        // Custom damage if applicable
+        if (idDamage.containsKey(matId)) {
+            return idDamage.get(matId);
         }
 
         // Otherwise just 1 damage

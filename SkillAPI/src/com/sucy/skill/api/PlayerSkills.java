@@ -93,6 +93,14 @@ public final class PlayerSkills extends Valued {
             }
         }
 
+        // Dynamic values
+        if (config.contains(PlayerValues.VALUES)) {
+            ConfigurationSection values = config.getConfigurationSection(PlayerValues.VALUES);
+            for (String key : values.getKeys(false)) {
+                setValue(key, values.getInt(key));
+            }
+        }
+
         // Skill bindings
         ConfigurationSection bindConfig = config.getConfigurationSection(PlayerValues.BIND);
         if (bindConfig != null) {
@@ -343,6 +351,7 @@ public final class PlayerSkills extends Valued {
         if (tree == null || plugin.oldHealthEnabled()) {
             plugin.getServer().getPlayer(player).setHealthScale(20.0);
         }
+        else plugin.getServer().getPlayer(player).setHealthScaled(false);
         applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level));
     }
 
@@ -764,6 +773,7 @@ public final class PlayerSkills extends Valued {
         config.set(path + PlayerValues.EXP, exp);
         config.set(path + PlayerValues.POINTS, points);
         config.set(path + PlayerValues.MANA, mana);
+        saveValues(config.createSection(path + PlayerValues.VALUES));
         for (Map.Entry<String, Integer> entry : skills.entrySet()) {
             config.set(path + PlayerValues.SKILLS + "." + entry.getKey(), entry.getValue());
         }

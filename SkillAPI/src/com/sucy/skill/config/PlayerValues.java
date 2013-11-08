@@ -45,6 +45,11 @@ public class PlayerValues {
     MANA = "mana",
 
     /**
+     * Player values
+     */
+    VALUES = "values",
+
+    /**
      * Skill bindings
      */
     BIND = "binds";

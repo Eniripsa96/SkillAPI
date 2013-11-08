@@ -60,6 +60,16 @@ public class ClassValues {
     MANA_BONUS = "mana-scale",
 
     /**
+     * Custom name for mana
+     */
+    MANA_NAME = "mana-name",
+
+    /**
+     * Whether or not the class gains mana passively
+     */
+    PASSIVE_MANA_GAIN = "passive-mana-gain",
+
+    /**
      * Maximum level of the class
      */
     MAX_LEVEL = "max-level";

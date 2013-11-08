@@ -156,6 +156,7 @@ Stats:
   exp: '&2Exp'
 Skill Types:
   skill-shot: 'Skill Shot'
+  attack-imbuement: 'Attack Imbuement'
   target: 'Target'
   skill-shot-aoe: 'Skill Shot AOE'
   target-aoe: 'Target AOE'

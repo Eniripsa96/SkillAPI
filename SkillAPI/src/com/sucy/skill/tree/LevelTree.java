@@ -37,12 +37,12 @@ public abstract class LevelTree extends SkillTree {
         // Get the max level
         int maxLevel = 1;
         for (ClassSkill skill : skills) {
-            if (skill.getMaxLevel() > maxLevel) maxLevel = skill.getMaxLevel();
+            if (skill.getAttribute(SkillAttribute.LEVEL, 1) > maxLevel) maxLevel = skill.getAttribute(SkillAttribute.LEVEL, 1);
         }
 
         // Break it up into tiers
-        int scale = (maxLevel + getPerTierLimit() - 1) / getPerTierLimit();
-        Collections.sort(skills, comparator);
+        int scale = (maxLevel + getTierLimit() - 1) / getTierLimit();
+        Collections.sort(skills, levelComparator);
         HashMap<Integer, List<ClassSkill>> tiers = new HashMap<Integer, List<ClassSkill>>();
         int tier = 0;
         while (skills.size() > 0) {
@@ -51,7 +51,7 @@ public abstract class LevelTree extends SkillTree {
             int max = tier * scale;
             int count = 0;
 
-            while (skills.size() > 0 && count++ < getPerTierLimit() && skills.get(0).getMaxLevel() <= max) {
+            while (skills.size() > 0 && count++ < getPerTierLimit() && skills.get(0).getAttribute(SkillAttribute.LEVEL, 1) <= max) {
                 list.add(skills.remove(0));
             }
         }
@@ -59,13 +59,40 @@ public abstract class LevelTree extends SkillTree {
         // Arrange the tree
         for (int i = 0; i < tier; i++) {
             List<ClassSkill> list = tiers.get(i);
+            int maxIndex = 0;
+
+            for (int j = 0; j < getPerTierLimit(); j++) {
+                for (int k = 0; k < i; k++) {
+                    List<ClassSkill> prevList = tiers.get(k);
+                    if (prevList.size() <= j) continue;
+                    ClassSkill prevSkill = prevList.get(j);
+                    for (int l = 0; l < list.size(); l++) {
+                        ClassSkill nextSkill = list.get(l);
+                        if (nextSkill.getSkillReq() != null
+                                && nextSkill.getSkillReq().equalsIgnoreCase(prevSkill.getName())) {
+                            list.remove(l);
+                            int index = Math.min(Math.max(maxIndex, j), list.size());
+                            maxIndex = Math.max(maxIndex + 1, j);
+                            list.add(index, nextSkill);
+                        }
+                    }
+                }
+            }
             for (int j = 0; j < list.size(); j++) {
+                int index;
+                if (getPerTierLimit() == 9) index = j + i * 9;
+                else index = j * 9 + i;
+                skillSlots.put(index, list.get(j));
+                if (index / 9 + 1 > height) height = index / 9 + 1;
             }
         }
+        if (height == 0) height = 1;
     }
 
     /**
-     * @return maximum number of skills per tier is allowed
+     * Maximum number of skills per tier allowed
+     *
+     * @return number of skills per tier
      */
     protected abstract int getPerTierLimit();
 

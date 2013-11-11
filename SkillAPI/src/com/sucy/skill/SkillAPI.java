@@ -449,6 +449,19 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * Copies dynamic skill data from the config into the API
+     *
+     * @param config config containing dynamic skill data
+     */
+    public void loadDynamicSkills(ConfigurationSection config) {
+        for (String key : config.getKeys(false)) {
+            if (!skillConfig.getConfig().contains(key)) {
+                skillConfig.getConfig().set(key, config.getConfigurationSection(key));
+            }
+        }
+    }
+
+    /**
      * <p>Adds a new class to the game</p>
      * <p>This must be done in the SkillPlugin.registerClasses(SkillAPI) method when the API calls it.
      * This is to ensure the correct assigning of skills to classes by registering them in the proper sequence.</p>
@@ -525,8 +538,22 @@ public class SkillAPI extends JavaPlugin {
      * @param classes classes to add
      */
     public void addClasses(CustomClass ... classes) {
-        for (CustomClass customClass : classes)
+        for (CustomClass customClass : classes) {
             addClass(customClass);
+        }
+    }
+
+    /**
+     * Copies dynamic skill data from the config into the API
+     *
+     * @param config config containing dynamic skill data
+     */
+    public void loadDynamicClasses(ConfigurationSection config) {
+        for (String key : config.getKeys(false)) {
+            if (!classConfig.getConfig().contains(key)) {
+                classConfig.getConfig().set(key, config.getConfigurationSection(key));
+            }
+        }
     }
 
     // ----------------------------- Player Methods -------------------------------------- //

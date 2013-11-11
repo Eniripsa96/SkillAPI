@@ -68,4 +68,31 @@ public class ParticleHelper {
             index++;
         }
     }
+
+    /**
+     * Randomly plays particle effects within a hemisphere
+     *
+     * @param loc    location to center the effect around
+     * @param type   type of particle to use
+     * @param radius radius of the hemisphere
+     * @param amount amount of particles to use
+     */
+    public static void fillHemisphere(Location loc, ParticleType type, int radius, int amount) {
+        Location temp = loc.clone();
+        int rSquared = radius * radius;
+        int twoRadius = radius * 2;
+        int index = 0;
+
+        // Play the particles
+        while (index < amount) {
+            temp.setX(loc.getX() + random.nextFloat() * twoRadius - radius);
+            temp.setY(loc.getY() + random.nextFloat() * radius);
+            temp.setZ(loc.getZ() + random.nextFloat() * twoRadius - radius);
+
+            if (temp.distanceSquared(loc) > rSquared) continue;
+
+            loc.getWorld().playEffect(temp, type.getEffect(), 0);
+            index++;
+        }
+    }
 }

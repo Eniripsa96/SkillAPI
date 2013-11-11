@@ -154,7 +154,9 @@ public abstract class CustomClass extends Attributed {
      * @return brace color for the class prefix
      */
     public ChatColor getBraceColor() {
-        return ChatColor.getByChar(ChatColor.getLastColors(prefix).charAt(1));
+        String colors = ChatColor.getLastColors(prefix);
+        if (colors.length() < 2) return ChatColor.WHITE;
+        return ChatColor.getByChar(colors.charAt(1));
     }
 
     /**

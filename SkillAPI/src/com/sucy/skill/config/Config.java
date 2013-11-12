@@ -1,7 +1,5 @@
 package com.sucy.skill.config;
 
-import com.rit.sucy.MCCore;
-import com.rit.sucy.config.ISavable;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,8 +7,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 
 /**

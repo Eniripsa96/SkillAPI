@@ -1,7 +1,7 @@
 package com.sucy.skill.api.event;
 
-import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.api.skill.ClassSkill;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 

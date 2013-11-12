@@ -2,11 +2,11 @@ package com.sucy.skill.command.admin;
 
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.command.CommandHandler;
 import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
-import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 

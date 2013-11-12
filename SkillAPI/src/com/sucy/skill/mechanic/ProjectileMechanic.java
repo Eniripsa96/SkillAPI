@@ -1,10 +1,11 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
-import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.api.util.effects.ProjectileHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -40,7 +41,7 @@ public class ProjectileMechanic implements IMechanic, Listener {
     }
 
     /**
-     * Gives mana to all targets
+     * Launches projectiles from a source
      *
      * @param player  player using the skill
      * @param data    data of the player using the skill
@@ -65,45 +66,14 @@ public class ProjectileMechanic implements IMechanic, Listener {
         else projectile = Arrow.class;
 
         List<Integer> list;
-        list = launchHorizontalCircle(player, projectile, amount, angle, speed);
+        if (spread == 0) list = ProjectileHelper.launchHorizontalCircle(player, projectile, amount, angle, speed);
+        else list = ProjectileHelper.launchCircle(player, projectile, amount, angle, speed);
 
         for (int id : list) {
             projectiles.put(id, new EmbedData(player, data, skill));
         }
 
         return worked;
-    }
-
-    private List<Integer> launchHorizontalCircle(Player source, Class<? extends Projectile> projectileType, int amount, int angle, int speed) {
-        List<Integer> list = new ArrayList<Integer>();
-
-        Vector vel = source.getLocation().getDirection();
-        vel.setY(0);
-        vel.multiply(speed / vel.length());
-
-        // Fire one straight ahead if odd
-        if (amount % 2 == 1) {
-            Projectile projectile = source.launchProjectile(projectileType);
-            projectile.setVelocity(vel);
-            list.add(projectile.getEntityId());
-        }
-
-        double a = (double)angle / (amount - 1);
-        for (int i = 0; i < (amount - 1) / 2; i++) {
-            for (int j = -1; j <= 1; j += 2) {
-                double b = angle / 2 * j - a * i * j;
-                Projectile projectile = source.launchProjectile(projectileType);
-                Vector v = vel.clone();
-                double cos = Math.cos(b * Math.PI / 180);
-                double sin = Math.sin(b * Math.PI / 180);
-                v.setX(v.getX() * cos - v.getZ() * sin);
-                v.setZ(v.getX() * sin + v.getZ() * cos);
-                projectile.setVelocity(v);
-                list.add(projectile.getEntityId());
-            }
-        }
-
-        return list;
     }
 
     /**

@@ -2,9 +2,9 @@ package com.sucy.skill.api.skill;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Attributed;
+import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.config.SkillValues;
 import com.sucy.skill.language.SkillNodes;
-import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

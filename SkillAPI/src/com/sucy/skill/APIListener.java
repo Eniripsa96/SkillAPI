@@ -1,13 +1,18 @@
 package com.sucy.skill;
 
-import com.sucy.skill.api.*;
+import com.sucy.skill.api.CustomClass;
+import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.api.Status;
+import com.sucy.skill.api.StatusHolder;
+import com.sucy.skill.api.dynamic.Mechanic;
 import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
-import com.sucy.skill.api.skill.*;
+import com.sucy.skill.api.skill.ClassSkill;
+import com.sucy.skill.api.skill.PassiveSkill;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
-
+import com.sucy.skill.mechanic.ProjectileMechanic;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -19,7 +24,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -103,7 +111,7 @@ public class APIListener implements Listener {
         // Player class damage
         if (damager instanceof Player) {
 
-            Player p = (Player)event.getDamager();
+            Player p = (Player)damager;
 
             // Projectile damage
             if (event.getDamager() instanceof Projectile) {
@@ -257,28 +265,34 @@ public class APIListener implements Listener {
     @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
 
+        PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
+
         // If the player data doesn't exist, create a new instance
-        if (plugin.getPlayer(event.getPlayer().getName()) == null) {
+        if (skills == null) {
             plugin.addPlayer(new PlayerSkills(plugin, event.getPlayer().getName()));
         }
 
-        // Otherwise, load the data
+        // Otherwise, apply join effects to the data
         else {
-            PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
 
-            // Update the player health
-            skills.updateHealth();
+            // Effects when a player has a class
+            if (skills.hasClass()) {
 
-            // Apply class prefixes
-            if (skills.getClassName() != null && CoreChecker.isCoreActive())
-                PrefixManager.setPrefix(skills, skills.getPrefix(), plugin.getClass(skills.getClassName()).getBraceColor());
+                // Update the player health
+                skills.updateHealth();
 
-            // Apply passive skills
-            for (Map.Entry<String, Integer> entry : skills.getSkills().entrySet()) {
-                if (entry.getValue() >= 1) {
-                    ClassSkill s = plugin.getSkill(entry.getKey());
-                    if (s != null && s instanceof PassiveSkill)
-                        ((PassiveSkill) s).onInitialize(event.getPlayer(), entry.getValue());
+                // Apply passive skills
+                for (Map.Entry<String, Integer> entry : skills.getSkills().entrySet()) {
+                    if (entry.getValue() >= 1) {
+                        ClassSkill s = plugin.getSkill(entry.getKey());
+                        if (s != null && s instanceof PassiveSkill)
+                            ((PassiveSkill) s).onInitialize(event.getPlayer(), entry.getValue());
+                    }
+                }
+
+                // Apply class prefixes
+                if (CoreChecker.isCoreActive()) {
+                    PrefixManager.setPrefix(skills, skills.getPrefix(), plugin.getClass(skills.getClassName()).getBraceColor());
                 }
             }
         }

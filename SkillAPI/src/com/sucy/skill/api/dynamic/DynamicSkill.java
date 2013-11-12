@@ -1,8 +1,11 @@
 package com.sucy.skill.api.dynamic;
 
-import com.sucy.skill.api.skill.*;
-import com.sucy.skill.config.SkillValues;
 import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.api.skill.ClassSkill;
+import com.sucy.skill.api.skill.PassiveSkill;
+import com.sucy.skill.api.skill.SkillShot;
+import com.sucy.skill.api.skill.SkillType;
+import com.sucy.skill.config.SkillValues;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;

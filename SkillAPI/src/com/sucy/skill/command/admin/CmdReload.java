@@ -6,7 +6,6 @@ import com.sucy.skill.command.CommandHandler;
 import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 

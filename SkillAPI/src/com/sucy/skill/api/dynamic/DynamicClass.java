@@ -1,10 +1,6 @@
 package com.sucy.skill.api.dynamic;
 
 import com.sucy.skill.api.CustomClass;
-import com.sucy.skill.config.ClassValues;
-import org.bukkit.configuration.ConfigurationSection;
-
-import javax.swing.tree.TreeNode;
 
 /**
  * A class that can be defined via config

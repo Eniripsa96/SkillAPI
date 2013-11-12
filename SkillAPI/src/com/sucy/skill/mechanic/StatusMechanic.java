@@ -1,10 +1,10 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
-import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 

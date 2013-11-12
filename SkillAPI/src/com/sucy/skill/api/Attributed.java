@@ -1,6 +1,5 @@
 package com.sucy.skill.api;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;

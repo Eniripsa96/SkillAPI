@@ -2,11 +2,9 @@ package com.sucy.skill.mccore;
 
 import com.rit.sucy.scoreboard.StatHolder;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.ClassAttribute;
 import com.sucy.skill.api.CustomClass;
-import com.sucy.skill.language.StatNodes;
 import com.sucy.skill.api.PlayerSkills;
-import org.bukkit.ChatColor;
+import com.sucy.skill.language.StatNodes;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,6 @@
 package com.sucy.skill.api.dynamic;
 
 import com.rit.sucy.text.TextFormatter;
-import com.sucy.skill.api.Attributed;
 import com.sucy.skill.api.util.TargetHelper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

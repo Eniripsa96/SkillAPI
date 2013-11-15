@@ -161,6 +161,7 @@ public class Mechanic {
         put("PROJECTILE", new ProjectileMechanic());
         put("PULL", new PullMechanic());
         put("PUSH", new PushMechanic());
+        put("SOUND", new SoundMechanic());
         put("STATUS", new StatusMechanic());
         put("TAUNT", new TauntMechanic());
         put("TELEPORT", new TeleportMechanic());

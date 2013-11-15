@@ -17,6 +17,7 @@ import org.bukkit.entity.SmallFireball;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -29,6 +30,7 @@ public abstract class CustomClass extends Attributed {
     private final HashMap<Class<? extends Projectile>, Integer> projectileDamage = new HashMap<Class<? extends Projectile>, Integer>();
     private final HashMap<Material, Integer> damage = new HashMap<Material, Integer>();
     private final HashMap<Integer, Integer> idDamage = new HashMap<Integer, Integer>();
+    private final HashMap<Integer, Integer> idProjectiles = new LinkedHashMap<Integer, Integer>();
 
     private final List<String> inheritance = new ArrayList<String>();
     private final List<String> skills = new ArrayList<String>();
@@ -371,6 +373,16 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
+     * Sets damage for a custom projectile using the id of the weapon that fires it
+     *
+     * @param weaponId ID of the weapon that fires the projectile
+     * @param damage   damage to set to it
+     */
+    protected void setProjectileDamage(int weaponId, int damage) {
+        idProjectiles.put(weaponId, damage);
+    }
+
+    /**
      * Gets the maximum damage dealt by a projectile
      *
      * @param type projectile type
@@ -389,6 +401,17 @@ public abstract class CustomClass extends Attributed {
         }
 
         // No damage set for the item
+        else return 0;
+    }
+
+    /**
+     * Gets the damage for a custom projectile item
+     *
+     * @param id projectile weapon ID
+     * @return   damage
+     */
+    public int getCustomDamage(int id) {
+        if (idProjectiles.containsKey(id)) return idProjectiles.get(id);
         else return 0;
     }
 
@@ -444,6 +467,8 @@ public abstract class CustomClass extends Attributed {
         config.set(ClassValues.HEALTH_BONUS, getScale(ClassAttribute.HEALTH));
         config.set(ClassValues.MANA_BASE, getBase(ClassAttribute.MANA));
         config.set(ClassValues.MANA_BONUS, getScale(ClassAttribute.MANA));
+        config.set(ClassValues.PASSIVE_MANA_GAIN, gainMana);
+        config.set(ClassValues.MANA_NAME, manaName);
     }
 
     /**

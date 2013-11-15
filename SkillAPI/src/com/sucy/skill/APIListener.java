@@ -9,6 +9,7 @@ import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.PassiveSkill;
+import com.sucy.skill.api.skill.SkillMeta;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
@@ -22,11 +23,14 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +40,8 @@ import java.util.Map;
  * <p>You should not instantiate or use this class</p>
  */
 public class APIListener implements Listener {
+
+    private static final String P_TYPE = "pType";
 
     private final SkillAPI plugin;
 
@@ -119,9 +125,16 @@ public class APIListener implements Listener {
                 if (player != null && player.getClassName() != null) {
                     CustomClass playerClass = plugin.getClass(player.getClassName());
 
+                    // Custom items get flat damages
+                    if (projectile.hasMetadata(P_TYPE)) {
+                        FixedMetadataValue metaValue = (FixedMetadataValue)projectile.getMetadata(P_TYPE).get(0);
+                        int id = metaValue.asInt();
+                        event.setDamage(playerClass.getCustomDamage(id));
+                    }
+
                     // When the default damage isn't 0, set the damage relative
                     // to the default damage to account for varied damages
-                    if (CustomClass.getDefaultDamage(projectile.getClass()) != 0) {
+                    else if (CustomClass.getDefaultDamage(projectile.getClass()) != 0) {
                         double damage = event.getDamage() * playerClass.getDamage(projectile.getClass()) / CustomClass.getDefaultDamage(projectile.getClass());
                         event.setDamage(damage < 0 ? 0 : damage);
                     }
@@ -159,6 +172,22 @@ public class APIListener implements Listener {
         }
         if (target != null) {
             event.setDamage(plugin.getStatusHolder(target).modifyDamageTaken(event.getDamage()));
+        }
+    }
+
+    /**
+     * Sets metadata for custom projectiles
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onLaunch(ProjectileLaunchEvent event) {
+        if (event.getEntity().getShooter() instanceof Player) {
+            Player player = (Player)event.getEntity().getShooter();
+            ItemStack item = player.getItemInHand();
+            if (item.getType().toString().toLowerCase().startsWith("x")) {
+                event.getEntity().setMetadata(P_TYPE, new FixedMetadataValue(plugin, item.getTypeId()));
+            }
         }
     }
 

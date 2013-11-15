@@ -4,7 +4,7 @@ import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.StatusHolder;
-import com.sucy.skill.api.dynamic.Mechanic;
+import com.sucy.skill.api.event.AttackType;
 import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
 import com.sucy.skill.api.skill.ClassSkill;
@@ -12,7 +12,6 @@ import com.sucy.skill.api.skill.PassiveSkill;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
-import com.sucy.skill.mechanic.ProjectileMechanic;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -143,14 +142,12 @@ public class APIListener implements Listener {
                 if (player != null && player.getClassName() != null) {
                     CustomClass playerClass = plugin.getClass(player.getClassName());
 
-
-
                     // Set the damage normally
                     Material mat = p.getItemInHand() == null ?
                             Material.AIR : p.getItemInHand().getType();
                     double damage = 1;
-                    if (mat != null) damage = event.getDamage() + playerClass.getDamage(mat) - CustomClass.getDefaultDamage(mat);
-                    else if (p.getItemInHand() != null) damage = Math.max(damage, playerClass.getDamage(p.getItemInHand().getTypeId()));
+                    if (mat.toString().toLowerCase().startsWith("x")) damage = Math.max(damage, playerClass.getDamage(p.getItemInHand().getTypeId()));
+                    else if (p.getItemInHand() != null) damage = event.getDamage() + playerClass.getDamage(mat) - CustomClass.getDefaultDamage(mat);
                     event.setDamage(damage);
                 }
             }
@@ -231,16 +228,19 @@ public class APIListener implements Listener {
             // Update the timer
             timers.put(damaged.getEntityId(), System.currentTimeMillis());
 
+            AttackType type = event.getDamager() instanceof Projectile ? AttackType.PROJECTILE : AttackType.MELEE;
+
             // Call an event when a player dealt damage
             if (damager instanceof Player) {
-                PlayerOnHitEvent e = new PlayerOnHitEvent((Player)damager, damaged, event.getDamage());
+
+                PlayerOnHitEvent e = new PlayerOnHitEvent((Player)damager, damaged, type, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
                 event.setDamage(e.getDamage());
             }
 
             // Call an event when a player received damage
             if (damaged instanceof Player) {
-                PlayerOnDamagedEvent e = new PlayerOnDamagedEvent((Player)damaged, damager, event.getDamage());
+                PlayerOnDamagedEvent e = new PlayerOnDamagedEvent((Player)damaged, damager, type, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
                 event.setDamage(e.getDamage());
             }

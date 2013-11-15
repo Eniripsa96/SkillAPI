@@ -38,7 +38,7 @@ public class PotionMechanic implements IMechanic {
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
         PotionEffectType potionType = PotionEffectType.values()[skill.getValue(TYPE)];
-        int duration = skill.getAttribute(DURATION, target, level);
+        int duration = skill.getAttribute(DURATION, target, level) * 20;
         int tier = skill.getAttribute(TIER, target, level);
 
         // Must have a target

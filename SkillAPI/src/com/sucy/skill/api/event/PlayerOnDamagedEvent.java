@@ -16,6 +16,7 @@ public class PlayerOnDamagedEvent extends Event {
     private Hashtable<String, Object> flags = new Hashtable<String, Object>();
     private Player player;
     private LivingEntity attacker;
+    private AttackType type;
     private double damage;
 
     /**
@@ -23,11 +24,13 @@ public class PlayerOnDamagedEvent extends Event {
      *
      * @param player player taking damage
      * @param entity mob or player damaging the player
+     * @param type   type of attack
      * @param damage amount of damage dealt
      */
-    public PlayerOnDamagedEvent(Player player, LivingEntity entity, double damage) {
+    public PlayerOnDamagedEvent(Player player, LivingEntity entity, AttackType type, double damage) {
         this.player = player;
         this.attacker = entity;
+        this.type = type;
         this.damage = damage;
     }
 
@@ -43,6 +46,13 @@ public class PlayerOnDamagedEvent extends Event {
      */
     public LivingEntity getAttacker() {
         return attacker;
+    }
+
+    /**
+     * @return type of attack that caused the damage
+     */
+    public AttackType getAttackType() {
+        return type;
     }
 
     /**

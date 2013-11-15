@@ -144,6 +144,7 @@ public class Mechanic {
     }
 
     public static final HashMap<String, IMechanic> MECHANICS = new HashMap<String, IMechanic>() {{
+        put("ATTACKMODIFIER", new AttackModifierMechanic());
         put("DAMAGE", new DamageMechanic());
         put("DAMAGEBONUS", new DamageBonusMechanic());
         put("DAMAGEPERCENT", new DamagePercentMechanic());
@@ -152,6 +153,7 @@ public class Mechanic {
         put("FIRE", new FireMechanic());
         put("HEAL", new HealMechanic());
         put("LAUNCH", new LaunchMechanic());
+        put("LIGHTNING", new LightningMechanic());
         put("MANA", new ManaMechanic());
         put("MANADAMAGE", new ManaDamageMechanic());
         put("PARTICLE", new ParticleMechanic());

@@ -137,10 +137,9 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      * @return       attribute value at the level
      */
     public int getAttribute(String key, Target target, int level) {
-        String modified = key;
-        if (!key.equals("Range") && !key.equals("Radius")) modified = this.prefix + target.getAlias(this, key);
-        else modified = target.getAlias(this, key);
-        return super.getAttribute(modified, level);
+        if (!key.equals("Range") && !key.equals("Radius")) key = this.prefix + target.getAlias(this, key);
+        else key = target.getAlias(this, key);
+        return getAttribute(key, level);
     }
 
     /**

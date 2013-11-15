@@ -21,6 +21,11 @@ public enum ParticleType {
      * Smoke effect
      */
     SMOKE (Effect.SMOKE),
+
+    /**
+     * Potion break effect
+     */
+    POTION_BREAK (Effect.POTION_BREAK)
     ;
 
     private final Effect effect;

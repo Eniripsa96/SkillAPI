@@ -1,5 +1,6 @@
 package com.sucy.skill.api.util.effects;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 
 import java.util.Random;
@@ -21,6 +22,20 @@ public class ParticleHelper {
      * @param direction direction to orientate the circle
      */
     public static void fillCircle(Location loc, ParticleType type, int radius, int amount, Direction direction) {
+        fillCircle(loc, type, radius, 0, amount, direction);
+    }
+
+    /**
+     * Randomly plays particle effects within the circle
+     *
+     * @param loc       location to center the effect around
+     * @param type      type of particle to use
+     * @param data      data value to use
+     * @param radius    radius of the circle
+     * @param amount    amount of particles to use
+     * @param direction direction to orientate the circle
+     */
+    public static void fillCircle(Location loc, ParticleType type, int data, int radius, int amount, Direction direction) {
         Location temp = loc.clone();
         int rSquared = radius * radius;
         int twoRadius = radius * 2;
@@ -51,6 +66,19 @@ public class ParticleHelper {
      * @param amount    amount of particles to use
      */
     public static void fillSphere(Location loc, ParticleType type, int radius, int amount) {
+        fillSphere(loc, type, 0, radius, amount);
+    }
+
+    /**
+     * Randomly plays particle effects within the sphere
+     *
+     * @param loc       location to center the effect around
+     * @param type      type of particle to use
+     * @param data      data value to use
+     * @param radius    radius of the sphere
+     * @param amount    amount of particles to use
+     */
+    public static void fillSphere(Location loc, ParticleType type, int data, int radius, int amount) {
         Location temp = loc.clone();
         int rSquared = radius * radius;
         int twoRadius = radius * 2;
@@ -78,6 +106,19 @@ public class ParticleHelper {
      * @param amount amount of particles to use
      */
     public static void fillHemisphere(Location loc, ParticleType type, int radius, int amount) {
+        fillHemisphere(loc, type, 0, radius, amount);
+    }
+
+    /**
+     * Randomly plays particle effects within a hemisphere
+     *
+     * @param loc    location to center the effect around
+     * @param type   type of particle to use
+     * @param data   data value to use
+     * @param radius radius of the hemisphere
+     * @param amount amount of particles to use
+     */
+    public static void fillHemisphere(Location loc, ParticleType type, int data, int radius, int amount) {
         Location temp = loc.clone();
         int rSquared = radius * radius;
         int twoRadius = radius * 2;

@@ -458,6 +458,7 @@ public class SkillAPI extends JavaPlugin {
                 skillConfig.getConfig().set(key, config.getConfigurationSection(key));
             }
         }
+        skillConfig.saveConfig();
     }
 
     /**
@@ -553,6 +554,7 @@ public class SkillAPI extends JavaPlugin {
                 classConfig.getConfig().set(key, config.getConfigurationSection(key));
             }
         }
+        classConfig.saveConfig();
     }
 
     // ----------------------------- Player Methods -------------------------------------- //

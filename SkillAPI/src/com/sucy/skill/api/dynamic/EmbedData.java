@@ -1,6 +1,7 @@
 package com.sucy.skill.api.dynamic;
 
 import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.api.Valued;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Embedded data for some mechanics
  */
-public class EmbedData {
+public class EmbedData extends Valued {
 
     private Player player;
     private PlayerSkills data;
@@ -32,14 +33,22 @@ public class EmbedData {
     }
 
     /**
+     * @return skill with the embedded effects
+     */
+    public DynamicSkill getSkill() {
+        return skill;
+    }
+
+    /**
      * Resolves the embedded skill without a target
      *
      * @param loc location the projectile hit
      */
     public void resolveNonTarget(Location loc) {
+        if (!player.isValid()) return;
         skill.prefix = "Embed ";
         for (Mechanic mechanic : skill.embedMechanics) {
-            if (!player.isValid() || mechanic.getTarget() == Target.TARGET || mechanic.getTarget() == Target.TARGET_AREA) continue;
+            if (mechanic.getTarget() == Target.TARGET || mechanic.getTarget() == Target.TARGET_AREA) continue;
             List<LivingEntity> targets;
 
             // Get the targets
@@ -61,9 +70,10 @@ public class EmbedData {
      * @param target target
      */
     public void resolveTarget(LivingEntity target) {
+        if (!player.isValid()) return;
         skill.prefix = "Embed ";
         for (Mechanic mechanic : skill.embedMechanics) {
-            if (!player.isValid() || (mechanic.getTarget() != Target.TARGET && mechanic.getTarget() != Target.TARGET_AREA)) return;
+            if (mechanic.getTarget() != Target.TARGET && mechanic.getTarget() != Target.TARGET_AREA) return;
 
             List<LivingEntity> targets;
             if (mechanic.getTarget() == Target.TARGET_AREA) targets = area(target.getLocation(), skill, data.getSkillLevel(skill.getName()));

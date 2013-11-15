@@ -415,8 +415,10 @@ public abstract class ClassSkill extends Attributed {
 
         // Attributes
         for (String attribute : getAttributeNames()) {
-            setBase(attribute, config.getInt(attribute + "-base"));
-            setScale(attribute, config.getInt(attribute + "-scale"));
+            if (config.contains(attribute)) {
+                setBase(attribute, config.getInt(attribute + "-base"));
+                setScale(attribute, config.getInt(attribute + "-scale"));
+            }
         }
 
         // Max level

@@ -7,6 +7,7 @@ import com.sucy.skill.api.dynamic.Target;
 import com.sucy.skill.api.util.effects.Direction;
 import com.sucy.skill.api.util.effects.ParticleHelper;
 import com.sucy.skill.api.util.effects.ParticleType;
+import org.bukkit.Effect;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -21,6 +22,7 @@ public class ParticleMechanic implements IMechanic {
     private static final String
             AREA = "Particle Area",
             PARTICLE = "Particle",
+            PARTICLE_DATA = "Particle Data",
             AMOUNT_BASE = "Particle Amount Base",
             AMOUNT_BONUS = "Particle Amount Bonus",
             RADIUS_BASE = "Particle Radius Base",
@@ -49,6 +51,7 @@ public class ParticleMechanic implements IMechanic {
         int particle = skill.getValue(PARTICLE);
         int area = skill.getValue(AREA);
         ParticleType type;
+        int value = skill.getValue(PARTICLE_DATA);
         if (PARTICLES.containsKey(particle)) type = PARTICLES.get(particle);
         else type = PARTICLES.get(0);
 
@@ -57,17 +60,17 @@ public class ParticleMechanic implements IMechanic {
 
             // Sphere
             if (area == 1) {
-                ParticleHelper.fillSphere(entity.getLocation(), type, radius, amount);
+                ParticleHelper.fillSphere(entity.getLocation(), type, value, radius, amount);
             }
 
             // Hemisphere
             else if (area == 2) {
-                ParticleHelper.fillHemisphere(entity.getLocation(), type, radius, amount);
+                ParticleHelper.fillHemisphere(entity.getLocation(), type, value, radius, amount);
             }
 
             // Circle
             else {
-                ParticleHelper.fillCircle(entity.getLocation(), type, radius, amount, Direction.XZ);
+                ParticleHelper.fillCircle(entity.getLocation(), type, value, radius, amount, Direction.XZ);
             }
         }
 
@@ -84,6 +87,7 @@ public class ParticleMechanic implements IMechanic {
     public void applyDefaults(DynamicSkill skill, String prefix) {
         if (!skill.isSet(AREA)) skill.setValue(AREA, 0);
         if (!skill.isSet(PARTICLE)) skill.setValue(PARTICLE, 0);
+        if (!skill.isSet(PARTICLE_DATA)) skill.setValue(PARTICLE_DATA, 0);
         if (!skill.isSet(AMOUNT_BASE)) skill.setValue(AMOUNT_BASE, 20);
         if (!skill.isSet(AMOUNT_BONUS)) skill.setValue(AMOUNT_BONUS, 0);
         if (!skill.isSet(RADIUS_BASE)) skill.setValue(RADIUS_BASE, 8);
@@ -102,5 +106,6 @@ public class ParticleMechanic implements IMechanic {
         put(0, ParticleType.SMOKE);
         put(1, ParticleType.ENDER_SIGNAL);
         put(2, ParticleType.MOBSPAWNER_FLAMES);
+        put(3, ParticleType.POTION_BREAK);
     }};
 }

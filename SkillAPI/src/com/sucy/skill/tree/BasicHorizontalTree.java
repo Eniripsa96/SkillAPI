@@ -73,6 +73,6 @@ public class BasicHorizontalTree extends SkillTree {
         }
 
         // Return the rows needed
-        return width == 0 ? 1 : width;
+        return Math.max(width, 1);
     }
 }

@@ -72,6 +72,14 @@ public class InventoryTask extends BukkitRunnable {
                                 removeArmor(player, index);
                             }
                         }
+
+                        // Class exclusion
+                        else if (colorless.matches("Excluded Class: .+")) {
+                            String name = colorless.substring(16);
+                            if (isMatchingClass(name, data.getClassName())) {
+                                removeArmor(player, index);
+                            }
+                        }
                     }
                 }
                 index++;

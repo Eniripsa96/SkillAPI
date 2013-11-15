@@ -453,32 +453,32 @@ public abstract class CustomClass extends Attributed {
     private static final HashMap<Material, Integer> defaultDamage = new HashMap<Material, Integer>() {{
 
         // Swords
-        put(Material.DIAMOND_SWORD, 7);
-        put(Material.IRON_SWORD, 6);
-        put(Material.STONE_SWORD, 5);
-        put(Material.GOLD_SWORD, 4);
-        put(Material.WOOD_SWORD, 4);
+        put(Material.DIAMOND_SWORD, 8);
+        put(Material.IRON_SWORD, 7);
+        put(Material.STONE_SWORD, 6);
+        put(Material.GOLD_SWORD, 5);
+        put(Material.WOOD_SWORD, 5);
 
         // Axes
-        put(Material.DIAMOND_AXE, 6);
-        put(Material.IRON_AXE, 5);
-        put(Material.STONE_AXE, 4);
-        put (Material.GOLD_AXE, 3);
-        put (Material.WOOD_AXE, 3);
+        put(Material.DIAMOND_AXE, 7);
+        put(Material.IRON_AXE, 6);
+        put(Material.STONE_AXE, 5);
+        put (Material.GOLD_AXE, 4);
+        put (Material.WOOD_AXE, 4);
 
         // Pickaxes
-        put (Material.DIAMOND_PICKAXE, 5);
-        put (Material.IRON_PICKAXE, 4);
-        put (Material.STONE_PICKAXE, 3);
-        put (Material.GOLD_PICKAXE, 2);
-        put (Material.WOOD_PICKAXE, 2);
+        put (Material.DIAMOND_PICKAXE, 6);
+        put (Material.IRON_PICKAXE, 5);
+        put (Material.STONE_PICKAXE, 4);
+        put (Material.GOLD_PICKAXE, 3);
+        put (Material.WOOD_PICKAXE, 3);
 
         // Shovels
-        put (Material.DIAMOND_SPADE, 4);
-        put (Material.IRON_SPADE, 3);
-        put (Material.STONE_SPADE, 2);
-        put (Material.GOLD_SPADE, 1);
-        put (Material.WOOD_SPADE, 1);
+        put (Material.DIAMOND_SPADE, 5);
+        put (Material.IRON_SPADE, 4);
+        put (Material.STONE_SPADE, 3);
+        put (Material.GOLD_SPADE, 2);
+        put (Material.WOOD_SPADE, 2);
     }};
 
     /**

@@ -35,7 +35,7 @@ public abstract class Attributed extends Valued {
     }
 
     /**
-     * Gets the value of an attribute at level 1 of the skill
+     * Gets the base value of an attribute
      *
      * @param attribute attribute name
      * @return          base value
@@ -48,7 +48,7 @@ public abstract class Attributed extends Valued {
     }
 
     /**
-     * Gets the scale for an attribute
+     * Gets the bonus for an attribute value per level
      *
      * @param attribute attribute name
      * @return          change in value per skill level (adding, can be negative value)
@@ -91,7 +91,7 @@ public abstract class Attributed extends Valued {
     }
 
     /**
-     * Adds to an attribute
+     * Adds to the base value of an attribute
      *
      * @param attribute attribute to add to
      * @param amount    amount to add

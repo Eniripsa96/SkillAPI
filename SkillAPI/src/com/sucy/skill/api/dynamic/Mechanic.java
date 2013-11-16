@@ -150,8 +150,10 @@ public class Mechanic {
         put("DAMAGEPERCENT", new DamagePercentMechanic());
         put("DAMAGEPERCENTREDUCTION", new DamagePercentReductionMechanic());
         put("DAMAGEREDUCTION", new DamageReductionMechanic());
+        put("DOT", new DOTMechanic());
         put("FIRE", new FireMechanic());
         put("HEAL", new HealMechanic());
+        put("HOT", new HOTMechanic());
         put("LAUNCH", new LaunchMechanic());
         put("LIGHTNING", new LightningMechanic());
         put("MANA", new ManaMechanic());

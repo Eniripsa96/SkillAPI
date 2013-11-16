@@ -12,7 +12,7 @@ public class DamageModifier {
     /**
      * Constructor
      *
-     * @param bonus    bonus damage
+     * @param bonus    bonus damage (negative to reduce damage)
      * @param duration modifier duration in milliseconds
      */
     public DamageModifier(int bonus, long duration) {
@@ -22,7 +22,7 @@ public class DamageModifier {
     /**
      * Constructor
      *
-     * @param multiplier damage multiplier
+     * @param multiplier damage multiplier (less than one to reduce damage)
      * @param duration   modifier duration in milliseconds
      */
     public DamageModifier(double multiplier, long duration) {
@@ -32,8 +32,8 @@ public class DamageModifier {
     /**
      * Constructor
      *
-     * @param bonus      bonus damage
-     * @param multiplier damage multiplier
+     * @param bonus      bonus damage (negative to reduce damage)
+     * @param multiplier damage multiplier (less than one to reduce damage)
      * @param duration   modifier duration in milliseconds
      */
     public DamageModifier(int bonus, double multiplier, long duration) {

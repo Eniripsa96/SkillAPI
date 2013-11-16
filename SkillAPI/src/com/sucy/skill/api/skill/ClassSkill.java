@@ -26,13 +26,39 @@ public abstract class ClassSkill extends Attributed {
     private final HashMap<String, Long> timers = new HashMap<String, Long>();
     private final String name;
 
+    /**
+     * Type of the skill, mostly just for aesthetics as it is just displayed in the skill tree
+     */
     protected SkillType type;
+
+    /**
+     * Indicator for the skill in a skill tree
+     */
     protected Material indicator;
+
+    /**
+     * Maximum level the skill can reach
+     */
     protected int maxLevel;
+
+    /**
+     * Skill that this skill requires before being able to be upgraded
+     */
     protected String skillReq;
+
+    /**
+     * Level of the required skill that is needed before this can be upgraded
+     */
     protected int skillReqLevel;
 
+    /**
+     * Description of the skill
+     */
     protected final ArrayList<String> description = new ArrayList<String>();
+
+    /**
+     * SkillAPI reference
+     */
     protected final SkillAPI api;
 
     /**
@@ -163,8 +189,9 @@ public abstract class ClassSkill extends Attributed {
     /**
      * Generates a new indicator item stack for the given skill level
      *
-     * @param level current skill level
-     * @return      indicator item stack
+     * @param player player data
+     * @param level  current skill level
+     * @return       indicator item stack
      */
     public ItemStack getIndicator(PlayerSkills player, int level) {
 
@@ -369,6 +396,26 @@ public abstract class ClassSkill extends Attributed {
      */
     public void refreshCooldown(PlayerSkills player) {
         timers.put(player.getName(), 0L);
+    }
+
+    /**
+     * Subtracts from the remaining time left on the cooldown for the player
+     *
+     * @param player  player to subtract for
+     * @param seconds seconds to reduce the cooldown by
+     */
+    public void subtractCooldown(PlayerSkills player, int seconds) {
+        timers.put(player.getName(), timers.get(player.getName()) - seconds * 1000);
+    }
+
+    /**
+     * Adds to the remaining time left on the cooldown for the player
+     *
+     * @param player  player to add to
+     * @param seconds seconds to increase the cooldown by
+     */
+    public void addCooldown(PlayerSkills player, int seconds) {
+        timers.put(player.getName(), timers.get(player.getName()) + seconds * 1000);
     }
 
     /**

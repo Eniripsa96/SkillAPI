@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * Manager of an entity's statuses
+ * <p>Status data for an entity</p>
+ * <p>Contains information for status effects and damage/defense modifiers</p>
  */
 public class StatusHolder {
 
@@ -14,7 +15,9 @@ public class StatusHolder {
     private final ArrayList<DamageModifier> defenseModifiers = new ArrayList<DamageModifier>();
 
     /**
-     * Adds a status to the holder
+     * <p>Applies a status to the holder</p>
+     * <p>If a status is already applied that has a longer duration, this does nothing</p>
+     * <p>If a status is already applied that has a shorter duration, this overwrites it</p>
      *
      * @param status   status of the holder
      * @param duration duration of the status in milliseconds
@@ -26,7 +29,8 @@ public class StatusHolder {
     }
 
     /**
-     * Adds a damage modifier to the holder
+     * <p>Adds a damage modifier to the holder</p>
+     * <p>Multiple damage modifiers stack</p>
      *
      * @param modifier modifier
      */
@@ -35,7 +39,8 @@ public class StatusHolder {
     }
 
     /**
-     * Adds a defense modifier to the holder
+     * <p>Adds a defense modifier to the holder</p>
+     * <p>Multiple defense modifiers stack</p>
      *
      * @param modifier modifier
      */
@@ -44,7 +49,7 @@ public class StatusHolder {
     }
 
     /**
-     * Checks if the holder has the status
+     * <p>Checks if the holder has the status active on them</p>
      *
      * @param status status effect
      * @return       true if contains the status, false otherwise
@@ -55,7 +60,8 @@ public class StatusHolder {
     }
 
     /**
-     * Removes a status from the holder
+     * <p>Removes a status from the holder</p>
+     * <p>If they don't have the status, this does nothing</p>
      *
      * @param status status to remove
      */
@@ -64,7 +70,8 @@ public class StatusHolder {
     }
 
     /**
-     * Gets the time left on a status applied to the holder
+     * <p>Gets the time left of a status on the holder</p>
+     * <p>If the status isn't applied, this returns 0</p>
      *
      * @param status status to check
      * @return       time remaining on the status
@@ -74,7 +81,7 @@ public class StatusHolder {
     }
 
     /**
-     * Checks statuses, removing any expired statuses
+     * <p>Checks the statuses applied to the holder, removing any expired statuses</p>
      */
     private void checkStatuses() {
         Set<Status> keys = statuses.keySet();
@@ -86,7 +93,8 @@ public class StatusHolder {
     }
 
     /**
-     * Modifies the amount of damage the holder does
+     * <p>Modifies the amount of damage dealt by the holder according to its damage modifiers</p>
+     * <p>If the holder has no damage modifiers, this does nothing</p>
      *
      * @param damage base damage dealt
      * @return       modified damage amount
@@ -96,7 +104,8 @@ public class StatusHolder {
     }
 
     /**
-     * Modifies the amount of damage the holder does
+     * <p>Modifies the amount of damage taken by the holder according to its defense modifiers</p>
+     * <p>If the holder has no defense modifiers, this does nothing</p>
      *
      * @param damage base damage dealt
      * @return       modified damage amount
@@ -106,7 +115,8 @@ public class StatusHolder {
     }
 
     /**
-     * Modifies a damage amount using modifiers
+     * <p>Modifies a damage amount using the modifier list</p>
+     * <p>If the list is empty, this does nothing</p>
      *
      * @param modifiers damage modifiers
      * @param damage    initial damage
@@ -129,7 +139,7 @@ public class StatusHolder {
     }
 
     /**
-     * Checks if any damage modifiers are expired
+     * <p>Checks if any modifiers in the list are expired, and removes them if they are</p>
      *
      * @param modifiers modifiers to check
      */

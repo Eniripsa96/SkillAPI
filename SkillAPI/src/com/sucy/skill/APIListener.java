@@ -287,7 +287,7 @@ public class APIListener implements Listener {
     }
 
     /**
-     * Loads player data on joining the game
+     * Initializes class effects when a player joins the game
      *
      * @param event event details
      */
@@ -296,33 +296,24 @@ public class APIListener implements Listener {
 
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
 
-        // If the player data doesn't exist, create a new instance
-        if (skills == null) {
-            plugin.addPlayer(new PlayerSkills(plugin, event.getPlayer().getName()));
-        }
+        // Effects when a player has a class
+        if (skills.hasClass()) {
 
-        // Otherwise, apply join effects to the data
-        else {
+            // Update the player health
+            skills.updateHealth();
 
-            // Effects when a player has a class
-            if (skills.hasClass()) {
-
-                // Update the player health
-                skills.updateHealth();
-
-                // Apply passive skills
-                for (Map.Entry<String, Integer> entry : skills.getSkills().entrySet()) {
-                    if (entry.getValue() >= 1) {
-                        ClassSkill s = plugin.getSkill(entry.getKey());
-                        if (s != null && s instanceof PassiveSkill)
-                            ((PassiveSkill) s).onInitialize(event.getPlayer(), entry.getValue());
-                    }
+            // Apply passive skills
+            for (Map.Entry<String, Integer> entry : skills.getSkills().entrySet()) {
+                if (entry.getValue() >= 1) {
+                    ClassSkill s = plugin.getSkill(entry.getKey());
+                    if (s != null && s instanceof PassiveSkill)
+                        ((PassiveSkill) s).onInitialize(event.getPlayer(), entry.getValue());
                 }
+            }
 
-                // Apply class prefixes
-                if (CoreChecker.isCoreActive()) {
-                    PrefixManager.setPrefix(skills, skills.getPrefix(), plugin.getClass(skills.getClassName()).getBraceColor());
-                }
+            // Apply class prefixes
+            if (CoreChecker.isCoreActive()) {
+                PrefixManager.setPrefix(skills, skills.getPrefix(), plugin.getClass(skills.getClassName()).getBraceColor());
             }
         }
     }
@@ -352,6 +343,7 @@ public class APIListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
         skills.stopPassiveAbilities();
+        skills.clearHealthBonuses();
         skills.applyMaxHealth(20);
     }
 

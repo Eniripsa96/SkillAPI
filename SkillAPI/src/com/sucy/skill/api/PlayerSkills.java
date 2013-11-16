@@ -35,13 +35,15 @@ public final class PlayerSkills extends Valued {
     private SkillAPI plugin;
     private String player;
     private String tree;
+    private int bonusHealth;
     private int points;
     private int level;
     private int mana;
     private int exp;
 
     /**
-     * Constructor
+     * <p>Constructor</p>
+     * <p>Do not use this</p>
      *
      * @param plugin API reference
      * @param player player name
@@ -52,7 +54,9 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Constructor
+     * <p>Constructor</p>
+     * <p>Do not use this</p>
+     *
      * @param plugin API reference
      * @param player player name
      * @param config config section to load from
@@ -114,9 +118,7 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Gets the skills the player has
-     *
-     * @return skill data
+     * @return map of the names and levels of the skills the player has
      */
     public HashMap<String, Integer> getSkills() {
         return skills;
@@ -144,14 +146,14 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * @return mana
+     * @return current mana
      */
     public int getMana() {
         return mana;
     }
 
     /**
-     * @return skill points
+     * @return current skill points
      */
     public int getPoints() {
         return points;
@@ -170,6 +172,10 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Subtracts the amount from the player's mana</p>
+     * <p>Calls a PlayerManaUseEvent before subtracting so it can
+     * be cancelled or modified</p>
+     *
      * @param amount amount of mana to use
      */
     public void useMana(int amount) {
@@ -186,6 +192,10 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Gives mana to the player</p>
+     * <p>Calls a PlayerGainManaEvent before giving the mana so it can
+     * be cancelled or modified</p>
+     *
      * @param amount amount of mana to gain
      */
     public void gainMana(int amount) {
@@ -202,7 +212,9 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Upgrades a skill to the next level, consuming skill points in the process
+     * <p>Upgrades a skill for the player, consuming skill points in the process</p>
+     * <p>If the player does not have the correct requirements for upgrading the skill
+     * (skill points, class level, skill prerequisite), this does nothing</p>
      *
      * @param skill skill to upgrade
      * @return      true if upgraded, false otherwise
@@ -253,7 +265,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Changes the player's class
+     * <p>Changes the player's class to the class with the given name</p>
+     * <p>The class name is not case-sensitive</p>
      *
      * @param className name of the target class
      */
@@ -336,30 +349,43 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Adds max health to the player
+     * <p>Adds maximum health to the player</p>
+     * <p>Bonuses provided this way do not persist through reloads and the player rejoining.
+     * Because of this, passive abilities do not need to clean up their health bonuses when stopping their effects</p>
      *
      * @param amount amount of health to give to the player
      */
     public void addMaxHealth(int amount) {
-        CustomClass c = plugin.getClass(tree);
-        if (c != null) c.addAttribute(ClassAttribute.HEALTH, amount);
+        bonusHealth += amount;
         updateHealth();
     }
 
     /**
-     * Updates the health of the player to match the class details
+     * <p>Clears all health bonuses the player has</p>
+     */
+    public void clearHealthBonuses() {
+        bonusHealth = 0;
+    }
+
+    /**
+     * <p>Updates the health of the player, applying the type of health bar the plugin settings indicates</p>
      */
     public void updateHealth() {
         if (plugin.getServer().getPlayer(player) == null) return;
         if (tree == null || plugin.oldHealthEnabled()) {
             plugin.getServer().getPlayer(player).setHealthScale(20.0);
+            applyMaxHealth(20 + bonusHealth);
         }
-        else plugin.getServer().getPlayer(player).setHealthScaled(false);
-        applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level));
+        else {
+            plugin.getServer().getPlayer(player).setHealthScaled(false);
+            applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level) + bonusHealth);
+        }
     }
 
     /**
-     * Sets the max health keeping the amount of missing health the same
+     * <p>Sets the maximum health of the player, adjusting their current health accordingly</p>
+     * <p>If the health adjustment would bring their health to or below 0, it leaves them with
+     * 1 health instead</p>
      *
      * @param amount new max health
      */
@@ -375,7 +401,7 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Stops the effects of all passive abilities
+     * <p>Stops the effects of all passive abilities for the player</p>
      */
     public void stopPassiveAbilities() {
         for (Map.Entry<String, Integer> entry : getSkills().entrySet()) {
@@ -388,7 +414,7 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * @return skill tree name
+     * @return name of the player's class or null if has no class
      */
     public String getClassName() {
         return tree;
@@ -412,7 +438,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Checks if the player has the skill
+     * <p>Checks if the player has the skill available</p>
+     * <p>The skill name is not case-sensitive</p>
      *
      * @param name skill name
      * @return     true if included in the class, false otherwise
@@ -422,7 +449,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Checks if the player has invested points in the skill
+     * <p>Checks if the player has the skill available and has invested at least one point into it</p>
+     * <p>The skill name is not case-sensitive</p>
      *
      * @param name skill name
      * @return     true if upgraded
@@ -432,7 +460,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Gets the level of the skill
+     * <p>Retrieves the level of the skill the player has unlocked</p>
+     * <p>The skill name is not case-sensitive</p>
      *
      * @param name skill name
      * @return     skill level
@@ -445,7 +474,7 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Displays the player's skill tree
+     * <p>Displays the player's skill tree</p>
      *
      * @return true if successful, false if the player doesn't have skills
      */
@@ -461,7 +490,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Binds a skill to a material
+     * <p>Binds a player's skill to the given material</p>
+     * <p>The skill name is not case-sensitive</p>
      *
      * @param material material to bind to
      * @param skill    name of skill to be bound
@@ -472,7 +502,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Gets the skill bound on a material
+     * <p>Retrieves the name of the skill bound to the given item</p>
+     * <p>If no skill is bound to the item, this returns null</p>
      *
      * @param material material to check
      * @return         bound skill or null if none
@@ -482,7 +513,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Unbinds any skill from a material
+     * <p>Unbinds a skill from the given material</p>
+     * <p>If no skill is bound to the material, this does nothing</p>
      *
      * @param material material to unbind
      */
@@ -492,7 +524,9 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Gives the player class experience
+     * <p>Awards the player experience</p>
+     * <p>A PlayerExperienceGainEvent is called beforehand so it
+     * can be cancelled or modified</p>
      *
      * @param amount amount of exp to gain
      */
@@ -519,7 +553,9 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Levels the player up the given amount of times
+     * <p>Levels the player up the amount of times</p>
+     * <p>If the player's level would exceed their class's maximum level, their level is set
+     * to that instead</p>
      *
      * @param amount amount of levels to go up
      */
@@ -563,7 +599,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Checks if the player can profess to the class
+     * <p>Checks if the player can profess into the class with the given name</p>
+     * <p>The name is not case-sensitive</p>
      *
      * @param target class to profess to
      * @return       true if able, false otherwise
@@ -577,7 +614,7 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Heals the player while considering status effects and max health
+     * <p>Heals the player the given amount, taking into account status effects and maximum health</p>
      *
      * @param amount amount to heal
      */
@@ -624,7 +661,10 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Applies a status to the player
+     * <p>Applies a status to the player</p>
+     * <p>Runs an event beforehand so it can be cancelled or modified</p>
+     * <p>This is the same as getting the status holder for the player and
+     * applying it there except for the event that is called</p>
      *
      * @param status   status to apply
      * @param duration duration of the status in seconds
@@ -640,14 +680,15 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * @return status data for the player
+     * @return the status data for the player
      */
     public StatusHolder getStatusData() {
         return getAPI().getStatusHolder(getAPI().getServer().getPlayer(player));
     }
 
     /**
-     * Removes a status from the player
+     * <p>Removes a status from the player</p>
+     * <p>This is the same as doing StatusHolder.removeStatus(status)</p>
      *
      * @param status status to remove
      */
@@ -656,7 +697,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Checks if the player is afflicted with a status
+     * <p>Checks if the player is afflicted with the given status</p>
+     * <p>This is the same as doing StatusHolder.hasStatus(status)</p>
      *
      * @param status status to check for
      * @return       true if afflicted, false otherwise
@@ -666,7 +708,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Gets the time left on a status applied to the player
+     * <p>Gets the time left on the status</p>
+     * <p>This is the same as doing StatusHolder.getTimeLeft(status)</p>
      *
      * @param status status to check
      * @return       time remaining on the status
@@ -676,9 +719,12 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Casts a skill
+     * <p>Makes the player cast the skill with the given name</p>
+     * <p>If the player is silenced or stunned this does nothing</p>
+     * <p>The skill name is not case-sensitive</p>
      *
      * @param skillName skill to cast
+     * @throws IllegalArgumentException when the skill name is invalid
      */
     public void castSkill(String skillName) {
         ClassSkill skill = plugin.getSkill(skillName);
@@ -765,7 +811,7 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * Saves the player to the config file
+     * <p>Saves the player data to the configuration section</p>
      *
      * @param config config file
      * @param path   config path

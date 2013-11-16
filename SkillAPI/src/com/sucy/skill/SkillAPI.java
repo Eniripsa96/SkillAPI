@@ -8,6 +8,7 @@ import com.sucy.skill.api.skill.SkillAttribute;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.api.util.TextSizer;
+import com.sucy.skill.api.util.effects.DOTHelper;
 import com.sucy.skill.command.ClassCommander;
 import com.sucy.skill.config.*;
 import com.sucy.skill.mccore.CoreChecker;
@@ -32,15 +33,22 @@ import java.util.regex.Pattern;
  * <p>Skill API</p>
  * <p>Developed by Steven Sucy (Eniripsa96)</p>
  * <p>Developed for the BukkitDev community</p>
+ * <br/>
+ * <p>Do not create an instance of this class, only use references
+ * provided for you through accessor methods, the SkillPlugin interface,
+ * or directly obtaining it through the PluginManager.</p>
  */
 public class SkillAPI extends JavaPlugin {
 
     // Data
-    private Hashtable<String, PlayerSkills> players = new Hashtable<String, PlayerSkills>();
-    private Hashtable<String, Integer> exp = new Hashtable<String, Integer>();
-    private Hashtable<String, ClassSkill> skills = new Hashtable<String, ClassSkill>();
-    private Hashtable<String, CustomClass> classes = new Hashtable<String, CustomClass>();
+    private final Hashtable<String, PlayerSkills> players = new Hashtable<String, PlayerSkills>();
+    private final Hashtable<String, Integer> exp = new Hashtable<String, Integer>();
+    private final Hashtable<String, ClassSkill> skills = new Hashtable<String, ClassSkill>();
+    private final Hashtable<String, CustomClass> classes = new Hashtable<String, CustomClass>();
     private final HashMap<Integer, StatusHolder> holders = new HashMap<Integer, StatusHolder>();
+
+    // Utility
+    private DOTHelper dotHelper;
 
     // Register mode
     private RegisterMode mode = RegisterMode.DONE;
@@ -70,7 +78,8 @@ public class SkillAPI extends JavaPlugin {
     // ----------------------------- Plugin Methods -------------------------------------- //
 
     /**
-     * Initializes plugin resources
+     * <p>Initializes plugin resources</p>
+     * <p>Do not call this method</p>
      */
     @Override
     public void onEnable() {
@@ -229,10 +238,12 @@ public class SkillAPI extends JavaPlugin {
         // Listeners and Commands
         new APIListener(this);
         new ClassCommander(this);
+        dotHelper = new DOTHelper(this);
     }
 
     /**
-     * Clears all plugin data after saving
+     * <p>Clears all plugin data after saving</p>
+     * <p>Do not call this method</p>
      */
     @Override
     public void onDisable() {
@@ -279,7 +290,10 @@ public class SkillAPI extends JavaPlugin {
     // ----------------------------- Data Management Methods -------------------------------------- //
 
     /**
-     * Saves player data to the config
+     * <p>Saves the data of the player with the given name</p>
+     * <p>The name is not cast-sensitive</p>
+     * <p>If no data is found for the player, nothing happens</p>
+     * <p>This does not update the config, only adds their data to the buffer</p>
      *
      * @param player player name
      */
@@ -289,10 +303,28 @@ public class SkillAPI extends JavaPlugin {
         players.get(player).save(playerConfig.getConfig(), PlayerValues.ROOT + "." + player + ".");
     }
 
+    /**
+     * <p>Forces the player configuration to save</p>
+     * <p>This does not update player data, only causes the config to save</p>
+     */
+    public void savePlayerConfig() {
+        playerConfig.saveConfig();
+    }
+
+    /**
+     * <p>Updates all player data and forces the configuration to save</p>
+     */
+    public void savePlayerData() {
+        for (String playerName : players.keySet()) {
+            savePlayer(playerName);
+        }
+        playerConfig.saveConfig();
+    }
+
     // ----------------------------- Settings Accessor Methods -------------------------------------- //
 
     /**
-     * @return tree type
+     * @return type of tree arrangement being used
      */
     public String getTreeType() {
         if (treeType == null) return "Requirement";
@@ -346,14 +378,17 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Calculates the required experience for a level
+     * <p>Calculates the required experience for a level</p>
+     * <p>Follows the format:</p>
+     * <p>exp = x * (level + y) + z * level + w</p>
+     * <p>Where x, y, z, and w are values from the config and level is the provided level</p>
      *
      * @param level level
      * @return      required exp
      */
     public int getRequiredExp(int level) {
         int value = level + y;
-        return x * value * value + z * value + w;
+        return x * value * value + z * level + w;
     }
 
     // ----------------------------- Registration methods -------------------------------------- //
@@ -448,7 +483,9 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Copies dynamic skill data from the config into the API
+     * <p>Copies dynamic skill data from the config into the API</p>
+     * <p>This must be done in SkillPlugin.registerSkills(SkillAPI) else the copied data will not be loaded
+     * and will be overwritten when the plugin is disabled.</p>
      *
      * @param config config containing dynamic skill data
      */
@@ -544,7 +581,9 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Copies dynamic skill data from the config into the API
+     * <p>Copies dynamic skill data from the config into the API</p>
+     * <p>This must be done in SkillPlugin.registerClasses(SkillAPI) else the copied data will not be loaded
+     * and will be overwritten when the plugin is disabled.</p>
      *
      * @param config config containing dynamic skill data
      */
@@ -560,28 +599,37 @@ public class SkillAPI extends JavaPlugin {
     // ----------------------------- Player Methods -------------------------------------- //
 
     /**
-     * Retrieves data for a player
+     * <p>Retrieves data for a player</p>
+     * <p>If no data is found for the player, new data is created</p>
      *
      * @param name player name
      * @return     player class data
      */
     public PlayerSkills getPlayer(String name) {
-        return players.get(name.toLowerCase());
-    }
 
-    /**
-     * Adds player data to the api
-     *
-     * @param player player data to add
-     */
-    public void addPlayer(PlayerSkills player) {
-        players.put(player.getName().toLowerCase(), player);
+        String lower = name.toLowerCase();
+
+        // If the player data doesn't exist, create a new instance
+        if (!players.containsKey(lower)) {
+            players.put(lower, new PlayerSkills(this, name));
+        }
+
+        // Return the player data
+        return players.get(lower);
     }
 
     // ----------------------------- Data Accessor Methods -------------------------------------- //
 
     /**
-     * Checks if the class with the given name is loaded
+     * @return DOTHelper used by the API
+     */
+    public DOTHelper getDOTHelper() {
+        return dotHelper;
+    }
+
+    /**
+     * <p>Checks if a class is loaded with the given name</p>
+     * <p>The name is not case-sensitive</p>
      *
      * @param name class name
      * @return     true if loaded, false otherwise
@@ -616,10 +664,12 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Gets the registered ClassSkill
+     * <p>Retrieves the skill with the given name</p>
+     * <p>If no loaded skill has the name, null is returned</p>
+     * <p>The name is not case-sensitive</p>
      *
      * @param name skill name
-     * @return     config data
+     * @return     skill reference
      */
     public ClassSkill getSkill(String name) {
         if (name == null) return null;
@@ -627,10 +677,12 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Gets the registered ClassSkill
+     * <p>Retrieves the skill with the given name</p>
+     * <p>If no loaded skill has the name, null is returned</p>
+     * <p>The name is not case-sensitive</p>
      *
      * @param name skill name
-     * @return     class skill
+     * @return     skill reference
      * @deprecated use getSkill(String) instead
      */
     @Deprecated
@@ -639,10 +691,12 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Gets the registered CustomClass
+     * <p>Retrieves the class with the given name</p>
+     * <p>If no loaded class has the name, null is returned</p>
+     * <p>The name is not case-sensitive</p>
      *
      * @param name class name
-     * @return     class
+     * @return     class reference
      */
     public CustomClass getClass(String name) {
         if (name == null) return null;
@@ -650,10 +704,12 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Gets the registered CustomClass
+     * <p>Retrieves the class with the given name</p>
+     * <p>If no loaded class has the name, null is returned</p>
+     * <p>The name is not case-sensitive</p>
      *
      * @param name class name
-     * @return     class
+     * @return     class reference
      * @deprecated use getClass(String) instead
      */
     @Deprecated
@@ -662,7 +718,8 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Checks if a skill was registered
+     * <p>Checks if a skill is loaded with the given name</p>
+     * <p>The name is not case-sensitive</p>
      *
      * @param name skill name
      * @return     true if registered, false otherwise
@@ -672,44 +729,47 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Gets the children for the skill tree
+     * <p>Retrieves the names of all children of the class with the given name</p>
+     * <p>The name is not case sensitive</p>
      *
-     * @param name tree name
-     * @return     name of all children
+     * @param name parent class name
+     * @return     names of all child classes
      */
     public ArrayList<String> getChildren(String name) {
         return getChildren(name, Bukkit.getConsoleSender());
     }
 
     /**
-     * Gets the children for the skill tree considering the player's permissions
+     * <p>Retrieves the names of all children of the class that the player has permission for</p>
+     * <p>The name is not case-sensitive</p>
      *
-     * @param tree   parent skill tree
+     * @param name   parent class name
      * @param player player to check for
-     * @return       list of available child skill trees
+     * @return       names of all available child classes
      */
-    public ArrayList<String> getChildren(String tree, Player player) {
-        return getChildren(tree, (CommandSender)player);
+    public ArrayList<String> getChildren(String name, Player player) {
+        return getChildren(name, (CommandSender)player);
     }
 
     /**
-     * Gets the children for the skill tree considering the sender's permissions
+     * <p>Retrieves the names of all children of the class that the sender has permission for</p>
+     * <p>The name is not case-sensitive</p>
      *
-     * @param tree   parent skill tree
+     * @param name   parent class name
      * @param sender sender to check permissions
-     * @return       list of available child skill trees
+     * @return       names of all available child classes
      */
-    private ArrayList<String> getChildren(String tree, CommandSender sender) {
+    private ArrayList<String> getChildren(String name, CommandSender sender) {
         ArrayList<String> children = new ArrayList<String>();
         for (CustomClass t : classes.values()) {
-            if (tree == null) {
+            if (name == null) {
                 if (t.getParent() == null && hasPermission(sender, t)) children.add(t.getName());
             }
             else {
-                if (t.getName().equalsIgnoreCase(tree)) continue;
+                if (t.getName().equalsIgnoreCase(name)) continue;
                 if (t.getParent() == null) continue;
                 if (!hasPermission(sender, t)) continue;
-                if (t.getParent().equalsIgnoreCase(tree)) {
+                if (t.getParent().equalsIgnoreCase(name)) {
                     children.add(t.getName());
                 }
             }
@@ -718,18 +778,19 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Checks if the player has permission to use the given class
+     * <p>Checks if the sender has permission to use the class</p>
      *
-     * @param player player to check for
+     * @param sender player to check for
      * @param t      class to check
      * @return       true if the player has permission, false otherwise
      */
-    public boolean hasPermission(CommandSender player, CustomClass t) {
-        return player.hasPermission(PermissionNodes.CLASS) || player.hasPermission(PermissionNodes.CLASS + "." + t.getName());
+    public boolean hasPermission(CommandSender sender, CustomClass t) {
+        return sender.hasPermission(PermissionNodes.CLASS) || sender.hasPermission(PermissionNodes.CLASS + "." + t.getName());
     }
 
     /**
-     * Retrieves the status data for an entity
+     * <p>Retrieves the status data for the entity</p>
+     * <p>If no data is found, new data is created</p>
      *
      * @param entity entity to retrieve for
      * @return       status data
@@ -742,7 +803,7 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Removes the status data for an entity
+     * <p>Clears all status data for an entity</p>
      *
      * @param entity entity to remove for
      */
@@ -813,7 +874,9 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
-     * Applies the global filters to the string
+     * <p>Applies global filters to the string</p>
+     * <p>The exact filters can be found in the configuration tutorials
+     * on the BukkitDev page</p>
      *
      * @param message message to filter
      * @return        filtered message

@@ -13,7 +13,8 @@ public abstract class Valued {
     private HashMap<String, Integer> values = new HashMap<String, Integer>();
 
     /**
-     * Gets a value from the player
+     * <p>Retrieves a set value</p>
+     * <p>If the value is not set, this returns 0</p>
      *
      * @param key value key
      * @return    value
@@ -23,7 +24,8 @@ public abstract class Valued {
     }
 
     /**
-     * Sets a value for the player
+     * <p>Sets a value</p>
+     * <p>If the value doesn't exist, it is created</p>
      *
      * @param key   value key
      * @param value value
@@ -33,7 +35,7 @@ public abstract class Valued {
     }
 
     /**
-     * Checks if the value is set
+     * <p>Checks if a value has been set</p>
      *
      * @param key value key
      * @return    true if set, false otherwise
@@ -43,7 +45,8 @@ public abstract class Valued {
     }
 
     /**
-     * Adds to a value for the player
+     * <p>Adds an amount to a value</p>
+     * <p>If the value doesn't exist, it creates the value with the amount</p>
      *
      * @param key   value key
      * @param value amount to add
@@ -53,7 +56,8 @@ public abstract class Valued {
     }
 
     /**
-     * Subtracts from a value for the player
+     * <p>Subtracts an amount from a value</p>
+     * <p>If the value doesn't exist, it creates the value with the negative amount</p>
      *
      * @param key   value key
      * @param value amount to subtract
@@ -63,27 +67,26 @@ public abstract class Valued {
     }
 
     /**
-     * Checks if the player's value has at least the deignated amount
+     * <p>Checks if the value is set with an amount of at least the provided amount</p>
+     * <p>If the value doesn't exist, it treats the value as having an amount of 0</p>
      *
-     * @param key   value key
-     * @param value amount required
-     * @return      true if has at least that much, false otherwise
+     * @param key    value key
+     * @param amount amount required
+     * @return       true if has at least that much, false otherwise
      */
-    public boolean hasValue(String key, int value) {
-        return values.get(key) >= value;
+    public boolean hasValue(String key, int amount) {
+        return values.get(key) >= amount;
     }
 
     /**
-     * Names of all values attached to this object
-     *
-     * @return value names
+     * @return names of all set values
      */
     public Set<String> getValueNames() {
         return values.keySet();
     }
 
     /**
-     * Saves values to a configuration section
+     * <p>Saves all set values to the configuration section</p>
      *
      * @param config configuration section to save to
      */
@@ -94,7 +97,8 @@ public abstract class Valued {
     }
 
     /**
-     * Loads values from a configuration section
+     * <p>Loads all values from the configuration section,
+     * overwriting any already set values if there are conflicts</p>
      *
      * @param config configuration section to load from
      */

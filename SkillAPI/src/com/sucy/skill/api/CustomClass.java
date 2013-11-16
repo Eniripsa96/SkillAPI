@@ -17,7 +17,6 @@ import org.bukkit.entity.SmallFireball;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public abstract class CustomClass extends Attributed {
     private final HashMap<Class<? extends Projectile>, Integer> projectileDamage = new HashMap<Class<? extends Projectile>, Integer>();
     private final HashMap<Material, Integer> damage = new HashMap<Material, Integer>();
     private final HashMap<Integer, Integer> idDamage = new HashMap<Integer, Integer>();
-    private final HashMap<Integer, Integer> idProjectiles = new LinkedHashMap<Integer, Integer>();
+    private final HashMap<Integer, Integer> idProjectiles = new HashMap<Integer, Integer>();
 
     private final List<String> inheritance = new ArrayList<String>();
     private final List<String> skills = new ArrayList<String>();
@@ -47,6 +46,8 @@ public abstract class CustomClass extends Attributed {
     private int maxLevel;
 
     /**
+     * Constructor
+     *
      * @param name         class name
      * @param parent       parent class
      * @param prefix       class prefix
@@ -92,14 +93,14 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * @return class prefix in case ChatAPI is enabled
+     * @return class prefix in case MCCore is enabled
      */
     public String getPrefix() {
         return prefix;
     }
 
     /**
-     * @return display name for mana
+     * @return display name for mana for the class
      */
     public String getManaName() {
         return manaName;
@@ -131,7 +132,7 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Checks if the class has the skill registered
+     * <p>Checks if the class has the skill registered</p>
      *
      * @param skill skill to check
      * @return      true if registered, false otherwise
@@ -141,7 +142,8 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Checks if the class has the skill registered
+     * <p>Checks if the class has the skill registered</p>
+     * <p>The name is not case-sensitive</p>
      *
      * @param name name of the skill to check
      * @return     true if registered, false otherwise
@@ -181,14 +183,14 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * @return list of classes this takes all skills from or null if it doesn't inherit anything
+     * @return list of the names classes this takes all skills from or an empty list if it doesn't inherit anything
      */
     public List<String> getInheritance() {
         return inheritance;
     }
 
     /**
-     * @return list of skills included in this tree outside of inheritance
+     * @return list of the names of skills included in this tree including inherited skills
      */
     public List<String> getSkills() {
         if (inheritance.size() == 0) return skills;
@@ -247,6 +249,7 @@ public abstract class CustomClass extends Attributed {
 
     /**
      * <p>Adds multiple skills to the class</p>
+     * <p>If one of the skills is already added, it is skipped</p>
      *
      * @param skills skills to add
      */
@@ -259,7 +262,7 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Updates th class data from configuration data
+     * Updates the class data from configuration data
      *
      * @param config configuration to update from
      */
@@ -303,7 +306,7 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Sets the damage for an item type
+     * <p>Sets the damage for an item type</p>
      *
      * @param mat    item type
      * @param damage damage dealt
@@ -313,7 +316,8 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Sets damage for an item ID
+     * <p>Sets damage for an item ID</p>
+     * <p>Primarily to be used with custom items</p>
      *
      * @param matId  item ID
      * @param damage damage dealt

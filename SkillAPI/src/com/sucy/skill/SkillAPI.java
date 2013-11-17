@@ -9,6 +9,7 @@ import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.api.util.effects.DOTHelper;
+import com.sucy.skill.click.ClickListener;
 import com.sucy.skill.command.ClassCommander;
 import com.sucy.skill.config.*;
 import com.sucy.skill.mccore.CoreChecker;
@@ -68,6 +69,8 @@ public class SkillAPI extends JavaPlugin {
     private boolean mana;
     private boolean reset;
     private boolean oldHealth;
+    private boolean levelBar;
+    private boolean clickCombo;
     private int startingPoints;
     private int pointsPerLevel;
     private int x;
@@ -106,6 +109,8 @@ public class SkillAPI extends JavaPlugin {
         startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path(), 1);
         pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path(), 1);
         oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path(), false);
+        levelBar = getConfig().getBoolean(SettingValues.USE_LEVEL_BAR.path(), false);
+        clickCombo = getConfig().getBoolean(SettingValues.USE_CLICK_COMBOS.path(), false);
 
         // Make sure dynamic files are created
         if (!skillConfig.getConfigFile().exists()) skillConfig.saveConfig();
@@ -238,6 +243,7 @@ public class SkillAPI extends JavaPlugin {
         // Listeners and Commands
         new APIListener(this);
         new ClassCommander(this);
+        if (clickCombo) new ClickListener(this);
         dotHelper = new DOTHelper(this);
     }
 
@@ -378,9 +384,23 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * @return whether or not the level bar is being used
+     */
+    public boolean usingLevelBar() {
+        return levelBar;
+    }
+
+    /**
+     * @return whether or not click combos are being used
+     */
+    public boolean usingClickCombos() {
+        return clickCombo;
+    }
+
+    /**
      * <p>Calculates the required experience for a level</p>
      * <p>Follows the format:</p>
-     * <p>exp = x * (level + y) + z * level + w</p>
+     * <p>exp = x * (level + y) * (level + y) + z * level + w</p>
      * <p>Where x, y, z, and w are values from the config and level is the provided level</p>
      *
      * @param level level

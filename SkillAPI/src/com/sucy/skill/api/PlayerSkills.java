@@ -1,5 +1,6 @@
 package com.sucy.skill.api;
 
+import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.skill.*;
@@ -51,6 +52,9 @@ public final class PlayerSkills extends Valued {
     public PlayerSkills(SkillAPI plugin, String player) {
         this.plugin = plugin;
         this.player = player;
+        this.level = 1;
+        this.exp = 0;
+        this.points = plugin.getStartingPoints();
     }
 
     /**
@@ -115,6 +119,9 @@ public final class PlayerSkills extends Valued {
                 binds.put(Material.getMaterial(bind), bindConfig.getString(bind));
             }
         }
+
+        // Level bar
+        updateLevelBar();
     }
 
     /**
@@ -295,6 +302,7 @@ public final class PlayerSkills extends Valued {
             if (CoreChecker.isCoreActive())
                 PrefixManager.clearPrefix(player);
             updateHealth();
+            updateLevelBar();
 
             plugin.getServer().getPluginManager().callEvent(
                     new PlayerClassChangeEvent(this, plugin.getClass(prevTree), null));
@@ -344,6 +352,7 @@ public final class PlayerSkills extends Valued {
             PrefixManager.setPrefix(this, tree.getPrefix(), tree.getBraceColor());
 
         updateHealth();
+        updateLevelBar();
         plugin.getServer().getPluginManager().callEvent(
                 new PlayerClassChangeEvent(this, plugin.getClass(prevTree), plugin.getClass(className)));
     }
@@ -550,6 +559,7 @@ public final class PlayerSkills extends Valued {
 
         // Level the player up
         if (levels > 0) levelUp(levels);
+        else updateLevelBar();
     }
 
     /**
@@ -596,6 +606,8 @@ public final class PlayerSkills extends Valued {
         // Call the event
         plugin.getServer().getPluginManager().callEvent(
                 new PlayerLevelUpEvent(this));
+
+        updateLevelBar();
     }
 
     /**
@@ -635,6 +647,30 @@ public final class PlayerSkills extends Valued {
             if (health > p.getMaxHealth()) health = p.getMaxHealth();
         if (health < 0) health = 0;
         p.setHealth(health);
+    }
+
+    /**
+     * Updates the level bar for the player
+     */
+    public void updateLevelBar() {
+        Player player = plugin.getServer().getPlayer(this.player);
+
+        // Must be online with permission while the plugin is using level bars
+        if (player == null || !player.hasPermission(PermissionNodes.BASIC) || !plugin.usingLevelBar()) {
+            return;
+        }
+
+        // No class leaves the level bar empty
+        if (!hasClass()) {
+            player.setLevel(0);
+            player.setExp(0);
+        }
+
+        // A class displays the class level and experience progress
+        else {
+            player.setLevel(level);
+            player.setExp((float)exp / getRequiredExp());
+        }
     }
 
     /**

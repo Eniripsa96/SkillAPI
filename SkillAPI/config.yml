@@ -18,6 +18,8 @@ starting-points: 1
 points-per-level: 1
 players-per-check: 1
 old-health-bar: false
+use-level-bar: false
+use-click-combos: false
 exp-formula:
   x: 1
   y: 4

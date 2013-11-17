@@ -2,6 +2,7 @@ package com.sucy.skill.api.skill;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Attributed;
+import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.config.SkillValues;
 import com.sucy.skill.language.SkillNodes;
@@ -195,6 +196,10 @@ public abstract class ClassSkill extends Attributed {
      */
     public ItemStack getIndicator(PlayerSkills player, int level) {
 
+        // No indicator for players without a class
+        if (!player.hasClass()) return null;
+
+        CustomClass c = getAPI().getClass(player.getClassName());
         List<String> layout = api.getMessages(SkillNodes.LAYOUT, false);
         boolean first = true;
 
@@ -330,6 +335,12 @@ public abstract class ClassSkill extends Attributed {
                 // Anything else appends to the lore
                 else lore.add(result);
             }
+        }
+
+        // Click string at the bottom
+        if (api.usingClickCombos() && (this instanceof SkillShot || this instanceof TargetSkill)) {
+            lore.add("");
+            lore.add(c.getClickString(this));
         }
 
         meta.setLore(lore);

@@ -2,7 +2,10 @@ package com.sucy.skill.api;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skill.ClassSkill;
+import com.sucy.skill.api.skill.SkillShot;
+import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.api.util.TextFormatter;
+import com.sucy.skill.click.MouseClick;
 import com.sucy.skill.config.ClassValues;
 import com.sucy.skill.language.StatNodes;
 import com.sucy.skill.tree.*;
@@ -208,6 +211,71 @@ public abstract class CustomClass extends Attributed {
             }
         }
         return list;
+    }
+
+    /**
+     * Gets a skill from clicks
+     *
+     * @param clicks mouse clicks
+     * @return       skill for the combo or null if not found
+     */
+    public ClassSkill getSkill(MouseClick ... clicks) {
+
+        // Get the desired index
+        int index = 0;
+        for (int i = 0; i < 4; i++) {
+            if (clicks[i] == MouseClick.RIGHT) {
+                index += 1 << i;
+            }
+        }
+
+        // Get the correlating skill
+        int current = 1;
+        for (String skill : getSkills()) {
+            ClassSkill s = api.getSkill(skill);
+            if ((s instanceof SkillShot || s instanceof TargetSkill) && index == current++) {
+                return s;
+            }
+        }
+
+        // No skill found
+        return null;
+    }
+
+    /**
+     * Gets the click string for the skill
+     *
+     * @param skill skill to get it for
+     * @return      click string
+     */
+    public String getClickString(ClassSkill skill) {
+
+        // Get the index
+        int index = 0;
+        int current = 0;
+        for (String name : getSkills()) {
+            ClassSkill s = api.getSkill(name);
+            if (s != null && (s instanceof SkillShot || s instanceof TargetSkill)) {
+                current++;
+                if (name.equalsIgnoreCase(skill.getName())) {
+                    index = current;
+                }
+            }
+        }
+
+        // No click details
+        if (index == 0) return "";
+
+        // Get the result
+        String result = "";
+        int prevIndex = index;
+        for (int i = 0; i < 4; i++) {
+            int click = index % 2;
+            index /= 2;
+            result += ChatColor.GOLD + (click == 0 ? "Left" : "Right") + ChatColor.GRAY + ", ";
+        }
+
+        return result.substring(0, result.length() - 4);
     }
 
     /**

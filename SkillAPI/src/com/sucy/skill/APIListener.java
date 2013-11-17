@@ -5,11 +5,11 @@ import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.event.AttackType;
+import com.sucy.skill.api.event.PlayerExperienceGainEvent;
 import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.PassiveSkill;
-import com.sucy.skill.api.skill.SkillMeta;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
@@ -25,10 +25,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -65,6 +62,12 @@ public class APIListener implements Listener {
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+
+        // Must have permission
+        if (!player.hasPermission(PermissionNodes.BASIC)) {
+            return;
+        }
+
         PlayerSkills data = plugin.getPlayer(player.getName());
         Material heldItem = player.getItemInHand().getType();
 
@@ -117,6 +120,11 @@ public class APIListener implements Listener {
         if (damager instanceof Player) {
 
             Player p = (Player)damager;
+
+            // Requires permission
+            if (!p.hasPermission(PermissionNodes.BASIC)) {
+                return;
+            }
 
             // Projectile damage
             if (event.getDamager() instanceof Projectile) {
@@ -262,14 +270,29 @@ public class APIListener implements Listener {
             // Call an event when a player dealt damage
             if (damager instanceof Player) {
 
-                PlayerOnHitEvent e = new PlayerOnHitEvent((Player)damager, damaged, type, event.getDamage());
+                Player p = (Player)damager;
+
+                // Requires permission
+                if (!p.hasPermission(PermissionNodes.BASIC)) {
+                    return;
+                }
+
+                PlayerOnHitEvent e = new PlayerOnHitEvent(p, damaged, type, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
                 event.setDamage(e.getDamage());
             }
 
             // Call an event when a player received damage
             if (damaged instanceof Player) {
-                PlayerOnDamagedEvent e = new PlayerOnDamagedEvent((Player)damaged, damager, type, event.getDamage());
+
+                Player p = (Player)damaged;
+
+                // Requires permission
+                if (!p.hasPermission(PermissionNodes.BASIC)) {
+                    return;
+                }
+
+                PlayerOnDamagedEvent e = new PlayerOnDamagedEvent(p, damager, type, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
                 event.setDamage(e.getDamage());
             }
@@ -295,6 +318,9 @@ public class APIListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
 
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
+
+        // Level bar
+        skills.updateLevelBar();
 
         // Effects when a player has a class
         if (skills.hasClass()) {
@@ -354,7 +380,7 @@ public class APIListener implements Listener {
      */
     @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDeath(EntityDeathEvent event) {
-        if (event.getEntity().getKiller() != null) {
+        if (event.getEntity().getKiller() != null && event.getEntity().getKiller().hasPermission(PermissionNodes.BASIC)) {
             PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller().getName());
             player.giveExp(plugin.getExp(getName(event.getEntity())));
         }
@@ -416,6 +442,18 @@ public class APIListener implements Listener {
             else if (event.isShiftClick()) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    /**
+     * Updates level bar when the player's enchanting experience changes
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onExpChange(PlayerExpChangeEvent event) {
+        if (plugin.usingLevelBar() && event.getPlayer().hasPermission(PermissionNodes.BASIC)) {
+            event.setAmount(0);
         }
     }
 

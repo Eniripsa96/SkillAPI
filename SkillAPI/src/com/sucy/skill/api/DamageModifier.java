@@ -46,7 +46,7 @@ public class DamageModifier {
      * @return whether or not the modifier is expired
      */
     public boolean isExpired() {
-        return System.currentTimeMillis() < duration;
+        return System.currentTimeMillis() > duration;
     }
 
     /**

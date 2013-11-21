@@ -5,7 +5,6 @@ import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.event.AttackType;
-import com.sucy.skill.api.event.PlayerExperienceGainEvent;
 import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
 import com.sucy.skill.api.skill.ClassSkill;
@@ -20,10 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -39,6 +35,8 @@ import java.util.Map;
 public class APIListener implements Listener {
 
     private static final String P_TYPE = "pType";
+    private static final String S_TYPE = "sType";
+    private static final int SPAWNER = 0, EGG = 1;
 
     private final SkillAPI plugin;
 
@@ -374,12 +372,32 @@ public class APIListener implements Listener {
     }
 
     /**
+     * Marks spawned entities with how they spawned to block experience from certain methods
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onSpawn(CreatureSpawnEvent event) {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+            event.getEntity().setMetadata(S_TYPE, new FixedMetadataValue(plugin, SPAWNER));
+        }
+        else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) {
+            event.getEntity().setMetadata(S_TYPE, new FixedMetadataValue(plugin, EGG));
+        }
+    }
+
+    /**
      * Awards experience for killing a player
      *
      * @param event event details
      */
     @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDeath(EntityDeathEvent event) {
+        if (event.getEntity().hasMetadata(S_TYPE)) {
+            int value = event.getEntity().getMetadata(S_TYPE).get(0).asInt();
+            if (value == SPAWNER && plugin.blockingSpawnerExp()) return;
+            else if (value == EGG && plugin.blockingEggExp()) return;
+        }
         if (event.getEntity().getKiller() != null && event.getEntity().getKiller().hasPermission(PermissionNodes.BASIC)) {
             PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller().getName());
             player.giveExp(plugin.getExp(getName(event.getEntity())));

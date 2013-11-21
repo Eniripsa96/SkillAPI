@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class StatusHolder {
 
-    private final HashMap<Status, Long> statuses = new HashMap<Status, Long>();
+    private final HashMap<IStatus, Long> statuses = new HashMap<IStatus, Long>();
     private final ArrayList<DamageModifier> damageModifiers = new ArrayList<DamageModifier>();
     private final ArrayList<DamageModifier> defenseModifiers = new ArrayList<DamageModifier>();
 
@@ -22,7 +22,7 @@ public class StatusHolder {
      * @param status   status of the holder
      * @param duration duration of the status in milliseconds
      */
-    public void addStatus(Status status, long duration) {
+    public void addStatus(IStatus status, long duration) {
         duration += System.currentTimeMillis();
         if (statuses.containsKey(status) && statuses.get(status) >= duration) return;
         statuses.put(status, duration);
@@ -54,7 +54,7 @@ public class StatusHolder {
      * @param status status effect
      * @return       true if contains the status, false otherwise
      */
-    public boolean hasStatus(Status status) {
+    public boolean hasStatus(IStatus status) {
         checkStatuses();
         return statuses.containsKey(status);
     }
@@ -65,7 +65,7 @@ public class StatusHolder {
      *
      * @param status status to remove
      */
-    public void removeStatus(Status status) {
+    public void removeStatus(IStatus status) {
         statuses.remove(status);
     }
 
@@ -76,7 +76,7 @@ public class StatusHolder {
      * @param status status to check
      * @return       time remaining on the status
      */
-    public int getTimeLeft(Status status) {
+    public int getTimeLeft(IStatus status) {
         return statuses.containsKey(status) ? Math.max(0, (int) (statuses.get(status) - System.currentTimeMillis() + 999) / 1000) : 0;
     }
 
@@ -84,8 +84,8 @@ public class StatusHolder {
      * <p>Checks the statuses applied to the holder, removing any expired statuses</p>
      */
     private void checkStatuses() {
-        Set<Status> keys = statuses.keySet();
-        for (Status status : keys) {
+        Set<IStatus> keys = statuses.keySet();
+        for (IStatus status : keys) {
             if (statuses.get(status) < System.currentTimeMillis()) {
                 statuses.remove(status);
             }

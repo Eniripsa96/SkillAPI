@@ -66,6 +66,16 @@ public enum SettingValues {
     USE_CLICK_COMBOS,
 
     /**
+     * Whether or not to block experience gain from mob spawners
+     */
+    BLOCK_MOB_SPAWNER_EXP,
+
+    /**
+     * Whether or not to block experience gain from mob eggs
+     */
+    BLOCK_MOB_EGG_EXP,
+
+    /**
      * Experience yield for kills
      */
     KILLS,

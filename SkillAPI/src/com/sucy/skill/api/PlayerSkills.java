@@ -630,7 +630,7 @@ public final class PlayerSkills extends Valued {
      *
      * @param amount amount to heal
      */
-    public void heal(int amount) {
+    public void heal(double amount) {
         if (hasStatus(Status.CURSE)) amount *= -1;
         if (hasStatus(Status.INVINCIBLE) && amount < 0) return;
 
@@ -705,7 +705,7 @@ public final class PlayerSkills extends Valued {
      * @param status   status to apply
      * @param duration duration of the status in seconds
      */
-    public void applyStatus(Status status, int duration) {
+    public void applyStatus(IStatus status, int duration) {
 
         PlayerStatusEvent event = new PlayerStatusEvent(this, status, duration);
         plugin.getServer().getPluginManager().callEvent(event);
@@ -728,7 +728,7 @@ public final class PlayerSkills extends Valued {
      *
      * @param status status to remove
      */
-    public void removeStatus(Status status) {
+    public void removeStatus(IStatus status) {
         getStatusData().removeStatus(status);
     }
 
@@ -739,7 +739,7 @@ public final class PlayerSkills extends Valued {
      * @param status status to check for
      * @return       true if afflicted, false otherwise
      */
-    public boolean hasStatus(Status status) {
+    public boolean hasStatus(IStatus status) {
         return getTimeLeft(status) > 0;
     }
 
@@ -750,7 +750,7 @@ public final class PlayerSkills extends Valued {
      * @param status status to check
      * @return       time remaining on the status
      */
-    public int getTimeLeft(Status status) {
+    public int getTimeLeft(IStatus status) {
         return getStatusData().getTimeLeft(status);
     }
 

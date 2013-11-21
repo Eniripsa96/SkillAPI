@@ -1,7 +1,7 @@
 package com.sucy.skill.api.event;
 
+import com.sucy.skill.api.IStatus;
 import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.api.Status;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -14,7 +14,7 @@ public class PlayerStatusEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private PlayerSkills player;
     private boolean cancelled;
-    private Status status;
+    private IStatus status;
     private double duration;
 
     /**
@@ -24,7 +24,7 @@ public class PlayerStatusEvent extends Event implements Cancellable {
      * @param status     status being applied
      * @param duration   duration of the status in seconds
      */
-    public PlayerStatusEvent(PlayerSkills playerData, Status status, int duration) {
+    public PlayerStatusEvent(PlayerSkills playerData, IStatus status, int duration) {
         this.player = playerData;
         this.duration = duration;
         this.status = status;
@@ -41,7 +41,7 @@ public class PlayerStatusEvent extends Event implements Cancellable {
     /**
      * @return status being applied
      */
-    public Status getStatus() {
+    public IStatus getStatus() {
         return status;
     }
 

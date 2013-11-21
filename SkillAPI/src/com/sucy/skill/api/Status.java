@@ -3,7 +3,7 @@ package com.sucy.skill.api;
 /**
  * Statuses able to be applied to a player
  */
-public enum Status {
+public enum Status implements IStatus {
 
     /**
      * Unable to move, cast skills, or deal auto-attack damage

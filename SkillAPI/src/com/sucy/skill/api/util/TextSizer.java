@@ -1,6 +1,5 @@
 package com.sucy.skill.api.util;
 
-import com.rit.sucy.text.TextAlignment;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;

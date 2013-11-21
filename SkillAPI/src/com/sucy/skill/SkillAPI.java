@@ -1,12 +1,7 @@
 package com.sucy.skill;
 
 import com.sucy.skill.api.*;
-import com.sucy.skill.api.dynamic.DynamicClass;
-import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.api.skill.SkillAttribute;
-import com.sucy.skill.api.skill.SkillShot;
-import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.api.util.effects.DOTHelper;
 import com.sucy.skill.click.ClickListener;
@@ -22,8 +17,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -44,15 +37,11 @@ public class SkillAPI extends JavaPlugin {
     // Data
     private final Hashtable<String, PlayerSkills> players = new Hashtable<String, PlayerSkills>();
     private final Hashtable<String, Integer> exp = new Hashtable<String, Integer>();
-    private final Hashtable<String, ClassSkill> skills = new Hashtable<String, ClassSkill>();
-    private final Hashtable<String, CustomClass> classes = new Hashtable<String, CustomClass>();
     private final HashMap<Integer, StatusHolder> holders = new HashMap<Integer, StatusHolder>();
 
     // Utility
+    private RegistrationManager registration;
     private DOTHelper dotHelper;
-
-    // Register mode
-    private RegisterMode mode = RegisterMode.DONE;
 
     // Tasks
     private InventoryTask invTask;
@@ -61,8 +50,6 @@ public class SkillAPI extends JavaPlugin {
     // Configurations
     private Config playerConfig;
     private Config languageConfig;
-    private Config skillConfig;
-    private Config classConfig;
 
     // Settings
     private String treeType;
@@ -71,6 +58,8 @@ public class SkillAPI extends JavaPlugin {
     private boolean oldHealth;
     private boolean levelBar;
     private boolean clickCombo;
+    private boolean blockSpawnerExp;
+    private boolean blockEggExp;
     private int startingPoints;
     private int pointsPerLevel;
     private int x;
@@ -90,8 +79,6 @@ public class SkillAPI extends JavaPlugin {
         reloadConfig();
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
-        skillConfig = new Config(this, "dynamic/skills");
-        classConfig = new Config(this, "dynamic/classes");
         languageConfig.saveDefaultConfig();
 
         // Make sure default config values are set
@@ -111,43 +98,8 @@ public class SkillAPI extends JavaPlugin {
         oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path(), false);
         levelBar = getConfig().getBoolean(SettingValues.USE_LEVEL_BAR.path(), false);
         clickCombo = getConfig().getBoolean(SettingValues.USE_CLICK_COMBOS.path(), false);
-
-        // Make sure dynamic files are created
-        if (!skillConfig.getConfigFile().exists()) skillConfig.saveConfig();
-        if (!classConfig.getConfigFile().exists()) classConfig.saveConfig();
-
-        // Request skills first
-        mode = RegisterMode.SKILL;
-        for (Plugin plugin : getServer().getPluginManager().getPlugins()) {
-            if (plugin instanceof SkillPlugin) {
-                ((SkillPlugin) plugin).registerSkills(this);
-            }
-        }
-
-        // Load dynamic skills
-        for (String key : skillConfig.getConfig().getKeys(false)) {
-            if (!skills.containsKey(key.toLowerCase())) {
-                skills.put(key.toLowerCase(), new DynamicSkill(key));
-            }
-        }
-
-        // Register classes after
-        mode = RegisterMode.CLASS;
-        for (Plugin plugin : getServer().getPluginManager().getPlugins()) {
-            if (plugin instanceof SkillPlugin) {
-                ((SkillPlugin) plugin).registerClasses(this);
-            }
-        }
-
-        // Load dynamic classes
-        for (String key : classConfig.getConfig().getKeys(false)) {
-            if (!classes.containsKey(key.toLowerCase())) {
-                classes.put(key.toLowerCase(), new DynamicClass(key));
-            }
-        }
-
-        // Done registering everything
-        mode = RegisterMode.DONE;
+        blockSpawnerExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_SPAWNER_EXP.path(), true);
+        blockEggExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_EGG_EXP.path(), true);
 
         // Experience formula
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
@@ -155,6 +107,10 @@ public class SkillAPI extends JavaPlugin {
         y = formula.getInt("y");
         z = formula.getInt("z");
         w = formula.getInt("w");
+
+        // Register classes and skills
+        registration = new RegistrationManager(this);
+        registration.initialize();
 
         // Set up the mana task
         int manaFreq = getConfig().getInt(SettingValues.MANA_GAIN_FREQ.path());
@@ -170,60 +126,6 @@ public class SkillAPI extends JavaPlugin {
         for (String mob : section.getKeys(false)) {
             exp.put(mob, section.getInt(mob));
         }
-
-        // Load skill data
-        for (ClassSkill skill : skills.values()) {
-            try {
-                if (skill instanceof DynamicSkill) {
-                    skill.update(skillConfig.getConfig().getConfigurationSection(skill.getName()));
-                }
-                else skill.update(new Config(this, "skill\\" + skill.getName()).getConfig());
-            }
-            catch (Exception e) {
-                getLogger().severe("Failed to load skill: " + skill.getName());
-                e.printStackTrace();
-            }
-        }
-
-        // Load skill tree data
-        for (CustomClass tree : classes.values()) {
-            if (tree instanceof DynamicClass) {
-                tree.update(classConfig.getConfig().getConfigurationSection(tree.getName()));
-            }
-            else tree.update(new Config(this, "class\\" + tree.getName()).getConfig());
-        }
-
-        // Arrange skill trees
-        List<CustomClass> classList = new ArrayList<CustomClass>(this.classes.values());
-        for (CustomClass tree : classList) {
-            try {
-                tree.getTree().arrange();
-            }
-            catch (Exception ex) {
-                getLogger().severe("Failed to arrange skill tree for the class " + tree.getName() + " - " + ex.getMessage());
-                classes.remove(tree.getName().toLowerCase());
-            }
-        }
-
-        // Save dynamic skills
-        for (Map.Entry<String, ClassSkill> entry : skills.entrySet()) {
-            if (entry.getValue() instanceof DynamicSkill) {
-                DynamicSkill skill = (DynamicSkill)entry.getValue();
-                skill.save(skillConfig.getConfig().createSection(skill.getName()));
-            }
-        }
-        skillConfig.saveConfig();
-
-        // Save dynamic classes
-        for (Map.Entry<String, CustomClass> entry : classes.entrySet()) {
-            if (entry.getValue() instanceof DynamicClass) {
-                DynamicClass c = (DynamicClass)entry.getValue();
-                c.save(classConfig.getConfig().createSection(c.getName()));
-            }
-        }
-        classConfig.saveConfig();
-
-        getLogger().info("Loaded " + skills.size() + " skills and " + classes.size() + " skill trees");
 
         // Load player data
         if (playerConfig.getConfig().contains(PlayerValues.ROOT) && playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false) != null) {
@@ -287,8 +189,7 @@ public class SkillAPI extends JavaPlugin {
             PrefixManager.clearAll();
 
         // Clear all data
-        skills.clear();
-        classes.clear();
+        registration.clearData();
         exp.clear();
         players.clear();
     }
@@ -398,6 +299,20 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * @return whether or not the experience from mob spawners is being blocked
+     */
+    public boolean blockingSpawnerExp() {
+        return blockSpawnerExp;
+    }
+
+    /**
+     * @return whether or not the experience from mob eggs is being blocked
+     */
+    public boolean blockingEggExp() {
+        return blockEggExp;
+    }
+
+    /**
      * <p>Calculates the required experience for a level</p>
      * <p>Follows the format:</p>
      * <p>exp = x * (level + y) * (level + y) + z * level + w</p>
@@ -421,73 +336,7 @@ public class SkillAPI extends JavaPlugin {
      * @param skill skill to add
      */
     public void addSkill(ClassSkill skill) {
-
-        if (mode != RegisterMode.SKILL) throw new IllegalStateException("Cannot register skills outside of the registerSkills method");
-
-        // Null names are not allowed
-        if (skill.getName() == null) {
-            getLogger().severe("Unable to register skill - " + skill.getClass().getName() + " - null name");
-            return;
-        }
-
-        // Don't allow duplicate names
-        else if (skills.containsKey(skill.getName().toLowerCase())) {
-            getLogger().severe("Duplicate skill names detected! - " + skill.getName());
-            return;
-        }
-
-        // Make sure the right attributes are there
-        skill.checkDefault(SkillAttribute.LEVEL, 1, 0);
-        skill.checkDefault(SkillAttribute.COST, 1, 0);
-        if (skill instanceof SkillShot || skill instanceof TargetSkill) {
-            skill.checkDefault(SkillAttribute.MANA, 0, 0);
-            skill.checkDefault(SkillAttribute.COOLDOWN, 0, 0);
-            if (skill instanceof TargetSkill) {
-                skill.checkDefault(SkillAttribute.RANGE, 6, 0);
-            }
-        }
-
-        // Detect if default values are needed
-        Config configFile = new Config(this, "skill\\" + skill.getName());
-        ConfigurationSection config = configFile.getConfig();
-        boolean neededOnly = config.getKeys(false).size() != 0;
-
-        // Save default values
-        try {
-            if (!config.contains(SkillValues.MAX_LEVEL))
-                config.set(SkillValues.MAX_LEVEL, skill.getMaxLevel() < 1 ? 1 : skill.getMaxLevel());
-            if (!config.contains(SkillValues.INDICATOR))
-                config.set(SkillValues.INDICATOR, skill.getIndicator().name());
-            if (skill.getSkillReq() != null && !neededOnly) {
-                config.set(SkillValues.SKILL_REQ, skill.getSkillReq());
-                config.set(SkillValues.SKILL_REQ_LEVEL, skill.getSkillReqLevel());
-            }
-            for (String attribute : skill.getAttributeNames()) {
-                if (!config.contains(attribute + "-base"))
-                    config.set(attribute + "-base", skill.getBase(attribute));
-                if (!config.contains(attribute + "-scale"))
-                    config.set(attribute + "-scale", skill.getScale(attribute));
-            }
-            if (!config.contains(SkillValues.DESCRIPTION)) {
-                if (skill.getDescription() == null)
-                    config.set(SkillValues.DESCRIPTION, new ArrayList<String>());
-                else config.set(SkillValues.DESCRIPTION, skill.getDescription());
-            }
-
-            // Add it to the list
-            skills.put(skill.getName().toLowerCase(), skill);
-            configFile.saveConfig();
-
-            // Register any listeners for skills
-            if (skill instanceof Listener) {
-                Listener listener = (Listener)skill;
-                getServer().getPluginManager().registerEvents(listener, this);
-            }
-        }
-        catch (Exception e) {
-            getLogger().severe("Failed to register skill: " + skill.getName() + " - invalid returned values");
-            config.set(SkillValues.ROOT + "." + skill.getName(), null);
-        }
+        registration.addSkill(skill);
     }
 
     /**
@@ -498,8 +347,7 @@ public class SkillAPI extends JavaPlugin {
      * @param skills skills to add
      */
     public void addSkills(ClassSkill ... skills) {
-        for (ClassSkill skill : skills)
-            addSkill(skill);
+        registration.addSkills(skills);
     }
 
     /**
@@ -510,12 +358,7 @@ public class SkillAPI extends JavaPlugin {
      * @param config config containing dynamic skill data
      */
     public void loadDynamicSkills(ConfigurationSection config) {
-        for (String key : config.getKeys(false)) {
-            if (!skillConfig.getConfig().contains(key)) {
-                skillConfig.getConfig().set(key, config.getConfigurationSection(key));
-            }
-        }
-        skillConfig.saveConfig();
+        registration.loadDynamicSkills(config);
     }
 
     /**
@@ -526,65 +369,7 @@ public class SkillAPI extends JavaPlugin {
      * @param customClass class to add
      */
     public void addClass(CustomClass customClass) {
-
-        if (mode != RegisterMode.CLASS) throw new IllegalStateException("Cannot register classes outside of the registerClasses method");
-
-        // Validate the name
-        if (customClass.getName() == null) {
-            getLogger().severe("Could not register class - " + customClass.getClass().getName() + " - null name");
-            return;
-        }
-
-        // Don't allow duplicate names
-        else if (classes.containsKey(customClass.getName().toLowerCase())) {
-            getLogger().severe("Duplicate class names detected! - " + customClass.getName());
-            return;
-        }
-
-        // Make sure the class has the right attributes
-        customClass.checkDefault(ClassAttribute.HEALTH, 20, 0);
-        customClass.checkDefault(ClassAttribute.MANA, 100, 0);
-
-        // Detect if default values are needed
-        Config configFile = new Config(this, "class\\" + customClass.getName());
-        ConfigurationSection config = configFile.getConfig();
-        boolean neededOnly = config.getKeys(false).size() != 0;
-
-        // Save values to config
-        try {
-            if (!config.contains(ClassValues.PREFIX))
-                config.set(ClassValues.PREFIX, customClass.getPrefix().replace(ChatColor.COLOR_CHAR, '&'));
-            if (customClass.getParent() != null && !neededOnly)
-                config.set(ClassValues.PARENT, customClass.getParent());
-            if (!config.contains(ClassValues.LEVEL))
-                config.set(ClassValues.LEVEL, customClass.getProfessLevel());
-            if (customClass.getInheritance() != null && customClass.getInheritance().size() > 0 && !neededOnly)
-                config.set(ClassValues.INHERIT, customClass.getInheritance());
-            if (!config.contains(ClassValues.HEALTH_BASE))
-                config.set(ClassValues.HEALTH_BASE, customClass.getBase(ClassAttribute.HEALTH));
-            if (!config.contains(ClassValues.HEALTH_BONUS))
-                config.set(ClassValues.HEALTH_BONUS, customClass.getScale(ClassAttribute.HEALTH));
-            if (!config.contains(ClassValues.MANA_BASE))
-                config.set(ClassValues.MANA_BASE, customClass.getBase(ClassAttribute.MANA));
-            if (!config.contains(ClassValues.MANA_BONUS))
-                config.set(ClassValues.MANA_BONUS, customClass.getScale(ClassAttribute.MANA));
-            if (!config.contains(ClassValues.SKILLS))
-                config.set(ClassValues.SKILLS, customClass.getSkills());
-            if (!config.contains(ClassValues.MAX_LEVEL))
-                config.set(ClassValues.MAX_LEVEL, customClass.getMaxLevel());
-            if (!config.contains(ClassValues.MANA_NAME))
-                config.set(ClassValues.MANA_NAME, customClass.getManaName());
-            if (!config.contains(ClassValues.PASSIVE_MANA_GAIN))
-                config.set(ClassValues.PASSIVE_MANA_GAIN, customClass.gainsMana());
-
-            // Add to table
-            classes.put(customClass.getName().toLowerCase(), customClass);
-            configFile.saveConfig();
-        }
-        catch (Exception e) {
-            getLogger().severe("Failed to register class - " + customClass.getName() + " - Invalid values");
-            config.set(ClassValues.ROOT + "." + customClass.getName(), null);
-        }
+        registration.addClass(customClass);
     }
 
     /**
@@ -595,9 +380,7 @@ public class SkillAPI extends JavaPlugin {
      * @param classes classes to add
      */
     public void addClasses(CustomClass ... classes) {
-        for (CustomClass customClass : classes) {
-            addClass(customClass);
-        }
+        registration.addClasses(classes);
     }
 
     /**
@@ -608,12 +391,7 @@ public class SkillAPI extends JavaPlugin {
      * @param config config containing dynamic skill data
      */
     public void loadDynamicClasses(ConfigurationSection config) {
-        for (String key : config.getKeys(false)) {
-            if (!classConfig.getConfig().contains(key)) {
-                classConfig.getConfig().set(key, config.getConfigurationSection(key));
-            }
-        }
-        classConfig.saveConfig();
+        registration.loadDynamicClasses(config);
     }
 
     // ----------------------------- Player Methods -------------------------------------- //
@@ -655,7 +433,7 @@ public class SkillAPI extends JavaPlugin {
      * @return     true if loaded, false otherwise
      */
     public boolean hasClass(String name){
-        return classes.containsKey(name.toLowerCase());
+        return registration.hasClass(name);
     }
 
     /**
@@ -680,7 +458,7 @@ public class SkillAPI extends JavaPlugin {
      * @return     true if loaded, false otherwise
      */
     public boolean hasSkill(String name) {
-        return skills.get(name.toLowerCase()) != null;
+        return registration.hasSkill(name);
     }
 
     /**
@@ -692,8 +470,7 @@ public class SkillAPI extends JavaPlugin {
      * @return     skill reference
      */
     public ClassSkill getSkill(String name) {
-        if (name == null) return null;
-        return skills.get(name.toLowerCase());
+        return registration.getSkill(name);
     }
 
     /**
@@ -719,8 +496,7 @@ public class SkillAPI extends JavaPlugin {
      * @return     class reference
      */
     public CustomClass getClass(String name) {
-        if (name == null) return null;
-        return classes.get(name.toLowerCase());
+        return registration.getClass(name);
     }
 
     /**
@@ -745,7 +521,7 @@ public class SkillAPI extends JavaPlugin {
      * @return     true if registered, false otherwise
      */
     public boolean isSkillRegistered(String name) {
-        return skills.containsKey(name.toLowerCase());
+        return registration.isSkillRegistered(name);
     }
 
     /**
@@ -781,7 +557,7 @@ public class SkillAPI extends JavaPlugin {
      */
     private ArrayList<String> getChildren(String name, CommandSender sender) {
         ArrayList<String> children = new ArrayList<String>();
-        for (CustomClass t : classes.values()) {
+        for (CustomClass t : registration.getClasses()) {
             if (name == null) {
                 if (t.getParent() == null && hasPermission(sender, t)) children.add(t.getName());
             }

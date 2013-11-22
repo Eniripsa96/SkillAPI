@@ -95,8 +95,10 @@ public class AttackModifierMechanic implements IMechanic, Listener {
         }
 
         // Apply the embedded effects
+        data.getSkill().startEmbeddedEffects();
         data.resolveNonTarget(event.getTarget().getLocation());
         data.resolveTarget(event.getTarget());
+        data.getSkill().stopEmbeddedEffects();
     }
 
     /**

@@ -4,6 +4,7 @@ import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -45,7 +46,7 @@ public class SoundMechanic implements IMechanic {
 
         // Volume
         float volume = skill.getValue(SOUND) / 100.0f;
-        volume = Math.min(Math.max(volume, 1.0f), 0.0f);
+        volume = Math.max(Math.min(volume, 1.0f), 0.0f);
 
         // Pitch
         float pitch = (3 * skill.getValue(PITCH) + 500) / 400.0f;

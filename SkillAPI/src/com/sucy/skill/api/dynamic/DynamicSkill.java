@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Details for a skill described through configuration data
+ * <p>Details for a skill described through configuration data</p>
+ * <p>You should not use this class. It is for dynamic usage only.</p>
  */
 public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill {
 
@@ -298,6 +299,20 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
     }
 
     /**
+     * Starts the usage of the skill during embedded effects
+     */
+    public void startEmbeddedEffects() {
+        beginUsage();
+    }
+
+    /**
+     * Stops the usage of the skill during embedded effects
+     */
+    public void stopEmbeddedEffects() {
+        stopUsage();
+    }
+
+    /**
      * Saves the mechanic to the configuration section
      *
      * @param config configuration section to save to
@@ -405,9 +420,11 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
             // Use the effect
             prefix = "Passive ";
+            beginUsage();
             for (Mechanic mechanic : skill.passiveMechanics) {
                 mechanic.resolve(player, data, skill);
             }
+            stopUsage();
         }
     }
 }

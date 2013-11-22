@@ -50,6 +50,9 @@ public class InventoryTask extends BukkitRunnable {
             int index = 0;
             for (ItemStack item : player.getInventory().getArmorContents()) {
                 if (item == null) continue;
+                boolean hasRequirement = false;
+                boolean needsRequirement = false;
+                boolean removed = false;
                 if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
                     List<String> lore = item.getItemMeta().getLore();
 
@@ -62,14 +65,17 @@ public class InventoryTask extends BukkitRunnable {
                             int level = Integer.parseInt(colorless.substring(11));
                             if (data.getLevel() < level) {
                                 removeArmor(player, index);
+                                removed = true;
+                                break;
                             }
                         }
 
                         // Class requirements
                         else if (colorless.matches("Class Req: .+")) {
+                            needsRequirement = true;
                             String name = colorless.substring(11);
-                            if (!isMatchingClass(name, data.getClassName())) {
-                                removeArmor(player, index);
+                            if (isMatchingClass(name, data.getClassName())) {
+                                hasRequirement = true;
                             }
                         }
 
@@ -78,10 +84,13 @@ public class InventoryTask extends BukkitRunnable {
                             String name = colorless.substring(16);
                             if (isMatchingClass(name, data.getClassName())) {
                                 removeArmor(player, index);
+                                removed = true;
+                                break;
                             }
                         }
                     }
                 }
+                if (needsRequirement != hasRequirement && !removed) removeArmor(player, index);
                 index++;
             }
         }

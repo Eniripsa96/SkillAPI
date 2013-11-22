@@ -48,8 +48,8 @@ public class RegistrationManager {
      */
     public RegistrationManager(SkillAPI api) {
         this.api = api;
-        skillConfig = new Config(api, "dynamic" + File.separator + "skills.yml");
-        classConfig = new Config(api, "dynamic" + File.separator + "classes.yml");
+        skillConfig = new Config(api, "dynamic" + File.separator + "skills");
+        classConfig = new Config(api, "dynamic" + File.separator + "classes");
     }
 
     public void initialize() {

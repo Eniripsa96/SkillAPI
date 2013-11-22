@@ -4,9 +4,7 @@ import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.StatusHolder;
-import com.sucy.skill.api.event.AttackType;
-import com.sucy.skill.api.event.PlayerOnDamagedEvent;
-import com.sucy.skill.api.event.PlayerOnHitEvent;
+import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.PassiveSkill;
 import com.sucy.skill.language.StatusNodes;
@@ -256,14 +254,22 @@ public class APIListener implements Listener {
 
             // Make sure it doesn't run too often
             if (timers.containsKey(damaged.getEntityId())
-                    && System.currentTimeMillis() - timers.get(damaged.getEntityId()) < 500) {
+                    && System.currentTimeMillis() - timers.get(damaged.getEntityId()) < 475) {
                 return;
             }
 
             // Update the timer
             timers.put(damaged.getEntityId(), System.currentTimeMillis());
 
-            AttackType type = event.getDamager() instanceof Projectile ? AttackType.PROJECTILE : AttackType.MELEE;
+            AttackType type;
+            if (PlayerSkills.skillsBeingCast.size() > 0) type = AttackType.SKILL;
+            else if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) type = AttackType.MELEE;
+            else type = AttackType.PROJECTILE;
+
+            // Call the special damage event
+            SpecialEntityDamagedByEntityEvent se = new SpecialEntityDamagedByEntityEvent(damaged, damager, type, event.getDamage());
+            plugin.getServer().getPluginManager().callEvent(se);
+            event.setDamage(se.getDamage());
 
             // Call an event when a player dealt damage
             if (damager instanceof Player) {
@@ -278,7 +284,16 @@ public class APIListener implements Listener {
                 PlayerOnHitEvent e = new PlayerOnHitEvent(p, damaged, type, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
                 event.setDamage(e.getDamage());
+
+                // Call an event when a player's skill dealt damage
+                if (type == AttackType.SKILL) {
+                    PlayerOnSkillHitEvent she = new PlayerOnSkillHitEvent(p, damaged, PlayerSkills.skillsBeingCast.peek().getName(), event.getDamage());
+                    plugin.getServer().getPluginManager().callEvent(she);
+                    event.setDamage(she.getDamage());
+                }
             }
+
+
 
             // Call an event when a player received damage
             if (damaged instanceof Player) {
@@ -295,16 +310,6 @@ public class APIListener implements Listener {
                 event.setDamage(e.getDamage());
             }
         }
-    }
-
-    /**
-     * Updates timers when entities take damage
-     *
-     * @param event event details
-     */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHitUpdate(EntityDamageByEntityEvent event) {
-        timers.put(event.getEntity().getEntityId(), System.currentTimeMillis());
     }
 
     /**

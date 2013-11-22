@@ -14,5 +14,10 @@ public enum AttackType {
     /**
      * A projectile attack
      */
-    PROJECTILE
+    PROJECTILE,
+
+    /**
+     * A skill attack
+     */
+    SKILL
 }

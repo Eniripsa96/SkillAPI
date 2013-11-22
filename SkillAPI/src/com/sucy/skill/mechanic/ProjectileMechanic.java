@@ -90,7 +90,10 @@ public class ProjectileMechanic implements IMechanic, Listener {
             }
         }, 1);
         if (projectiles.containsKey(event.getEntity().getEntityId())) {
-            projectiles.get(event.getEntity().getEntityId()).resolveNonTarget(event.getEntity().getLocation());
+            EmbedData data = projectiles.get(event.getEntity().getEntityId());
+            data.getSkill().startEmbeddedEffects();
+            data.resolveNonTarget(event.getEntity().getLocation());
+            data.getSkill().stopEmbeddedEffects();
         }
     }
 

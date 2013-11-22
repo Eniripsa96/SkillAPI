@@ -188,6 +188,43 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
+     * <p>Marks this skill as being used</p>
+     * <p>This is handled for normal TargetSkill and SkillShot usages, but for your
+     * own passive tasks or listeners that call the skill effects at other times,
+     * you should use this to begin your skill and stopUsage() to end your skill.</p>
+     * <p>Not using these methods as specified will cause the PlayerOnSkillHitEvent not
+     * to detect your skill and the SpecialEntityDamagedByEntityEvent, PlayerOnHitEvent,
+     * and PlayerOnDamagedEvents not to know that any damage you deal was caused by a skill.</p>
+     * <p>If your skill is triggered by another skill's damage, the events described above
+     * will detect that a skill is being used, but the one that triggered yours instead of
+     * your skill itself. When this happens, the damage your skill deals will be counted
+     * as being dealt by the other one.</p>
+     */
+    protected void beginUsage() {
+        PlayerSkills.skillsBeingCast.push(this);
+    }
+
+    /**
+     * <p>Marks this skill as no longer being used</p>
+     * <p>This does nothing if your skill already is not marked as being used</p>
+     * <p>This is handled for normal TargetSkill and SkillShot usages, but for your
+     * own passive tasks or listeners that call the skill effects at other times,
+     * you should use this to begin your skill and stopUsage() to end your skill.</p>
+     * <p>Not using these methods as specified will cause the PlayerOnSkillHitEvent not
+     * to detect your skill and the SpecialEntityDamagedByEntityEvent, PlayerOnHitEvent,
+     * and PlayerOnDamagedEvents not to know that any damage you deal was caused by a skill.</p>
+     * <p>If your skill is triggered by another skill's damage, the events described above
+     * will detect that a skill is being used, but the one that triggered yours instead of
+     * your skill itself. When this happens, the damage your skill deals will be counted
+     * as being dealt by the other one.</p>
+     */
+    protected void stopUsage() {
+        for (int i = PlayerSkills.skillsBeingCast.indexOf(this); i >= 0 && i < PlayerSkills.skillsBeingCast.size();) {
+            PlayerSkills.skillsBeingCast.pop();
+        }
+    }
+
+    /**
      * Generates a new indicator item stack for the given skill level
      *
      * @param player player data

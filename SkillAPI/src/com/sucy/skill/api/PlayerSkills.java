@@ -17,10 +17,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>Player class data</p>
@@ -30,6 +27,8 @@ import java.util.Map;
  * the stats of a player.</p>
  */
 public final class PlayerSkills extends Valued {
+
+    public static Stack<ClassSkill> skillsBeingCast = new Stack<ClassSkill>();
 
     private HashMap<String, Integer> skills = new HashMap<String, Integer>();
     private HashMap<Material, String> binds = new HashMap<Material, String>();
@@ -770,6 +769,7 @@ public final class PlayerSkills extends Valued {
 
         SkillStatus status = skill.checkStatus(this, plugin.isManaEnabled());
         int level = getSkillLevel(skill.getName());
+        skillsBeingCast.push(skill);
 
         // Silenced
         if (hasStatus(Status.SILENCE) || hasStatus(Status.STUN)) {
@@ -814,14 +814,22 @@ public final class PlayerSkills extends Valued {
         // Check for skill shots
         else if (skill instanceof SkillShot) {
 
-            // Try to cast the skill
-            if (((SkillShot) skill).cast(plugin.getServer().getPlayer(player), getSkillLevel(skill.getName()))) {
+            try {
+                // Try to cast the skill
+                if (((SkillShot) skill).cast(plugin.getServer().getPlayer(player), getSkillLevel(skill.getName()))) {
 
-                // Start the cooldown
-                skill.startCooldown(this);
+                    // Start the cooldown
+                    skill.startCooldown(this);
 
-                // Use mana if successful
-                if (plugin.isManaEnabled()) useMana(skill.getAttribute(SkillAttribute.MANA, level));
+                    // Use mana if successful
+                    if (plugin.isManaEnabled()) useMana(skill.getAttribute(SkillAttribute.MANA, level));
+                }
+            }
+
+            // Problem with the skill
+            catch (Exception ex) {
+                ex.printStackTrace();
+                getAPI().getLogger().severe("Failed to cast skill - " + skill.getName() + ": Internal skill error");
             }
         }
 
@@ -833,17 +841,27 @@ public final class PlayerSkills extends Valued {
             LivingEntity target = TargetHelper.getLivingTarget(p, skill.getAttribute(SkillAttribute.RANGE, level));
             if (target != null) {
 
-                // Try to cast the skill
-                if (((TargetSkill) skill).cast(p, target, level, Protection.isAlly(p, target))) {
+                try {
+                    // Try to cast the skill
+                    if (((TargetSkill) skill).cast(p, target, level, Protection.isAlly(p, target))) {
 
-                    // Apply the cooldown
-                    skill.startCooldown(this);
+                        // Apply the cooldown
+                        skill.startCooldown(this);
 
-                    // Use mana if successful
-                    if (plugin.isManaEnabled()) useMana(plugin.getSkill(skill.getName()).getAttribute(SkillAttribute.MANA, level));
+                        // Use mana if successful
+                        if (plugin.isManaEnabled()) useMana(plugin.getSkill(skill.getName()).getAttribute(SkillAttribute.MANA, level));
+                    }
+                }
+
+                // Problem with the skill
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                    getAPI().getLogger().severe("Failed to cast skill - " + skill.getName() + ": Internal skill error");
                 }
             }
         }
+
+        skillsBeingCast.clear();
     }
 
     /**

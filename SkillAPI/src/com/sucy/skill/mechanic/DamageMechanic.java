@@ -38,7 +38,7 @@ public class DamageMechanic implements IMechanic {
         for (LivingEntity t : targets) {
             t.setLastDamageCause(new EntityDamageByEntityEvent(player, t, EntityDamageEvent.DamageCause.CUSTOM, (double)damage));
             double prevHealth = t.getHealth();
-            t.damage(damage);
+            t.damage(damage, player);
             worked = worked || prevHealth != t.getHealth();
         }
 

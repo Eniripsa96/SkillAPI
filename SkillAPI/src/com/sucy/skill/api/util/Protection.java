@@ -29,7 +29,7 @@ public class Protection {
                 return true;
             }
         }
-        EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(attacker, target, EntityDamageEvent.DamageCause.CUSTOM, 1.0);
+        EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(attacker, target, EntityDamageEvent.DamageCause.CUSTOM, 0.01);
         Bukkit.getPluginManager().callEvent(event);
         return !event.isCancelled() && event.getDamage() > 0;
     }

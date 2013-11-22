@@ -54,9 +54,8 @@ public class ManaDamageMechanic implements IMechanic {
                 // Mana
                 else damage = amount * p.getMana() / 100.0;
 
-                t.setLastDamageCause(new EntityDamageByEntityEvent(player, t, EntityDamageEvent.DamageCause.CUSTOM, damage));
                 double prevHealth = t.getHealth();
-                t.damage(damage);
+                t.damage(damage, player);
                 worked = worked || prevHealth != t.getHealth();
             }
         }

@@ -43,9 +43,9 @@ public class DOTMechanic implements IMechanic {
 
         DOTHelper helper = data.getAPI().getDOTHelper();
         int level = data.getSkillLevel(skill.getName());
-        int damage = skill.getAttribute(DAMAGE, level);
-        int duration = skill.getAttribute(DURATION, level);
-        int frequency = skill.getAttribute(FREQUENCY, level);
+        int damage = skill.getAttribute(DAMAGE, target, level);
+        int duration = skill.getAttribute(DURATION, target, level);
+        int frequency = skill.getAttribute(FREQUENCY, target, level);
         boolean lethal = skill.getValue(LETHAL) != 1;
 
         // Apply a DOT to all targets

@@ -11,6 +11,7 @@ import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.tree.SkillTree;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -37,8 +38,6 @@ public class APIListener implements Listener {
     private static final int SPAWNER = 0, EGG = 1;
 
     private final SkillAPI plugin;
-
-    private final HashMap<Integer, Long> timers = new HashMap<Integer, Long>();
 
     /**
      * Constructor
@@ -252,15 +251,6 @@ public class APIListener implements Listener {
             // Neither can be null
             if (damaged == null || damager == null) return;
 
-            // Make sure it doesn't run too often
-            if (timers.containsKey(damaged.getEntityId())
-                    && System.currentTimeMillis() - timers.get(damaged.getEntityId()) < 475) {
-                return;
-            }
-
-            // Update the timer
-            timers.put(damaged.getEntityId(), System.currentTimeMillis());
-
             AttackType type;
             if (PlayerSkills.skillsBeingCast.size() > 0) type = AttackType.SKILL;
             else if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) type = AttackType.MELEE;
@@ -321,6 +311,7 @@ public class APIListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
 
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
+        plugin.getStatusHolder(event.getPlayer()).addStatus(Status.ROOT, 10000);
 
         // Level bar
         skills.updateLevelBar();
@@ -418,7 +409,16 @@ public class APIListener implements Listener {
     public void onMove(PlayerMoveEvent event) {
         PlayerSkills player = plugin.getPlayer(event.getPlayer().getName());
         if (player != null && (player.hasStatus(Status.STUN) ||  player.hasStatus(Status.ROOT))) {
-            event.getPlayer().teleport(event.getFrom());
+            Location from = event.getFrom();
+            Location to = event.getTo();
+            if (!player.hasStatus(Status.STUN)) {
+                if (from.getX() == to.getX() && from.getY() == to.getY() && from.getZ() == to.getZ()) {
+                    return;
+                }
+                from.setPitch(event.getTo().getPitch());
+                from.setYaw(event.getTo().getYaw());
+            }
+            event.getPlayer().teleport(from);
 
             // Send a message
             if (player.hasStatus(Status.STUN)) {

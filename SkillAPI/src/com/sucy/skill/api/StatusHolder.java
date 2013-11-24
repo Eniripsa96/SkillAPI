@@ -60,6 +60,16 @@ public class StatusHolder {
     }
 
     /**
+     * <p>Checks if the holder has any active statuses on them</p>
+     *
+     * @return true if contains any statuses, false otherwise
+     */
+    public boolean hasStatuses() {
+        checkStatuses();
+        return statuses.size() > 0;
+    }
+
+    /**
      * <p>Removes a status from the holder</p>
      * <p>If they don't have the status, this does nothing</p>
      *

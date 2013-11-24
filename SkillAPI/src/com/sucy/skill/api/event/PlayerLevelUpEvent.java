@@ -12,15 +12,17 @@ public class PlayerLevelUpEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private PlayerSkills player;
     private int level;
+    private int amount;
 
     /**
      * Constructor
      *
      * @param playerData data of the player leveling up
      */
-    public PlayerLevelUpEvent(PlayerSkills playerData) {
+    public PlayerLevelUpEvent(PlayerSkills playerData, int amount) {
         this.player = playerData;
         this.level = playerData.getLevel();
+        this.amount = amount;
     }
 
     /**
@@ -35,6 +37,13 @@ public class PlayerLevelUpEvent extends Event {
      */
     public int getLevel() {
         return level;
+    }
+
+    /**
+     * @return how many levels the player gained
+     */
+    public int getGainedLevels() {
+        return amount;
     }
 
     /**

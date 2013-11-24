@@ -105,7 +105,10 @@ public class ProjectileMechanic implements IMechanic, Listener {
     @EventHandler
     public void onProjectileHit(EntityDamageByEntityEvent event) {
         if (projectiles.containsKey(event.getDamager().getEntityId()) && event.getEntity() instanceof LivingEntity) {
-            projectiles.get(event.getDamager().getEntityId()).resolveTarget((LivingEntity)event.getEntity());
+            EmbedData data = projectiles.get(event.getDamager().getEntityId());
+            data.getSkill().startEmbeddedEffects();
+            data.resolveTarget((LivingEntity)event.getEntity());
+            data.getSkill().stopEmbeddedEffects();
         }
     }
 

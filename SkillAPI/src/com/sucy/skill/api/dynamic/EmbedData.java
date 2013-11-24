@@ -62,6 +62,7 @@ public class EmbedData extends Valued {
             // Resolve the effects
             mechanic.resolve(player, data, skill, targets);
         }
+        skill.prefix = "";
     }
 
     /**
@@ -84,6 +85,7 @@ public class EmbedData extends Valued {
 
             mechanic.resolve(player, data, skill, targets);
         }
+        skill.prefix = "";
     }
 
     /**

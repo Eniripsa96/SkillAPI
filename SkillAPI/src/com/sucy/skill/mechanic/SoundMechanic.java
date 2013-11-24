@@ -45,7 +45,7 @@ public class SoundMechanic implements IMechanic {
         else sound = SOUNDS.get(0);
 
         // Volume
-        float volume = skill.getValue(SOUND) / 100.0f;
+        float volume = skill.getValue(VOLUME) / 100.0f;
         volume = Math.max(Math.min(volume, 1.0f), 0.0f);
 
         // Pitch

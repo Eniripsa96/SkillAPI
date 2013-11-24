@@ -291,7 +291,7 @@ public final class PlayerSkills extends Valued {
         }
 
         // If the player was reverted to no class, clear all data
-        if (this.tree == null) {
+        if (plugin.getClass(this.tree) == null) {
             level = 1;
             points = plugin.getStartingPoints();
             exp = 0;
@@ -380,14 +380,20 @@ public final class PlayerSkills extends Valued {
      */
     public void updateHealth() {
         if (plugin.getServer().getPlayer(player) == null) return;
-        if (tree == null || plugin.oldHealthEnabled()) {
-            plugin.getServer().getPlayer(player).setHealthScale(20.0);
+
+        // No class just has the default 20hp
+        if (tree == null) {
             applyMaxHealth(20 + bonusHealth);
         }
+
+        // Apply class health
         else {
-            plugin.getServer().getPlayer(player).setHealthScaled(false);
             applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level) + bonusHealth);
         }
+
+        // Apply health scaling
+        if (plugin.oldHealthEnabled()) plugin.getServer().getPlayer(player).setHealthScale(20);
+        else plugin.getServer().getPlayer(player).setHealthScaled(false);
     }
 
     /**
@@ -604,7 +610,7 @@ public final class PlayerSkills extends Valued {
 
         // Call the event
         plugin.getServer().getPluginManager().callEvent(
-                new PlayerLevelUpEvent(this));
+                new PlayerLevelUpEvent(this, amount));
 
         updateLevelBar();
     }

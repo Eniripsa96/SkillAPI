@@ -225,7 +225,23 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Generates a new indicator item stack for the given skill level
+     * <p>Creates a new indicator for this skill using the data of the provided player and skill level</p>
+     * <p>If the player does not have a class, this returns null</p>
+     * <p>If the player does not have the skill available, this returns null</p>
+     *
+     * @param player player data
+     * @return       indicator item stack
+     */
+    public ItemStack getIndicator(PlayerSkills player) {
+        if (player.hasSkill(getName())) {
+            return getIndicator(player, player.getSkillLevel(getName()));
+        }
+        return null;
+    }
+
+    /**
+     * <p>Creates a new indicator for this skill using the data of the provided player and skill level</p>
+     * <p>If the player does not have a class, this returns null</p>
      *
      * @param player player data
      * @param level  current skill level

@@ -48,6 +48,9 @@ public abstract class CustomClass extends Attributed {
     private int professLevel;
     private int maxLevel;
 
+    protected int offset = 1;
+    protected int interval = 1;
+
     /**
      * Constructor
      *
@@ -230,12 +233,13 @@ public abstract class CustomClass extends Attributed {
         }
 
         // Get the correlating skill
-        int current = 1;
+        int current = offset;
         for (String skill : getSkills()) {
             ClassSkill s = api.getSkill(skill);
-            if ((s instanceof SkillShot || s instanceof TargetSkill) && index == current++) {
+            if ((s instanceof SkillShot || s instanceof TargetSkill) && index == current) {
                 return s;
             }
+            current += interval;
         }
 
         // No skill found
@@ -252,14 +256,14 @@ public abstract class CustomClass extends Attributed {
 
         // Get the index
         int index = 0;
-        int current = 0;
+        int current = offset;
         for (String name : getSkills()) {
             ClassSkill s = api.getSkill(name);
             if (s != null && (s instanceof SkillShot || s instanceof TargetSkill)) {
-                current++;
                 if (name.equalsIgnoreCase(skill.getName())) {
                     index = current;
                 }
+                current += interval;
             }
         }
 
@@ -268,7 +272,6 @@ public abstract class CustomClass extends Attributed {
 
         // Get the result
         String result = "";
-        int prevIndex = index;
         for (int i = 0; i < 4; i++) {
             int click = index % 2;
             index /= 2;

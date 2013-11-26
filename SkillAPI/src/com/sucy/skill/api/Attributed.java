@@ -11,8 +11,28 @@ import java.util.List;
  */
 public abstract class Attributed extends Valued {
 
-    private final HashMap<String, Integer> base = new HashMap<String, Integer>();
-    private final HashMap<String, Integer> scale = new HashMap<String, Integer>();
+    private final HashMap<String, Double> base = new HashMap<String, Double>();
+    private final HashMap<String, Double> scale = new HashMap<String, Double>();
+
+    /**
+     * <p>Defines a new attribute for the skill</p>
+     * <p>Values are overwritten after the configuration
+     * is loaded. Using this method is simply to define
+     * the default values before configuration changes.</p>
+     * <p>You should not use this method after the initial
+     * creation of the skill.</p>
+     *
+     * @param name  attribute name
+     * @param base  base value
+     * @param scale value scale
+     * @throws IllegalArgumentException if attribute is already defined
+     */
+    public void setAttribute(String name, double base, double scale) {
+        if (this.base.containsKey(name)) throw new IllegalArgumentException("Attribute is already defined: " + name);
+
+        this.base.put(name, base);
+        this.scale.put(name, scale);
+    }
 
     /**
      * <p>Defines a new attribute for the skill</p>
@@ -30,8 +50,8 @@ public abstract class Attributed extends Valued {
     public void setAttribute(String name, int base, int scale) {
         if (this.base.containsKey(name)) throw new IllegalArgumentException("Attribute is already defined: " + name);
 
-        this.base.put(name, base);
-        this.scale.put(name, scale);
+        this.base.put(name, (double)base);
+        this.scale.put(name, (double)scale);
     }
 
     /**
@@ -41,7 +61,7 @@ public abstract class Attributed extends Valued {
      * @return          base value
      * @throws IllegalArgumentException if the attribute is not defined
      */
-    public int getBase(String attribute) {
+    public double getBase(String attribute) {
         if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined: " + attribute);
 
         return base.get(attribute);
@@ -54,7 +74,7 @@ public abstract class Attributed extends Valued {
      * @return          change in value per skill level (adding, can be negative value)
      * @throws IllegalArgumentException if the attribute is not defined
      */
-    public int getScale(String attribute) {
+    public double getScale(String attribute) {
         if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined: " + attribute);
 
         return scale.get(attribute);
@@ -70,7 +90,7 @@ public abstract class Attributed extends Valued {
      * @param value     new value
      * @throws IllegalArgumentException if attribute is not defined
      */
-    public void setBase(String attribute, int value) {
+    public void setBase(String attribute, double value) {
         if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
         base.put(attribute, value);
     }
@@ -85,19 +105,39 @@ public abstract class Attributed extends Valued {
      * @param value     new scale value
      * @throws IllegalArgumentException if attribute is not defined
      */
-    public void setScale(String attribute, int value) {
+    public void setScale(String attribute, double value) {
         if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
         scale.put(attribute, value);
     }
 
     /**
-     * Adds to the base value of an attribute
+     * <p>Sets the base value of an attribute</p>
+     * <p>This is used by the API to override the default values.
+     * You should not use this method. When defining attributes,
+     * use setAttribute(int, int)</p>
      *
-     * @param attribute attribute to add to
-     * @param amount    amount to add
+     * @param attribute attribute name
+     * @param value     new value
+     * @throws IllegalArgumentException if attribute is not defined
      */
-    public void addAttribute(String attribute, int amount) {
-        setBase(attribute, getBase(attribute) + amount);
+    public void setBase(String attribute, int value) {
+        if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
+        base.put(attribute, (double)value);
+    }
+
+    /**
+     * <p>Sets the bonus value of an attribute</p>
+     * <p>This is used by the API to override the default values.
+     * You should not use this method. When defining attributes,
+     * use setAttribute(int, int)</p>
+     *
+     * @param attribute attribute name
+     * @param value     new scale value
+     * @throws IllegalArgumentException if attribute is not defined
+     */
+    public void setScale(String attribute, int value) {
+        if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined - " + attribute);
+        scale.put(attribute, (double)value);
     }
 
     /**
@@ -141,7 +181,7 @@ public abstract class Attributed extends Valued {
      * @return           attribute value
      * @throws IllegalArgumentException if the attribute is not defined
      */
-    public int getAttribute(String attribute, int level) {
+    public double getAttribute(String attribute, int level) {
         if (!hasAttribute(attribute)) throw new IllegalArgumentException("Attribute is not defined: " + attribute);
 
         return getBase(attribute) + getScale(attribute) * (level - 1);
@@ -154,9 +194,23 @@ public abstract class Attributed extends Valued {
      * @param defaultBase  default base value
      * @param defaultScale default scale value
      */
-    public void checkDefault(String attribute, int defaultBase, int defaultScale) {
-        if (!hasAttribute(attribute))
+    public void checkDefault(String attribute, double defaultBase, double defaultScale) {
+        if (!hasAttribute(attribute)) {
             setAttribute(attribute, defaultBase, defaultScale);
+        }
+    }
+
+    /**
+     * Checks to make sure the attributed object has a default attribute
+     *
+     * @param attribute    attribute to check
+     * @param defaultBase  default base value
+     * @param defaultScale default scale value
+     */
+    public void checkDefault(String attribute, int defaultBase, int defaultScale) {
+        if (!hasAttribute(attribute)) {
+            setAttribute(attribute, defaultBase, defaultScale);
+        }
     }
 
     /**
@@ -182,8 +236,8 @@ public abstract class Attributed extends Valued {
 
         for (String key : config.getKeys(false)) {
             ConfigurationSection section = config.getConfigurationSection(key);
-            base.put(key, section.getInt("base"));
-            scale.put(key, section.getInt("scale"));
+            base.put(key, section.getDouble("base"));
+            scale.put(key, section.getDouble("scale"));
         }
     }
 }

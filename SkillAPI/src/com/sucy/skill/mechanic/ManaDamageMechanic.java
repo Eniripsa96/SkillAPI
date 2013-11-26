@@ -38,14 +38,13 @@ public class ManaDamageMechanic implements IMechanic {
         // Change mana of all player targets
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int amount = skill.getAttribute(MANA, target, level);
+        double amount = skill.getAttribute(MANA, target, level);
         int damageType = skill.getValue(TYPE);
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
                 PlayerSkills p = skill.getAPI().getPlayer(((Player) t).getName());
                 if (!p.hasClass()) continue;
-                CustomClass c = skill.getAPI().getClass(p.getClassName());
-                int maxMana = c.getAttribute(ClassAttribute.MANA, p.getLevel());
+                int maxMana = p.getMaxMana();
                 double damage;
 
                 // Missing Mana

@@ -38,8 +38,8 @@ public class TeleportMechanic implements IMechanic {
         // Get attributes
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int vDistance = skill.getAttribute(V_DISTANCE, target, level);
-        int hDistance = skill.getAttribute(H_DISTANCE, target, level);
+        int vDistance = (int)skill.getAttribute(V_DISTANCE, target, level);
+        int hDistance = (int)skill.getAttribute(H_DISTANCE, target, level);
 
         // Make all targets teleport
 

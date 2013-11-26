@@ -159,6 +159,16 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * Gets the maximum mana for the player
+     *
+     * @return maximum mana
+     */
+    public int getMaxMana() {
+        CustomClass c = plugin.getClass(tree);
+        return c == null ? 0 : (int)c.getAttribute(ClassAttribute.MANA, level);
+    }
+
+    /**
      * @return current skill points
      */
     public int getPoints() {
@@ -190,8 +200,7 @@ public final class PlayerSkills extends Valued {
         plugin.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
-        CustomClass c = plugin.getClass(tree);
-        int maxMana = c == null ? 0 : c.getAttribute(ClassAttribute.MANA, level);
+        int maxMana = getMaxMana();
         mana -= event.getMana();
         if (mana < 0) mana = 0;
         if (mana > maxMana) mana = maxMana;
@@ -211,7 +220,7 @@ public final class PlayerSkills extends Valued {
         plugin.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
-        int maxMana = getAPI().getClass(tree).getAttribute(ClassAttribute.MANA, level);
+        int maxMana = getMaxMana();
         mana += event.getMana();
         if (mana < 0) mana = 0;
         if (mana > maxMana) mana = maxMana;
@@ -238,11 +247,11 @@ public final class PlayerSkills extends Valued {
             return false;
 
         // Level requirement isn't met
-        if (this.level < skill.getAttribute(SkillAttribute.LEVEL, level))
+        if (this.level < (int)skill.getAttribute(SkillAttribute.LEVEL, level))
             return false;
 
         // Skill cost isn't met
-        if (points < skill.getAttribute(SkillAttribute.COST, level))
+        if (points < (int)skill.getAttribute(SkillAttribute.COST, level))
             return false;
 
         // Doesn't have prerequisite
@@ -254,7 +263,7 @@ public final class PlayerSkills extends Valued {
             ((PassiveSkill) skill).onUpgrade(plugin.getServer().getPlayer(getName()), level + 1);
 
         // Upgrade the skill
-        this.points -= skill.getAttribute(SkillAttribute.COST, level);
+        this.points -= (int)skill.getAttribute(SkillAttribute.COST, level);
         skills.put(skill.getName().toLowerCase(), level + 1);
 
         // If first level, call the unlock event
@@ -319,7 +328,7 @@ public final class PlayerSkills extends Valued {
                 ClassSkill s = getAPI().getSkill(skill);
                 int level = getSkillLevel(skill);
                 for (int i = 1; i <= level; i++) {
-                    points += s.getAttribute(SkillAttribute.COST, i);
+                    points += (int)s.getAttribute(SkillAttribute.COST, i);
                 }
                 if (s instanceof PassiveSkill) {
                     ((PassiveSkill)s).stopEffects(plugin.getServer().getPlayer(player), level);
@@ -343,7 +352,7 @@ public final class PlayerSkills extends Valued {
 
         // Set mana if just starting
         if (prevTree == null) {
-            mana = plugin.getClass(this.tree).getAttribute(ClassAttribute.MANA, level);
+            mana = getMaxMana();
         }
 
         // Set the new prefix for the class
@@ -403,7 +412,7 @@ public final class PlayerSkills extends Valued {
      *
      * @param amount new max health
      */
-    public void applyMaxHealth(int amount) {
+    public void applyMaxHealth(double amount) {
         Player p = plugin.getServer().getPlayer(player);
         if (p == null) return;
 
@@ -806,7 +815,7 @@ public final class PlayerSkills extends Valued {
         // Skill requires more mana
         else if (status == SkillStatus.MISSING_MANA) {
             List<String> messages = plugin.getMessages(OtherNodes.NO_MANA, true);
-            int cost = skill.getAttribute(SkillAttribute.MANA, level);
+            int cost = (int)skill.getAttribute(SkillAttribute.MANA, level);
             for (String message : messages) {
                 message = message.replace("{missing}", (cost - getMana()) + "")
                         .replace("{mana}", getMana() + "")
@@ -828,7 +837,7 @@ public final class PlayerSkills extends Valued {
                     skill.startCooldown(this);
 
                     // Use mana if successful
-                    if (plugin.isManaEnabled()) useMana(skill.getAttribute(SkillAttribute.MANA, level));
+                    if (plugin.isManaEnabled()) useMana((int)skill.getAttribute(SkillAttribute.MANA, level));
                 }
             }
 
@@ -855,7 +864,7 @@ public final class PlayerSkills extends Valued {
                         skill.startCooldown(this);
 
                         // Use mana if successful
-                        if (plugin.isManaEnabled()) useMana(plugin.getSkill(skill.getName()).getAttribute(SkillAttribute.MANA, level));
+                        if (plugin.isManaEnabled()) useMana((int)plugin.getSkill(skill.getName()).getAttribute(SkillAttribute.MANA, level));
                     }
                 }
 

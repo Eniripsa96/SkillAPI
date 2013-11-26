@@ -137,7 +137,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      * @param level  level of the skill
      * @return       attribute value at the level
      */
-    public int getAttribute(String key, Target target, int level) {
+    public double getAttribute(String key, Target target, int level) {
         if (!key.equals("Range") && !key.equals("Radius")) key = this.prefix + target.getAlias(this, key);
         else key = target.getAlias(this, key);
         return getAttribute(key, level);
@@ -248,7 +248,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         PlayerSkills data = api.getPlayer(player.getName());
         PassiveTask task = new PassiveTask(this, data, player);
         int level = data.getSkillLevel(getName());
-        int period = getAttribute(PERIOD, level) * 20;
+        int period = (int)(getAttribute(PERIOD, level) * 20);
         task.runTaskTimer(data.getAPI(), period, period);
         tasks.put(player.getName(), task);
     }
@@ -293,7 +293,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         PlayerSkills data = api.getPlayer(player.getName());
         boolean successful = false;
         for (Mechanic mechanic : activeMechanics) {
-            successful = successful || mechanic.resolve(player, data, this);
+            successful = mechanic.resolve(player, data, this) || successful;
         }
         return successful;
     }

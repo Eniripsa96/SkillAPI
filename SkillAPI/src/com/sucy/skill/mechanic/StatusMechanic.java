@@ -36,13 +36,13 @@ public class StatusMechanic implements IMechanic {
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
         Status status = STATUSES.get(skill.getValue(TYPE));
-        int duration = skill.getAttribute(LENGTH, target, level);
+        double duration = skill.getAttribute(LENGTH, target, level);
 
         // Apply  potion effect to all
         boolean worked = false;
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
-                data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, duration * 1000);
+                data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, (int)(duration * 1000));
                 worked = true;
             }
         }

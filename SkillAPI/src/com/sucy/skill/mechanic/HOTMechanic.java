@@ -42,9 +42,9 @@ public class HOTMechanic implements IMechanic {
 
         DOTHelper helper = data.getAPI().getDOTHelper();
         int level = data.getSkillLevel(skill.getName());
-        int health = skill.getAttribute(HEALTH, target, level);
-        int duration = skill.getAttribute(DURATION, target, level);
-        int frequency = skill.getAttribute(FREQUENCY, target, level);
+        double health = skill.getAttribute(HEALTH, target, level);
+        int duration = (int)(skill.getAttribute(DURATION, target, level) * 20);
+        int frequency = (int)(skill.getAttribute(FREQUENCY, target, level) * 20);
 
         // Apply a DOT to all targets
         for (LivingEntity entity : targets) {

@@ -21,7 +21,7 @@ public class TargetHelper {
      * @param range  maximum range to check
      * @return       all entities in the player's vision line
      */
-    public static List<LivingEntity> getLivingTargets(Player player, int range) {
+    public static List<LivingEntity> getLivingTargets(Player player, double range) {
         List<Entity> list = player.getNearbyEntities(range, range, range);
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
 
@@ -55,7 +55,7 @@ public class TargetHelper {
      * @param range  maximum range to check
      * @return       entity player is looing at or null if not found
      */
-    public static LivingEntity getLivingTarget(Player player, int range) {
+    public static LivingEntity getLivingTarget(Player player, double range) {
         List<LivingEntity> targets = getLivingTargets(player, range);
         if (targets.size() == 0) return null;
         LivingEntity target = targets.get(0);

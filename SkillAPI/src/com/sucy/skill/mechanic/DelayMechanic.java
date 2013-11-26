@@ -37,7 +37,7 @@ public class DelayMechanic implements IMechanic {
         // Get attributes
         final EmbedData embedData = new EmbedData(player, data, skill);
         final int level = data.getSkillLevel(skill.getName());
-        final int delay = skill.getAttribute(DELAY, target, level);
+        final int delay = (int)(skill.getAttribute(DELAY, target, level) * 20);
 
         // Run the effect later
         data.getAPI().getServer().getScheduler().runTaskLater(data.getAPI(), new Runnable() {
@@ -51,7 +51,7 @@ public class DelayMechanic implements IMechanic {
                 }
                 embedData.getSkill().stopEmbeddedEffects();
             }
-        }, delay * 20);
+        }, delay);
 
         return true;
     }

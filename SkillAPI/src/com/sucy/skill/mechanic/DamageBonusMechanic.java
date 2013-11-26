@@ -37,12 +37,12 @@ public class DamageBonusMechanic implements IMechanic {
 
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
-        int bonus = skill.getAttribute(BONUS, target, level);
-        int duration = skill.getAttribute(DURATION, target, level);
+        int bonus = (int)skill.getAttribute(BONUS, target, level);
+        double duration = skill.getAttribute(DURATION, target, level);
 
         // Add damage modifiers
         for (LivingEntity entity : targets) {
-            data.getAPI().getStatusHolder(entity).addDamageModifier(new DamageModifier(bonus, duration * 1000));
+            data.getAPI().getStatusHolder(entity).addDamageModifier(new DamageModifier(bonus, (int)(duration * 1000)));
         }
 
         return true;

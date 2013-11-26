@@ -98,8 +98,8 @@ public class EmbedData extends Valued {
      */
     private List<LivingEntity> area(Location center, DynamicSkill skill, int level) {
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
-        int radius = skill.getAttribute("Radius", level);
-        int radiusSq = radius * radius;
+        double radius = skill.getAttribute("Radius", level);
+        double radiusSq = radius * radius;
         for (Entity entity : center.getWorld().getEntities()) {
             if (entity.getLocation().distanceSquared(center) < radiusSq && entity instanceof LivingEntity) {
                 targets.add((LivingEntity)entity);

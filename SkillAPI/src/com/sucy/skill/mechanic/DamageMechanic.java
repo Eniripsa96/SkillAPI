@@ -34,7 +34,7 @@ public class DamageMechanic implements IMechanic {
         // Damage all targets
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int damage = skill.getAttribute(DAMAGE, target, level);
+        double damage = skill.getAttribute(DAMAGE, target, level);
         for (LivingEntity t : targets) {
             t.setLastDamageCause(new EntityDamageByEntityEvent(player, t, EntityDamageEvent.DamageCause.CUSTOM, (double)damage));
             double prevHealth = t.getHealth();

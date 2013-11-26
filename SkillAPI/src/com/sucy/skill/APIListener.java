@@ -24,7 +24,6 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -112,7 +111,7 @@ public class APIListener implements Listener {
         }
 
         // Player class damage
-        if (damager instanceof Player) {
+        if (damager instanceof Player && PlayerSkills.skillsBeingCast.isEmpty()) {
 
             Player p = (Player)damager;
 
@@ -132,7 +131,8 @@ public class APIListener implements Listener {
                     if (projectile.hasMetadata(P_TYPE)) {
                         FixedMetadataValue metaValue = (FixedMetadataValue)projectile.getMetadata(P_TYPE).get(0);
                         int id = metaValue.asInt();
-                        event.setDamage(playerClass.getCustomDamage(id));
+                        int damage = playerClass.getCustomDamage(id);
+                        if (damage > 0) event.setDamage(damage);
                     }
 
                     // When the default damage isn't 0, set the damage relative
@@ -162,7 +162,10 @@ public class APIListener implements Listener {
                     Material mat = p.getItemInHand() == null ?
                             Material.AIR : p.getItemInHand().getType();
                     double damage = 1;
-                    if (mat.toString().toLowerCase().startsWith("x")) damage = Math.max(damage, playerClass.getDamage(p.getItemInHand().getTypeId()));
+                    if (mat.toString().toLowerCase().startsWith("x")) {
+                        damage = Math.max(damage, playerClass.getDamage(p.getItemInHand().getTypeId()));
+                        if (damage == 0) damage = event.getDamage();
+                    }
                     else if (p.getItemInHand() != null) damage = event.getDamage() + playerClass.getDamage(mat) - CustomClass.getDefaultDamage(mat);
                     event.setDamage(damage);
                 }
@@ -311,7 +314,6 @@ public class APIListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
 
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
-        plugin.getStatusHolder(event.getPlayer()).addStatus(Status.ROOT, 10000);
 
         // Level bar
         skills.updateLevelBar();

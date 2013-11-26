@@ -54,8 +54,8 @@ public class AttackModifierMechanic implements IMechanic, Listener {
 
         // Add the player to the map
         int level = data.getSkillLevel(skill.getName());
-        int duration = skill.getAttribute(DURATION, target, level) * 1000;
-        int attacks = skill.getAttribute(ATTACKS, target, level);
+        int duration = (int)(skill.getAttribute(DURATION, target, level) * 1000);
+        int attacks = (int)skill.getAttribute(ATTACKS, target, level);
         TimedEmbedData embedData = new TimedEmbedData(player, data, skill, System.currentTimeMillis() + duration);
         embedData.setValue(ATTACKS, attacks);
         activeEffects.put(player.getEntityId(), embedData);

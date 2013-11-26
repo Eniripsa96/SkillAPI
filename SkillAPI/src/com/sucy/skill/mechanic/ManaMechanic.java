@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class ManaMechanic implements IMechanic {
 
-    private static final String MANA = "Mana";
+    private static final String MANA = "Mana Amount";
 
     /**
      * Gives mana to all targets
@@ -32,7 +32,7 @@ public class ManaMechanic implements IMechanic {
         // Change mana of all player targets
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int amount = skill.getAttribute(MANA, target, level);
+        int amount = (int)skill.getAttribute(MANA, target, level);
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
                 PlayerSkills p = skill.getAPI().getPlayer(((Player) t).getName());

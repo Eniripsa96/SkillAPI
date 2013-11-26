@@ -1,5 +1,6 @@
 package com.sucy.skill.api.util.effects;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -27,7 +28,7 @@ public class ProjectileHelper {
      * @param speed          speed of the projectiles
      * @return               list of projectile entity IDs
      */
-    public static List<Integer> launchHorizontalCircle(Player source, Class<? extends Projectile> projectileType, int amount, int angle, int speed) {
+    public static List<Integer> launchHorizontalCircle(Player source, Class<? extends Projectile> projectileType, int amount, int angle, double speed) {
         List<Integer> list = new ArrayList<Integer>();
 
         vel = source.getLocation().getDirection();
@@ -75,7 +76,7 @@ public class ProjectileHelper {
      * @param speed          speed of the projectiles
      * @return               list of projectile entity IDs
      */
-    public static List<Integer> launchCircle(LivingEntity source, Class<? extends Projectile> projectileType, int amount, int angle, int speed) {
+    public static List<Integer> launchCircle(LivingEntity source, Class<? extends Projectile> projectileType, int amount, int angle, double speed) {
         List<Integer> list = new ArrayList<Integer>();
 
         // Fire one straight ahead if odd
@@ -119,6 +120,57 @@ public class ProjectileHelper {
                 projectile.setVelocity(vel);
                 list.add(projectile.getEntityId());
             }
+        }
+
+        return list;
+    }
+
+    /**
+     * Rains a group of projectiles down on a target location
+     *
+     * @param source     entity to fire the projectiles
+     * @param target     target location
+     * @param projectile type of projectile to launch
+     * @param amount     amount of projectiles to launch
+     * @param height     height above the target location to launch them from
+     * @param radius     radius of the rain
+     * @param speed      speed of the projectiles
+     * @return           list of projectile entity IDs
+     */
+    public static List<Integer> rainProjectiles(LivingEntity source, Location target, Class<? extends Projectile> projectile, int amount, int height, int radius, int speed) {
+
+        // Initialize data
+        List<Integer> list = new ArrayList<Integer>();
+        if (amount <= 0) return list;
+        target.add(0, height, 0);
+        Vector vel = new Vector(0, -speed, 0);
+
+        // Fire the one in the center
+        Projectile p = source.launchProjectile(projectile);
+        p.teleport(target);
+        p.setVelocity(vel);
+        list.add(p.getEntityId());
+        amount--;
+
+        // Launch projectiles
+        int tiers = (amount + 7) / 8;
+        for (int i = 0; i < tiers; i++) {
+            double rad = (double)radius * (tiers - i) / tiers;
+            int tierNum = Math.min(amount, 8);
+            double increment = 360 / tierNum;
+            double angle = (i % 2) * 22.5;
+            for (int j = 0; j < tierNum; j++) {
+                double dx = Math.cos(angle) * rad;
+                double dz = Math.sin(angle) * rad;
+                Location loc = target.clone();
+                loc.add(dx, 0, dz);
+                p = source.launchProjectile(projectile);
+                p.teleport(loc);
+                p.setVelocity(vel);
+                list.add(p.getEntityId());
+                angle += increment;
+            }
+            amount -= tierNum;
         }
 
         return list;

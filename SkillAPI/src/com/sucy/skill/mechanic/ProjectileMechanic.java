@@ -56,9 +56,9 @@ public class ProjectileMechanic implements IMechanic, Listener {
         // Change mana of all player targets
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int speed = skill.getAttribute(SPEED, target, level);
-        int amount = skill.getAttribute(QUANTITY, target, level);
-        int angle = skill.getAttribute(ANGLE, target, level);
+        double speed = skill.getAttribute(SPEED, target, level);
+        int amount = (int)skill.getAttribute(QUANTITY, target, level);
+        int angle = (int)skill.getAttribute(ANGLE, target, level);
         int spread = skill.getValue(SPREAD);
         int projectileId = skill.getValue(PROJECTILE);
         Class<? extends Projectile> projectile;

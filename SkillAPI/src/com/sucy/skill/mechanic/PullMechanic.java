@@ -33,7 +33,7 @@ public class PullMechanic implements IMechanic {
         // Get attributes
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int speed = skill.getAttribute(SPEED, target, level);
+        double speed = skill.getAttribute(SPEED, target, level);
 
         // Pull in all targets
         for (LivingEntity t : targets) {

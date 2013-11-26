@@ -43,10 +43,10 @@ public class ChanceMechanic implements IMechanic {
 
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
-        int chance = skill.getAttribute(CHANCE, target, level);
+        double chance = skill.getAttribute(CHANCE, target, level);
 
         // Roll a chance
-        if (random.nextDouble() < chance / 100.0) {
+        if (random.nextDouble() < chance / 100) {
 
             // Apply the embedded effects
             EmbedData embedData = new EmbedData(player, data, skill);

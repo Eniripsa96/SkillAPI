@@ -30,29 +30,29 @@ public class ConditionMechanic implements IMechanic {
         DISARM = 5,
         CURSE = 6,
         FIRE = 7,
-        SPEED = 9,
-        SLOWNESS = 10,
-        HASTE = 11,
-        FATIGUE = 12,
-        STRENGTH = 13,
-        JUMP = 14,
-        NAUSEA = 15,
-        REGENERATION = 16,
-        RESISTANCE = 17,
-        FIRE_RESISTANCE = 18,
-        WATER_BREATHING = 19,
-        INVISIBILITY = 20,
-        BLINDNESS = 21,
-        NIGHT_VISION = 22,
-        HUNGER = 23,
-        WEAKNESS = 24,
-        POISON = 25,
-        WITHER = 26,
-        HEALTH = 27,
-        ABSORPTION = 28,
-        SATURATION = 29,
-        POTION = 30,
-        STATUS = 31;
+        SPEED = 8,
+        SLOWNESS = 9,
+        HASTE = 10,
+        FATIGUE = 11,
+        STRENGTH = 12,
+        JUMP = 13,
+        NAUSEA = 14,
+        REGENERATION = 15,
+        RESISTANCE = 16,
+        FIRE_RESISTANCE = 17,
+        WATER_BREATHING = 18,
+        INVISIBILITY = 19,
+        BLINDNESS = 20,
+        NIGHT_VISION = 21,
+        HUNGER = 22,
+        WEAKNESS = 23,
+        POISON = 24,
+        WITHER = 25,
+        HEALTH = 26,
+        ABSORPTION = 27,
+        SATURATION = 28,
+        POTION = 29,
+        STATUS = 30;
 
     private static final int
         STOP = 0,
@@ -79,8 +79,7 @@ public class ConditionMechanic implements IMechanic {
         if (targets.isEmpty()) return false;
 
         // Get attributes
-        int level = data.getSkillLevel(skill.getName());
-        int statement = skill.getAttribute(CONDITION, target, level);
+        int statement = skill.getValue(CONDITION);
 
         // Prepare the embed data in case it needs to be used
         EmbedData embedData = new EmbedData(player, data, skill);

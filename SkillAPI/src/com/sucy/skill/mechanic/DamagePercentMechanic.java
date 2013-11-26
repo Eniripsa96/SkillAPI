@@ -37,12 +37,12 @@ public class DamagePercentMechanic implements IMechanic {
 
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
-        int bonus = skill.getAttribute(PERCENT, target, level);
-        int duration = skill.getAttribute(DURATION, target, level);
+        double bonus = skill.getAttribute(PERCENT, target, level);
+        double duration = skill.getAttribute(DURATION, target, level);
 
         // Add damage modifiers
         for (LivingEntity entity : targets) {
-            data.getAPI().getStatusHolder(entity).addDamageModifier(new DamageModifier(1 + bonus / 100.0, duration * 1000));
+            data.getAPI().getStatusHolder(entity).addDamageModifier(new DamageModifier(1 + bonus / 100, (int)(duration * 1000)));
         }
 
         return true;

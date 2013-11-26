@@ -35,8 +35,8 @@ public class LaunchMechanic implements IMechanic {
         // Get attributes
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int vSpeed = skill.getAttribute(V_SPEED, target, level);
-        int hSpeed = skill.getAttribute(H_SPEED, target, level);
+        double vSpeed = skill.getAttribute(V_SPEED, target, level);
+        double hSpeed = skill.getAttribute(H_SPEED, target, level);
 
         // Make all targets dash forward
         for (LivingEntity t : targets) {
@@ -44,7 +44,7 @@ public class LaunchMechanic implements IMechanic {
             if (vel.lengthSquared() == 0) continue;
             vel.setY(0);
             vel.multiply(hSpeed / vel.length());
-            vel.setY(vSpeed + 0.5);
+            vel.setY(vSpeed);
             t.setVelocity(vel);
             worked = true;
         }

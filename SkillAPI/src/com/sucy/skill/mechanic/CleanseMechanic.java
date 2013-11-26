@@ -22,21 +22,29 @@ public class CleanseMechanic implements IMechanic {
     private static final PotionEffectType[] POTIONS = new PotionEffectType[] {
             PotionEffectType.ABSORPTION, PotionEffectType.BLINDNESS, PotionEffectType.CONFUSION,
             PotionEffectType.DAMAGE_RESISTANCE, PotionEffectType.FAST_DIGGING, PotionEffectType.FIRE_RESISTANCE,
-            PotionEffectType.HARM, PotionEffectType.HEAL, PotionEffectType.HEALTH_BOOST, PotionEffectType.HUNGER,
-            PotionEffectType.INCREASE_DAMAGE, PotionEffectType.INVISIBILITY, PotionEffectType.JUMP,
-            PotionEffectType.NIGHT_VISION, PotionEffectType.POISON, PotionEffectType.REGENERATION,
-            PotionEffectType.SATURATION, PotionEffectType.SLOW, PotionEffectType.SLOW_DIGGING,
-            PotionEffectType.SPEED, PotionEffectType.WATER_BREATHING, PotionEffectType.WATER_BREATHING,
-            PotionEffectType.WEAKNESS, PotionEffectType.WITHER };
+            PotionEffectType.HEALTH_BOOST, PotionEffectType.HUNGER, PotionEffectType.INCREASE_DAMAGE,
+            PotionEffectType.INVISIBILITY, PotionEffectType.JUMP, PotionEffectType.NIGHT_VISION,
+            PotionEffectType.POISON, PotionEffectType.REGENERATION, PotionEffectType.SATURATION,
+            PotionEffectType.SLOW, PotionEffectType.SLOW_DIGGING, PotionEffectType.SPEED,
+            PotionEffectType.WATER_BREATHING, PotionEffectType.WEAKNESS, PotionEffectType.WITHER };
 
     private static final String CLEANSE = "Cleanse";
 
+    /**
+     * Cleanses statuses from each target
+     *
+     * @param player  player using the skill
+     * @param data    data of the player using the skill
+     * @param skill   skill being used
+     * @param target  target type of the skill
+     * @param targets targets for the effects
+     * @return        true if cleansed any statuses, false otherwise
+     */
     @Override
     public boolean resolve(Player player, PlayerSkills data, DynamicSkill skill, Target target, List<LivingEntity> targets) {
 
         // Get the attributes
-        int level = data.getSkillLevel(skill.getName());
-        int cleanse = skill.getAttribute(CLEANSE, target, level);
+        int cleanse = skill.getValue(CLEANSE);
 
         boolean worked = false;
 

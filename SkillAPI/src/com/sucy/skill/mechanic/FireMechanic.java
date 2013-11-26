@@ -33,9 +33,9 @@ public class FireMechanic implements IMechanic {
 
         // Damage all targets
         int level = data.getSkillLevel(skill.getName());
-        int duration = skill.getAttribute(DURATION, target, level);
+        int duration = (int)(skill.getAttribute(DURATION, target, level) * 20);
         for (LivingEntity t : targets) {
-            t.setFireTicks(duration * 20);
+            t.setFireTicks(duration);
         }
 
         return true;

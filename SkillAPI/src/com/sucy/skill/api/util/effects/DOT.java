@@ -12,7 +12,7 @@ public class DOT {
     private int ticksLeft;
     private int frequency;
     private int ticks;
-    private int damage;
+    private double damage;
     private boolean lethal;
 
     /**
@@ -20,10 +20,10 @@ public class DOT {
      *
      * @param ticks     ticks left
      * @param damage    damage per tick
-     * @param lethal    lethal or not
      * @param frequency time between ticks
+     * @param lethal    lethal or not
      */
-    public DOT(int ticks, int damage, int frequency, boolean lethal) {
+    public DOT(int ticks, double damage, int frequency, boolean lethal) {
         this.ticks = ticks;
         this.damage = damage;
         this.lethal = lethal;
@@ -41,7 +41,7 @@ public class DOT {
     /**
      * @return damage dealt per tick
      */
-    public int getDamage() {
+    public double getDamage() {
         return damage;
     }
 

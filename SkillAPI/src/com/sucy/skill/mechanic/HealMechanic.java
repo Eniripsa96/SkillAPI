@@ -32,7 +32,7 @@ public class HealMechanic implements IMechanic {
         // Damage all targets
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int amount = skill.getAttribute(HEAL, target, level);
+        double amount = skill.getAttribute(HEAL, target, level);
         for (LivingEntity t : targets) {
             double prevHealth = t.getHealth();
             if (t instanceof Player) {

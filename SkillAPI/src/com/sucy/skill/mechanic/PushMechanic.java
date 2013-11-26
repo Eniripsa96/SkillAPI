@@ -33,7 +33,7 @@ public class PushMechanic implements IMechanic {
         // Get attributes
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        int speed = skill.getAttribute(SPEED, target, level);
+        double speed = skill.getAttribute(SPEED, target, level);
 
         // Force all targets to dash
         for (LivingEntity t : targets) {

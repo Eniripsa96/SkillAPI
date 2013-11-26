@@ -37,12 +37,12 @@ public class DamagePercentReductionMechanic implements IMechanic {
 
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
-        int reduction = skill.getAttribute(REDUCTION, target, level);
-        int duration = skill.getAttribute(DURATION, target, level);
+        double reduction = skill.getAttribute(REDUCTION, target, level);
+        double duration = skill.getAttribute(DURATION, target, level);
 
         // Add damage modifiers
         for (LivingEntity entity : targets) {
-            data.getAPI().getStatusHolder(entity).addDefenseModifier(new DamageModifier(1 - reduction / 100.0, duration * 1000));
+            data.getAPI().getStatusHolder(entity).addDefenseModifier(new DamageModifier(1 - reduction / 100, (int)(duration * 1000)));
         }
 
         return true;

@@ -120,7 +120,7 @@ public enum Target {
      */
     private List<LivingEntity> area(DynamicSkill skill, Player caster, int level) {
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
-        int radius = skill.getAttribute(getAlias(skill, RADIUS), level);
+        double radius = skill.getAttribute(getAlias(skill, RADIUS), level);
         targets.add(caster);
         for (Entity entity : caster.getNearbyEntities(radius, radius, radius)) {
             if (entity instanceof LivingEntity) {
@@ -142,7 +142,7 @@ public enum Target {
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
         LivingEntity target = TargetHelper.getLivingTarget(caster, skill.getAttribute(getAlias(skill, RANGE), level));
         if (target != null) {
-            int radius = skill.getAttribute(getAlias(skill, RADIUS), level);
+            double radius = skill.getAttribute(getAlias(skill, RADIUS), level);
             targets.add(target);
             for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
                 if (entity instanceof LivingEntity) {

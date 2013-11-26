@@ -434,7 +434,7 @@ public abstract class CustomClass extends Attributed {
         }
 
         // Otherwise just 1 damage
-        else return 1;
+        else return 0;
     }
 
     /**

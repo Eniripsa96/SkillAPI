@@ -13,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 public abstract class ClassSkill extends Attributed {
 
+    private static final DecimalFormat FORMAT = new DecimalFormat("#########0.0#");
     private final HashMap<String, Long> timers = new HashMap<String, Long>();
     private final String name;
 
@@ -285,11 +287,11 @@ public abstract class ClassSkill extends Attributed {
             // Requirement Filter
             if (line.contains("{requirements}")) {
 
-                int requiredLevel = getAttribute(SkillAttribute.LEVEL, level + 1);
+                int requiredLevel = (int)getAttribute(SkillAttribute.LEVEL, level + 1);
                 line = line.replace("{requirements}",
                         getRequirementString(SkillAttribute.LEVEL, requiredLevel, player.getLevel() >= requiredLevel));
 
-                int requiredPoints = getAttribute(SkillAttribute.COST, level + 1);
+                int requiredPoints = (int)getAttribute(SkillAttribute.COST, level + 1);
                 results.add(getRequirementString(SkillAttribute.COST, requiredPoints, player.getPoints() >= requiredPoints));
 
                 String skillReq = getSkillReq();
@@ -310,8 +312,8 @@ public abstract class ClassSkill extends Attributed {
                         continue;
 
                     // Get the values
-                    int oldValue = getAttribute(attribute, level);
-                    int newValue = getAttribute(attribute, level + 1);
+                    double oldValue = getAttribute(attribute, level);
+                    double newValue = getAttribute(attribute, level + 1);
 
                     // Level 0 doesn't count
                     if (level == 0) oldValue = newValue;
@@ -323,13 +325,13 @@ public abstract class ClassSkill extends Attributed {
                     if (oldValue != newValue) {
 
                         attLine = api.getMessage(SkillNodes.ATTRIBUTE_CHANGING, false);
-                        attLine = attLine.replace("{new}", newValue + "");
+                        attLine = attLine.replace("{new}", format(newValue) + "");
                     }
 
                     // Not changing attribute
                     else attLine = api.getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, false);
 
-                    attLine = attLine.replace("{value}", oldValue + "")
+                    attLine = attLine.replace("{value}", format(oldValue) + "")
                             .replace("{name}", attribute);
 
                     // Line replace
@@ -402,6 +404,19 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
+     * Formates a double value for display
+     *
+     * @param value value to format
+     * @return      formatted string
+     */
+    private String format(double value) {
+        if ((int)value == value) {
+            return "" + (int)value;
+        }
+        return FORMAT.format(value);
+    }
+
+    /**
      * Gets the requirement string for the skill icon
      *
      * @param name      requirement name
@@ -435,7 +450,7 @@ public abstract class ClassSkill extends Attributed {
 
         // If mana is enabled, check to see if the player has enough
         if (manaEnabled) {
-            int manaCost = getAttribute(SkillAttribute.MANA, level);
+            double manaCost = getAttribute(SkillAttribute.MANA, level);
 
             if (player.getMana() < manaCost) return SkillStatus.MISSING_MANA;
         }

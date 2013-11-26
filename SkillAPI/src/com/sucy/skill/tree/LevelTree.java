@@ -37,7 +37,9 @@ public abstract class LevelTree extends SkillTree {
         // Get the max level
         int maxLevel = 1;
         for (ClassSkill skill : skills) {
-            if (skill.getAttribute(SkillAttribute.LEVEL, 1) > maxLevel) maxLevel = skill.getAttribute(SkillAttribute.LEVEL, 1);
+            if (skill.getBase(SkillAttribute.LEVEL) > maxLevel) {
+                maxLevel = (int)skill.getBase(SkillAttribute.LEVEL);
+            }
         }
 
         // Break it up into tiers

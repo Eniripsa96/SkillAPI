@@ -46,6 +46,11 @@ public enum SettingValues {
     POINTS_PER_LEVEL,
 
     /**
+     * Whether or not lore requirements are enabled
+     */
+    LORE_REQUIREMENTS,
+
+    /**
      * Number of players to check for item restrictions each tick
      */
     PLAYERS_PER_CHECK,

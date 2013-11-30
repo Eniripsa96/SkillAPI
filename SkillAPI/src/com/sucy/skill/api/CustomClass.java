@@ -1,6 +1,7 @@
 package com.sucy.skill.api;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
@@ -48,15 +49,40 @@ public abstract class CustomClass extends Attributed {
     private int professLevel;
     private int maxLevel;
 
+    /**
+     * <p>An offset for the click skill combo IDs</p>
+     * <p>Click skill combos follow the pattern of
+     * resembling bit versions of their IDs where 0s are
+     * left clicks and 1s are right clicks.</p>
+     * <p>If the offset is 0, it will start with all
+     * left clicks. If it is 1, it will start with a
+     * right click followed by 3 left clicks.</p>
+     * <p>Other values are accepted, but may lead to strange results.
+     * The ones listed are the main uses for these values.</p>
+     */
     protected int offset = 1;
+
+    /**
+     * <p>An interval for the click skill combo IDs</p>
+     * <p>Click skill combos follow the pattern of
+     * resembling bit versions of their IDs where 0s are
+     * left clicks and 1s are right clicks.</p>
+     * <p>If the interval is 1, all click combos will
+     * be used. If the interval is 2 and the offset is 1,
+     * only click combos starting with right clicks will be
+     * used. If the interval is 2 and the offset is 0,
+     * only click combos starting with left clicks will be used.</p>
+     * <p>Other values are accepted, but may lead to strange results.
+     * The ones listed are the main uses for these values.</p>
+     */
     protected int interval = 1;
 
     /**
      * Constructor
      *
      * @param name         class name
-     * @param parent       parent class
-     * @param prefix       class prefix
+     * @param parent       name of the parent class
+     * @param prefix       class prefix for MCCore chat/scoreboards
      * @param professLevel level to profess
      */
     public CustomClass(String name, String parent, String prefix, int professLevel, int maxLevel) {
@@ -166,6 +192,10 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
+     * <p>Retrieves the brace color for the class prefix</p>
+     * <p>The brace color is the first ChatColor occurrence
+     * in the name or just white if no colors are found</p>
+     *
      * @return brace color for the class prefix
      */
     public ChatColor getBraceColor() {
@@ -175,6 +205,12 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
+     * <p>The profession level of this class</p>
+     * <p>This is the level in which the class can
+     * profess into other classes</p>
+     * <p>If this value is less than 1, it represents
+     * this class as not being able to profess further</p>
+     *
      * @return level required for professing
      */
     public int getProfessLevel() {
@@ -182,6 +218,12 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
+     * <p>Retrieves the maximum level the class is allowed to achieve</p>
+     * <p>Any levels gained past this number are canceled, whether through
+     * commands or natural experience.</p>
+     * <p>If this number is lower than the profession level, the class will
+     * not be able to profess</p>
+     *
      * @return max level of the class
      */
     public int getMaxLevel() {
@@ -189,14 +231,20 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * @return list of the names classes this takes all skills from or an empty list if it doesn't inherit anything
+     * <p>Retrieves the list of the names of all classes this inherits from</p>
+     * <p>Inherited classes provide this class with all of their skills</p>
+     *
+     * @return list of the names inherited classes or an empty list if there's no inheritance
      */
     public List<String> getInheritance() {
         return inheritance;
     }
 
     /**
-     * @return list of the names of skills included in this tree including inherited skills
+     * <p>Retrieves the list of skill names available for this class</p>
+     * <p>This list includes those provided by inherited classes</p>
+     *
+     * @return list of the names of skills available to this class
      */
     public List<String> getSkills() {
         if (inheritance.size() == 0) return skills;
@@ -217,7 +265,9 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Gets a skill from clicks
+     * <p>Retrieves a SkillShot or TargetSkill from a combination of clicks</p>
+     * <p>If the click combination does not match any available skill, this will return null</p>
+     * <p>The pairing of skills is determined by the offset and interval fields in the class</p>
      *
      * @param clicks mouse clicks
      * @return       skill for the combo or null if not found
@@ -247,15 +297,23 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Gets the click string for the skill
+     * <p>Represents the click combination for the skill as a string</p>
+     * <p>This only works for TargetSkills and SkillShots</p>
+     * <p>Passive skills return an empty string if they aren't also a TargetSkill or SkillShot</p>
+     * <p>Dynamic skills without active effects will also return an empty string</p>
      *
      * @param skill skill to get it for
      * @return      click string
      */
     public String getClickString(ClassSkill skill) {
 
+        // Ignore dynamic skills without active effects
+        if (skill instanceof DynamicSkill && !((DynamicSkill)skill).hasActiveEffects()) {
+            return "";
+        }
+
         // Get the index
-        int index = 0;
+        int index = -1;
         int current = offset;
         for (String name : getSkills()) {
             ClassSkill s = api.getSkill(name);
@@ -268,7 +326,7 @@ public abstract class CustomClass extends Attributed {
         }
 
         // No click details
-        if (index == 0) return "";
+        if (index == -1) return "";
 
         // Get the result
         String result = "";
@@ -458,7 +516,8 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Gets the maximum damage dealt by a projectile
+     * <p>Retrieves the maximum damage this class deals with the projectile</p>
+     * <p>If the damage for the projectile is not set, this returns 0</p>
      *
      * @param type projectile type
      * @return     maximum damage dealt
@@ -480,7 +539,10 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Gets the damage for a custom projectile item
+     * <p>Retrieves the maximum projectile damage this class can do with a weapon with the given ID</p>
+     * <p>The ID is for the weapon that fires the projectile. If its like a snowball where the
+     * projectile is thrown instead of launched from a weapon, you can provide just the projectile ID</p>
+     * <p>If the damage for the projectile is not set, this returns 0</p>
      *
      * @param id projectile weapon ID
      * @return   damage
@@ -491,7 +553,8 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Gets the default damage for an item
+     * <p>Retrieves the default damage assigned to the given item type</p>
+     * <p>If no default is set for the item, this just returns 1</p>
      *
      * @param mat item type
      * @return    default damage
@@ -508,7 +571,8 @@ public abstract class CustomClass extends Attributed {
     }
 
     /**
-     * Gets the default damage for the projectile
+     * <p>Retrieves the default damage assigned to the given projectile type</p>
+     * <p>If no default is set for the item, this just returns 0</p>
      *
      * @param type projectile type
      * @return     default damage
@@ -521,13 +585,12 @@ public abstract class CustomClass extends Attributed {
         }
 
         // No damage set
-        else {
-            return 0;
-        }
+        else return 0;
     }
 
     /**
-     * Saves the class data to the configuration section
+     * <p>Saves the class data to the config</p>
+     * <p>This is handled by the API so you generally do not need to use this</p>
      *
      * @param config configuration section to save to
      */

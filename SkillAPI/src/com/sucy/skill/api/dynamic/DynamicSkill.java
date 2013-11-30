@@ -130,6 +130,15 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
     }
 
     /**
+     * <p>Checks whether or not the skill has active effects</p>
+     *
+     * @return true if has active effects, false otherwise
+     */
+    public boolean hasActiveEffects() {
+        return activeMechanics.size() > 0;
+    }
+
+    /**
      * GetAttribute override to handle passive prefixes
      *
      * @param key    attribute key

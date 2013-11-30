@@ -1,18 +1,13 @@
 package com.sucy.skill.mechanic;
 
 import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.api.dynamic.*;
-import com.sucy.skill.api.event.AttackType;
-import com.sucy.skill.api.event.PlayerOnHitEvent;
-import org.bukkit.Bukkit;
+import com.sucy.skill.api.dynamic.DynamicSkill;
+import com.sucy.skill.api.dynamic.EmbedData;
+import com.sucy.skill.api.dynamic.IMechanic;
+import com.sucy.skill.api.dynamic.Target;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 

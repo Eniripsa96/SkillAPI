@@ -4,6 +4,7 @@ import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
+import com.sucy.skill.api.event.PlayerSkillHealEvent;
 import com.sucy.skill.api.util.effects.DOT;
 import com.sucy.skill.api.util.effects.DOTHelper;
 import com.sucy.skill.api.util.effects.DOTSet;
@@ -46,10 +47,17 @@ public class HOTMechanic implements IMechanic {
         int duration = (int)(skill.getAttribute(DURATION, target, level) * 20);
         int frequency = (int)(skill.getAttribute(FREQUENCY, target, level) * 20);
 
-        // Apply a DOT to all targets
+        // Apply a HOT to all targets
         for (LivingEntity entity : targets) {
+            double amount = health;
+            if (entity instanceof Player) {
+                int ticks = (duration / frequency);
+                PlayerSkillHealEvent event = new PlayerSkillHealEvent((Player)entity, player, skill.getName(), ticks * amount);
+                skill.getAPI().getServer().getPluginManager().callEvent(event);
+                amount = event.getAmount() / ticks;
+            }
             DOTSet set = helper.getDOTSet(entity);
-            set.addEffect(skill.getName(), new DOT(duration, -health, frequency, false));
+            set.addEffect(skill.getName(), new DOT(duration, -amount, frequency, false));
         }
 
         return true;

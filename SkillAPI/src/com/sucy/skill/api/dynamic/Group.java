@@ -48,8 +48,7 @@ public enum Group {
             if (this == ALLY) inGroup = (caster == target || Protection.isAlly(caster, target));
             else if (this == ENEMY) inGroup = (caster != target && !Protection.isAlly(caster, target));
             else if (this == OTHERS) inGroup = (caster != target);
-            else if (this == ALL) inGroup = true;
-            else inGroup = false;
+            else inGroup = this == ALL;
 
             // Remove the entry if its in the group
             if (!inGroup) {

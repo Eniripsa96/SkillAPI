@@ -1,7 +1,10 @@
 package com.sucy.skill.mechanic;
 
 import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.api.dynamic.*;
+import com.sucy.skill.api.dynamic.DynamicSkill;
+import com.sucy.skill.api.dynamic.IMechanic;
+import com.sucy.skill.api.dynamic.Target;
+import com.sucy.skill.api.dynamic.TimedEmbedData;
 import com.sucy.skill.api.event.AttackType;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
 import org.bukkit.Bukkit;

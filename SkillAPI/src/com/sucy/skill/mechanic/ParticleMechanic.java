@@ -7,8 +7,6 @@ import com.sucy.skill.api.dynamic.Target;
 import com.sucy.skill.api.util.effects.Direction;
 import com.sucy.skill.api.util.effects.ParticleHelper;
 import com.sucy.skill.api.util.effects.ParticleType;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 

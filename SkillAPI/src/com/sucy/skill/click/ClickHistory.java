@@ -3,18 +3,10 @@ package com.sucy.skill.click;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.api.Status;
 import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.api.skill.SkillAttribute;
-import com.sucy.skill.api.skill.SkillShot;
-import com.sucy.skill.api.skill.SkillStatus;
-import com.sucy.skill.language.OtherNodes;
-import com.sucy.skill.language.StatusNodes;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Click history for a single player

@@ -4,6 +4,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.language.OtherNodes;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -44,6 +45,7 @@ public class InventoryTask extends BukkitRunnable {
 
             // Get the player data
             Player player = players[index];
+            if (player.getGameMode() == GameMode.CREATIVE) continue;
             PlayerSkills data = plugin.getPlayer(player.getName());
 
             // Check for lore strings

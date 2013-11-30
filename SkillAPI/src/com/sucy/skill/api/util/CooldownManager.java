@@ -1,6 +1,6 @@
 package com.sucy.skill.api.util;
 
-import java.lang.Long;import java.lang.Math;import java.lang.String;import java.lang.System;import java.util.HashMap;
+import java.util.HashMap;
 
 /**
  * Helper class for managing cooldowns

@@ -36,7 +36,7 @@ public class HealMechanic implements IMechanic {
         for (LivingEntity t : targets) {
             double prevHealth = t.getHealth();
             if (t instanceof Player) {
-                data.getAPI().getPlayer(((Player) t).getName()).heal(amount);
+                data.getAPI().getPlayer(((Player) t).getName()).heal(player, amount, skill.getName());
                 worked = true;
             }
             else {

@@ -1,12 +1,16 @@
 package com.sucy.skill;
 
-import com.sucy.skill.api.*;
+import com.sucy.skill.api.CustomClass;
+import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.api.util.effects.DOTHelper;
 import com.sucy.skill.click.ClickListener;
 import com.sucy.skill.command.ClassCommander;
-import com.sucy.skill.config.*;
+import com.sucy.skill.config.Config;
+import com.sucy.skill.config.PlayerValues;
+import com.sucy.skill.config.SettingValues;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.task.InventoryTask;
@@ -15,11 +19,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -119,7 +127,7 @@ public class SkillAPI extends JavaPlugin {
 
         // Set up the inventory task
         int playersPerTick = getConfig().getInt(SettingValues.PLAYERS_PER_CHECK.path());
-        invTask = new InventoryTask(this, playersPerTick);
+        if (getConfig().getBoolean(SettingValues.LORE_REQUIREMENTS.path(), true)) invTask = new InventoryTask(this, playersPerTick);
 
         // Load experience yields
         ConfigurationSection section = getConfig().getConfigurationSection(SettingValues.KILLS.path());

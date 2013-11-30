@@ -263,7 +263,7 @@ public final class PlayerSkills extends Valued {
             ((PassiveSkill) skill).onUpgrade(plugin.getServer().getPlayer(getName()), level + 1);
 
         // Upgrade the skill
-        this.points -= (int)skill.getAttribute(SkillAttribute.COST, level);
+        this.points -= (int)skill.getAttribute(SkillAttribute.COST, level + 1);
         skills.put(skill.getName().toLowerCase(), level + 1);
 
         // If first level, call the unlock event
@@ -275,6 +275,42 @@ public final class PlayerSkills extends Valued {
         // Call the upgrade event
         plugin.getServer().getPluginManager().callEvent(
                 new PlayerSkillUpgradeEvent(this, skill));
+
+        return true;
+    }
+
+    /**
+     * <p>Downgrades a skill for the player, refunding skill points in the process</p>
+     * <p>If the player does not have points invested in the skill, this does nothing</p>
+     *
+     * @param skill skill to downgrade
+     * @return      true if downgraded, false otherwise
+     */
+    public boolean downgradeSkill(ClassSkill skill) {
+
+        // Skill isn't available
+        if (!hasSkill(skill.getName()))
+            return false;
+
+        int level = getSkillLevel(skill.getName());
+
+        // Skill has no points
+        if (level == 0)
+            return false;
+
+        // Update passive skill effects
+        if (skill instanceof PassiveSkill) {
+            ((PassiveSkill) skill).stopEffects(plugin.getServer().getPlayer(getName()), level);
+            ((PassiveSkill) skill).onInitialize(plugin.getServer().getPlayer(getName()), level - 1);
+        }
+
+        // Downgrade the skill
+        this.points += (int)skill.getAttribute(SkillAttribute.COST, level);
+        skills.put(skill.getName().toLowerCase(), level - 1);
+
+        // Call the downgrade event
+        plugin.getServer().getPluginManager().callEvent(
+                new PlayerSkillDowngradeEvent(this, skill));
 
         return true;
     }
@@ -645,26 +681,45 @@ public final class PlayerSkills extends Valued {
      * @param amount amount to heal
      */
     public void heal(double amount) {
+
+        // Apply statuses
         if (hasStatus(Status.CURSE)) amount *= -1;
         if (hasStatus(Status.INVINCIBLE) && amount < 0) return;
 
         Player p = plugin.getServer().getPlayer(player);
         double health;
 
-        // Adjust the health depending on if the old health bar is enabled
-        if (plugin.oldHealthEnabled() && tree != null) {
-            CustomClass playerClass = plugin.getClass(tree);
-            health = p.getHealth() + amount * 20 / playerClass.getAttribute(ClassAttribute.HEALTH, level);
-        }
-        else health = p.getHealth() + amount;
+        // Call the event
+        PlayerHealEvent event = new PlayerHealEvent(p, amount);
+        getAPI().getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
 
-            if (health > p.getMaxHealth()) health = p.getMaxHealth();
+        // Heal the player
+        health = p.getHealth() + amount;
+        if (health > p.getMaxHealth()) health = p.getMaxHealth();
         if (health < 0) health = 0;
         p.setHealth(health);
     }
 
     /**
-     * Updates the level bar for the player
+     * <p>Heals the player the given amount, taking into account status effects and maximum health</p>
+     * <p>This method also launches a PlayerSkillHealEvent with the provided details</p>
+     *
+     * @param healer    player who did the healing
+     * @param amount    amount of health restored
+     * @param skillName name of the skill used
+     */
+    public void heal(Player healer, double amount, String skillName) {
+        PlayerSkillHealEvent event = new PlayerSkillHealEvent(getAPI().getServer().getPlayer(player), healer, skillName, amount);
+        getAPI().getServer().getPluginManager().callEvent(event);
+        heal(event.getAmount());
+    }
+
+    /**
+     * <p>Updates the enchanting level bar for the player</p>
+     * <p>This sets the enchanting level to the player's class level
+     * and the progress to the player's class experience progress to the
+     * next level.</p>
      */
     public void updateLevelBar() {
         Player player = plugin.getServer().getPlayer(this.player);
@@ -688,6 +743,10 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Retrieves the total amount of required experience
+     * to the next level for the player. This uses SkillAPI's
+     * configurable formula, plugging in the player's current level.</p>
+     *
      * @return amount of experience required for the next level
      */
     public int getRequiredExp() {
@@ -695,6 +754,10 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Retrieves the amount of experience left that the
+     * player needs to reach the next level</p>
+     * <p>This is a simple calculation of (requiredExp - currentExp)</p>
+     *
      * @return experience to the next level
      */
     public int getExpToNextLevel() {
@@ -730,6 +793,11 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Retrieves the status data for the player</p>
+     * <p>If the player doesn't have data for them,
+     * new data is created and returned</p>
+     * <p>This is this doing SkillAPI.getStatusHolder(player)</p>
+     *
      * @return the status data for the player
      */
     public StatusHolder getStatusData() {
@@ -738,6 +806,7 @@ public final class PlayerSkills extends Valued {
 
     /**
      * <p>Removes a status from the player</p>
+     * <p>If the player does not have the status on them, this does nothing</p>
      * <p>This is the same as doing StatusHolder.removeStatus(status)</p>
      *
      * @param status status to remove
@@ -759,6 +828,7 @@ public final class PlayerSkills extends Valued {
 
     /**
      * <p>Gets the time left on the status</p>
+     * <p>If the status is not applied or is expired, this returns 0</p>
      * <p>This is the same as doing StatusHolder.getTimeLeft(status)</p>
      *
      * @param status status to check
@@ -770,8 +840,18 @@ public final class PlayerSkills extends Valued {
 
     /**
      * <p>Makes the player cast the skill with the given name</p>
-     * <p>If the player is silenced or stunned this does nothing</p>
      * <p>The skill name is not case-sensitive</p>
+     * <p>If the player is silenced or stunned this does nothing</p>
+     * <p>If the skill is not a target skill or a skill shot, this
+     * will do nothing</p>
+     * <p>If the skill is on cooldown, the cast doesn't work but
+     * the player is notified that it is on cooldown</p>
+     * <p>If the player doesn't have enough mana to use the skill,
+     * the cast doesn't work but the player is notified that they
+     * don't have enough mana</p>
+     * <p>If the skill was successfully used, mana is deducted from
+     * them according to the skill cost and then the cooldown for
+     * the skill is started if applicable.</p>
      *
      * @param skillName skill to cast
      * @throws IllegalArgumentException when the skill name is invalid
@@ -881,6 +961,9 @@ public final class PlayerSkills extends Valued {
 
     /**
      * <p>Saves the player data to the configuration section</p>
+     * <p>Saving is handled automatically by the API so you
+     * shouldn't use this unless you plan on managing multiple
+     * profiles for each player.</p>
      *
      * @param config config file
      * @param path   config path

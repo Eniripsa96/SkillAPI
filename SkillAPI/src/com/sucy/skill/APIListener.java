@@ -22,8 +22,11 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -457,8 +460,15 @@ public class APIListener implements Listener {
                 // If they clicked on a skill, try upgrading it
                 if (tree.isSkill(event.getSlot())) {
                     PlayerSkills player = plugin.getPlayer(event.getWhoClicked().getName());
-                    if (player.upgradeSkill(tree.getSkill(event.getSlot()))) {
-                        tree.update(event.getInventory(), player);
+                    if (event.isLeftClick()) {
+                        if (player.upgradeSkill(tree.getSkill(event.getSlot()))) {
+                            tree.update(event.getInventory(), player);
+                        }
+                    }
+                    else if (event.isRightClick()) {
+                        if (player.downgradeSkill(tree.getSkill(event.getSlot()))) {
+                            tree.update(event.getInventory(), player);
+                        }
                     }
                 }
             }

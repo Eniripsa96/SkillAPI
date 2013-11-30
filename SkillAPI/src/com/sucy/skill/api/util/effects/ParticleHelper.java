@@ -1,6 +1,5 @@
 package com.sucy.skill.api.util.effects;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 
 import java.util.Random;

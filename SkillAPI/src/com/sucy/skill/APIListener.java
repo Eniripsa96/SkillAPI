@@ -22,11 +22,8 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,6 +88,8 @@ public class APIListener implements Listener {
      */
     @EventHandler (priority = EventPriority.LOW)
     public void onDamage(EntityDamageByEntityEvent event) {
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
 
         LivingEntity target = convertEntity(event.getEntity());
         LivingEntity damager = convertEntity(event.getDamager());
@@ -207,6 +206,9 @@ public class APIListener implements Listener {
      */
     @EventHandler (priority =  EventPriority.HIGH, ignoreCancelled = true)
     public void onStatusHit (EntityDamageByEntityEvent event) {
+
+        // Ignore ally checks
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
 
         // Status effects
         LivingEntity damaged = convertEntity(event.getEntity());
@@ -433,7 +435,6 @@ public class APIListener implements Listener {
                 plugin.sendStatusMessage(event.getPlayer(), StatusNodes.ROOTED, player.getTimeLeft(Status.ROOT));
             }
         }
-
     }
 
     /**

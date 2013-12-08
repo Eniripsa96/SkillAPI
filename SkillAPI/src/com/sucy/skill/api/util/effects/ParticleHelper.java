@@ -1,7 +1,12 @@
 package com.sucy.skill.api.util.effects;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -9,6 +14,7 @@ import java.util.Random;
  */
 public class ParticleHelper {
 
+    private static final String VERSION = "net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
     private static final Random random = new Random();
 
     /**
@@ -51,7 +57,9 @@ public class ParticleHelper {
 
             if (temp.distanceSquared(loc) > rSquared) continue;
 
-            loc.getWorld().playEffect(temp, type.getEffect(), 0);
+            if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
+            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), loc, 25);
+            else loc.getWorld().playEffect(temp, type.getEffect(), data);
             index++;
         }
     }
@@ -91,7 +99,9 @@ public class ParticleHelper {
 
             if (temp.distanceSquared(loc) > rSquared) continue;
 
-            loc.getWorld().playEffect(temp, type.getEffect(), 0);
+            if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
+            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), loc, 25);
+            else loc.getWorld().playEffect(temp, type.getEffect(), data);
             index++;
         }
     }
@@ -131,8 +141,154 @@ public class ParticleHelper {
 
             if (temp.distanceSquared(loc) > rSquared) continue;
 
-            loc.getWorld().playEffect(temp, type.getEffect(), 0);
+            if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
+            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), loc, 25);
+            else loc.getWorld().playEffect(temp, type.getEffect(), data);
             index++;
         }
     }
+
+
+    /**
+     * Sends the particle to all players within a radius of the location
+     *
+     * @param loc    location to play at
+     * @param radius radius of the effect
+     */
+    private static void send(String particle, Location loc, int radius) {
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            if (player.getWorld() == loc.getWorld() && player.getLocation().distanceSquared(loc) < radius * radius) {
+                sendToPlayer(particle, player, loc);
+            }
+        }
+    }
+
+    /**
+     * Sends the particle to the player at the given location
+     *
+     * @param player   player to send to
+     * @param location location of the particle
+     */
+    private static void sendToPlayer(String particle, Player player, Location location) {
+        Object packet = getInstance(getClass("Packet63WorldParticles"));
+        if (packet == null) return;
+        setValue(packet, "a", particle);
+        setValue(packet, "b", (float) location.getX());
+        setValue(packet, "c", (float) location.getY());
+        setValue(packet, "d", (float) location.getZ());
+        setValue(packet, "e", 0.0f);
+        setValue(packet, "f", 0.0f);
+        setValue(packet, "g", 0.0f);
+        setValue(packet, "h", 1.0f);
+        setValue(packet, "i", 1);
+        sendPacket(player, packet);
+    }
+
+    /**
+     * Retrieves a class by name
+     *
+     * @param name name of the class
+     * @return     class object or null if invalid
+     */
+    private static Class<?> getClass(String name) {
+        try {
+            return Class.forName(VERSION + name);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Gets an instance of the class
+     *
+     * @param c    class to get an instance of
+     * @param args constructor arguments
+     * @return     instance of the class or null if unable to create the object
+     */
+    private static Object getInstance(Class<?> c, Object ... args) {
+        try {
+            for (Constructor<?> constructor : c.getDeclaredConstructors()) {
+                if (constructor.getGenericParameterTypes().length == args.length) {
+                    return constructor.newInstance(args);
+                }
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Tries to send a packet to the player
+     *
+     * @param player player to send to
+     * @param packet packet to send
+     */
+    private static void sendPacket(Player player, Object packet) {
+        try {
+            Object handle = player.getClass().getMethod("getHandle").invoke(player);
+            Object connection = handle.getClass().getField("playerConnection").get(handle);
+            connection.getClass().getMethod("sendPacket", getClass("Packet")).invoke(connection, packet);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Tries to set a value for the object
+     *
+     * @param o         object reference
+     * @param fieldName name of the field to set
+     * @param value     value to set
+     */
+    private static void setValue(Object o, String fieldName, Object value) {
+        try {
+            Field field = o.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(o, value);
+        }
+        catch (Exception ex) { /* Do Nothing */ }
+    }
+
+    private static final HashMap<Integer, String> OTHER_VALUES = new HashMap<Integer, String>() {{
+        put(0, "angryVillager");
+        put(1, "bubble");
+        put(2, "cloud");
+        put(3, "crit");
+        put(4, "deathSuspend");
+        put(5, "dripLava");
+        put(6, "dripWater");
+        put(7, "enchantmenttable");
+        put(8, "explode");
+        put(9, "fireworksSpark");
+        put(10, "flame");
+        put(11, "footstep");
+        put(12, "happyVillager");
+        put(13, "heart");
+        put(14, "hugeexplosion");
+        put(15, "iconcrack_");
+        put(16, "instantSpell");
+        put(17, "largeexplode");
+        put(18, "largesmoke");
+        put(19, "lava");
+        put(20, "magicCrit");
+        put(21, "mobSpell");
+        put(22, "mobSpellAmbient");
+        put(23, "note");
+        put(24, "portal");
+        put(25, "reddust");
+        put(26, "slime");
+        put(27, "snowballpoof");
+        put(28, "snowshovel");
+        put(29, "spell");
+        put(30, "splash");
+        put(31, "suspend");
+        put(32, "tilecrack_");
+        put(33, "townaura");
+        put(34, "witchMagic");
+    }};
 }

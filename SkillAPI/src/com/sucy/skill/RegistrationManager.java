@@ -195,7 +195,7 @@ public class RegistrationManager {
             if (!config.contains(SkillValues.MAX_LEVEL))
                 config.set(SkillValues.MAX_LEVEL, skill.getMaxLevel() < 1 ? 1 : skill.getMaxLevel());
             if (!config.contains(SkillValues.INDICATOR))
-                config.set(SkillValues.INDICATOR, skill.getIndicator().name());
+                config.set(SkillValues.INDICATOR, skill.getIndicator().getType().name() + "," + skill.getIndicator().getDurability());
             if (skill.getSkillReq() != null && !neededOnly) {
                 config.set(SkillValues.SKILL_REQ, skill.getSkillReq());
                 config.set(SkillValues.SKILL_REQ_LEVEL, skill.getSkillReqLevel());

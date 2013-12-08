@@ -40,10 +40,13 @@ public class ProjectileHelper {
             Projectile projectile = source.launchProjectile(projectileType);
             projectile.setVelocity(vel);
             list.add(projectile.getEntityId());
+            amount--;
         }
 
+        if (amount <= 0) return list;
+
         double a = (double)angle / (amount - 1);
-        for (int i = 0; i < (amount - 1) / 2; i++) {
+        for (int i = 0; i < amount / 2; i++) {
             for (int j = -1; j <= 1; j += 2) {
 
                 // Initial calculations
@@ -84,8 +87,10 @@ public class ProjectileHelper {
             Projectile projectile = source.launchProjectile(projectileType);
             projectile.setVelocity(projectile.getVelocity().multiply(speed / projectile.getVelocity().length()));
             list.add(projectile.getEntityId());
-            if (amount == 1) return list;
+            amount--;
         }
+
+        if (amount <= 0) return list;
 
         // Get the base velocity
         Vector base = source.getLocation().getDirection();
@@ -101,7 +106,7 @@ public class ProjectileHelper {
         if (base.getZ() < 0) hAngle = -hAngle;
 
         double angleIncrement = (double)angle / (amount - 1);
-        for (int i = 0; i < (amount - 1) / 2; i++) {
+        for (int i = 0; i < amount / 2; i++) {
             for (int direction = -1; direction <= 1; direction += 2) {
 
                 // Initial calculations

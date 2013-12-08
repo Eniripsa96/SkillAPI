@@ -1,6 +1,8 @@
 package com.sucy.skill.api.util.effects;
 
+import com.sucy.skill.api.skill.ClassSkill;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 /**
  * <p>Data for a DOT effect</p>
@@ -9,6 +11,8 @@ import org.bukkit.entity.LivingEntity;
  */
 public class DOT {
 
+    private ClassSkill skill;
+    private Player caster;
     private int ticksLeft;
     private int frequency;
     private int ticks;
@@ -24,6 +28,22 @@ public class DOT {
      * @param lethal    lethal or not
      */
     public DOT(int ticks, double damage, int frequency, boolean lethal) {
+        this(null, null, ticks, damage, frequency, lethal);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param skill     skill applying the DOT
+     * @param caster    player casting the skill
+     * @param ticks     ticks left
+     * @param damage    damage per tick
+     * @param frequency time between ticks
+     * @param lethal    lethal or not
+     */
+    public DOT(ClassSkill skill, Player caster, int ticks, double damage, int frequency, boolean lethal) {
+        this.skill = skill;
+        this.caster = caster;
         this.ticks = ticks;
         this.damage = damage;
         this.lethal = lethal;
@@ -83,11 +103,24 @@ public class DOT {
             if (damage <= 0) return false;
 
             // Damage the entity
-            entity.damage(damage);
+            if (skill != null) {
+                skill.beginUsage();
+            }
+            if (caster != null) {
+                entity.damage(damage, caster);
+            }
+            else entity.damage(damage);
+            if (skill != null) {
+                skill.stopUsage();
+            }
         }
 
         // Healing
         else {
+
+            if (skill != null) {
+                skill.beginUsage();
+            }
 
             // Cannot go above the enemy health
             double health = entity.getHealth() - damage;
@@ -95,6 +128,10 @@ public class DOT {
 
             // Heal the entity
             entity.setHealth(health);
+
+            if (skill != null) {
+                skill.stopUsage();
+            }
         }
 
         // Ends the effect if the entity is dead

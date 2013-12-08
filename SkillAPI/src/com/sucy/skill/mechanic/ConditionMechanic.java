@@ -86,7 +86,7 @@ public class ConditionMechanic implements IMechanic {
 
         // Prepare the embed data in case it needs to be used
         EmbedData embedData = new EmbedData(player, data, skill);
-        skill.startEmbeddedEffects();
+        skill.beginUsage();
 
         // Loop through each target
         boolean worked = false;
@@ -161,7 +161,7 @@ public class ConditionMechanic implements IMechanic {
                 worked = true;
             }
         }
-        skill.stopEmbeddedEffects();
+        skill.stopUsage();
 
         return worked;
     }

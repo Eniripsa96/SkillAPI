@@ -44,12 +44,12 @@ public class DelayMechanic implements IMechanic {
             @Override
             public void run() {
                 // Apply the embedded effects
-                embedData.getSkill().startEmbeddedEffects();
+                embedData.getSkill().beginUsage();
                 for (LivingEntity t : targets) {
                     embedData.resolveNonTarget(t.getLocation());
                     embedData.resolveTarget(t);
                 }
-                embedData.getSkill().stopEmbeddedEffects();
+                embedData.getSkill().stopUsage();
             }
         }, delay);
 

@@ -47,7 +47,7 @@ public class CmdProfess implements ICommand {
                 player.setClass(args[0]);
                 List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.PROFESS, true);
                 for (String message : messages) {
-                    message = message.replace("{class}", args[0]);
+                    message = message.replace("{class}", api.getClass(args[0]).getName());
                     sender.sendMessage(message);
                 }
             }

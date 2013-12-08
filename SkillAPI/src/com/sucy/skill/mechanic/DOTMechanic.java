@@ -51,7 +51,7 @@ public class DOTMechanic implements IMechanic {
         // Apply a DOT to all targets
         for (LivingEntity entity : targets) {
             DOTSet set = helper.getDOTSet(entity);
-            set.addEffect(skill.getName(), new DOT(duration, damage, frequency, lethal));
+            set.addEffect(skill.getName(), new DOT(skill, player, duration, damage, frequency, lethal));
         }
 
         return true;

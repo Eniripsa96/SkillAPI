@@ -52,7 +52,6 @@ public class ProjectileMechanic implements IMechanic, Listener {
     public boolean resolve(Player player, PlayerSkills data, DynamicSkill skill, Target target, List<LivingEntity> targets) {
 
         // Change mana of all player targets
-        boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
         double speed = skill.getAttribute(SPEED, target, level);
         int amount = (int)skill.getAttribute(QUANTITY, target, level);
@@ -71,7 +70,7 @@ public class ProjectileMechanic implements IMechanic, Listener {
             projectiles.put(id, new EmbedData(player, data, skill));
         }
 
-        return worked;
+        return true;
     }
 
     /**
@@ -89,9 +88,9 @@ public class ProjectileMechanic implements IMechanic, Listener {
         }, 1);
         if (projectiles.containsKey(event.getEntity().getEntityId())) {
             EmbedData data = projectiles.get(event.getEntity().getEntityId());
-            data.getSkill().startEmbeddedEffects();
+            data.getSkill().beginUsage();
             data.resolveNonTarget(event.getEntity().getLocation());
-            data.getSkill().stopEmbeddedEffects();
+            data.getSkill().stopUsage();
         }
     }
 
@@ -102,11 +101,12 @@ public class ProjectileMechanic implements IMechanic, Listener {
      */
     @EventHandler
     public void onProjectileHit(EntityDamageByEntityEvent event) {
+
         if (projectiles.containsKey(event.getDamager().getEntityId()) && event.getEntity() instanceof LivingEntity) {
             EmbedData data = projectiles.get(event.getDamager().getEntityId());
-            data.getSkill().startEmbeddedEffects();
+            data.getSkill().beginUsage();
             data.resolveTarget((LivingEntity)event.getEntity());
-            data.getSkill().stopEmbeddedEffects();
+            data.getSkill().stopUsage();
         }
     }
 

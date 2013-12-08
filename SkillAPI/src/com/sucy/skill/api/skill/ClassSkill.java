@@ -37,7 +37,7 @@ public abstract class ClassSkill extends Attributed {
     /**
      * Indicator for the skill in a skill tree
      */
-    protected Material indicator;
+    protected ItemStack indicator;
 
     /**
      * Maximum level the skill can reach
@@ -65,7 +65,8 @@ public abstract class ClassSkill extends Attributed {
     protected final SkillAPI api;
 
     /**
-     * Constructor
+     * <p>Constructor</p>
+     * <p>This is used for basic skills that don't require another skill to be leveled up before this one</p>
      *
      * @param name      skill name
      * @param type      skill type
@@ -73,11 +74,12 @@ public abstract class ClassSkill extends Attributed {
      * @param maxLevel  maximum skill level
      */
     public ClassSkill(String name, SkillType type, Material indicator, int maxLevel) {
-        this(name, type, indicator, maxLevel, null, 0);
+        this(name, type, new ItemStack(indicator), maxLevel, null, 0);
     }
 
     /**
-     * Constructor
+     * <p>Constructor</p>
+     * <p>This is used for higher level skills that require another skill to be leveled up before this one</p>
      *
      * @param name      skill name
      * @param type      skill type
@@ -86,6 +88,35 @@ public abstract class ClassSkill extends Attributed {
      * @param skillReq  skill required before this one
      */
     public ClassSkill(String name, SkillType type, Material indicator, int maxLevel, String skillReq, int skillReqLevel) {
+        this(name, type, new ItemStack(indicator), maxLevel, skillReq, skillReqLevel);
+    }
+
+    /**
+     * <p>Constructor</p>
+     * <p>This is used for basic skills that don't require another skill to be leveled up before this one</p>
+     * <p>The indicator's display name and lore will not be saved, only the type and durability</p>
+     *
+     * @param name      skill name
+     * @param type      skill type
+     * @param indicator skill tree indicator
+     * @param maxLevel  maximum skill level
+     */
+    public ClassSkill(String name, SkillType type, ItemStack indicator, int maxLevel) {
+        this(name, type, indicator, maxLevel, null, 0);
+    }
+
+    /**
+     * <p>Constructor</p>
+     * <p>This is used for higher level skills that require another skill to be leveled up before this one</p>
+     * <p>The indicator's display name and lore will not be saved, only the type and durability</p>
+     *
+     * @param name      skill name
+     * @param type      skill type
+     * @param indicator skill tree indicator
+     * @param maxLevel  maximum skill level
+     * @param skillReq  skill required before this one
+     */
+    public ClassSkill(String name, SkillType type, ItemStack indicator, int maxLevel, String skillReq, int skillReqLevel) {
         this.type = type;
         this.name = name;
         this.indicator = indicator;
@@ -96,6 +127,8 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
+     * <p>Retrieves the SkillAPI reference</p>
+     *
      * @return API reference
      */
     public SkillAPI getAPI() {
@@ -103,6 +136,8 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
+     * <p>Retrieves the name of the skill</p>
+     *
      * @return skill name
      */
     public String getName() {
@@ -110,6 +145,8 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
+     * <p>Retrieves the maximum level this skill can be upgraded to</p>
+     *
      * @return the maximum level of the skill
      */
     public int getMaxLevel() {
@@ -117,9 +154,13 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
+     * <p>Retrieves the base item for the skill indicator</p>
+     * <p>This does not include the skill data provided when
+     * getting the indicator for a player</p>
+     *
      * @return the material used to represent the skill in skill trees
      */
-    public Material getIndicator() {
+    public ItemStack getIndicator() {
         return indicator;
     }
 
@@ -172,12 +213,21 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Sets the icon for the skill
+     * <p>Assigns a new indicator for the skill</p>
      *
-     * @param mat material for the icon
+     * @param mat new indicator
      */
     public void setIcon(Material mat) {
-        indicator = mat;
+        indicator = new ItemStack(mat);
+    }
+
+    /**
+     * <p>Assigns a new indicator for the skill</p>
+     *
+     * @param item new indicator
+     */
+    public void setIcon(ItemStack item) {
+        indicator = item;
     }
 
     /**
@@ -202,7 +252,7 @@ public abstract class ClassSkill extends Attributed {
      * your skill itself. When this happens, the damage your skill deals will be counted
      * as being dealt by the other one.</p>
      */
-    protected void beginUsage() {
+    public void beginUsage() {
         PlayerSkills.skillsBeingCast.push(this);
     }
 
@@ -220,7 +270,7 @@ public abstract class ClassSkill extends Attributed {
      * your skill itself. When this happens, the damage your skill deals will be counted
      * as being dealt by the other one.</p>
      */
-    protected void stopUsage() {
+    public void stopUsage() {
         for (int i = PlayerSkills.skillsBeingCast.indexOf(this); i >= 0 && i < PlayerSkills.skillsBeingCast.size();) {
             PlayerSkills.skillsBeingCast.pop();
         }
@@ -258,8 +308,9 @@ public abstract class ClassSkill extends Attributed {
         List<String> layout = api.getMessages(SkillNodes.LAYOUT, false);
         boolean first = true;
 
-        ItemStack item = new ItemStack(getIndicator());
-        ItemMeta meta = item.hasItemMeta() ? item.getItemMeta() : Bukkit.getItemFactory().getItemMeta(indicator);
+        ItemStack item = indicator.clone();
+        item.setAmount(Math.max(1, level));
+        ItemMeta meta = item.hasItemMeta() ? item.getItemMeta() : Bukkit.getItemFactory().getItemMeta(item.getType());
         ArrayList<String> lore = new ArrayList<String>();
 
         // Cycle through each line, parse it, and add it to the display
@@ -404,7 +455,7 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Formates a double value for display
+     * Formats a double value for display
      *
      * @param value value to format
      * @return      formatted string
@@ -564,7 +615,25 @@ public abstract class ClassSkill extends Attributed {
         }
 
         // Icon
-        Material icon = Material.valueOf(config.getString(SkillValues.INDICATOR));
-        if (icon != null) indicator = icon;
+        parseIndicator(config.getString(SkillValues.INDICATOR));
+    }
+
+    /**
+     * <p>Parses the indicator from the config string and
+     * updates the indicator to the loaded one</p>
+     * <p>This is primarily for the API loading in data.
+     * You shouldn't have to use this method.</p>
+     *
+     * @param string config string
+     */
+    protected void parseIndicator(String string) {
+        String[] pieces;
+        if (string.contains(",")) pieces = string.split(",");
+        else pieces = new String[] { string };
+        Material icon = Material.valueOf(pieces[0]);
+        if (icon == null) return;
+        ItemStack item = new ItemStack(icon);
+        if (pieces.length > 1) item.setDurability(Short.parseShort(pieces[1]));
+        indicator = item;
     }
 }

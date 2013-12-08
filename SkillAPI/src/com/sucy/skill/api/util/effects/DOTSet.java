@@ -22,7 +22,7 @@ public class DOTSet extends BukkitRunnable {
      * @param target target of the DOT set
      */
     public DOTSet(SkillAPI api, LivingEntity target) {
-        runTaskTimer(api, 20, 20);
+        runTaskTimer(api, 1, 1);
         this.target = target;
     }
 

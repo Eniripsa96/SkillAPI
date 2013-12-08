@@ -45,12 +45,12 @@ public class ChanceMechanic implements IMechanic {
 
             // Apply the embedded effects
             EmbedData embedData = new EmbedData(player, data, skill);
-            skill.startEmbeddedEffects();
+            skill.beginUsage();
             for (LivingEntity t : targets) {
                 embedData.resolveNonTarget(t.getLocation());
                 embedData.resolveTarget(t);
             }
-            skill.stopEmbeddedEffects();
+            skill.stopUsage();
         }
 
         return true;

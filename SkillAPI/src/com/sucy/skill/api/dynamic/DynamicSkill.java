@@ -64,7 +64,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
         // Basic values
         type = SkillType.valueOf(config.getString(SkillValues.TYPE, type.name()).toUpperCase().replace(" ", "_"));
-        indicator = Material.valueOf(config.getString(SkillValues.INDICATOR, indicator.name()).toUpperCase().replace(" ", "_"));
+        parseIndicator(config.getString(SkillValues.INDICATOR, "GLASS").toUpperCase().replace(" ", "_"));
         maxLevel = config.getInt(SkillValues.MAX_LEVEL, maxLevel);
         skillReq = config.getString(SkillValues.SKILL_REQ, skillReq);
         skillReqLevel = config.getInt(SkillValues.SKILL_REQ_LEVEL, skillReqLevel);
@@ -308,27 +308,13 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
     }
 
     /**
-     * Starts the usage of the skill during embedded effects
-     */
-    public void startEmbeddedEffects() {
-        beginUsage();
-    }
-
-    /**
-     * Stops the usage of the skill during embedded effects
-     */
-    public void stopEmbeddedEffects() {
-        stopUsage();
-    }
-
-    /**
      * Saves the mechanic to the configuration section
      *
      * @param config configuration section to save to
      */
     public void save(ConfigurationSection config) {
         config.set(SkillValues.TYPE, getType().name());
-        config.set(SkillValues.INDICATOR, getIndicator().name());
+        config.set(SkillValues.INDICATOR, getIndicator().getType().name() + "," + getIndicator().getDurability());
         config.set(SkillValues.MAX_LEVEL, getMaxLevel());
         config.set(SkillValues.SKILL_REQ, getSkillReq());
         config.set(SkillValues.SKILL_REQ_LEVEL, getSkillReqLevel());

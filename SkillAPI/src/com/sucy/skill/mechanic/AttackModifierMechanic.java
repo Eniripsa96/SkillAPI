@@ -59,9 +59,11 @@ public class AttackModifierMechanic implements IMechanic, Listener {
         int level = data.getSkillLevel(skill.getName());
         int duration = (int)(skill.getAttribute(DURATION, target, level) * 1000);
         int attacks = (int)skill.getAttribute(ATTACKS, target, level);
-        TimedEmbedData embedData = new TimedEmbedData(player, data, skill, System.currentTimeMillis() + duration);
-        embedData.setValue(ATTACKS, attacks);
-        activeEffects.put(player.getEntityId(), embedData);
+        for (LivingEntity t : targets) {
+            TimedEmbedData embedData = new TimedEmbedData(player, data, skill, System.currentTimeMillis() + duration);
+            embedData.setValue(ATTACKS, attacks);
+            activeEffects.put(t.getEntityId(), embedData);
+        }
         return true;
     }
 
@@ -98,10 +100,10 @@ public class AttackModifierMechanic implements IMechanic, Listener {
         }
 
         // Apply the embedded effects
-        data.getSkill().startEmbeddedEffects();
+        data.getSkill().beginUsage();
         data.resolveNonTarget(event.getTarget().getLocation());
         data.resolveTarget(event.getTarget());
-        data.getSkill().stopEmbeddedEffects();
+        data.getSkill().stopUsage();
     }
 
     /**

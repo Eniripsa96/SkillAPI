@@ -124,6 +124,11 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Retrieves the details of the player's skills</p>
+     * <p>The key is the name of the skill</p>
+     * <p>The value is the level of the skill</p>
+     * <p>Modifying this map will change the player's skill data</p>
+     *
      * @return map of the names and levels of the skills the player has
      */
     public HashMap<String, Integer> getSkills() {
@@ -131,6 +136,8 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Retrieves the name of the player</p>
+     *
      * @return player name
      */
     public String getName() {

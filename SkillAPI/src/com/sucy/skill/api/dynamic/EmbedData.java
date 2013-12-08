@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Embedded data for some mechanics
+ * <p>Embedded data for dynamic effects</p>
  */
 public class EmbedData extends Valued {
 

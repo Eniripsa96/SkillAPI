@@ -7,6 +7,8 @@ import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,10 @@ public class StatusMechanic implements IMechanic {
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
                 data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, (int)(duration * 1000));
+                worked = true;
+            }
+            else if (status == Status.ROOT || status == Status.STUN) {
+                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, (int)(duration * 20)));
                 worked = true;
             }
         }

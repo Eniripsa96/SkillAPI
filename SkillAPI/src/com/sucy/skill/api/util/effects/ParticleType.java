@@ -25,7 +25,12 @@ public enum ParticleType {
     /**
      * Potion break effect
      */
-    POTION_BREAK (Effect.POTION_BREAK)
+    POTION_BREAK (Effect.POTION_BREAK),
+
+    /**
+     * Packet-based effects
+     */
+    OTHER (null)
     ;
 
     private final Effect effect;

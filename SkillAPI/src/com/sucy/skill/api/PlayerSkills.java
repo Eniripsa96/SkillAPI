@@ -136,6 +136,15 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Retrieves the player reference</p>
+     *
+     * @return player reference
+     */
+    public Player getPlayer() {
+        return plugin.getServer().getPlayer(player);
+    }
+
+    /**
      * <p>Retrieves the name of the player</p>
      *
      * @return player name
@@ -342,6 +351,12 @@ public final class PlayerSkills extends Valued {
             binds.clear();
         }
 
+        // Clear permissions on leaving a class
+        if (plugin.getClass(prevTree) != null) {
+            String permission = "skillapi.profess." + plugin.getClass(prevTree).getName().toLowerCase();
+            // TODO clear permission
+        }
+
         // If the player was reverted to no class, clear all data
         if (plugin.getClass(this.tree) == null) {
             level = 1;
@@ -361,6 +376,10 @@ public final class PlayerSkills extends Valued {
         }
 
         CustomClass tree = plugin.getClass(className);
+
+        // Set new permission
+        String perm = "skillapi.profess." + tree.getName().toLowerCase();
+        // TODO set permission
 
         // If not resetting, simply remove any skills no longer in the tree
         if (!plugin.doProfessionsReset()) {
@@ -475,6 +494,20 @@ public final class PlayerSkills extends Valued {
                 ClassSkill s = plugin.getSkill(entry.getKey());
                 if (s != null && s instanceof PassiveSkill)
                     ((PassiveSkill) s).stopEffects(plugin.getServer().getPlayer(player), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * <p>Starts the effects of all passive abilities for the player</p>
+     */
+    public void startPassiveAbilities() {
+        Player player = getPlayer();
+        for (Map.Entry<String, Integer> entry : getSkills().entrySet()) {
+            if (entry.getValue() >= 1) {
+                ClassSkill s = plugin.getSkill(entry.getKey());
+                if (s != null && s instanceof PassiveSkill)
+                    ((PassiveSkill) s).onInitialize(player, entry.getValue());
             }
         }
     }

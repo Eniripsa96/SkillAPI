@@ -106,5 +106,6 @@ public class ParticleMechanic implements IMechanic {
         put(1, ParticleType.ENDER_SIGNAL);
         put(2, ParticleType.MOBSPAWNER_FLAMES);
         put(3, ParticleType.POTION_BREAK);
+        put(4, ParticleType.OTHER);
     }};
 }

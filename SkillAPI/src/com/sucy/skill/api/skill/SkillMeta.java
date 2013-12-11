@@ -1,5 +1,6 @@
 package com.sucy.skill.api.skill;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
@@ -16,7 +17,7 @@ public class SkillMeta implements MetadataValue {
 
     private static final String META_NAME = "skillMeta";
 
-    private Hashtable<String, Integer> attributes = new Hashtable<String, Integer>();
+    private Hashtable<String, Double> attributes = new Hashtable<String, Double>();
     private Player caster;
     private Plugin plugin;
     private ClassSkill skill;
@@ -27,7 +28,7 @@ public class SkillMeta implements MetadataValue {
      * @param caster caster of the skill
      */
     public SkillMeta(Player caster, ClassSkill skill) {
-        this.caster = caster;
+        this(Bukkit.getPluginManager().getPlugin("SkillAPI"), caster, skill);
     }
 
     /**
@@ -57,7 +58,7 @@ public class SkillMeta implements MetadataValue {
      * @param name  attribute name
      * @param value attribute value
      */
-    public void setAttribute(String name, int value) {
+    public void setAttribute(String name, double value) {
         attributes.put(name, value);
     }
 
@@ -67,7 +68,7 @@ public class SkillMeta implements MetadataValue {
      * @param name attribute name
      * @return     attribute value or null if not set
      */
-    public int getAttribute(String name) {
+    public double getAttribute(String name) {
         return attributes.get(name);
     }
 
@@ -188,7 +189,7 @@ public class SkillMeta implements MetadataValue {
      * @return       meta attached or null if none
      */
     public static SkillMeta getMeta(Metadatable target, ClassSkill skill) {
-        if (hasMeta(target, skill)) return (SkillMeta)target.getMetadata(META_NAME + skill.getName());
+        if (hasMeta(target, skill)) return (SkillMeta)target.getMetadata(META_NAME + skill.getName()).get(0);
         else return null;
     }
 }

@@ -6,6 +6,7 @@ import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.api.util.effects.DOTHelper;
+import com.sucy.skill.api.util.effects.ParticleHelper;
 import com.sucy.skill.click.ClickListener;
 import com.sucy.skill.command.ClassCommander;
 import com.sucy.skill.config.Config;
@@ -150,11 +151,12 @@ public class SkillAPI extends JavaPlugin {
                 players.put(player.getName().toLowerCase(), new PlayerSkills(this, player.getName()));
         }
 
-        // Listeners and Commands
-        new APIListener(this);
+        // Setup Helper classes
+        new SkillListener(this);
         new ClassCommander(this);
         if (clickCombo) new ClickListener(this);
         dotHelper = new DOTHelper(this);
+        ParticleHelper.initialize();
     }
 
     /**

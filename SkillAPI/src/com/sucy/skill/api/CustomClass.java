@@ -14,10 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.LargeFireball;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.SmallFireball;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +26,7 @@ import java.util.List;
  */
 public abstract class CustomClass extends Attributed {
 
-    private final HashMap<Class<? extends Projectile>, Integer> projectileDamage = new HashMap<Class<? extends Projectile>, Integer>();
+    private final HashMap<Material, Integer> projectileDamage = new HashMap<Material, Integer>();
     private final HashMap<Material, Integer> damage = new HashMap<Material, Integer>();
     private final HashMap<Integer, Integer> idDamage = new HashMap<Integer, Integer>();
     private final HashMap<Integer, Integer> idProjectiles = new HashMap<Integer, Integer>();
@@ -411,7 +407,7 @@ public abstract class CustomClass extends Attributed {
 
         // Options
         manaName = TextFormatter.colorString(config.getString(ClassValues.MANA_NAME, "Mana"));
-        gainMana = config.getBoolean(ClassValues.PASSIVE_MANA_GAIN);
+        gainMana = config.getBoolean(ClassValues.PASSIVE_MANA_GAIN, true);
 
         // Stats
         if (hasAttribute(ClassAttribute.HEALTH)) {
@@ -501,7 +497,7 @@ public abstract class CustomClass extends Attributed {
      * @param type   projectile type
      * @param damage maximum damage dealt
      */
-    protected void setProjectileDamage(Class<? extends Projectile> type, int damage) {
+    protected void setProjectileDamage(Material type, int damage) {
         this.projectileDamage.put(type, damage);
     }
 
@@ -522,7 +518,7 @@ public abstract class CustomClass extends Attributed {
      * @param type projectile type
      * @return     maximum damage dealt
      */
-    public int getDamage(Class<? extends Projectile> type) {
+    public int getProjectileDamage(Material type) {
 
         // Custom damage if applicable
         if (projectileDamage.containsKey(type)) {
@@ -577,7 +573,7 @@ public abstract class CustomClass extends Attributed {
      * @param type projectile type
      * @return     default damage
      */
-    public static int getDefaultDamage(Class<? extends Projectile> type) {
+    public static int getDefaultProjectileDamage(Material type) {
 
         // Default damage if applicable
         if (defaultProjectileDamage.containsKey(type)) {
@@ -647,9 +643,8 @@ public abstract class CustomClass extends Attributed {
     /**
      * Default damage for projectiles
      */
-    private static final HashMap<Class<? extends Projectile>, Integer> defaultProjectileDamage = new HashMap<Class<? extends Projectile>, Integer>() {{
-        put(Arrow.class, 10);
-        put(SmallFireball.class, 5);
-        put(LargeFireball.class, 17);
+    private static final HashMap<Material, Integer> defaultProjectileDamage = new HashMap<Material, Integer>() {{
+        put(Material.BOW, 10);
+        put(Material.FIREBALL, 5);
     }};
 }

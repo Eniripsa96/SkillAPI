@@ -50,7 +50,7 @@ public class Mechanic {
     public Mechanic(DynamicSkill skill, ConfigurationSection config, String prefix) {
         this.skill = skill;
         this.prefix = prefix;
-        this.target = Target.valueOf(config.getString(TARGET).toUpperCase());
+        this.target = Target.valueOf(config.getString(TARGET).toUpperCase().replace(" ", "_"));
         this.group = Group.valueOf(config.getString(GROUP).toUpperCase());
         this.mechanic = MECHANICS.get(config.getString(EFFECT).toUpperCase());
     }

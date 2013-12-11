@@ -86,8 +86,10 @@ public class ProjectileMechanic implements IMechanic, Listener {
                 projectiles.remove(event.getEntity().getEntityId());
             }
         }, 1);
+        event.getEntity().getServer().getLogger().info("Projectile landed");
         if (projectiles.containsKey(event.getEntity().getEntityId())) {
             EmbedData data = projectiles.get(event.getEntity().getEntityId());
+            event.getEntity().getServer().getLogger().info("resolving non-target " + data.getSkill().getName() + "...");
             data.getSkill().beginUsage();
             data.resolveNonTarget(event.getEntity().getLocation());
             data.getSkill().stopUsage();
@@ -102,8 +104,10 @@ public class ProjectileMechanic implements IMechanic, Listener {
     @EventHandler
     public void onProjectileHit(EntityDamageByEntityEvent event) {
 
+        event.getEntity().getServer().getLogger().info("Projectile hit");
         if (projectiles.containsKey(event.getDamager().getEntityId()) && event.getEntity() instanceof LivingEntity) {
             EmbedData data = projectiles.get(event.getDamager().getEntityId());
+            event.getEntity().getServer().getLogger().info("resolving target " + data.getSkill().getName() + "...");
             data.getSkill().beginUsage();
             data.resolveTarget((LivingEntity)event.getEntity());
             data.getSkill().stopUsage();
@@ -122,6 +126,7 @@ public class ProjectileMechanic implements IMechanic, Listener {
         skill.checkDefault(prefix + QUANTITY, 1, 0);
         skill.checkDefault(prefix + ANGLE, 30, 0);
         if (!skill.isSet(SPREAD)) skill.setValue(SPREAD, 0);
+        if (!skill.isSet(PROJECTILE)) skill.setValue(PROJECTILE, 0);
     }
 
     /**

@@ -9,6 +9,7 @@ import com.sucy.skill.config.SkillValues;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -125,7 +126,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
         // If passive abilities, make sure there's a period
         if (passiveMechanics.size() > 0) {
-            checkDefault(PERIOD, 3, 1);
+            checkDefault(PERIOD, 3, 0);
         }
     }
 
@@ -255,7 +256,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
         // Start a new task
         PlayerSkills data = api.getPlayer(player.getName());
-        PassiveTask task = new PassiveTask(this, data, player);
+        PassiveTask task = new PassiveTask(this, data, player.getName());
         int level = data.getSkillLevel(getName());
         int period = (int)(getAttribute(PERIOD, level) * 20);
         task.runTaskTimer(data.getAPI(), period, period);
@@ -387,19 +388,19 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
         private DynamicSkill skill;
         private PlayerSkills data;
-        private Player player;
+        private String playerName;
 
         /**
          * Constructor
          *
-         * @param skill  passive skill
-         * @param data   data of the player with the passive
-         * @param player player with the passive
+         * @param skill      passive skill
+         * @param data       data of the player with the passive
+         * @param playerName name of the player with the passive
          */
-        private PassiveTask(DynamicSkill skill, PlayerSkills data, Player player) {
+        private PassiveTask(DynamicSkill skill, PlayerSkills data, String playerName) {
             this.skill = skill;
             this.data = data;
-            this.player = player;
+            this.playerName = playerName;
         }
 
         /**
@@ -408,8 +409,10 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         @Override
         public void run() {
 
+            Player player = getAPI().getServer().getPlayer(playerName);
+
             // Cannot use the effect
-            if (!player.isValid() || !skill.hasItemReq(player)) {
+            if (player == null || player.isDead() || !skill.hasItemReq(player)) {
                 return;
             }
 

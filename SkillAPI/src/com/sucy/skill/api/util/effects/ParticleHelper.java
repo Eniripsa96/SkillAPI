@@ -148,6 +148,21 @@ public class ParticleHelper {
         }
     }
 
+    private static Class<?> packetClass;
+    private static Object packet;
+
+    public static void initialize() {
+        packetClass = getClass("Packet");
+        packet = getInstance(getClass("Packet63WorldParticles"));
+        if (packet == null) {
+            packet = getInstance(getClass("PacketPlayOutWorldParticles"));
+        }
+        setValue(packet, "e", 0.0f);
+        setValue(packet, "f", 0.0f);
+        setValue(packet, "g", 0.0f);
+        setValue(packet, "h", 1.0f);
+        setValue(packet, "i", 1);
+    }
 
     /**
      * Sends the particle to all players within a radius of the location
@@ -170,17 +185,11 @@ public class ParticleHelper {
      * @param location location of the particle
      */
     private static void sendToPlayer(String particle, Player player, Location location) {
-        Object packet = getInstance(getClass("Packet63WorldParticles"));
         if (packet == null) return;
         setValue(packet, "a", particle);
         setValue(packet, "b", (float) location.getX());
         setValue(packet, "c", (float) location.getY());
         setValue(packet, "d", (float) location.getZ());
-        setValue(packet, "e", 0.0f);
-        setValue(packet, "f", 0.0f);
-        setValue(packet, "g", 0.0f);
-        setValue(packet, "h", 1.0f);
-        setValue(packet, "i", 1);
         sendPacket(player, packet);
     }
 
@@ -195,7 +204,6 @@ public class ParticleHelper {
             return Class.forName(VERSION + name);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             return null;
         }
     }
@@ -215,9 +223,7 @@ public class ParticleHelper {
                 }
             }
         }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        catch (Exception ex) { /* */ }
         return null;
     }
 
@@ -231,7 +237,7 @@ public class ParticleHelper {
         try {
             Object handle = player.getClass().getMethod("getHandle").invoke(player);
             Object connection = handle.getClass().getField("playerConnection").get(handle);
-            connection.getClass().getMethod("sendPacket", getClass("Packet")).invoke(connection, packet);
+            connection.getClass().getMethod("sendPacket", packetClass).invoke(connection, packet);
         }
         catch (Exception ex) {
             ex.printStackTrace();

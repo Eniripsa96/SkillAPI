@@ -1,9 +1,11 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 2.17
+version: 2.19
+
 commands:
   class:
     description: interacts with class and skill functionality
+
 permissions:
   skillapi.basic:
     description: access to skill trees and using skills

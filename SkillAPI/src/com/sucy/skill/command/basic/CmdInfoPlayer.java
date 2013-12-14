@@ -58,7 +58,7 @@ public class CmdInfoPlayer implements ICommand {
 
             // Filter and send the messages
             for (String string : messages) {
-                string = string.replace("{player}", player.getName());
+                string = string.replace("{player}", player.getPlayer().getName());
                 if (player.getClassName() != null)
                     string = string.replace("{class}", player.getClassName())
                                    .replace("{level}", player.getLevel() + "")

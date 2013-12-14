@@ -69,6 +69,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean clickCombo;
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
+    private boolean blockCreativeExp;
     private int startingPoints;
     private int pointsPerLevel;
     private int x;
@@ -109,6 +110,7 @@ public class SkillAPI extends JavaPlugin {
         clickCombo = getConfig().getBoolean(SettingValues.USE_CLICK_COMBOS.path(), false);
         blockSpawnerExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_SPAWNER_EXP.path(), true);
         blockEggExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_EGG_EXP.path(), true);
+        blockCreativeExp = getConfig().getBoolean(SettingValues.BLOCK_CREATIVE_EXP.path(), true);
 
         // Experience formula
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
@@ -320,6 +322,13 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean blockingEggExp() {
         return blockEggExp;
+    }
+
+    /**
+     * @return whether or not the experience gained while in creative mode is being blocked
+     */
+    public boolean blockingCreativeExp() {
+        return blockCreativeExp;
     }
 
     /**

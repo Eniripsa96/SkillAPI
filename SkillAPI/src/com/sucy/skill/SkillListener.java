@@ -12,6 +12,7 @@ import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -139,7 +140,7 @@ public class SkillListener implements Listener {
                     if (projectile.hasMetadata(P_TYPE)) {
                         int id = projectile.getMetadata(P_TYPE).get(0).asInt();
                         int damage = playerClass.getCustomDamage(id);
-                        if (damage > 0) event.setDamage(damage);
+                        event.setDamage(Math.max(damage, 1));
                     }
 
                     // When the default damage isn't 0, set the damage relative
@@ -173,10 +174,9 @@ public class SkillListener implements Listener {
                     double damage = 1;
                     if (mat.toString().toLowerCase().startsWith("x")) {
                         damage = Math.max(damage, playerClass.getDamage(p.getItemInHand().getTypeId()));
-                        if (damage == 0) damage = event.getDamage();
                     }
                     else if (p.getItemInHand() != null) damage = event.getDamage() + playerClass.getDamage(mat) - CustomClass.getDefaultDamage(mat);
-                    event.setDamage(damage);
+                    event.setDamage(Math.max(damage, 1));
                 }
             }
         }
@@ -432,6 +432,7 @@ public class SkillListener implements Listener {
             else if (value == EGG && plugin.blockingEggExp()) return;
         }
         if (event.getEntity().getKiller() != null && event.getEntity().getKiller().hasPermission(PermissionNodes.BASIC)) {
+            if (event.getEntity().getKiller().getGameMode() == GameMode.CREATIVE && plugin.blockingCreativeExp()) return;
             PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller().getName());
             player.giveExp(plugin.getExp(getName(event.getEntity())));
         }

@@ -46,6 +46,7 @@ Commands:
     reload: ''
     reset: ''
     skills: ''
+    unbind: ''
   complete:
     bind:
     - '&6{skill} &2has been bound to the item &6{item}'
@@ -107,6 +108,8 @@ Commands:
       - '&6THIS WILL CLEAR ALL OF YOUR STATS &7(you will be Lv1)'
       - '&7If you are sure, type &6/class reset confirm'
     skills: []
+    unbind:
+    - '&6{item} &2is no longer bound to a skill'
   description:
     bind: 'Binds skill to held item'
     cast: 'Casts the skill'
@@ -121,11 +124,13 @@ Commands:
     reload: 'Reloads the plugin'
     reset: 'Resets all stats'
     skills: 'Opens skill tree'
+    unbind: 'Unbinds a skill'
   error:
     cannot-be-cast: '&4That skill cannot be cast'
     cannot-level: '&4That player needs a class before leveling up'
     cannot-profess: '&4You cannot profess at this time'
     max-level: '&4That player is already at the max level'
+    no-bound-skill: '&4You do not have a skill bound to your held item'
     no-class: '&4You have not chosen a class yet'
     no-held-item: '&4You do not have a held item'
     no-target: '&4There is no target in range'
@@ -148,6 +153,7 @@ Commands:
     reload: 'reload'
     reset: 'reset'
     skills: 'skills'
+    unbind: 'unbind'
 Stats:
   health: '&2Health'
   mana: '&2Mana'

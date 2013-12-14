@@ -592,9 +592,9 @@ public abstract class ClassSkill extends Attributed {
 
         // Attributes
         for (String attribute : getAttributeNames()) {
-            if (config.contains(attribute)) {
+            if (config.contains(attribute + "-base")) {
                 setBase(attribute, config.getInt(attribute + "-base"));
-                setScale(attribute, config.getInt(attribute + "-scale"));
+                setScale(attribute, config.getInt(attribute + "-scale", 0));
             }
         }
 

@@ -81,6 +81,11 @@ public enum SettingValues {
     BLOCK_MOB_EGG_EXP,
 
     /**
+     * Blocks experience while in creative mode
+     */
+    BLOCK_CREATIVE_EXP,
+
+    /**
      * Experience yield for kills
      */
     KILLS,

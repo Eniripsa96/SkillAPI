@@ -323,6 +323,14 @@ public final class PlayerSkills extends Valued {
         // Downgrade the skill
         this.points += (int)skill.getAttribute(SkillAttribute.COST, level);
         skills.put(skill.getName().toLowerCase(), level - 1);
+        if (skills.get(skill.getName().toLowerCase()) == 0) {
+            for (Map.Entry<Material, String> bind : binds.entrySet()) {
+                if (bind.getValue().equalsIgnoreCase(skill.getName())) {
+                    binds.remove(bind.getKey());
+                    break;
+                }
+            }
+        }
 
         // Call the downgrade event
         plugin.getServer().getPluginManager().callEvent(

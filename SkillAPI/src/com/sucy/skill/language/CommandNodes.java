@@ -135,6 +135,11 @@ public class CommandNodes {
      */
     RELOAD = "reload",
 
+    /**
+     * Unbinding a skill
+     */
+    UNBIND = "unbind",
+
     // ------------------- Error Messages ------------------------ //
 
     /**
@@ -161,6 +166,11 @@ public class CommandNodes {
      * Player already is the maximum level
      */
     MAX_LEVEL = ERROR_BASE + "max-level",
+
+    /**
+     * There is no skill to unbind
+     */
+    NO_BOUND_SKILL = ERROR_BASE + "no-bound-skill",
 
     /**
      * A player doesn't have a class

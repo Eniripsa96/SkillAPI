@@ -59,7 +59,7 @@ public class CmdInfoConsole implements ICommand {
 
             // Filter and send the messages
             for (String string : messages) {
-                string = string.replace("{player}", player.getName())
+                string = string.replace("{player}", player.getPlayer().getName())
                                .replace("{class}", player.getClassName())
                                .replace("{level}", player.getLevel() + "")
                                .replace("{exp}", player.getExp() + "")

@@ -6,6 +6,7 @@ import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
 import com.sucy.skill.api.dynamic.TimedEmbedData;
 import com.sucy.skill.api.event.AttackType;
+import com.sucy.skill.api.event.PlayerOnDamagedEvent;
 import com.sucy.skill.api.event.PlayerOnHitEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -22,7 +23,7 @@ import java.util.Random;
 /**
  * Mechanic for applying embedded effects on attack
  */
-public class AttackModifierMechanic implements IMechanic, Listener {
+public class DefenseModifierMechanic implements IMechanic, Listener {
 
     private static final String
             TYPE = "Attack Type",
@@ -40,7 +41,7 @@ public class AttackModifierMechanic implements IMechanic, Listener {
     /**
      * Constructor
      */
-    public AttackModifierMechanic() {
+    public DefenseModifierMechanic() {
         Plugin plugin = Bukkit.getPluginManager().getPlugin("SkillAPI");
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -78,7 +79,7 @@ public class AttackModifierMechanic implements IMechanic, Listener {
      * @param event event details
      */
     @EventHandler
-    public void onAttack(PlayerOnHitEvent event) {
+    public void onAttack(PlayerOnDamagedEvent event) {
 
         // Make sure the player is embedded
         int id = event.getPlayer().getEntityId();
@@ -111,8 +112,8 @@ public class AttackModifierMechanic implements IMechanic, Listener {
 
         // Apply the embedded effects
         data.getSkill().beginUsage();
-        data.resolveNonTarget(event.getTarget().getLocation());
-        data.resolveTarget(event.getTarget());
+        data.resolveNonTarget(event.getAttacker().getLocation());
+        data.resolveTarget(event.getAttacker());
         data.getSkill().stopUsage();
     }
 

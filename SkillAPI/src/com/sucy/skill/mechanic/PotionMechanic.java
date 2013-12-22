@@ -1,5 +1,6 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
@@ -93,8 +94,11 @@ public class PotionMechanic implements IMechanic {
         put(18, PotionEffectType.WEAKNESS);
         put(19, PotionEffectType.POISON);
         put(20, PotionEffectType.WITHER);
-        put(21, PotionEffectType.HEALTH_BOOST);
-        put(22, PotionEffectType.ABSORPTION);
-        put(23, PotionEffectType.SATURATION);
+
+        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2)) {
+            put(21, PotionEffectType.HEALTH_BOOST);
+            put(22, PotionEffectType.ABSORPTION);
+            put(23, PotionEffectType.SATURATION);
+        }
     }};
 }

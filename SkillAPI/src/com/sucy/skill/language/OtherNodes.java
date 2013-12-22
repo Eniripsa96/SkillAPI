@@ -37,5 +37,10 @@ public class OtherNodes {
     /**
      * Player cannot use an item due to class/level restrictions
      */
-    CANNOT_USE_ITEM = BASE + "cannot-use-item";
+    CANNOT_USE_ITEM = BASE + "cannot-use-item",
+
+    /**
+     * Casting a skill
+     */
+    SKILL_CAST = BASE + "skill-cast";
 }

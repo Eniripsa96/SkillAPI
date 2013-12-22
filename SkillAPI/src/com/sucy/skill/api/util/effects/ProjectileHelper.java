@@ -1,6 +1,7 @@
 package com.sucy.skill.api.util.effects;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -38,7 +39,10 @@ public class ProjectileHelper {
         // Fire one straight ahead if odd
         if (amount % 2 == 1) {
             Projectile projectile = source.launchProjectile(projectileType);
-            projectile.setVelocity(vel);
+            if (projectile instanceof Fireball) {
+                ((Fireball)projectile).setDirection(vel);
+            }
+            else projectile.setVelocity(vel);
             list.add(projectile.getEntityId());
             amount--;
         }
@@ -61,7 +65,10 @@ public class ProjectileHelper {
 
                 // Launch the projectile
                 Projectile projectile = source.launchProjectile(projectileType);
-                projectile.setVelocity(v);
+                if (projectile instanceof Fireball) {
+                    ((Fireball)projectile).setDirection(v);
+                }
+                else projectile.setVelocity(v);
                 list.add(projectile.getEntityId());
             }
         }
@@ -85,7 +92,11 @@ public class ProjectileHelper {
         // Fire one straight ahead if odd
         if (amount % 2 == 1) {
             Projectile projectile = source.launchProjectile(projectileType);
-            projectile.setVelocity(projectile.getVelocity().multiply(speed / projectile.getVelocity().length()));
+            Vector vel = projectile.getVelocity().multiply(speed / projectile.getVelocity().length());
+            if (projectile instanceof Fireball) {
+                ((Fireball)projectile).setDirection(vel);
+            }
+            else projectile.setVelocity(vel);
             list.add(projectile.getEntityId());
             amount--;
         }
@@ -122,7 +133,10 @@ public class ProjectileHelper {
 
                 // Launch the projectile
                 Projectile projectile = source.launchProjectile(projectileType);
-                projectile.setVelocity(vel);
+                if (projectile instanceof Fireball) {
+                    ((Fireball)projectile).setDirection(vel);
+                }
+                else projectile.setVelocity(vel);
                 list.add(projectile.getEntityId());
             }
         }
@@ -153,7 +167,10 @@ public class ProjectileHelper {
         // Fire the one in the center
         Projectile p = source.launchProjectile(projectile);
         p.teleport(target);
-        p.setVelocity(vel);
+        if (p instanceof Fireball) {
+            ((Fireball)p).setDirection(vel);
+        }
+        else p.setVelocity(vel);
         list.add(p.getEntityId());
         amount--;
 
@@ -171,7 +188,10 @@ public class ProjectileHelper {
                 loc.add(dx, 0, dz);
                 p = source.launchProjectile(projectile);
                 p.teleport(loc);
-                p.setVelocity(vel);
+                if (p instanceof Fireball) {
+                    ((Fireball)p).setDirection(vel);
+                }
+                else p.setVelocity(vel);
                 list.add(p.getEntityId());
                 angle += increment;
             }

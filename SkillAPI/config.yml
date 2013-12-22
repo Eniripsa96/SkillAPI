@@ -24,6 +24,8 @@ use-click-combos: false
 block-mob-spawner-exp: true
 block-mob-egg-exp: true
 block-creative-exp: true
+use-exp-orbs: false
+skill-message-radius: 20
 exp-formula:
   x: 1
   y: 4

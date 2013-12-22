@@ -10,6 +10,7 @@ import com.sucy.skill.api.skill.PassiveSkill;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
+import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -26,6 +27,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 import java.util.Map;
 
@@ -128,6 +130,12 @@ public class SkillListener implements Listener {
                 return;
             }
 
+            // Unusable weapon
+            if (InventoryTask.cannotUse(plugin.getPlayer(p.getName()), p.getItemInHand())) {
+                event.setDamage(1);
+                return;
+            }
+
             // Projectile damage
             if (event.getDamager() instanceof Projectile) {
                 Projectile projectile = (Projectile) event.getDamager();
@@ -151,11 +159,11 @@ public class SkillListener implements Listener {
                         int defaultDamage = CustomClass.getDefaultProjectileDamage(mat);
                         if (defaultDamage > 0) {
                             double damage = event.getDamage() * setDamage / defaultDamage;
-                            event.setDamage(damage < 0 ? 0 : damage);
+                            BukkitHelper.setDamage(event, damage < 0 ? 0 : damage);
                         }
                         else {
                             double damage = event.getDamage() + setDamage;
-                            event.setDamage(damage < 0 ? 0 : damage);
+                            BukkitHelper.setDamage(event, damage < 0 ? 0 : damage);
                         }
                     }
 
@@ -176,17 +184,17 @@ public class SkillListener implements Listener {
                         damage = Math.max(damage, playerClass.getDamage(p.getItemInHand().getTypeId()));
                     }
                     else if (p.getItemInHand() != null) damage = event.getDamage() + playerClass.getDamage(mat) - CustomClass.getDefaultDamage(mat);
-                    event.setDamage(Math.max(damage, 1));
+                    BukkitHelper.setDamage(event, Math.max(damage, 1));
                 }
             }
         }
 
         // Damage modifiers
         if (damager != null) {
-            event.setDamage(plugin.getStatusHolder(damager).modifyDamageDealt(event.getDamage()));
+            BukkitHelper.setDamage(event, plugin.getStatusHolder(damager).modifyDamageDealt(event.getDamage()));
         }
         if (target != null) {
-            event.setDamage(plugin.getStatusHolder(target).modifyDamageTaken(event.getDamage()));
+            BukkitHelper.setDamage(event, plugin.getStatusHolder(target).modifyDamageTaken(event.getDamage()));
         }
     }
 
@@ -223,14 +231,12 @@ public class SkillListener implements Listener {
         // Status effects
         LivingEntity damaged = convertEntity(event.getEntity());
         if (damaged != null) {
-            StatusHolder holder = plugin.getStatusHolder((LivingEntity)event.getEntity());
+            StatusHolder holder = plugin.getStatusHolder(damaged);
 
             // Absorb
             if (holder.hasStatus(Status.ABSORB)) {
                 event.setCancelled(true);
-                double health = damaged.getHealth() + event.getDamage();
-                if (health > damaged.getMaxHealth()) health = damaged.getMaxHealth();
-                damaged.setHealth(health);
+                BukkitHelper.heal(damaged, event.getDamage());
             }
 
             // Invincible
@@ -277,7 +283,7 @@ public class SkillListener implements Listener {
             // Call the special damage event
             SpecialEntityDamagedByEntityEvent se = new SpecialEntityDamagedByEntityEvent(damaged, damager, type, event.getDamage());
             plugin.getServer().getPluginManager().callEvent(se);
-            event.setDamage(se.getDamage());
+            BukkitHelper.setDamage(event, se.getDamage());
 
             // Call an event when a player dealt damage
             if (damager instanceof Player) {
@@ -291,17 +297,15 @@ public class SkillListener implements Listener {
 
                 PlayerOnHitEvent e = new PlayerOnHitEvent(p, damaged, type, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
-                event.setDamage(e.getDamage());
+                BukkitHelper.setDamage(event, e.getDamage());
 
                 // Call an event when a player's skill dealt damage
                 if (type == AttackType.SKILL) {
                     PlayerOnSkillHitEvent she = new PlayerOnSkillHitEvent(p, damaged, PlayerSkills.skillsBeingCast.peek().getName(), event.getDamage());
                     plugin.getServer().getPluginManager().callEvent(she);
-                    event.setDamage(she.getDamage());
+                    BukkitHelper.setDamage(event, she.getDamage());
                 }
             }
-
-
 
             // Call an event when a player received damage
             if (damaged instanceof Player) {
@@ -315,7 +319,7 @@ public class SkillListener implements Listener {
 
                 PlayerOnDamagedEvent e = new PlayerOnDamagedEvent(p, damager, type, event.getDamage());
                 plugin.getServer().getPluginManager().callEvent(e);
-                event.setDamage(e.getDamage());
+                BukkitHelper.setDamage(event, e.getDamage());
             }
         }
     }
@@ -401,7 +405,7 @@ public class SkillListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         PlayerSkills player = plugin.getPlayer(event.getPlayer().getName());
-        player.startPassiveAbilities();
+        player.startPassiveAbilities(event.getPlayer());
     }
 
     /**
@@ -428,13 +432,24 @@ public class SkillListener implements Listener {
     public void onKill(EntityDeathEvent event) {
         if (event.getEntity().hasMetadata(S_TYPE)) {
             int value = event.getEntity().getMetadata(S_TYPE).get(0).asInt();
-            if (value == SPAWNER && plugin.blockingSpawnerExp()) return;
-            else if (value == EGG && plugin.blockingEggExp()) return;
+            if (value == SPAWNER && plugin.blockingSpawnerExp()) {
+                if (plugin.usingExpOrbs()) event.setDroppedExp(0);
+                return;
+            }
+            else if (value == EGG && plugin.blockingEggExp()) {
+                if (plugin.usingExpOrbs()) event.setDroppedExp(0);
+                return;
+            }
         }
         if (event.getEntity().getKiller() != null && event.getEntity().getKiller().hasPermission(PermissionNodes.BASIC)) {
-            if (event.getEntity().getKiller().getGameMode() == GameMode.CREATIVE && plugin.blockingCreativeExp()) return;
-            PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller().getName());
-            player.giveExp(plugin.getExp(getName(event.getEntity())));
+            if (event.getEntity().getKiller().getGameMode() == GameMode.CREATIVE && plugin.blockingCreativeExp()) {
+                if (plugin.usingExpOrbs()) event.setDroppedExp(0);
+                return;
+            }
+            if (!plugin.usingExpOrbs()) {
+                PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller().getName());
+                player.giveExp(plugin.getExp(getName(event.getEntity())));
+            }
         }
     }
 
@@ -517,8 +532,11 @@ public class SkillListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGHEST)
     public void onExpChange(PlayerExpChangeEvent event) {
+        if (plugin.usingExpOrbs()) {
+            plugin.getPlayer(event.getPlayer().getName()).giveExp(event.getAmount());
+        }
         if (plugin.usingLevelBar() && event.getPlayer().hasPermission(PermissionNodes.BASIC)) {
             event.setAmount(0);
         }

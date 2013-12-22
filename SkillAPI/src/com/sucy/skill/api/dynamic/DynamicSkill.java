@@ -9,7 +9,6 @@ import com.sucy.skill.config.SkillValues;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -69,6 +68,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         maxLevel = config.getInt(SkillValues.MAX_LEVEL, maxLevel);
         skillReq = config.getString(SkillValues.SKILL_REQ, skillReq);
         skillReqLevel = config.getInt(SkillValues.SKILL_REQ_LEVEL, skillReqLevel);
+        message = config.getString(SkillValues.MESSAGE);
         description.clear();
         description.addAll(config.getStringList(SkillValues.DESCRIPTION));
 
@@ -140,7 +140,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
     }
 
     /**
-     * GetAttribute override to handle passive prefixes
+     * getAttribute override to handle passive prefixes
      *
      * @param key    attribute key
      * @param target target of the attribute
@@ -151,6 +151,19 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         if (!key.equals("Range") && !key.equals("Radius")) key = this.prefix + target.getAlias(this, key);
         else key = target.getAlias(this, key);
         return getAttribute(key, level);
+    }
+
+    /**
+     * hasAttribute override to handle passive prefixes
+     *
+     * @param key    attribute key
+     * @param target target of the attribute
+     * @return       attribute value at the level
+     */
+    public boolean hasAttribute(String key, Target target) {
+        if (!key.equals("Range") && !key.equals("Radius")) key = this.prefix + target.getAlias(this, key);
+        else key = target.getAlias(this, key);
+        return hasAttribute(key);
     }
 
     /**
@@ -203,6 +216,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      * @param newMechanic mechanic being added
      */
     private void checkConflicts(List<? extends Mechanic> mechanics, Mechanic newMechanic, String prefix) {
+        newMechanic.getEffect().applyDefaults(this, prefix);
         for (Mechanic m : mechanics) {
             if (m.conflicts(newMechanic)) throw new IllegalArgumentException("Mechanic is already added to the skill");
             else if (m.needsAlias(newMechanic)) {
@@ -218,15 +232,13 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
                     // Add the new attribute
                     newMechanic.getEffect().applyDefaults(this, prefix);
-                    setAttribute(prefix + newMechanic.getTarget().getAlias(this, attribute), getBase(fullName), getScale(fullName));
-                    removeAttribute(fullName);
+                    if (hasAttribute(fullName)) {
+                        setAttribute(prefix + newMechanic.getTarget().getAlias(this, attribute), getBase(fullName), getScale(fullName));
+                        removeAttribute(fullName);
+                    }
                 }
-
-                return;
             }
         }
-
-        newMechanic.getEffect().applyDefaults(this, prefix);
     }
 
     /**
@@ -282,10 +294,11 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      */
     @Override
     public void stopEffects(Player player, int level) {
-        for (PassiveTask task : tasks.values()) {
-            task.cancel();
+        String key = player.getName().toLowerCase();
+        if (tasks.containsKey(key)) {
+            tasks.get(key).cancel();
+            tasks.remove(key);
         }
-        tasks.clear();
     }
 
     /**
@@ -320,6 +333,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         config.set(SkillValues.SKILL_REQ, getSkillReq());
         config.set(SkillValues.SKILL_REQ_LEVEL, getSkillReqLevel());
         config.set(SkillValues.DESCRIPTION, description);
+        config.set(SkillValues.MESSAGE, message);
         config.set(ITEM_REQ, itemReq);
         saveAttributes(config.createSection(ATTRIBUTES));
         saveValues(config.createSection(VALUES));

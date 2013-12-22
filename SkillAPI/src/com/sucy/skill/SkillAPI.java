@@ -3,6 +3,8 @@ package com.sucy.skill;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.StatusHolder;
+import com.sucy.skill.api.dynamic.IMechanic;
+import com.sucy.skill.api.dynamic.Mechanic;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.api.util.effects.DOTHelper;
@@ -12,6 +14,7 @@ import com.sucy.skill.command.ClassCommander;
 import com.sucy.skill.config.Config;
 import com.sucy.skill.config.PlayerValues;
 import com.sucy.skill.config.SettingValues;
+import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.task.InventoryTask;
@@ -67,11 +70,13 @@ public class SkillAPI extends JavaPlugin {
     private boolean oldHealth;
     private boolean levelBar;
     private boolean clickCombo;
+    private boolean expOrbs;
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
     private boolean blockCreativeExp;
     private int startingPoints;
     private int pointsPerLevel;
+    private int messageRadius;
     private int x;
     private int y;
     private int z;
@@ -111,6 +116,8 @@ public class SkillAPI extends JavaPlugin {
         blockSpawnerExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_SPAWNER_EXP.path(), true);
         blockEggExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_EGG_EXP.path(), true);
         blockCreativeExp = getConfig().getBoolean(SettingValues.BLOCK_CREATIVE_EXP.path(), true);
+        expOrbs = getConfig().getBoolean(SettingValues.USE_EXP_ORBS.path(), false);
+        messageRadius = getConfig().getInt(SettingValues.SKILL_MESSAGE_RADIUS.path(), 20);
 
         // Experience formula
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
@@ -308,6 +315,13 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean usingClickCombos() {
         return clickCombo;
+    }
+
+    /**
+     * @return whether or not to use experience orbs instead of the table
+     */
+    public boolean usingExpOrbs() {
+        return expOrbs;
     }
 
     /**
@@ -627,6 +641,35 @@ public class SkillAPI extends JavaPlugin {
     }
 
     // ----------------------------- Language Methods -------------------------------------- //
+
+    /**
+     * Sends a message for a skill using the caster's name
+     *
+     * @param skill  skill being casted
+     * @param caster caster of the skill
+     */
+    public void sendSkillMessage(ClassSkill skill, Player caster) {
+
+        // Custom skill message
+        String message;
+        if (skill.hasMessage()) {
+            message = applyFilters(skill.getMessage());
+            message = message.replace("{player}", caster.getName()).replace("{skill}", skill.getName());
+        }
+
+        // Universal message
+        else {
+            message = getMessage(OtherNodes.SKILL_CAST, true);
+            message = message.replace("{skill}", skill.getName()).replace("{player}", caster.getName());
+        }
+
+        // Send the message
+        for (Player player : caster.getWorld().getPlayers()) {
+            if (player.getLocation().distanceSquared(caster.getLocation()) <= messageRadius * messageRadius) {
+                player.sendMessage(message);
+            }
+        }
+    }
 
     /**
      * Gets a message from the language file

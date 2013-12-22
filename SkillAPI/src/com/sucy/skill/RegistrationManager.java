@@ -52,6 +52,9 @@ public class RegistrationManager {
         classConfig = new Config(api, "dynamic" + File.separator + "classes");
     }
 
+    /**
+     * Initializes the registration processes
+     */
     public void initialize() {
 
         // Make sure dynamic files are created
@@ -196,6 +199,8 @@ public class RegistrationManager {
                 config.set(SkillValues.MAX_LEVEL, skill.getMaxLevel() < 1 ? 1 : skill.getMaxLevel());
             if (!config.contains(SkillValues.INDICATOR))
                 config.set(SkillValues.INDICATOR, skill.getIndicator().getType().name() + "," + skill.getIndicator().getDurability());
+            if (!config.contains(SkillValues.MESSAGE) && !neededOnly)
+                config.set(SkillValues.MESSAGE, skill.getMessage());
             if (skill.getSkillReq() != null && !neededOnly) {
                 config.set(SkillValues.SKILL_REQ, skill.getSkillReq());
                 config.set(SkillValues.SKILL_REQ_LEVEL, skill.getSkillReqLevel());

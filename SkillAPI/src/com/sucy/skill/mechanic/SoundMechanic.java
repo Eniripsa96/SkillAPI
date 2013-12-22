@@ -1,5 +1,6 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
@@ -96,7 +97,6 @@ public class SoundMechanic implements IMechanic {
         put(12, Sound.BLAZE_BREATH);
         put(13, Sound.BLAZE_DEATH);
         put(14, Sound.BLAZE_HIT);
-        put(15, Sound.BREATH);
         put(16, Sound.BURP);
         put(17, Sound.CAT_HISS);
         put(18, Sound.CAT_HIT);
@@ -122,10 +122,6 @@ public class SoundMechanic implements IMechanic {
         put(38, Sound.DIG_STONE);
         put(39, Sound.DIG_WOOD);
         put(40, Sound.DIG_WOOL);
-        put(41, Sound.DONKEY_ANGRY);
-        put(42, Sound.DONKEY_DEATH);
-        put(43, Sound.DONKEY_HIT);
-        put(44, Sound.DONKEY_IDLE);
         put(45, Sound.DOOR_CLOSE);
         put(46, Sound.DOOR_OPEN);
         put(47, Sound.DRINK);
@@ -145,13 +141,6 @@ public class SoundMechanic implements IMechanic {
         put(61, Sound.FALL_SMALL);
         put(62, Sound.FIRE);
         put(63, Sound.FIRE_IGNITE);
-        put(64, Sound.FIREWORK_BLAST);
-        put(65, Sound.FIREWORK_BLAST2);
-        put(66, Sound.FIREWORK_LARGE_BLAST);
-        put(67, Sound.FIREWORK_LARGE_BLAST2);
-        put(68, Sound.FIREWORK_LAUNCH);
-        put(69, Sound.FIREWORK_TWINKLE);
-        put(70, Sound.FIREWORK_TWINKLE2);
         put(71, Sound.FIZZ);
         put(72, Sound.FUSE);
         put(73, Sound.GHAST_CHARGE);
@@ -161,23 +150,6 @@ public class SoundMechanic implements IMechanic {
         put(77, Sound.GHAST_SCREAM);
         put(78, Sound.GHAST_SCREAM2);
         put(79, Sound.GLASS);
-        put(80, Sound.HORSE_ANGRY);
-        put(81, Sound.HORSE_ARMOR);
-        put(82, Sound.HORSE_BREATHE);
-        put(83, Sound.HORSE_GALLOP);
-        put(84, Sound.HORSE_HIT);
-        put(85, Sound.HORSE_IDLE);
-        put(86, Sound.HORSE_JUMP);
-        put(87, Sound.HORSE_LAND);
-        put(88, Sound.HORSE_SADDLE);
-        put(89, Sound.HORSE_SKELETON_DEATH);
-        put(90, Sound.HORSE_SKELETON_IDLE);
-        put(91, Sound.HORSE_SOFT);
-        put(92, Sound.HORSE_WOOD);
-        put(93, Sound.HORSE_ZOMBIE_DEATH);
-        put(94, Sound.HORSE_ZOMBIE_HIT);
-        put(95, Sound.HORSE_ZOMBIE_IDLE);
-        put(96, Sound.HURT);
         put(97, Sound.HURT_FLESH);
         put(98, Sound.IRONGOLEM_DEATH);
         put(99, Sound.IRONGOLEM_HIT);
@@ -237,14 +209,7 @@ public class SoundMechanic implements IMechanic {
         put(153, Sound.STEP_STONE);
         put(154, Sound.STEP_WOOD);
         put(155, Sound.STEP_WOOL);
-        put(156, Sound.SUCCESSFUL_HIT);
         put(157, Sound.SWIM);
-        put(158, Sound.VILLAGER_DEATH);
-        put(159, Sound.VILLAGER_HAGGLE);
-        put(160, Sound.VILLAGER_HIT);
-        put(161, Sound.VILLAGER_IDLE);
-        put(162, Sound.VILLAGER_NO);
-        put(163, Sound.VILLAGER_YES);
         put(164, Sound.WATER);
         put(165, Sound.WITHER_DEATH);
         put(166, Sound.WITHER_HURT);
@@ -274,5 +239,49 @@ public class SoundMechanic implements IMechanic {
         put(190, Sound.ZOMBIE_UNFECT);
         put(191, Sound.ZOMBIE_WOOD);
         put(192, Sound.ZOMBIE_WOODBREAK);
+
+        // Sounds in only 1.6.2 and beyond
+        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2)) {
+            put(41, Sound.DONKEY_ANGRY);
+            put(42, Sound.DONKEY_DEATH);
+            put(43, Sound.DONKEY_HIT);
+            put(44, Sound.DONKEY_IDLE);
+            put(64, Sound.FIREWORK_BLAST);
+            put(65, Sound.FIREWORK_BLAST2);
+            put(66, Sound.FIREWORK_LARGE_BLAST);
+            put(67, Sound.FIREWORK_LARGE_BLAST2);
+            put(68, Sound.FIREWORK_LAUNCH);
+            put(69, Sound.FIREWORK_TWINKLE);
+            put(70, Sound.FIREWORK_TWINKLE2);
+            put(80, Sound.HORSE_ANGRY);
+            put(81, Sound.HORSE_ARMOR);
+            put(82, Sound.HORSE_BREATHE);
+            put(83, Sound.HORSE_GALLOP);
+            put(84, Sound.HORSE_HIT);
+            put(85, Sound.HORSE_IDLE);
+            put(86, Sound.HORSE_JUMP);
+            put(87, Sound.HORSE_LAND);
+            put(88, Sound.HORSE_SADDLE);
+            put(89, Sound.HORSE_SKELETON_DEATH);
+            put(90, Sound.HORSE_SKELETON_IDLE);
+            put(91, Sound.HORSE_SOFT);
+            put(92, Sound.HORSE_WOOD);
+            put(93, Sound.HORSE_ZOMBIE_DEATH);
+            put(94, Sound.HORSE_ZOMBIE_HIT);
+            put(95, Sound.HORSE_ZOMBIE_IDLE);
+            put(156, Sound.SUCCESSFUL_HIT);
+            put(158, Sound.VILLAGER_DEATH);
+            put(159, Sound.VILLAGER_HAGGLE);
+            put(160, Sound.VILLAGER_HIT);
+            put(161, Sound.VILLAGER_IDLE);
+            put(162, Sound.VILLAGER_NO);
+            put(163, Sound.VILLAGER_YES);
+        }
+
+        // 1.7.2 differences
+        if (!BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_7_2)) {
+            put(15, Sound.BREATH);
+            put(96, Sound.HURT);
+        }
     }};
 }

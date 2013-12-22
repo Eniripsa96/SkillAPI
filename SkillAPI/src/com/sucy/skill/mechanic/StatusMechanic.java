@@ -48,7 +48,7 @@ public class StatusMechanic implements IMechanic {
                 worked = true;
             }
             else if (status == Status.ROOT || status == Status.STUN) {
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, (int)(duration * 20)));
+                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, (int)(duration * 20)));
                 worked = true;
             }
         }

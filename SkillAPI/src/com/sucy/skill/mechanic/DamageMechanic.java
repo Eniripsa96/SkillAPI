@@ -1,13 +1,12 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.List;
 
@@ -36,11 +35,8 @@ public class DamageMechanic implements IMechanic {
         int level = data.getSkillLevel(skill.getName());
         double damage = skill.getAttribute(DAMAGE, target, level);
         for (LivingEntity t : targets) {
-            t.setLastDamageCause(new EntityDamageByEntityEvent(player, t, EntityDamageEvent.DamageCause.CUSTOM, damage));
             double prevHealth = t.getHealth();
-            double newHealth = prevHealth - damage;
-            if (newHealth < 0) newHealth = 0;
-            t.setHealth(newHealth);
+            BukkitHelper.damageManually(t, player, damage);
             worked = worked || prevHealth != t.getHealth();
         }
 

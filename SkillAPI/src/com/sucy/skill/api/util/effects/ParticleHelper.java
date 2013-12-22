@@ -216,6 +216,7 @@ public class ParticleHelper {
      * @return     instance of the class or null if unable to create the object
      */
     private static Object getInstance(Class<?> c, Object ... args) {
+        if (c == null) return null;
         try {
             for (Constructor<?> constructor : c.getDeclaredConstructors()) {
                 if (constructor.getGenericParameterTypes().length == args.length) {

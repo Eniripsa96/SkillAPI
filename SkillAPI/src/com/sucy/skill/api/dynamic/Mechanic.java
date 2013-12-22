@@ -153,6 +153,7 @@ public class Mechanic {
         put("DAMAGEPERCENT", new DamagePercentMechanic());
         put("DAMAGEPERCENTREDUCTION", new DamagePercentReductionMechanic());
         put("DAMAGEREDUCTION", new DamageReductionMechanic());
+        put("DEFENSEMODIFIER", new DefenseModifierMechanic());
         put("DELAY", new DelayMechanic());
         put("DOT", new DOTMechanic());
         put("FIRE", new FireMechanic());

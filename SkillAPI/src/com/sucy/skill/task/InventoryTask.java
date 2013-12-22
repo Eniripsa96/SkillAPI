@@ -16,22 +16,30 @@ import java.util.List;
  */
 public class InventoryTask extends BukkitRunnable {
 
-    private SkillAPI plugin;
-    private Player[] players;
+    private static SkillAPI plugin;
     private int playersPerCheck;
     private int index = -1;
 
     /**
      * Task constructor
      *
-     * @param plugin          API reference
+     * @param p               API reference
      * @param playersPerCheck how many players to check each tick
      */
-    public InventoryTask(SkillAPI plugin, int playersPerCheck) {
-        this.plugin = plugin;
+    public InventoryTask(SkillAPI p, int playersPerCheck) {
         this.playersPerCheck = playersPerCheck;
-        players = plugin.getServer().getOnlinePlayers();
+        if (plugin != null) return;
+        plugin = p;
         runTaskTimer(plugin, 1, 1);
+    }
+
+    /**
+     * Clears the plugin reference on cancel
+     */
+    @Override
+    public void cancel() {
+        super.cancel();
+        plugin = null;
     }
 
     /**
@@ -39,8 +47,9 @@ public class InventoryTask extends BukkitRunnable {
      */
     @Override
     public void run() {
+        Player[] players = plugin.getServer().getOnlinePlayers();
         for (int i = 0; i < playersPerCheck; i++) {
-            if (!getNextPlayer()) return;
+            if (!getNextPlayer(players)) return;
             if (i >= players.length) return;
 
             // Get the player data
@@ -51,51 +60,60 @@ public class InventoryTask extends BukkitRunnable {
             // Check for lore strings
             int index = 0;
             for (ItemStack item : player.getInventory().getArmorContents()) {
-                if (item == null) continue;
-                boolean hasRequirement = false;
-                boolean needsRequirement = false;
-                boolean removed = false;
-                if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
-                    List<String> lore = item.getItemMeta().getLore();
-
-                    // Check each line of the lore
-                    for (String line : lore) {
-                        String colorless = ChatColor.stripColor(line);
-
-                        // Level requirements
-                        if (colorless.matches("Level Req: [0-9]+")) {
-                            int level = Integer.parseInt(colorless.substring(11));
-                            if (data.getLevel() < level) {
-                                removeArmor(player, index);
-                                removed = true;
-                                break;
-                            }
-                        }
-
-                        // Class requirements
-                        else if (colorless.matches("Class Req: .+")) {
-                            needsRequirement = true;
-                            String name = colorless.substring(11);
-                            if (isMatchingClass(name, data.getClassName())) {
-                                hasRequirement = true;
-                            }
-                        }
-
-                        // Class exclusion
-                        else if (colorless.matches("Excluded Class: .+")) {
-                            String name = colorless.substring(16);
-                            if (isMatchingClass(name, data.getClassName())) {
-                                removeArmor(player, index);
-                                removed = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (needsRequirement != hasRequirement && !removed) removeArmor(player, index);
+                if (cannotUse(data, item)) removeArmor(player, index);
                 index++;
             }
         }
+    }
+
+    /**
+     * <p>Checks if the player cannot use the item</p>
+     * <p>If SkillAPI is not enabled or it's lore requirement setting
+     * is disabled, this will always return false</p>
+     *
+     * @param player player to check for
+     * @param item   item to check
+     * @return       true if cannot use, false otherwise
+     */
+    public static boolean cannotUse(PlayerSkills player, ItemStack item) {
+        if (plugin == null) return false;
+        if (item == null) return false;
+        boolean hasRequirement = false;
+        boolean needsRequirement = false;
+        if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
+            List<String> lore = item.getItemMeta().getLore();
+
+            // Check each line of the lore
+            for (String line : lore) {
+                String colorless = ChatColor.stripColor(line);
+
+                // Level requirements
+                if (colorless.matches("Level Req: [0-9]+")) {
+                    int level = Integer.parseInt(colorless.substring(11));
+                    if (player.getLevel() < level) {
+                        return true;
+                    }
+                }
+
+                // Class requirements
+                else if (colorless.matches("Class Req: .+")) {
+                    needsRequirement = true;
+                    String name = colorless.substring(11);
+                    if (isMatchingClass(name, player.getClassName())) {
+                        hasRequirement = true;
+                    }
+                }
+
+                // Class exclusion
+                else if (colorless.matches("Excluded Class: .+")) {
+                    String name = colorless.substring(16);
+                    if (isMatchingClass(name, player.getClassName())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return needsRequirement != hasRequirement;
     }
 
     /**
@@ -105,7 +123,7 @@ public class InventoryTask extends BukkitRunnable {
      * @param actual actual class
      * @return       true if matches, false otherwise
      */
-    private boolean isMatchingClass(String req, String actual) {
+    private static boolean isMatchingClass(String req, String actual) {
 
         // If the player doesn't have a class, it doesn't match any
         if (actual == null) return false;
@@ -144,7 +162,7 @@ public class InventoryTask extends BukkitRunnable {
      *
      * @return true if found a player, false otherwise
      */
-    private boolean getNextPlayer() {
+    private boolean getNextPlayer(Player[] players) {
         index++;
 
         // Limit the index
@@ -154,6 +172,6 @@ public class InventoryTask extends BukkitRunnable {
         }
 
         // Make sure its a valid player
-        return players.length > 0 && (players[index].isOnline() || getNextPlayer());
+        return players.length > 0 && (players[index].isOnline() || getNextPlayer(players));
     }
 }

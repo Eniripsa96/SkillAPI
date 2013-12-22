@@ -185,3 +185,5 @@ Other:
   - '&2You have reached the maximum level for your class'
   cannot-use-item:
   - '&4You cannot use that item'
+  skill-cast:
+  - '&6{player} &2has cast &6{skill}'

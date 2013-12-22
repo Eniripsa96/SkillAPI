@@ -71,6 +71,11 @@ public enum SettingValues {
     USE_CLICK_COMBOS,
 
     /**
+     * Whether or not to use experience orbs instead of the settings values
+     */
+    USE_EXP_ORBS,
+
+    /**
      * Whether or not to block experience gain from mob spawners
      */
     BLOCK_MOB_SPAWNER_EXP,
@@ -94,6 +99,11 @@ public enum SettingValues {
      * Formula for experience requirements
      */
     EXP_FORMULA,
+
+    /**
+     * How large of an area to say that a player used a skill
+     */
+    SKILL_MESSAGE_RADIUS,
 
     ;
 

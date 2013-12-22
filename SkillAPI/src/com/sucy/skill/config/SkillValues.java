@@ -42,7 +42,12 @@ public class SkillValues {
     /**
      * Type of the skill
      */
-    TYPE = "type"
+    TYPE = "type",
+
+    /**
+     * Message of the skill
+     */
+    MESSAGE = "message"
 
     ;
 }

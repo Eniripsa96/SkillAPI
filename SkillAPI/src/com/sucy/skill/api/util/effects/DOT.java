@@ -1,6 +1,8 @@
 package com.sucy.skill.api.util.effects;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.skill.ClassSkill;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -107,9 +109,9 @@ public class DOT {
                 skill.beginUsage();
             }
             if (caster != null) {
-                entity.damage(damage, caster);
+                BukkitHelper.damage(entity, caster, damage);
             }
-            else entity.damage(damage);
+            else BukkitHelper.damage(entity, damage);
             if (skill != null) {
                 skill.stopUsage();
             }
@@ -122,12 +124,7 @@ public class DOT {
                 skill.beginUsage();
             }
 
-            // Cannot go above the enemy health
-            double health = entity.getHealth() - damage;
-            health = Math.min(entity.getMaxHealth(), health);
-
-            // Heal the entity
-            entity.setHealth(health);
+            BukkitHelper.heal(entity, -damage);
 
             if (skill != null) {
                 skill.stopUsage();

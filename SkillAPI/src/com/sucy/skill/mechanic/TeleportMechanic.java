@@ -48,17 +48,13 @@ public class TeleportMechanic implements IMechanic {
             for (LivingEntity t : targets) {
                 if (t.getLocation().getBlock().getType() != Material.AIR) continue;
                 Vector vec = t.getLocation().getDirection();
-                double xRatio = vec.getX() / Math.abs(vec.getX() + vec.getZ());
-                double zRatio = vec.getZ() / Math.abs(vec.getX() + vec.getZ());
+                vec.multiply(hDistance / vec.length());
 
-                double xChange = xRatio * hDistance;
-                double zChange = zRatio * hDistance;
+                int steps = 2 * (int)Math.max(Math.max(vec.getX(), vDistance), vec.getZ());
 
-                int steps = Math.max(Math.max((int)xChange, vDistance), (int)zChange);
-
-                double xScale = xChange / steps;
+                double xScale = vec.getX() / steps;
                 double yScale = (double)vDistance / steps;
-                double zScale = zChange / steps;
+                double zScale = vec.getZ() / steps;
 
                 Location loc = t.getLocation();
                 for (int i = 0; i < steps; i++) {

@@ -55,7 +55,8 @@ public class CmdBind implements ICommand {
             }
 
             // No held item
-            else if (((Player) sender).getItemInHand().getType() == Material.AIR) {
+            else if (((Player)sender).getItemInHand().getType() == null ||
+                    ((Player) sender).getItemInHand().getType() == Material.AIR) {
                 String error = api.getMessage(CommandNodes.NO_HELD_ITEM, true);
                 sender.sendMessage(error);
             }

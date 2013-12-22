@@ -1,5 +1,6 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.dynamic.DynamicSkill;
@@ -132,9 +133,9 @@ public class ConditionMechanic implements IMechanic {
                 else if (condition == WEAKNESS && t.hasPotionEffect(PotionEffectType.WEAKNESS)) passed = true;
                 else if (condition == POISON && t.hasPotionEffect(PotionEffectType.POISON)) passed = true;
                 else if (condition == WITHER && t.hasPotionEffect(PotionEffectType.WITHER)) passed = true;
-                else if (condition == HEALTH && t.hasPotionEffect(PotionEffectType.HEALTH_BOOST)) passed = true;
-                else if (condition == ABSORPTION && t.hasPotionEffect(PotionEffectType.ABSORPTION)) passed = true;
-                else if (condition == SATURATION && t.hasPotionEffect(PotionEffectType.SATURATION)) passed = true;
+                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2) && condition == HEALTH && t.hasPotionEffect(PotionEffectType.HEALTH_BOOST)) passed = true;
+                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2) && condition == ABSORPTION && t.hasPotionEffect(PotionEffectType.ABSORPTION)) passed = true;
+                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2) && condition == SATURATION && t.hasPotionEffect(PotionEffectType.SATURATION)) passed = true;
                 else if (condition == POTION && t.getActivePotionEffects().size() > 0) passed = true;
                 else if (condition == STATUS && data.getAPI().getStatusHolder(t).hasStatuses()) passed = true;
 

@@ -53,6 +53,13 @@ public class SkillMeta implements MetadataValue {
     }
 
     /**
+     * @return caster of the skill
+     */
+    public Player getCaster() {
+        return caster;
+    }
+
+    /**
      * Sets an attribute for the metadata
      *
      * @param name  attribute name

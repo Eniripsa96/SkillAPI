@@ -1,5 +1,6 @@
 package com.sucy.skill.api;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.*;
@@ -195,7 +196,7 @@ public final class PlayerSkills extends Valued {
      * @return class prefix
      */
     public String getPrefix() {
-        if (tree == null) {
+        if (plugin.getClass(tree) == null) {
             return ChatColor.GRAY + "No Class";
         }
         else {
@@ -421,7 +422,7 @@ public final class PlayerSkills extends Valued {
         }
 
         // Set mana if just starting
-        if (prevTree == null) {
+        if (plugin.getClass(prevTree) == null) {
             mana = getMaxMana();
         }
 
@@ -461,7 +462,7 @@ public final class PlayerSkills extends Valued {
         if (plugin.getServer().getPlayer(player) == null) return;
 
         // No class just has the default 20hp
-        if (tree == null) {
+        if (plugin.getClass(tree) == null) {
             applyMaxHealth(20 + bonusHealth);
         }
 
@@ -471,8 +472,10 @@ public final class PlayerSkills extends Valued {
         }
 
         // Apply health scaling
-        if (plugin.oldHealthEnabled()) plugin.getServer().getPlayer(player).setHealthScale(20);
-        else plugin.getServer().getPlayer(player).setHealthScaled(false);
+        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2)) {
+            if (plugin.oldHealthEnabled()) plugin.getServer().getPlayer(player).setHealthScale(20);
+            else plugin.getServer().getPlayer(player).setHealthScaled(false);
+        }
     }
 
     /**
@@ -485,12 +488,7 @@ public final class PlayerSkills extends Valued {
     public void applyMaxHealth(double amount) {
         Player p = plugin.getServer().getPlayer(player);
         if (p == null) return;
-
-        double prevMax = p.getMaxHealth();
-        double prevHealth = p.getHealth();
-
-        p.setMaxHealth(amount);
-        p.setHealth(Math.max(1, prevHealth + amount - prevMax));
+        BukkitHelper.setMaxHealth(p, amount);
     }
 
     /**
@@ -508,9 +506,22 @@ public final class PlayerSkills extends Valued {
 
     /**
      * <p>Starts the effects of all passive abilities for the player</p>
+     * <p>If the player is currently respawning or offline, this will not work</p>
      */
     public void startPassiveAbilities() {
-        Player player = getPlayer();
+        if (getPlayer() == null) return;
+        startPassiveAbilities(getPlayer());
+    }
+
+    /**
+     * <p>Starts the effects of all passive abilities for the player</p>
+     * <p>This is for use when the player is respawning or offline
+     * but a reference is still present</p>
+     *
+     * @param player player to start the effects for
+     */
+    public void startPassiveAbilities(Player player) {
+        if (player == null) plugin.getLogger().info("null Player?");
         for (Map.Entry<String, Integer> entry : getSkills().entrySet()) {
             if (entry.getValue() >= 1) {
                 ClassSkill s = plugin.getSkill(entry.getKey());
@@ -538,7 +549,7 @@ public final class PlayerSkills extends Valued {
      * @return level the player is able to profess, less than 1 if unable to profess
      */
     public int getProfessionLevel() {
-        if (tree == null) return 1;
+        if (plugin.getClass(tree) == null) return 1;
 
         CustomClass tree = plugin.getClass(this.tree);
         return tree.getProfessLevel();
@@ -586,7 +597,7 @@ public final class PlayerSkills extends Valued {
      * @return true if successful, false if the player doesn't have skills
      */
     public boolean viewSkills() {
-        if (tree == null)
+        if (plugin.getClass(tree) == null)
             return false;
 
         Player p = plugin.getServer().getPlayer(player);
@@ -638,7 +649,7 @@ public final class PlayerSkills extends Valued {
      * @param amount amount of exp to gain
      */
     public void giveExp(int amount) {
-        if (tree == null) return;
+        if (plugin.getClass(tree) == null) return;
 
         // Call an event
         PlayerExperienceGainEvent event = new PlayerExperienceGainEvent(this, amount);
@@ -668,7 +679,7 @@ public final class PlayerSkills extends Valued {
      * @param amount amount of levels to go up
      */
     public void levelUp(int amount) {
-        if (tree == null) throw new IllegalArgumentException("Player cannot level up while not having a class");
+        if (plugin.getClass(tree) == null) throw new IllegalArgumentException("Player cannot level up while not having a class");
 
         CustomClass skillTree = plugin.getClass(tree);
         if (amount + level > skillTree.getMaxLevel()) amount = skillTree.getMaxLevel() - level;
@@ -717,7 +728,8 @@ public final class PlayerSkills extends Valued {
      */
     public boolean canProfess(String target) {
         CustomClass skillTree = plugin.getClass(target);
-        if (tree == null) return skillTree.getParent() == null;
+        if (skillTree == null) return false;
+        else if (plugin.getClass(tree) == null) return skillTree.getParent() == null;
         else if (getProfessionLevel() < 1) return false;
         else if (!plugin.hasPermission(plugin.getServer().getPlayer(player), skillTree)) return false;
         return skillTree.getParent() != null && skillTree.getParent().equalsIgnoreCase(tree) && plugin.getClass(tree).getProfessLevel() <= level;
@@ -910,7 +922,7 @@ public final class PlayerSkills extends Valued {
         // Invalid skill
         if (skill == null) throw new IllegalArgumentException("Invalid skill: " + skillName);
 
-        SkillStatus status = skill.checkStatus(this, plugin.isManaEnabled());
+        SkillStatus status = skill.checkStatus(this);
         int level = getSkillLevel(skill.getName());
         skillsBeingCast.push(skill);
 
@@ -957,22 +969,34 @@ public final class PlayerSkills extends Valued {
         // Check for skill shots
         else if (skill instanceof SkillShot) {
 
-            try {
-                // Try to cast the skill
-                if (((SkillShot) skill).cast(plugin.getServer().getPlayer(player), getSkillLevel(skill.getName()))) {
+            Player p = getPlayer();
+            PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill);
+            plugin.getServer().getPluginManager().callEvent(event);
 
-                    // Start the cooldown
-                    skill.startCooldown(this);
+            // Don't cast if cancelled
+            if (!event.isCancelled()) {
 
-                    // Use mana if successful
-                    if (plugin.isManaEnabled()) useMana((int)skill.getAttribute(SkillAttribute.MANA, level));
+                try {
+
+                    // Try to cast the skill
+                    if (((SkillShot) skill).cast(p, getSkillLevel(skill.getName()))) {
+
+                        // Send the message
+                        plugin.sendSkillMessage(skill, p);
+
+                        // Start the cooldown
+                        skill.startCooldown(this);
+
+                        // Use mana if successful
+                        if (plugin.isManaEnabled()) useMana((int)skill.getAttribute(SkillAttribute.MANA, level));
+                    }
                 }
-            }
 
-            // Problem with the skill
-            catch (Exception ex) {
-                ex.printStackTrace();
-                getAPI().getLogger().severe("Failed to cast skill - " + skill.getName() + ": Internal skill error");
+                // Problem with the skill
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                    getAPI().getLogger().severe("Failed to cast skill - " + skill.getName() + ": Internal skill error");
+                }
             }
         }
 
@@ -980,19 +1004,26 @@ public final class PlayerSkills extends Valued {
         else if (skill instanceof TargetSkill) {
 
             // Must have a target
-            Player p = plugin.getServer().getPlayer(player);
+            Player p = getPlayer();
             LivingEntity target = TargetHelper.getLivingTarget(p, skill.getAttribute(SkillAttribute.RANGE, level));
-            if (target != null) {
+            PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill);
+            plugin.getServer().getPluginManager().callEvent(event);
+
+            // Don't cast if cancelled
+            if (target != null && !event.isCancelled()) {
 
                 try {
                     // Try to cast the skill
                     if (((TargetSkill) skill).cast(p, target, level, Protection.isAlly(p, target))) {
 
+                        // Send the message
+                        plugin.sendSkillMessage(skill, p);
+
                         // Apply the cooldown
                         skill.startCooldown(this);
 
                         // Use mana if successful
-                        if (plugin.isManaEnabled()) useMana((int)plugin.getSkill(skill.getName()).getAttribute(SkillAttribute.MANA, level));
+                        if (plugin.isManaEnabled()) useMana((int)skill.getAttribute(SkillAttribute.MANA, level));
                     }
                 }
 
@@ -1027,6 +1058,7 @@ public final class PlayerSkills extends Valued {
             config.set(path + PlayerValues.SKILLS + "." + entry.getKey(), entry.getValue());
         }
         for (Map.Entry<Material, String> entry : binds.entrySet()) {
+            if (entry.getKey() == null) continue;
             config.set(path + PlayerValues.BIND + "." + entry.getKey().name(), entry.getValue());
         }
     }

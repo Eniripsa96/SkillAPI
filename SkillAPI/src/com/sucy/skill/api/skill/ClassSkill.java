@@ -20,6 +20,37 @@ import java.util.List;
 
 /**
  * <p>Base class for skills</p>
+ * <p>
+ *     You will extend this class for each of your skills. You can also implement
+ *     interfaces for additional effects such as one of the interacese provided
+ *     (SkillShot, PassiveSkill, or TargetSkill) or Listener for more custom
+ *     control over the usage of the skill.
+ * </p>
+ * <p>
+ *     Most of the members in this class are for the API's usage. The main members you will
+ *     use for creating skills are:
+ *     <li>description - a list of the lines for your skill description</li>
+ *     <li>api - a reference to SkillAPI</li>
+ *     <li>startCooldown() - method to put the skill on cooldown</li>
+ *     <li>refreshCooldown() - method to take a skill off cooldown</li>
+ *     <li>addCooldown(int amount) - adds to the cooldown left</li>
+ *     <li>subtractCooldown(int amount) - reduces the cooldown left</li>
+ *     <br/>
+ *     description is used for setting the description for your skill. This
+ *     is done in the constructor of your skill and you can add as many
+ *     lines as you want. The only limitation to this is you can't set it
+ *     to null without facing some problems.
+ *     <br/>
+ *     The API reference is there just in case you need a plugin reference
+ *     during initialization or if you don't want to pass in your own plugin
+ *     reference. It's useful during initialization because skills are created
+ *     before your plugin will enable when set up correctly (your plugin should
+ *     depend or at least softdepend SkillAPI).
+ *     <br/>
+ *     The cooldown methods are only for skills that influence the cooldown
+ *     of themselves or other skills, such as cutting the cooldown in half
+ *     if it hits or reducing the cooldown of other skills by some amount.
+ * </p>
  * <p>For a detailed tutorial on how to use this class, visit
  * <a href="http://dev.bukkit.org/bukkit-plugins/skillapi/pages/skill-tutorial/"/></p>
  */
@@ -30,37 +61,58 @@ public abstract class ClassSkill extends Attributed {
     private final String name;
 
     /**
-     * Type of the skill, mostly just for aesthetics as it is just displayed in the skill tree
+     * <p>Type of the skill, mostly just for aesthetics as it is just displayed in the skill tree</p>
+     * <p>This is made protected for use by dynamic skills. You should not normally use this field
+     * as it is set via the constructor</p>
      */
     protected SkillType type;
 
     /**
-     * Indicator for the skill in a skill tree
+     * <p>Indicator for the skill in a skill tree</p>
+     * <p>This is made protected for use by dynamic skills. You should not normally use this field
+     * as it is set via the constructor</p>
      */
     protected ItemStack indicator;
 
     /**
-     * Maximum level the skill can reach
+     * <p>Maximum level the skill can reach</p>
+     * <p>This is made protected for use by dynamic skills. You should not normally use this field
+     * as it is set via the constructor</p>
      */
     protected int maxLevel;
 
     /**
-     * Skill that this skill requires before being able to be upgraded
+     * <p>Skill that this skill requires before being able to be upgraded</p>
+     * <p>This is made protected for use by dynamic skills. You should not normally use this field
+     * as it is set via the constructor</p>
      */
     protected String skillReq;
 
     /**
-     * Level of the required skill that is needed before this can be upgraded
+     * <p>Level of the required skill that is needed before this can be upgraded</p>
+     * <p>This is made protected for use by dynamic skills. You should not normally use this field
+     * as it is set via the constructor</p>
      */
     protected int skillReqLevel;
 
     /**
-     * Description of the skill
+     * <p>The message that is displayed around the caster when the skill is cast</p>
+     * <p>This can be set whenever, but is generally only set in the constructor</p>
+     */
+    protected String message;
+
+    /**
+     * <p>Description of the skill</p>
+     * <p>You can manipulate this list directly to set the description
+     * for your skill. Don't set it to null if you don't want a description though,
+     * just clear it.</p>
      */
     protected final ArrayList<String> description = new ArrayList<String>();
 
     /**
-     * SkillAPI reference
+     * <p>SkillAPI reference</p>
+     * <p>You can use this reference as the plugin for your skill instead of your own.
+     * This can be useful as your skill is initialized before you own plugin is enabled.</p>
      */
     protected final SkillAPI api;
 
@@ -154,6 +206,27 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
+     * <p>Checks whether or not the 'message' field has been set to anything</p>
+     * <p>This returns true if the field is anything except null</p>
+     *
+     * @return true if a message has been set, false otherwise
+     */
+    public boolean hasMessage() {
+        return message != null;
+    }
+
+    /**
+     * <p>Retrieves the custom message of the skill</p>
+     * <p>This overrides the global message in the language config</p>
+     * <p>If no message was set, this returns null</p>
+     *
+     * @return custom skill message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
      * <p>Retrieves the base item for the skill indicator</p>
      * <p>This does not include the skill data provided when
      * getting the indicator for a player</p>
@@ -193,7 +266,9 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Sets the required skill
+     * <p>Sets the required skill for this skill</p>
+     * <p>Generally you will not use this method and provide
+     * the data to the constructor instead.</p>
      *
      * @param skill required skill
      * @param level level of the required skill
@@ -204,7 +279,9 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Sets the maximum level of the skill
+     * <p>Sets the maximum level of the skill</p>
+     * <p>Generally you will not use this method and provide
+     * the data to the constructor instead</p>
      *
      * @param level maximum level
      */
@@ -214,6 +291,8 @@ public abstract class ClassSkill extends Attributed {
 
     /**
      * <p>Assigns a new indicator for the skill</p>
+     * <p>Generally you will not use this method and provide
+     * the data to the constructor instead</p>
      *
      * @param mat new indicator
      */
@@ -223,6 +302,8 @@ public abstract class ClassSkill extends Attributed {
 
     /**
      * <p>Assigns a new indicator for the skill</p>
+     * <p>Generally you will not use this method and provide
+     * the data to the constructor instead</p>
      *
      * @param item new indicator
      */
@@ -231,7 +312,9 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Sets the type of the skill
+     * <p>Sets the type of the skill</p>
+     * <p>Generally you will not use this method and provide
+     * the data to the constructor instead</p>
      *
      * @param type new type
      */
@@ -294,6 +377,8 @@ public abstract class ClassSkill extends Attributed {
     /**
      * <p>Creates a new indicator for this skill using the data of the provided player and skill level</p>
      * <p>If the player does not have a class, this returns null</p>
+     * <p>This is primarily for API usage when generating skill trees. Because of this,
+     * you will most of the time not use this method.</p>
      *
      * @param player player data
      * @param level  current skill level
@@ -485,22 +570,21 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Checks the availability status of the skill for the player
+     * <p>Checks the availability status of the skill for the player</p>
+     * <p>The usage for this is most of the time handled by the API. You
+     * normally don't have to use this method</p>
      *
      * @param player      player to check for
-     * @param manaEnabled whether or not mana is enabled
      * @return            status of the skill for the player
      */
-    public SkillStatus checkStatus(PlayerSkills player, boolean manaEnabled) {
-
-        // Get the skill level
-        int level = player.getSkillLevel(name);
+    public SkillStatus checkStatus(PlayerSkills player) {
 
         // See if it is on cooldown
         if (getCooldown(player) > 0) return SkillStatus.ON_COOLDOWN;
 
         // If mana is enabled, check to see if the player has enough
-        if (manaEnabled) {
+        if (api.isManaEnabled()) {
+            int level = player.getSkillLevel(name);
             double manaCost = getAttribute(SkillAttribute.MANA, level);
 
             if (player.getMana() < manaCost) return SkillStatus.MISSING_MANA;
@@ -511,7 +595,9 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Starts the cooldown for this skill for the player
+     * <p>Starts the cooldown for this skill for the player</p>
+     * <p>If the skill was already on cooldown, this just restarts the timer
+     * rather than adding onto it</p>
      *
      * @param player player to start the cooldown for
      */
@@ -520,7 +606,8 @@ public abstract class ClassSkill extends Attributed {
     }
 
     /**
-     * Refreshes the cooldown for the skill enabling them to cast it again
+     * <p>Refreshes the cooldown for the skill</p>
+     * <p>This allows the player to use the skill again</p>
      *
      * @param player player to refresh the cooldown for
      */
@@ -616,6 +703,9 @@ public abstract class ClassSkill extends Attributed {
 
         // Icon
         parseIndicator(config.getString(SkillValues.INDICATOR));
+
+        // Message
+        message = config.getString(SkillValues.MESSAGE);
     }
 
     /**

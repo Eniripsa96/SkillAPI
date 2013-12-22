@@ -1,5 +1,6 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.dynamic.DynamicSkill;
@@ -19,14 +20,7 @@ public class CleanseMechanic implements IMechanic {
     private static final Status[] STATUSES = new Status[] {
             Status.ABSORB, Status.CURSE, Status.DISARM,
             Status.INVINCIBLE, Status.ROOT, Status.SILENCE, Status.STUN };
-    private static final PotionEffectType[] POTIONS = new PotionEffectType[] {
-            PotionEffectType.ABSORPTION, PotionEffectType.BLINDNESS, PotionEffectType.CONFUSION,
-            PotionEffectType.DAMAGE_RESISTANCE, PotionEffectType.FAST_DIGGING, PotionEffectType.FIRE_RESISTANCE,
-            PotionEffectType.HEALTH_BOOST, PotionEffectType.HUNGER, PotionEffectType.INCREASE_DAMAGE,
-            PotionEffectType.INVISIBILITY, PotionEffectType.JUMP, PotionEffectType.NIGHT_VISION,
-            PotionEffectType.POISON, PotionEffectType.REGENERATION, PotionEffectType.SATURATION,
-            PotionEffectType.SLOW, PotionEffectType.SLOW_DIGGING, PotionEffectType.SPEED,
-            PotionEffectType.WATER_BREATHING, PotionEffectType.WEAKNESS, PotionEffectType.WITHER };
+    private static final PotionEffectType[] POTIONS = BukkitHelper.getPotionEffectTypes();
 
     private static final String CLEANSE = "Cleanse";
 

@@ -1,5 +1,6 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
@@ -50,7 +51,7 @@ public class ManaDamageMechanic implements IMechanic {
                 else damage = amount * p.getMana() / 100.0;
 
                 double prevHealth = t.getHealth();
-                t.damage(damage, player);
+                BukkitHelper.damage(t, player, damage);
                 worked = worked || prevHealth != t.getHealth();
             }
         }

@@ -1,5 +1,6 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
@@ -47,16 +48,8 @@ public class HealthMechanic implements IMechanic {
 
             // Non-players
             else {
-                double prevHealth = t.getHealth();
                 double maxHealth = t.getMaxHealth() + amount;
-                if (maxHealth < 1) {
-                    maxHealth = 1;
-                    amount = (int)(maxHealth - t.getMaxHealth());
-                }
-                t.setMaxHealth(maxHealth);
-                double newHealth = t.getHealth() + amount;
-                if (newHealth < 1) newHealth = 1;
-                t.setHealth(newHealth);
+                BukkitHelper.setMaxHealth(t, maxHealth);
             }
         }
 
@@ -146,16 +139,12 @@ public class HealthMechanic implements IMechanic {
          */
         @Override
         protected void setup() {
-            double prevHealth = entity.getHealth();
             double maxHealth = entity.getMaxHealth() + bonus;
             if (maxHealth < 1) {
                 maxHealth = 1;
                 bonus = maxHealth - entity.getMaxHealth();
             }
-            entity.setMaxHealth(maxHealth);
-            double newHealth = prevHealth + bonus;
-            if (newHealth < 1) newHealth = 1;
-            entity.setHealth(newHealth);
+            BukkitHelper.setMaxHealth(entity, maxHealth);
         }
 
         /**
@@ -163,11 +152,7 @@ public class HealthMechanic implements IMechanic {
          */
         @Override
         protected void clear() {
-            double prevHealth = entity.getHealth();
-            entity.setMaxHealth(entity.getMaxHealth() - bonus);
-            double newHealth = prevHealth - bonus;
-            if (newHealth < 1) newHealth = 1;
-            entity.setHealth(newHealth);
+            BukkitHelper.setMaxHealth(entity, entity.getMaxHealth() - bonus);
         }
     }
 }

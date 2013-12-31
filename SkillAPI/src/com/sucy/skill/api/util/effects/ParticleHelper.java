@@ -58,7 +58,7 @@ public class ParticleHelper {
             if (temp.distanceSquared(loc) > rSquared) continue;
 
             if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
-            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), loc, 25);
+            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), temp, 25);
             else loc.getWorld().playEffect(temp, type.getEffect(), data);
             index++;
         }
@@ -100,7 +100,7 @@ public class ParticleHelper {
             if (temp.distanceSquared(loc) > rSquared) continue;
 
             if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
-            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), loc, 25);
+            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), temp, 25);
             else loc.getWorld().playEffect(temp, type.getEffect(), data);
             index++;
         }
@@ -142,21 +142,53 @@ public class ParticleHelper {
             if (temp.distanceSquared(loc) > rSquared) continue;
 
             if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
-            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), loc, 25);
+            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), temp, 25);
             else loc.getWorld().playEffect(temp, type.getEffect(), data);
             index++;
         }
     }
 
+    /**
+     * Players a particle effect at a location
+     *
+     * @param loc  location to play the effect
+     * @param type type of particle to play
+     */
+    public static void play(Location loc, ParticleType type) {
+        play(loc, type, 0);
+    }
+
+    /**
+     * Plays a particle effect at a location
+     *
+     * @param loc  location to play the effect
+     * @param type type of particle to play
+     * @param data data value for the particle
+     */
+    public static void play(Location loc, ParticleType type, int data) {
+        if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
+        if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), loc, 25);
+        else loc.getWorld().playEffect(loc, type.getEffect(), data);
+    }
+
     private static Class<?> packetClass;
     private static Object packet;
 
+    /**
+     * Initializes the reflection data for sending particles via packets
+     */
     public static void initialize() {
         packetClass = getClass("Packet");
+
+        // Try to get the packet instance for 1.6.4 and earlier
         packet = getInstance(getClass("Packet63WorldParticles"));
+
+        // Otherwise get the instance for 1.7.2 and later
         if (packet == null) {
             packet = getInstance(getClass("PacketPlayOutWorldParticles"));
         }
+
+        // Set common values
         setValue(packet, "e", 0.0f);
         setValue(packet, "f", 0.0f);
         setValue(packet, "g", 0.0f);

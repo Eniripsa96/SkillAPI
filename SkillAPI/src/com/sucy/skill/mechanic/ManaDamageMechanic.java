@@ -51,7 +51,7 @@ public class ManaDamageMechanic implements IMechanic {
                 else damage = amount * p.getMana() / 100.0;
 
                 double prevHealth = t.getHealth();
-                BukkitHelper.damage(t, player, damage);
+                BukkitHelper.damageManually(t, player, damage);
                 worked = worked || prevHealth != t.getHealth();
             }
         }

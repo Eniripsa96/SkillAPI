@@ -16,7 +16,7 @@ public class ClassCommander extends CommandHandler {
      * @param plugin plugin reference
      */
     public ClassCommander(SkillAPI plugin) {
-        super(plugin, "SkillAPI - Created by Steven Sucy", "class");
+        super(plugin, "SkillAPI - By Steven Sucy", "class");
     }
 
     /**

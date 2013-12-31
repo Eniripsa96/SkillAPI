@@ -164,6 +164,7 @@ public class Mechanic {
         put("MANA", new ManaMechanic());
         put("MANADAMAGE", new ManaDamageMechanic());
         put("PARTICLE", new ParticleMechanic());
+        put("PARTICLEPROJECTILE", new ParticleProjectileMechanic());
         put("POTION", new PotionMechanic());
         put("PROJECTILE", new ProjectileMechanic());
         put("PULL", new PullMechanic());

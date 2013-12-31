@@ -5,6 +5,7 @@ import com.rit.sucy.chat.Prefix;
 import com.rit.sucy.scoreboard.BoardManager;
 import com.rit.sucy.scoreboard.StatBoard;
 import com.sucy.skill.api.PlayerSkills;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 /**
@@ -23,6 +24,9 @@ public class PrefixManager {
         BoardManager.getPlayerBoards(player).removeBoards("SkillAPI");
     }
 
+    /**
+     * Clears all scoreboards for the plugin
+     */
     public static void clearAll() {
         BoardManager.clearPluginBoards("SkillAPI");
     }

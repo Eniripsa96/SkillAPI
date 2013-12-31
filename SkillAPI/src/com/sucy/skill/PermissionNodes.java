@@ -15,6 +15,11 @@ public class PermissionNodes {
         BASIC = BASE + "basic",
 
         /**
+         * Permission to gain experience
+         */
+        EXP = BASE + "exp",
+
+        /**
          * Permission to give players levels
          */
         LEVEL = BASE + "level",

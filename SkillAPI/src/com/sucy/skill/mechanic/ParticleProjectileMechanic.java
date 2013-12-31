@@ -5,15 +5,14 @@ import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
+import com.sucy.skill.api.util.effects.ParticleType;
 import com.sucy.skill.api.util.effects.ProjectileHelper;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,22 +21,23 @@ import java.util.List;
 /**
  * Mechanic for giving mana to targets
  */
-public class ProjectileMechanic implements IMechanic, Listener {
+public class ParticleProjectileMechanic implements IMechanic, Listener {
 
     private static final String
-            PROJECTILE = "Projectile",
-            SPEED = "Speed",
-            ANGLE = "Angle",
-            SPREAD = "Spread",
-            QUANTITY = "Quantity",
-            USE_PROJECTILE = "Use Arrow";
+            PARTICLE = "Projectile Particle",
+            DATA = "Projectile Data",
+            DAMAGE = "Projectile Damage",
+            SPEED = "Projectile Speed",
+            ANGLE = "Spread Angle",
+            SPREAD = "Spread Type",
+            QUANTITY = "Projectile Quantity";
 
     private final HashMap<Integer, EmbedData> projectiles = new HashMap<Integer, EmbedData>();
 
     /**
      * Constructor
      */
-    public ProjectileMechanic() {
+    public ParticleProjectileMechanic() {
         Bukkit.getPluginManager().registerEvents(this, Bukkit.getPluginManager().getPlugin("SkillAPI"));
     }
 
@@ -57,37 +57,18 @@ public class ProjectileMechanic implements IMechanic, Listener {
         // Change mana of all player targets
         int level = data.getSkillLevel(skill.getName());
         double speed = skill.getAttribute(SPEED, target, level);
+        double damage = skill.getAttribute(DAMAGE, target, level);
         int amount = (int)skill.getAttribute(QUANTITY, target, level);
         int angle = (int)skill.getAttribute(ANGLE, target, level);
         int spread = skill.getValue(SPREAD);
-        int projectileId = skill.getValue(PROJECTILE);
-        Class<? extends Projectile> projectile;
-        if (PROJECTILES.containsKey(projectileId)) projectile = PROJECTILES.get(projectileId);
-        else projectile = Arrow.class;
+        int value = skill.getValue(DATA);
+        int particleID = skill.getValue(PARTICLE);
+        ParticleType type;
+        if (PARTICLES.containsKey(particleID)) type = PARTICLES.get(particleID);
+        else type = ParticleType.SMOKE;
 
-        // Using projectiles
-        int removed = skill.getValue(USE_PROJECTILE);
-        if (removed > 0) {
-            Material mat;
-            if (!MATERIALS.containsKey(projectileId)) mat = MATERIALS.get(0);
-            else mat = MATERIALS.get(projectileId);
-            if (player.getInventory().contains(mat, removed)) {
-                player.getInventory().removeItem(new ItemStack(mat, removed));
-            }
-            else return false;
-        }
-
-        // Firing the projectiles
-        List<Integer> list;
-        if (spread == 0) list = ProjectileHelper.launchHorizontalCircle(player, projectile, amount, angle, speed);
-        else list = ProjectileHelper.launchCircle(player, projectile, amount, angle, speed);
-
-        // Applying embed data
-        if (skill.hasEmbedEffects()) {
-            for (int id : list) {
-                projectiles.put(id, new EmbedData(player, data, skill));
-            }
-        }
+        if (spread == 0) ProjectileHelper.launchHorizontalCircle(player, type, value, amount, angle, speed, damage);
+        else ProjectileHelper.launchCircle(player, type, value, amount, angle, speed, damage);
 
         return true;
     }
@@ -114,22 +95,6 @@ public class ProjectileMechanic implements IMechanic, Listener {
     }
 
     /**
-     * Target embedded effects
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onProjectileHit(EntityDamageByEntityEvent event) {
-
-        if (projectiles.containsKey(event.getDamager().getEntityId()) && event.getEntity() instanceof LivingEntity) {
-            EmbedData data = projectiles.get(event.getDamager().getEntityId());
-            data.getSkill().beginUsage();
-            data.resolveTarget((LivingEntity)event.getEntity());
-            data.getSkill().stopUsage();
-        }
-    }
-
-    /**
      * Sets default attributes for the skill
      *
      * @param skill  skill to apply to
@@ -140,9 +105,10 @@ public class ProjectileMechanic implements IMechanic, Listener {
         skill.checkDefault(prefix + SPEED, 3, 1);
         skill.checkDefault(prefix + QUANTITY, 1, 0);
         skill.checkDefault(prefix + ANGLE, 30, 0);
+        skill.checkDefault(prefix + DAMAGE, 5, 2);
         if (!skill.isSet(SPREAD)) skill.setValue(SPREAD, 0);
-        if (!skill.isSet(PROJECTILE)) skill.setValue(PROJECTILE, 0);
-        if (!skill.isSet(USE_PROJECTILE)) skill.setValue(USE_PROJECTILE, 0);
+        if (!skill.isSet(PARTICLE)) skill.setValue(PARTICLE, 0);
+        if (!skill.isSet(DATA)) skill.setValue(DATA, 0);
     }
 
     /**
@@ -150,24 +116,14 @@ public class ProjectileMechanic implements IMechanic, Listener {
      */
     @Override
     public String[] getAttributeNames() {
-        return new String[] { SPEED, QUANTITY, ANGLE };
+        return new String[] { SPEED, QUANTITY, ANGLE, DAMAGE };
     }
 
-    private static final HashMap<Integer, Class<? extends Projectile>> PROJECTILES = new LinkedHashMap<Integer, Class<? extends Projectile>>() {{
-        put(0, Arrow.class);
-        put(1, Snowball.class);
-        put(2, Egg.class);
-        put(3, SmallFireball.class);
-        put(4, LargeFireball.class);
-        put(5, WitherSkull.class);
-    }};
-
-    private static final HashMap<Integer, Material> MATERIALS = new LinkedHashMap<Integer, Material>() {{
-        put(0, Material.ARROW);
-        put(1, Material.SNOW_BALL);
-        put(2, Material.EGG);
-        put(3, Material.FIREBALL);
-        put(4, Material.FIREBALL);
-        put(5, Material.FIREBALL);
+    private static final HashMap<Integer, ParticleType> PARTICLES = new HashMap<Integer, ParticleType>() {{
+        put(0, ParticleType.SMOKE);
+        put(1, ParticleType.ENDER_SIGNAL);
+        put(2, ParticleType.MOBSPAWNER_FLAMES);
+        put(3, ParticleType.POTION_BREAK);
+        put(4, ParticleType.OTHER);
     }};
 }

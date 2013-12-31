@@ -5,14 +5,13 @@ import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.event.*;
-import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.api.skill.PassiveSkill;
+import com.sucy.skill.api.util.effects.ParticleProjectile;
+import com.sucy.skill.api.util.effects.ParticleType;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.tree.SkillTree;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,10 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.Vector;
-
-import java.util.Map;
+import org.bukkit.scoreboard.DisplaySlot;
 
 /**
  * <p>Main listener for the API</p>
@@ -61,6 +57,7 @@ public class SkillListener implements Listener {
      */
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent event) {
+
         Player player = event.getPlayer();
 
         // Must have permission
@@ -121,7 +118,7 @@ public class SkillListener implements Listener {
         }
 
         // Player class damage
-        if (damager instanceof Player && PlayerSkills.skillsBeingCast.isEmpty()) {
+        if (damager instanceof Player && PlayerSkills.skillsBeingCast.isEmpty() && !ParticleProjectile.damaging) {
 
             Player p = (Player)damager;
 
@@ -273,7 +270,7 @@ public class SkillListener implements Listener {
             LivingEntity damager = convertEntity(event.getDamager());
 
             // Neither can be null
-            if (damaged == null || damager == null) return;
+            if (damaged == null || damager == null || damaged.getNoDamageTicks() > 0) return;
 
             AttackType type;
             if (PlayerSkills.skillsBeingCast.size() > 0) type = AttackType.SKILL;

@@ -92,21 +92,8 @@ public class BukkitHelper {
      */
     public static void damageManually(LivingEntity target, LivingEntity damager, double damage) {
 
-        double prevHealth = target.getHealth();
-        double newHealth = prevHealth - damage;
-        if (newHealth < 0) newHealth = 0;
-
-        // 1.5.2 and earlier used integer values
-        if (isVersionAtMost(MC_1_5_2)) {
-            target.setLastDamageCause(new EntityDamageByEntityEvent(damager, target, EntityDamageEvent.DamageCause.CUSTOM, (int)damage));
-            target.setHealth((int) newHealth);
-        }
-
-        // 1.6.2 and beyond use double values
-        else {
-            target.setLastDamageCause(new EntityDamageByEntityEvent(damager, target, EntityDamageEvent.DamageCause.CUSTOM, damage));
-            target.setHealth(newHealth);
-        }
+        target.setNoDamageTicks(0);
+        damage(target, damager, damage);
     }
 
     /**

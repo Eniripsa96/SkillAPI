@@ -95,6 +95,7 @@ public class SkillAPI extends JavaPlugin {
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
         languageConfig.saveDefaultConfig();
+        BukkitHelper.initialize();
 
         // Make sure default config values are set
         for (SettingValues value : SettingValues.values()) {
@@ -211,6 +212,7 @@ public class SkillAPI extends JavaPlugin {
         registration.clearData();
         exp.clear();
         players.clear();
+        getServer().getScheduler().cancelTasks(this);
     }
 
     // ----------------------------- Data Management Methods -------------------------------------- //

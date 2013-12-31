@@ -186,4 +186,4 @@ Other:
   cannot-use-item:
   - '&4You cannot use that item'
   skill-cast:
-  - '&6{player} &2has cast &6{skill}'
+  - '&6{player} &2has cast &6{skill}&r'

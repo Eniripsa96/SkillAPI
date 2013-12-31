@@ -140,6 +140,15 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
     }
 
     /**
+     * <p>Checks whether or not the skill has embedded effects</p>
+     *
+     * @return true if has embed effects, false otherwise
+     */
+    public boolean hasEmbedEffects() {
+        return embedMechanics.size() > 0;
+    }
+
+    /**
      * getAttribute override to handle passive prefixes
      *
      * @param key    attribute key
@@ -294,6 +303,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      */
     @Override
     public void stopEffects(Player player, int level) {
+        if (player == null) return;
         String key = player.getName().toLowerCase();
         if (tasks.containsKey(key)) {
             tasks.get(key).cancel();

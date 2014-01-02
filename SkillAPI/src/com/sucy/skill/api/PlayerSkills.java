@@ -315,9 +315,18 @@ public final class PlayerSkills extends Valued {
         if (level == 0)
             return false;
 
+        // Skill is required by another skill
+        for (String s : skills.keySet()) {
+            String req = plugin.getSkill(s).getSkillReq();
+            if (req != null && req.equalsIgnoreCase(skill.getName())) {
+                if (getSkillLevel(s) > 0 && skills.get(s) >= getSkillLevel(s)) {
+                    return false;
+                }
+            }
+        }
+
         // Update passive skill effects
         if (skill instanceof PassiveSkill) {
-            ((PassiveSkill) skill).stopEffects(plugin.getServer().getPlayer(getName()), level);
             ((PassiveSkill) skill).onInitialize(plugin.getServer().getPlayer(getName()), level - 1);
         }
 
@@ -661,8 +670,8 @@ public final class PlayerSkills extends Valued {
 
         // Level up if there's enough exp
         int levels = 0;
-        while (exp >= getRequiredExp()) {
-            exp -= getRequiredExp();
+        while (exp >= plugin.getRequiredExp(level + levels)) {
+            exp -= plugin.getRequiredExp(level + levels);
             levels++;
         }
 
@@ -770,7 +779,7 @@ public final class PlayerSkills extends Valued {
      * @param skillName name of the skill used
      */
     public void heal(Player healer, double amount, String skillName) {
-        PlayerSkillHealEvent event = new PlayerSkillHealEvent(getAPI().getServer().getPlayer(player), healer, skillName, amount);
+        PlayerSkillHealEvent event = new PlayerSkillHealEvent(getPlayer(), healer, skillName, amount);
         getAPI().getServer().getPluginManager().callEvent(event);
         heal(event.getAmount());
     }
@@ -782,7 +791,7 @@ public final class PlayerSkills extends Valued {
      * next level.</p>
      */
     public void updateLevelBar() {
-        Player player = plugin.getServer().getPlayer(this.player);
+        Player player = getPlayer();
 
         // Must be online with permission while the plugin is using level bars
         if (player == null || !player.hasPermission(PermissionNodes.BASIC) || !plugin.usingLevelBar()) {

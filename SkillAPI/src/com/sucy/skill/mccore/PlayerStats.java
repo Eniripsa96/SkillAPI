@@ -4,6 +4,7 @@ import com.rit.sucy.scoreboard.StatHolder;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.api.util.TextFormatter;
 import com.sucy.skill.language.StatNodes;
 
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class PlayerStats implements StatHolder {
         if (plugin.isManaEnabled()) {
             if (player.hasClass()) {
                 CustomClass c = player.getAPI().getClass(player.getClassName());
-                map.put(c.getManaName(), player.getMana());
+                map.put(TextFormatter.colorString(c.getManaName()), player.getMana());
             }
         }
         map.put(plugin.getMessage(StatNodes.POINTS, true), player.getPoints());

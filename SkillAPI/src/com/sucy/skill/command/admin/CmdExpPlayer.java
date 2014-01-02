@@ -77,7 +77,7 @@ public class CmdExpPlayer implements ICommand {
                 sender.sendMessage(error);
             }
 
-            // Give them the levels
+            // Give them the experience
             else {
                 player.giveExp(amount);
 

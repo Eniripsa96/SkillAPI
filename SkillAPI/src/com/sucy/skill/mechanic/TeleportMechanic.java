@@ -46,25 +46,27 @@ public class TeleportMechanic implements IMechanic {
         // Not through walls
         if (skill.getValue(THROUGH_WALLS) == 1) {
             for (LivingEntity t : targets) {
-                if (t.getLocation().getBlock().getType() != Material.AIR) continue;
+                if (t.getLocation().getBlock().getType().isSolid()) continue;
                 Vector vec = t.getLocation().getDirection();
                 vec.multiply(hDistance / vec.length());
 
-                int steps = 2 * (int)Math.max(Math.max(vec.getX(), vDistance), vec.getZ());
+                double x = Math.abs(vec.getX());
+                double z = Math.abs(vec.getZ());
+                int steps = 2 * (int)Math.max(Math.max(x, vDistance), z);
 
                 double xScale = vec.getX() / steps;
-                double yScale = (double)vDistance / steps;
+                double yScale = vDistance / steps;
                 double zScale = vec.getZ() / steps;
 
-                Location loc = t.getLocation();
+                Location loc = t.getLocation().add(0, 0.5, 0);
                 for (int i = 0; i < steps; i++) {
                     loc.add(xScale, yScale, zScale);
-                    if (loc.getBlock().getType() != Material.AIR && loc.getBlock().getRelative(0, 1, 0).getType() != Material.AIR) {
+                    if (loc.getBlock().getType().isSolid() && loc.getBlock().getRelative(0, 1, 0).getType() != Material.AIR) {
                         loc.subtract(xScale, yScale, zScale);
                         break;
                     }
                 }
-                t.teleport(loc);
+                t.teleport(loc.add(0, -0.5, 0));
                 worked = true;
             }
         }
@@ -72,40 +74,35 @@ public class TeleportMechanic implements IMechanic {
         // Through walls
         else {
             for (LivingEntity t : targets) {
-                if (t.getLocation().getBlock().getType() != Material.AIR) continue;
+                Location loc = t.getLocation().add(0, 0.5, 0);
+                if (loc.getBlock().getType().isSolid()) continue;
                 Vector vec = t.getLocation().getDirection();
-                double xRatio = vec.getX() / (vec.getX() + vec.getZ());
-                double zRatio = 1 - xRatio;
 
-                Location loc = t.getLocation().add(xRatio * hDistance, vDistance, zRatio * hDistance);
-                while (loc.getBlock().getType() != Material.AIR && loc.distanceSquared(t.getLocation()) > 0.01) {
-                    if (loc.getBlock().getRelative(0, 1, 0).getType() != Material.AIR) {
+                double x = Math.abs(vec.getX());
+                double z = Math.abs(vec.getZ());
+                int steps = 2 * (int)Math.max(Math.max(x, vDistance), z);
+
+                double xScale = vec.getX() / steps;
+                double yScale = vDistance / steps;
+                double zScale = vec.getZ() / steps;
+
+                loc.add(xScale * steps, vDistance, zScale * hDistance);
+                int count = 0;
+                while (loc.getBlock().getType().isSolid() && count < steps) {
+                    if (!loc.getBlock().getRelative(0, 1, 0).getType().isSolid()) {
                         loc = loc.getBlock().getRelative(0, 1, 0).getLocation();
                     }
                     else {
-                        loc.setX(shrink(t.getLocation().getX(), loc.getX()));
-                        loc.setY(shrink(t.getLocation().getY(), loc.getY()));
-                        loc.setZ(shrink(t.getLocation().getZ(), loc.getZ()));
+                        loc.add(-xScale, -yScale, -zScale);
                     }
+                    count++;
                 }
-                t.teleport(loc);
+                t.teleport(loc.add(0, -0.5, 0));
                 worked = true;
             }
         }
 
         return worked;
-    }
-
-    /**
-     * Shrinks a coordinate down towards the original
-     *
-     * @param original original coordinate
-     * @param modified modified coordinate
-     * @return         shrunk coordinate
-     */
-    private double shrink(double original, double modified) {
-        if (modified > original) return modified - Math.min(1, modified - original);
-        else return modified + Math.min(1, original - modified);
     }
 
     /**

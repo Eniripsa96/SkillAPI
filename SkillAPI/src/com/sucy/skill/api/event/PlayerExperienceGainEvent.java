@@ -13,6 +13,7 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private PlayerSkills player;
     private boolean cancelled;
+    private boolean commandExp;
     private int amount;
 
     /**
@@ -22,8 +23,20 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable {
      * @param amount     amount of experience being gained
      */
     public PlayerExperienceGainEvent(PlayerSkills playerData, int amount) {
+        this(playerData, amount, false);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param playerData player gaining experience
+     * @param amount     amount of experience being gained
+     * @param commandExp whether or not the experience came from a command
+     */
+    public PlayerExperienceGainEvent(PlayerSkills playerData, int amount, boolean commandExp) {
         this.player = playerData;
         this.amount = amount;
+        this.commandExp = commandExp;
         cancelled = false;
     }
 
@@ -39,6 +52,13 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable {
      */
     public int getExp() {
         return amount;
+    }
+
+    /**
+     * @return whether or not the exp came from a command
+     */
+    public boolean isCommandExp() {
+        return commandExp;
     }
 
     /**

@@ -20,7 +20,7 @@ public class HealthMechanic implements IMechanic {
     private static final String HEALTH = "Health";
 
     private HashMap<String, Integer> playerBonuses = new HashMap<String, Integer>();
-    private HashMap<String, Integer> mobBonuses = new HashMap<String, Integer>();
+    private HashMap<Integer, Integer> mobBonuses = new HashMap<Integer, Integer>();
 
     /**
      * Grants bonus health to all targets
@@ -36,20 +36,22 @@ public class HealthMechanic implements IMechanic {
     public boolean resolve(Player player, PlayerSkills data, DynamicSkill skill, Target target, List<LivingEntity> targets) {
 
         // Grant health to all targets
-        boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
         int amount = (int)skill.getAttribute(HEALTH, target, level);
         for (LivingEntity t : targets) {
 
             // Players
             if (t instanceof Player) {
-                data.getAPI().getPlayer(((Player) t).getName()).addMaxHealth(amount);
+                Player p = (Player)t;
+                data.getAPI().getPlayer(p.getName()).addMaxHealth(amount);
+                playerBonuses.put(p.getName(), amount);
             }
 
             // Non-players
             else {
                 double maxHealth = t.getMaxHealth() + amount;
                 BukkitHelper.setMaxHealth(t, maxHealth);
+                mobBonuses.put(t.getEntityId(), amount);
             }
         }
 

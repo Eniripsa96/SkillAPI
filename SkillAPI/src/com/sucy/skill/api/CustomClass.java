@@ -393,7 +393,7 @@ public abstract class CustomClass extends Attributed {
      */
     public void update(ConfigurationSection config) {
         setParent(getAPI().getClass(config.getString(ClassValues.PARENT)));
-        setPrefix(config.getString(TextFormatter.colorString(ClassValues.PREFIX)));
+        setPrefix(config.getString(ClassValues.PREFIX));
         setMaxLevel(config.getInt(ClassValues.MAX_LEVEL));
         setProfessLevel(config.getInt(ClassValues.LEVEL));
 
@@ -406,7 +406,7 @@ public abstract class CustomClass extends Attributed {
         inheritance.addAll(config.getStringList(ClassValues.INHERIT));
 
         // Options
-        manaName = TextFormatter.colorString(config.getString(ClassValues.MANA_NAME, "Mana"));
+        manaName = config.getString(ClassValues.MANA_NAME, "Mana");
         gainMana = config.getBoolean(ClassValues.PASSIVE_MANA_GAIN, true);
 
         // Stats
@@ -592,7 +592,7 @@ public abstract class CustomClass extends Attributed {
      */
     public void save(ConfigurationSection config) {
         config.set(ClassValues.PARENT, parent);
-        config.set(ClassValues.PREFIX, prefix);
+        config.set(ClassValues.PREFIX, prefix.replace('§', '&'));
         config.set(ClassValues.MAX_LEVEL, maxLevel);
         config.set(ClassValues.LEVEL, professLevel);
         config.set(ClassValues.SKILLS, skills);
@@ -602,7 +602,7 @@ public abstract class CustomClass extends Attributed {
         config.set(ClassValues.MANA_BASE, getBase(ClassAttribute.MANA));
         config.set(ClassValues.MANA_BONUS, getScale(ClassAttribute.MANA));
         config.set(ClassValues.PASSIVE_MANA_GAIN, gainMana);
-        config.set(ClassValues.MANA_NAME, manaName);
+        config.set(ClassValues.MANA_NAME, manaName.replace('§', '&'));
     }
 
     /**

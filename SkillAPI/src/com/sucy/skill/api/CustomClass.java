@@ -470,8 +470,8 @@ public abstract class CustomClass extends Attributed {
             return defaultDamage.get(mat);
         }
 
-        // Otherwise just 1 damage
-        else return 1;
+        // Otherwise don't modify the damage
+        else return 0;
     }
 
     /**
@@ -487,7 +487,7 @@ public abstract class CustomClass extends Attributed {
             return idDamage.get(matId);
         }
 
-        // Otherwise just 1 damage
+        // Otherwise don't modify the damage
         else return 0;
     }
 

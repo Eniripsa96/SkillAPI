@@ -264,7 +264,7 @@ public final class PlayerSkills extends Valued {
             return false;
 
         // Level requirement isn't met
-        if (this.level < (int)skill.getAttribute(SkillAttribute.LEVEL, level))
+        if (this.level < (int)skill.getAttribute(SkillAttribute.LEVEL, level + 1))
             return false;
 
         // Skill cost isn't met

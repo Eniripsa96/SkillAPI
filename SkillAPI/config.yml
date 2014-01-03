@@ -21,6 +21,7 @@ players-per-check: 1
 old-health-bar: false
 use-level-bar: false
 use-click-combos: false
+default-one-damage: false
 block-mob-spawner-exp: true
 block-mob-egg-exp: true
 block-creative-exp: true

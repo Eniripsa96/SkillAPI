@@ -61,6 +61,11 @@ public enum SettingValues {
     OLD_HEALTH_BAR,
 
     /**
+     * Whether or not to default unknown items to 1 damage
+     */
+    DEFAULT_ONE_DAMAGE,
+
+    /**
      * Whether or not the API uses the level bar to display class level
      */
     USE_LEVEL_BAR,

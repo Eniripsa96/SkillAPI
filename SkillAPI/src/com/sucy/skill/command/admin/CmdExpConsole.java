@@ -40,7 +40,7 @@ public class CmdExpConsole implements ICommand {
             // Get the amount
             int amount = 0;
             try {
-                amount = Integer.parseInt(args[0]);
+                amount = (int)Double.parseDouble(args[0]);
             }
             catch (Exception ex) {
                 // Do nothing

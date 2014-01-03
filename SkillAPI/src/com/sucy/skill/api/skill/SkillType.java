@@ -10,7 +10,6 @@ public enum SkillType {
      */
     SKILL_SHOT ("skill-shot"),
 
-
     /**
      * A skill that imbues normal attacks with extra effects
      */
@@ -35,6 +34,21 @@ public enum SkillType {
      * A passive skill
      */
     PASSIVE ("passive"),
+
+    /**
+     * An area target effect
+     */
+    AREA ("area"),
+
+    /**
+     * A self targeted skill
+     */
+    SELF ("self"),
+
+    /**
+     * A linear target skill
+     */
+    LINEAR ("linear"),
     ;
 
     private final String name;

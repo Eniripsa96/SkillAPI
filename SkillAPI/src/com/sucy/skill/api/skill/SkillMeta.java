@@ -44,7 +44,7 @@ public class SkillMeta implements MetadataValue {
     }
 
     /**
-     * Attaches this meta data to the target
+     * Attaches this metadata to the target
      *
      * @param target target to attach to
      */
@@ -53,10 +53,27 @@ public class SkillMeta implements MetadataValue {
     }
 
     /**
+     * Attaches the metadata to the target using a custom key
+     *
+     * @param target target to attach to
+     * @param key    custom key
+     */
+    public void attach(Metadatable target, String key) {
+        target.setMetadata(META_NAME + key, this);
+    }
+
+    /**
      * @return caster of the skill
      */
     public Player getCaster() {
         return caster;
+    }
+
+    /**
+     * @return skill that added the metadata
+     */
+    public ClassSkill getSkill() {
+        return skill;
     }
 
     /**
@@ -77,6 +94,16 @@ public class SkillMeta implements MetadataValue {
      */
     public double getAttribute(String name) {
         return attributes.get(name);
+    }
+
+    /**
+     * Checks whether or not the attribute is set
+     *
+     * @param name name of the attribute
+     * @return     true if set, false otherwise
+     */
+    public boolean hasAttribute(String name) {
+        return attributes.contains(name);
     }
 
     /**
@@ -180,6 +207,21 @@ public class SkillMeta implements MetadataValue {
     }
 
     /**
+     * Adds the metadata to the target with a custom key
+     *
+     * @param caster caster of the skill
+     * @param target target to attach to
+     * @param skill  skill to attach for
+     * @param key    custom key to use
+     * @return       SkillMeta that was added
+     */
+    public static SkillMeta addMeta(Player caster, Metadatable target, ClassSkill skill, String key) {
+        SkillMeta meta = new SkillMeta(caster, skill);
+        meta.attach(target, key);
+        return meta;
+    }
+
+    /**
      * Checks if the target has skill meta attached to it
      *
      * @param target target to check
@@ -190,13 +232,39 @@ public class SkillMeta implements MetadataValue {
     }
 
     /**
-     * Retrieves the skill meta from the target
+     * Checks if the target has skill meta attached to it
+     *
+     * @param target target to check
+     * @param key    custom key
+     * @return       true if skill meta is present, false otherwise
+     */
+    public static boolean hasMeta(Metadatable target, String key) {
+        return target != null && target.hasMetadata(META_NAME + key);
+    }
+
+    /**
+     * <p>Retrieves the skill meta from the target</p>
+     * <p>If you provided a custom key when adding the metadata, use getMeta(Metadatable, String) instead.</p>
      *
      * @param target target to retrieve meta from
+     * @param skill  skill used to attach the metadata
      * @return       meta attached or null if none
      */
     public static SkillMeta getMeta(Metadatable target, ClassSkill skill) {
         if (hasMeta(target, skill)) return (SkillMeta)target.getMetadata(META_NAME + skill.getName()).get(0);
+        else return null;
+    }
+
+    /**
+     * <p>Retrieves the skill meta from the target</p>
+     * <p>If you did not use a custom key when adding the metadata, use getMeta(Metadatable, ClassSkill) instead.</p>
+     *
+     * @param target target to retrieve meta from
+     * @param key    custom key
+     * @return       meta attached or null if none
+     */
+    public static SkillMeta getMeta(Metadatable target, String key) {
+        if (hasMeta(target, key)) return (SkillMeta)target.getMetadata(META_NAME + key);
         else return null;
     }
 }

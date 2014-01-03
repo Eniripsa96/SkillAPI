@@ -156,7 +156,7 @@ public class ProjectileHelper {
      * @param speed      speed of the projectiles
      * @return           list of projectile entity IDs
      */
-    public static List<Integer> rainProjectiles(LivingEntity source, Location target, Class<? extends Projectile> projectile, int amount, int height, int radius, int speed) {
+    public static List<Integer> rainProjectiles(LivingEntity source, Location target, Class<? extends Projectile> projectile, int amount, int height, double radius, int speed) {
 
         // Initialize data
         List<Integer> list = new ArrayList<Integer>();
@@ -177,7 +177,7 @@ public class ProjectileHelper {
         // Launch projectiles
         int tiers = (amount + 7) / 8;
         for (int i = 0; i < tiers; i++) {
-            double rad = (double)radius * (tiers - i) / tiers;
+            double rad = radius * (tiers - i) / tiers;
             int tierNum = Math.min(amount, 8);
             double increment = 360 / tierNum;
             double angle = (i % 2) * 22.5;
@@ -319,7 +319,7 @@ public class ProjectileHelper {
      * @param damage   damage that the projectile will deal
      * @return         list of projectile entity IDs
      */
-    public static List<Integer> rainProjectiles(LivingEntity source, Location target, ParticleType particle, int data, int amount, int height, int radius, double speed, double damage) {
+    public static List<Integer> rainProjectiles(LivingEntity source, Location target, ParticleType particle, int data, int amount, int height, double radius, double speed, double damage) {
 
         // Initialize data
         List<Integer> list = new ArrayList<Integer>();
@@ -335,7 +335,7 @@ public class ProjectileHelper {
         // Launch projectiles
         int tiers = (amount + 7) / 8;
         for (int i = 0; i < tiers; i++) {
-            double rad = (double)radius * (tiers - i) / tiers;
+            double rad = radius * (tiers - i) / tiers;
             int tierNum = Math.min(amount, 8);
             double increment = 360 / tierNum;
             double angle = (i % 2) * 22.5;

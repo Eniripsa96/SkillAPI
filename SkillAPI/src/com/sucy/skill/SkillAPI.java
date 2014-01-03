@@ -72,6 +72,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean levelBar;
     private boolean clickCombo;
     private boolean expOrbs;
+    private boolean defaultOneDamage;
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
     private boolean blockCreativeExp;
@@ -115,6 +116,7 @@ public class SkillAPI extends JavaPlugin {
         oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path(), false);
         levelBar = getConfig().getBoolean(SettingValues.USE_LEVEL_BAR.path(), false);
         clickCombo = getConfig().getBoolean(SettingValues.USE_CLICK_COMBOS.path(), false);
+        defaultOneDamage = getConfig().getBoolean(SettingValues.DEFAULT_ONE_DAMAGE.path(), false);
         blockSpawnerExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_SPAWNER_EXP.path(), true);
         blockEggExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_EGG_EXP.path(), true);
         blockCreativeExp = getConfig().getBoolean(SettingValues.BLOCK_CREATIVE_EXP.path(), true);
@@ -325,6 +327,13 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean usingExpOrbs() {
         return expOrbs;
+    }
+
+    /**
+     * @return whether or not unknown items default to one damage
+     */
+    public boolean isDefaultOneDamage() {
+        return defaultOneDamage;
     }
 
     /**

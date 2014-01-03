@@ -145,7 +145,9 @@ public class SkillListener implements Listener {
                     if (projectile.hasMetadata(P_TYPE)) {
                         int id = projectile.getMetadata(P_TYPE).get(0).asInt();
                         int damage = playerClass.getCustomDamage(id);
-                        event.setDamage(Math.max(damage, 1));
+                        if (plugin.isDefaultOneDamage() || damage > 0) {
+                            BukkitHelper.setDamage(event, Math.max(damage, 1));
+                        }
                     }
 
                     // When the default damage isn't 0, set the damage relative
@@ -176,11 +178,14 @@ public class SkillListener implements Listener {
                     // Set the damage normally
                     Material mat = p.getItemInHand() == null ?
                             Material.AIR : p.getItemInHand().getType();
-                    double damage = 1;
+                    double damage = 0;
+
+                    // MCPC+ custom materials
                     if (mat.toString().toLowerCase().startsWith("x")) {
-                        damage = Math.max(damage, playerClass.getDamage(p.getItemInHand().getTypeId()));
+                        damage = playerClass.getDamage(p.getItemInHand().getTypeId());
                     }
                     else if (p.getItemInHand() != null) damage = event.getDamage() + playerClass.getDamage(mat) - CustomClass.getDefaultDamage(mat);
+                    if (plugin.isDefaultOneDamage() || damage > 0)
                     BukkitHelper.setDamage(event, Math.max(damage, 1));
                 }
             }

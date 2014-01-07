@@ -3,8 +3,6 @@ package com.sucy.skill;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.StatusHolder;
-import com.sucy.skill.api.dynamic.IMechanic;
-import com.sucy.skill.api.dynamic.Mechanic;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.api.util.effects.DOTHelper;
@@ -21,7 +19,6 @@ import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -76,6 +73,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
     private boolean blockCreativeExp;
+    private double expLost;
     private int startingPoints;
     private int pointsPerLevel;
     private int messageRadius;
@@ -122,6 +120,7 @@ public class SkillAPI extends JavaPlugin {
         blockCreativeExp = getConfig().getBoolean(SettingValues.BLOCK_CREATIVE_EXP.path(), true);
         expOrbs = getConfig().getBoolean(SettingValues.USE_EXP_ORBS.path(), false);
         messageRadius = getConfig().getInt(SettingValues.SKILL_MESSAGE_RADIUS.path(), 20);
+        expLost = getConfig().getDouble(SettingValues.PERCENT_EXP_LOST_ON_DEATH.path(), 0);
 
         // Experience formula
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
@@ -355,6 +354,13 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean blockingCreativeExp() {
         return blockCreativeExp;
+    }
+
+    /**
+     * @return lost experience percentage upon dying
+     */
+    public double getLostExp() {
+        return expLost;
     }
 
     /**

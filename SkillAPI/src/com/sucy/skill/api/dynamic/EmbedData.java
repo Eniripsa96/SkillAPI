@@ -54,8 +54,10 @@ public class EmbedData extends Valued {
             // Get the targets
             if (mechanic.getTarget() == Target.AREA) targets = area(loc, skill, data.getSkillLevel(skill.getName()));
             else {
-                targets = new ArrayList<LivingEntity>();
-                if (mechanic.getTarget() == Target.SELF) targets.add(player);
+                if (mechanic.getTarget() == Target.SELF) {
+                    targets = new ArrayList<LivingEntity>();
+                    targets.add(player);
+                }
                 else continue;
             }
 

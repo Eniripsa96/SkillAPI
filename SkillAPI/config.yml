@@ -27,6 +27,7 @@ block-mob-egg-exp: true
 block-creative-exp: true
 use-exp-orbs: false
 skill-message-radius: 20
+percent-exp-lost-on-death: 0.0
 exp-formula:
   x: 1
   y: 4

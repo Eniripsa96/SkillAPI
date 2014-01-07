@@ -36,12 +36,17 @@ public enum Target {
      */
     LINEAR (new DefaultAttribute("Range", 10, 0)),
 
+    /**
+     * Targets in a cone in front of the caster
+     */
+    CONE (new DefaultAttribute("Arc", 30, 0), new DefaultAttribute("Range", 8, 0)),
+
     ;
 
     private static final String
         RANGE = "Range",
         RADIUS = "Radius",
-        ANGLE = "Angle";
+        ARC = "Arc";
 
     private final DefaultAttribute[] defaults;
 
@@ -77,6 +82,7 @@ public enum Target {
         if (this == AREA) return area(skill, caster, level);
         if (this == TARGET_AREA) return targetArea(skill, caster, level);
         if (this == LINEAR) return linear(skill, caster, level);
+        if (this == CONE) return cone(skill, caster, level);
 
         return new ArrayList<LivingEntity>();
     }
@@ -165,6 +171,18 @@ public enum Target {
         List<LivingEntity> targets = TargetHelper.getLivingTargets(caster, skill.getAttribute(getAlias(skill, RANGE), level));
         targets.add(caster);
         return targets;
+    }
+
+    /**
+     * Targets for cone effects
+     *
+     * @param skill  skill with the effect
+     * @param caster player casting the skill
+     * @param level  skill level
+     * @return       all entities within the cone
+     */
+    private List<LivingEntity> cone(DynamicSkill skill, Player caster, int level) {
+        return TargetHelper.getConeTargets(caster, skill.getAttribute(getAlias(skill, ARC), level), skill.getAttribute(getAlias(skill, RANGE), level));
     }
 
     /**

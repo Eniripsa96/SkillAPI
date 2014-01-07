@@ -5,6 +5,7 @@ import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
+import com.sucy.skill.api.event.ParticleProjectileHitEvent;
 import com.sucy.skill.api.util.effects.ParticleType;
 import com.sucy.skill.api.util.effects.ProjectileHelper;
 import org.bukkit.Bukkit;
@@ -67,31 +68,11 @@ public class ParticleProjectileMechanic implements IMechanic, Listener {
         if (PARTICLES.containsKey(particleID)) type = PARTICLES.get(particleID);
         else type = ParticleType.SMOKE;
 
-        if (spread == 0) ProjectileHelper.launchHorizontalCircle(player, type, value, amount, angle, speed, damage);
-        else ProjectileHelper.launchCircle(player, type, value, amount, angle, speed, damage);
+        EmbedData embed = new EmbedData(player, data, skill);
+        if (spread == 0) ProjectileHelper.launchHorizontalCircle(player, type, value, amount, angle, speed, damage, embed);
+        else ProjectileHelper.launchCircle(player, type, value, amount, angle, speed, damage, embed);
 
         return true;
-    }
-
-    /**
-     * Non-target embedded effects
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onProjectileHit(final ProjectileHitEvent event) {
-        Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable() {
-            @Override
-            public void run() {
-                projectiles.remove(event.getEntity().getEntityId());
-            }
-        }, 1);
-        if (projectiles.containsKey(event.getEntity().getEntityId())) {
-            EmbedData data = projectiles.get(event.getEntity().getEntityId());
-            data.getSkill().beginUsage();
-            data.resolveNonTarget(event.getEntity().getLocation());
-            data.getSkill().stopUsage();
-        }
     }
 
     /**

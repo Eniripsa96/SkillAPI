@@ -7,6 +7,7 @@ import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.util.effects.ParticleProjectile;
 import com.sucy.skill.api.util.effects.ParticleType;
+import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
@@ -396,6 +397,25 @@ public class SkillListener implements Listener {
         if (event.getEntity() instanceof Player) {
             PlayerSkills player = plugin.getPlayer(((Player) event.getEntity()).getName());
             player.stopPassiveAbilities();
+        }
+    }
+
+    /**
+     * Lose experience on death
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        if (plugin.getLostExp() > 0 && event.getEntity().getGameMode() != GameMode.CREATIVE) {
+            PlayerSkills player = plugin.getPlayer(event.getEntity().getName());
+            if (player.hasClass()) {
+                int exp = player.loseExp(plugin.getLostExp());
+                if (exp > 0) {
+                    String message = plugin.getMessage(OtherNodes.EXP_LOST, true);
+                    event.getEntity().sendMessage(message.replace("{exp}", "" + exp));
+                }
+            }
         }
     }
 

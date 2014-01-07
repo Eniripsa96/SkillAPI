@@ -34,7 +34,7 @@ public class TargetHelper {
             Vector relative = entity.getLocation().subtract(player.getLocation()).toVector();
             double dot = relative.dot(facing);
             double rLengthSq = relative.lengthSquared();
-            double cosSquared = (dot * dot) / (rLengthSq + fLengthSq);
+            double cosSquared = (dot * dot) / (rLengthSq * fLengthSq);
             double sinSquared = 1 - cosSquared;
 
             relative = player.getLocation().subtract(entity.getLocation()).toVector();
@@ -68,6 +68,50 @@ public class TargetHelper {
             }
         }
         return target;
+    }
+
+    /**
+     * Gets the targets in a cone
+     *
+     * @param player player to get the targets for
+     * @param arc    arc angle of the cone
+     * @param range  range of the cone
+     * @return       list of targets
+     */
+    public static List<LivingEntity> getConeTargets(Player player, double arc, double range) {
+        List<LivingEntity> targets = new ArrayList<LivingEntity>();
+        List<Entity> list = player.getNearbyEntities(range, range, range);
+        if (arc <= 0) return targets;
+
+        // Initialize values
+        Vector dir = player.getLocation().getDirection();
+        dir.setY(0);
+        double cos = Math.cos(arc * Math.PI / 180);
+        double cosSq = cos * cos;
+        double dirSq = dir.lengthSquared();
+
+        // Get the targets in the cone
+        for (Entity entity : list) {
+            if (entity instanceof LivingEntity) {
+
+                // Greater than 360 degrees is all targets
+                if (arc >= 360) {
+                    targets.add((LivingEntity)entity);
+                }
+
+                // Otherwise, select targets based on dot product
+                else {
+                    Vector relative = entity.getLocation().subtract(player.getLocation()).toVector();
+                    relative.setY(0);
+                    double dot = relative.dot(dir);
+                    double value = dot * dot / (dirSq * relative.lengthSquared());
+                    if (arc < 180 && dot > 0 && value >= cosSq) targets.add((LivingEntity)entity);
+                    else if (arc >= 180 && (dot > 0 || dot <= cosSq)) targets.add((LivingEntity)entity);
+                }
+            }
+        }
+
+        return targets;
     }
 
     /**

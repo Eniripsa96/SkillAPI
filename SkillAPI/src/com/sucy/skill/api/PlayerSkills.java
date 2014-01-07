@@ -530,7 +530,7 @@ public final class PlayerSkills extends Valued {
      * @param player player to start the effects for
      */
     public void startPassiveAbilities(Player player) {
-        if (player == null) plugin.getLogger().info("null Player?");
+        if (player == null) return;
         for (Map.Entry<String, Integer> entry : getSkills().entrySet()) {
             if (entry.getValue() >= 1) {
                 ClassSkill s = plugin.getSkill(entry.getKey());
@@ -678,6 +678,20 @@ public final class PlayerSkills extends Valued {
         // Level the player up
         if (levels > 0) levelUp(levels);
         else updateLevelBar();
+    }
+
+    /**
+     * <p>Removes a percent of the player's required experience</p>
+     * <p>This cannot delevel a player and cannot drop their experience below 0</p>
+     *
+     * @param percent percentage of experience to lose
+     * @return        amount of experience lost
+     */
+    public int loseExp(double percent) {
+        int lost = (int)(getRequiredExp() * percent / 100);
+        if (lost > exp) lost = exp;
+        exp -= lost;
+        return lost;
     }
 
     /**

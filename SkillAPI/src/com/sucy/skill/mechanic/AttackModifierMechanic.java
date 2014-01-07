@@ -105,7 +105,7 @@ public class AttackModifierMechanic implements IMechanic, Listener {
         data.subtractValue(ATTACKS, 1);
 
         // Remove it from the map if necessary
-        if (data.getValue(ATTACKS) == 0) {
+        if (data.getValue(ATTACKS) <= 0) {
             activeEffects.remove(id);
         }
 

@@ -1,5 +1,6 @@
 package com.sucy.skill.api.util.effects;
 
+import com.sucy.skill.api.dynamic.EmbedData;
 import org.bukkit.Location;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
@@ -213,6 +214,54 @@ public class ProjectileHelper {
      * @param damage   damage the projectile will deal
      */
     public static void launchHorizontalCircle(Player source, ParticleType particle, int data, int amount, int angle, double speed, double damage) {
+        launchHorizontalCircle(source, particle, data, amount, angle, speed, damage, null);
+    }
+
+    /**
+     * Launches a circle of particle projectiles using the direction of the entity
+     *
+     * @param source   player to fire from
+     * @param particle type of particle to display
+     * @param data     data value for the particle
+     * @param amount   amount of projectiles to fire
+     * @param angle    angle of the arc
+     * @param speed    speed of the projectiles
+     * @param damage   damage the projectile will deal
+     */
+    public static void launchCircle(LivingEntity source, ParticleType particle, int data, int amount, int angle, double speed, double damage) {
+        launchCircle(source, particle, data, amount, angle, speed, damage, null);
+    }
+
+    /**
+     * Rains a group of particle projectiles down on a target location
+     *
+     * @param source   entity to fire the projectiles
+     * @param target   target location
+     * @param particle particle to display
+     * @param data     data value for the projectile
+     * @param amount   amount of projectiles to launch
+     * @param height   height above the target location to launch them from
+     * @param radius   radius of the rain
+     * @param speed    speed of the projectiles
+     * @param damage   damage that the projectile will deal
+     */
+    public static void rainProjectiles(LivingEntity source, Location target, ParticleType particle, int data, int amount, int height, double radius, double speed, double damage) {
+        rainProjectiles(source, target, particle, data, amount, height, radius, speed, damage, null);
+    }
+
+    /**
+     * Launches a circle of particle projectiles using the horizontal direction of the entity
+     *
+     * @param source   player to fire from
+     * @param particle type of particle to launch
+     * @param data     data value for the particle
+     * @param amount   amount of projectiles to fire
+     * @param angle    angle of the arc
+     * @param speed    speed of the projectiles
+     * @param damage   damage the projectile will deal
+     * @param embed    embed data to attack to the projectile for a dynamic skill
+     */
+    public static void launchHorizontalCircle(Player source, ParticleType particle, int data, int amount, int angle, double speed, double damage, EmbedData embed) {
 
         vel = source.getLocation().getDirection();
         vel.setY(0);
@@ -220,7 +269,8 @@ public class ProjectileHelper {
 
         // Fire one straight ahead if odd
         if (amount % 2 == 1) {
-            new ParticleProjectile(source, source.getLocation().add(0, 1, 0), vel, particle, data, 2, 0);
+            ParticleProjectile p = new ParticleProjectile(source, source.getLocation().add(0, 1, 0), vel, particle, data, 2, 0);
+            p.embed(embed);
             amount--;
         }
 
@@ -241,7 +291,8 @@ public class ProjectileHelper {
                 v.setZ(v.getX() * sin + v.getZ() * cos);
 
                 // Launch the projectile
-                new ParticleProjectile(source, source.getLocation().add(0, 1, 0), v, particle, data, 2, damage);
+                ParticleProjectile p = new ParticleProjectile(source, source.getLocation().add(0, 1, 0), v, particle, data, 2, damage);
+                p.embed(embed);
             }
         }
     }
@@ -256,18 +307,18 @@ public class ProjectileHelper {
      * @param angle    angle of the arc
      * @param speed    speed of the projectiles
      * @param damage   damage the projectile will deal
-     * @return         list of projectile entity IDs
+     * @param embed    embed data to attack to the projectile for a dynamic skill
      */
-    public static List<Integer> launchCircle(LivingEntity source, ParticleType particle, int data, int amount, int angle, double speed, double damage) {
-        List<Integer> list = new ArrayList<Integer>();
+    public static void launchCircle(LivingEntity source, ParticleType particle, int data, int amount, int angle, double speed, double damage, EmbedData embed) {
 
         // Fire one straight ahead if odd
         if (amount % 2 == 1) {
-            ParticleProjectile.launch(source, speed, particle, data, 0);
+            ParticleProjectile p = ParticleProjectile.launch(source, speed, particle, data, 0);
+            p.embed(embed);
             amount--;
         }
 
-        if (amount <= 0) return list;
+        if (amount <= 0) return;
 
         // Get the base velocity
         Vector base = source.getLocation().getDirection();
@@ -298,11 +349,10 @@ public class ProjectileHelper {
                 vel.setZ(x * Math.sin(totalAngle * DEGREE_TO_RAD) * speed);
 
                 // Launch the projectile
-                new ParticleProjectile(source, source.getLocation().add(0, 1, 0), vel, particle, data, 2, damage);
+                ParticleProjectile p = new ParticleProjectile(source, source.getLocation().add(0, 1, 0), vel, particle, data, 2, damage);
+                p.embed(embed);
             }
         }
-
-        return list;
     }
 
     /**
@@ -317,19 +367,19 @@ public class ProjectileHelper {
      * @param radius   radius of the rain
      * @param speed    speed of the projectiles
      * @param damage   damage that the projectile will deal
-     * @return         list of projectile entity IDs
+     * @param embed    embed data to attack to the projectile for a dynamic skill
      */
-    public static List<Integer> rainProjectiles(LivingEntity source, Location target, ParticleType particle, int data, int amount, int height, double radius, double speed, double damage) {
+    public static void rainProjectiles(LivingEntity source, Location target, ParticleType particle, int data, int amount, int height, double radius, double speed, double damage, EmbedData embed) {
 
         // Initialize data
-        List<Integer> list = new ArrayList<Integer>();
-        if (amount <= 0) return list;
+        if (amount <= 0) return;
         target.add(0, height, 0);
         Vector vel = new Vector(0, -speed, 0);
 
         // Fire the one in the center
         ParticleProjectile p = new ParticleProjectile(source, source.getLocation().add(0, 1, 0), vel, particle, data, 2, 0);
         p.teleport(target);
+        p.embed(embed);
         amount--;
 
         // Launch projectiles
@@ -346,11 +396,10 @@ public class ProjectileHelper {
                 loc.add(dx, 0, dz);
                 p = new ParticleProjectile(source, source.getLocation().add(0, 1, 0), vel, particle, data, 2, damage);
                 p.teleport(loc);
+                p.embed(embed);
                 angle += increment;
             }
             amount -= tierNum;
         }
-
-        return list;
     }
 }

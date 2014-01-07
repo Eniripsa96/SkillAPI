@@ -428,6 +428,10 @@ public abstract class CustomClass extends Attributed {
             setBase(ClassAttribute.MANA, config.getInt(ClassValues.MANA_BASE));
         if (config.contains(ClassValues.MANA_BONUS))
             setScale(ClassAttribute.MANA, config.getInt(ClassValues.MANA_BONUS));
+        if (config.contains(ClassValues.OFFSET))
+            offset = config.getInt(ClassValues.OFFSET);
+        if (config.contains(ClassValues.INTERVAL))
+            interval = config.getInt(ClassValues.INTERVAL);
     }
 
     /**

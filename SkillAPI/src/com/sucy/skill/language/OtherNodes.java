@@ -42,5 +42,10 @@ public class OtherNodes {
     /**
      * Casting a skill
      */
-    SKILL_CAST = BASE + "skill-cast";
+    SKILL_CAST = BASE + "skill-cast",
+
+    /**
+     * Message for when a player loses experience
+     */
+    EXP_LOST = BASE + "exp-lost";
 }

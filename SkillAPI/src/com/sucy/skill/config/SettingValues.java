@@ -101,6 +101,11 @@ public enum SettingValues {
     KILLS,
 
     /**
+     * Percentage of experience to lose upon dying
+     */
+    PERCENT_EXP_LOST_ON_DEATH,
+
+    /**
      * Formula for experience requirements
      */
     EXP_FORMULA,

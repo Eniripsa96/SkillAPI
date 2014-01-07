@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 2.22
+version: 2.25
 
 commands:
   class:

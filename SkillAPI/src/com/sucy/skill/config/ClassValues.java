@@ -72,5 +72,15 @@ public class ClassValues {
     /**
      * Maximum level of the class
      */
-    MAX_LEVEL = "max-level";
+    MAX_LEVEL = "max-level",
+
+    /**
+     * Offset for click combos
+     */
+    OFFSET = "offset",
+
+    /**
+     * Interval for click combos
+     */
+    INTERVAL = "interval";
 }

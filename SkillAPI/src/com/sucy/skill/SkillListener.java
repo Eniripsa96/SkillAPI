@@ -527,7 +527,7 @@ public class SkillListener implements Listener {
                 event.setCancelled(tree.checkClick(event.getSlot()));
 
                 // If they clicked on a skill, try upgrading it
-                if (tree.isSkill(event.getSlot())) {
+                if (tree.isSkill(event.getWhoClicked(), event.getSlot())) {
                     PlayerSkills player = plugin.getPlayer(event.getWhoClicked().getName());
                     if (event.isLeftClick()) {
                         if (player.upgradeSkill(tree.getSkill(event.getSlot()))) {

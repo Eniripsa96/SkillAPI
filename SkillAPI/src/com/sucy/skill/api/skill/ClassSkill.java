@@ -102,6 +102,14 @@ public abstract class ClassSkill extends Attributed {
     protected String message;
 
     /**
+     * <p>The permissions that are set when the skill is acquired</p>
+     * <p>These are given to the player once they unlock the skill
+     * and removed once they no longer have the skill</p>
+     * <p>Permissions are only given if Vault is installed as well</p>
+     */
+    protected final ArrayList<String> permissions = new ArrayList<String>();
+
+    /**
      * <p>Description of the skill</p>
      * <p>You can manipulate this list directly to set the description
      * for your skill. Don't set it to null if you don't want a description though,
@@ -224,6 +232,26 @@ public abstract class ClassSkill extends Attributed {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * <p>Checks whether or not the skill grants permissions when unlocked</p>
+     * <p>If no permissions were added to the list, this returns false</p>
+     *
+     * @return true if grants permissions, false otherwise
+     */
+    public boolean hasPermissions() {
+        return permissions.size() > 0;
+    }
+
+    /**
+     * <p>Retrieves the permissions granted by unlocking this skill</p>
+     * <p>If this skill doesn't grant permissions, this returns an empty list</p>
+     *
+     * @return list of permissions granted by this skill
+     */
+    public List<String> getPermissions() {
+        return permissions;
     }
 
     /**
@@ -631,8 +659,13 @@ public abstract class ClassSkill extends Attributed {
      * @param player  player to add to
      * @param seconds seconds to increase the cooldown by
      */
-    public void addCooldown(PlayerSkills player, int seconds) {
-        timers.put(player.getName(), timers.get(player.getName()) + seconds * 1000);
+    public void addCooldown(PlayerSkills player, double seconds) {
+        if (getCooldown(player) == 0) {
+            int level = player.getSkillLevel(name);
+            timers.put(player.getName(), System.currentTimeMillis() + (int)(1000 * seconds)
+                    - (int)(getAttribute(SkillAttribute.COOLDOWN, level) * 1000));
+        }
+        timers.put(player.getName(), timers.get(player.getName()) + (int)(seconds * 1000));
     }
 
     /**
@@ -706,6 +739,11 @@ public abstract class ClassSkill extends Attributed {
 
         // Message
         message = config.getString(SkillValues.MESSAGE);
+
+        // Permissions
+        if (config.contains(SkillValues.PERMISSIONS)) {
+            permissions.addAll(config.getStringList(SkillValues.PERMISSIONS));
+        }
     }
 
     /**

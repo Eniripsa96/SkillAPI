@@ -1,6 +1,8 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 2.25
+version: 2.26
+author: Eniripsa96
+softdepend: [Vault]
 
 commands:
   class:

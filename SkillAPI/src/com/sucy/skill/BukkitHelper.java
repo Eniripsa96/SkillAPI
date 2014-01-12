@@ -74,6 +74,10 @@ public class BukkitHelper {
      */
     public static void damage(LivingEntity target, double damage) {
 
+        // Allow damage to occur
+        int ticks = target.getNoDamageTicks();
+        target.setNoDamageTicks(0);
+
         // 1.5.2 and earlier used integer values
         if (isVersionAtMost(MC_1_5_2)) {
             target.damage((int)damage);
@@ -81,21 +85,10 @@ public class BukkitHelper {
 
         // 1.6.2 and beyond use double values
         else target.damage(damage);
+
+        // Reset damage timer to before the damage was applied
+        target.setNoDamageTicks(ticks);
     }
-
-    /**
-     * Damages a target while being compatible with 1.5.2 and earlier
-     *
-     * @param target  target to damage
-     * @param damager entity dealing the damage
-     * @param damage  damage to deal
-     */
-    public static void damageManually(LivingEntity target, LivingEntity damager, double damage) {
-
-        target.setNoDamageTicks(0);
-        damage(target, damager, damage);
-    }
-
     /**
      * Sets the max health of an entity while being compatible with 1.5.2 and earlier
      *

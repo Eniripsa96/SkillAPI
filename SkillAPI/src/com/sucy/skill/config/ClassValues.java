@@ -82,5 +82,10 @@ public class ClassValues {
     /**
      * Interval for click combos
      */
-    INTERVAL = "interval";
+    INTERVAL = "interval",
+
+    /**
+     * Permissions granted by the class
+     */
+    PERMISSIONS = "permissions";
 }

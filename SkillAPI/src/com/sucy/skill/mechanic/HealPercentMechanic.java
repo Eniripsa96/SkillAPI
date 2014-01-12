@@ -13,11 +13,11 @@ import java.util.List;
 /**
  * Mechanic for damaging targets based on missing mana
  */
-public class ManaDamageMechanic implements IMechanic {
+public class HealPercentMechanic implements IMechanic {
 
     private static final String
-            MANA = "Mana Percent",
-            TYPE = "ManaType";
+            HEALTH = "Heal Percent",
+            TYPE = "HealType";
 
     /**
      * Damages targets based on missing mana
@@ -35,27 +35,26 @@ public class ManaDamageMechanic implements IMechanic {
         // Change mana of all player targets
         boolean worked = false;
         int level = data.getSkillLevel(skill.getName());
-        double amount = skill.getAttribute(MANA, target, level);
+        double amount = skill.getAttribute(HEALTH, target, level);
         int damageType = skill.getValue(TYPE);
         for (LivingEntity t : targets) {
+            double damage;
+
+            // Missing health
+            if (damageType == 1) damage = amount * (t.getMaxHealth() - t.getHealth()) / 100.0;
+
+            // Current health
+            else if (damageType == 0) damage = amount * t.getHealth() / 100.0;
+
+            // Max health
+            else damage = amount * t.getMaxHealth() / 100;
+
+            double prevHealth = t.getHealth();
             if (t instanceof Player) {
-                PlayerSkills p = skill.getAPI().getPlayer(((Player) t).getName());
-                if (!p.hasClass()) continue;
-                double damage;
-
-                // Missing Mana
-                if (damageType == 1) damage = amount * (p.getMaxMana() - p.getMana()) / 100.0;
-
-                // Current Mana
-                else if (damageType == 0) damage = amount * p.getMana() / 100.0;
-
-                // Max Mana
-                else damage = amount * p.getMaxMana() / 100.0;
-
-                double prevHealth = t.getHealth();
-                BukkitHelper.damage(t, player, damage);
-                worked = worked || prevHealth != t.getHealth();
+                skill.getAPI().getPlayer(((Player) t).getName()).heal(damage);
             }
+            else BukkitHelper.heal(t, damage);
+            worked = worked || prevHealth != t.getHealth();
         }
 
         return worked;
@@ -69,7 +68,7 @@ public class ManaDamageMechanic implements IMechanic {
      */
     @Override
     public void applyDefaults(DynamicSkill skill, String prefix) {
-        skill.checkDefault(prefix + MANA, 10, 5);
+        skill.checkDefault(prefix + HEALTH, 10, 5);
         if (!skill.isSet(TYPE)) skill.setValue(TYPE, 0);
     }
 
@@ -78,6 +77,6 @@ public class ManaDamageMechanic implements IMechanic {
      */
     @Override
     public String[] getAttributeNames() {
-        return new String[] { MANA };
+        return new String[] {HEALTH};
     }
 }

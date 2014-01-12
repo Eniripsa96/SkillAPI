@@ -47,7 +47,12 @@ public class SkillValues {
     /**
      * Message of the skill
      */
-    MESSAGE = "message"
+    MESSAGE = "message",
+
+    /**
+     * Permissions gained by having the skill
+     */
+    PERMISSIONS = "permissions"
 
     ;
 }

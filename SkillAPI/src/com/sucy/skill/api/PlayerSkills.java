@@ -12,8 +12,11 @@ import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
+import com.sucy.skill.vault.PermissionManager;
+import com.sucy.skill.vault.VaultChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -44,7 +47,8 @@ public final class PlayerSkills extends Valued {
 
     /**
      * <p>Constructor</p>
-     * <p>Do not use this</p>
+     * <p>Do not use this. Instead, get a reference through
+     * SkillAPI via the getPlayer(String) method.</p>
      *
      * @param plugin API reference
      * @param player player name
@@ -59,7 +63,8 @@ public final class PlayerSkills extends Valued {
 
     /**
      * <p>Constructor</p>
-     * <p>Do not use this</p>
+     * <p>Do not use this. Instead, get a reference through
+     * SkillAPI via the getPlayer(String) method.</p>
      *
      * @param plugin API reference
      * @param player player name
@@ -137,12 +142,21 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * <p>Retrieves the player reference</p>
+     * <p>Retrieves the Bukkit player reference</p>
      *
      * @return player reference
      */
     public Player getPlayer() {
         return plugin.getServer().getPlayer(player);
+    }
+
+    /**
+     * <p>Retrieves the offline Bukkit player reference</p>
+     *
+     * @return offline player reference
+     */
+    public OfflinePlayer getOfflinePlayer() {
+        return plugin.getServer().getOfflinePlayer(player);
     }
 
     /**
@@ -283,10 +297,15 @@ public final class PlayerSkills extends Valued {
         this.points -= (int)skill.getAttribute(SkillAttribute.COST, level + 1);
         skills.put(skill.getName().toLowerCase(), level + 1);
 
-        // If first level, call the unlock event
+        // If first level, call the unlock event and give permissions
         if (level == 0) {
             plugin.getServer().getPluginManager().callEvent(
                     new PlayerSkillUnlockEvent(this, skill));
+            if (skill.hasPermissions() && VaultChecker.isVaultActive()) {
+                for (String perm : skill.getPermissions()) {
+                    PermissionManager.add(getPlayer(), perm);
+                }
+            }
         }
 
         // Call the upgrade event
@@ -317,7 +336,9 @@ public final class PlayerSkills extends Valued {
 
         // Skill is required by another skill
         for (String s : skills.keySet()) {
-            String req = plugin.getSkill(s).getSkillReq();
+            ClassSkill classSkill = plugin.getSkill(s);
+            if (classSkill == null) continue;
+            String req = classSkill.getSkillReq();
             if (req != null && req.equalsIgnoreCase(skill.getName())) {
                 if (getSkillLevel(s) > 0 && skills.get(s) >= getSkillLevel(s)) {
                     return false;
@@ -325,9 +346,17 @@ public final class PlayerSkills extends Valued {
             }
         }
 
+        // Remove permissions if now level 0
+        if (level == 1 && skill.hasPermissions() && VaultChecker.isVaultActive()) {
+            for (String perm : skill.getPermissions()) {
+                PermissionManager.remove(getPlayer(), perm);
+            }
+        }
+
         // Update passive skill effects
         if (skill instanceof PassiveSkill) {
-            ((PassiveSkill) skill).onInitialize(plugin.getServer().getPlayer(getName()), level - 1);
+            ((PassiveSkill) skill).stopEffects(getPlayer(), level);
+            ((PassiveSkill) skill).onInitialize(getPlayer(), level - 1);
         }
 
         // Downgrade the skill
@@ -370,9 +399,12 @@ public final class PlayerSkills extends Valued {
         }
 
         // Clear permissions on leaving a class
-        if (plugin.getClass(prevTree) != null) {
-            String permission = "skillapi.profess." + plugin.getClass(prevTree).getName().toLowerCase();
-            // TODO clear permission
+        CustomClass prevClass =  plugin.getClass(prevTree);
+        if (prevClass != null && VaultChecker.isVaultActive()) {
+            List<String> perms = prevClass.getPermissions();
+            for (String perm : perms) {
+                PermissionManager.remove(getPlayer(), perm);
+            }
         }
 
         // If the player was reverted to no class, clear all data
@@ -396,8 +428,11 @@ public final class PlayerSkills extends Valued {
         CustomClass tree = plugin.getClass(className);
 
         // Set new permission
-        String perm = "skillapi.profess." + tree.getName().toLowerCase();
-        // TODO set permission
+        if (VaultChecker.isVaultActive()) {
+            for (String perm : tree.getPermissions()) {
+                PermissionManager.add(getPlayer(), perm);
+            }
+        }
 
         // If not resetting, simply remove any skills no longer in the tree
         if (!plugin.doProfessionsReset()) {
@@ -865,7 +900,7 @@ public final class PlayerSkills extends Valued {
      * @param status   status to apply
      * @param duration duration of the status in seconds
      */
-    public void applyStatus(IStatus status, int duration) {
+    public void applyStatus(IStatus status, double duration) {
 
         PlayerStatusEvent event = new PlayerStatusEvent(this, status, duration);
         plugin.getServer().getPluginManager().callEvent(event);

@@ -36,7 +36,7 @@ public class DamageMechanic implements IMechanic {
         double damage = skill.getAttribute(DAMAGE, target, level);
         for (LivingEntity t : targets) {
             double prevHealth = t.getHealth();
-            BukkitHelper.damageManually(t, player, damage);
+            BukkitHelper.damage(t, player, damage);
             worked = worked || prevHealth != t.getHealth();
         }
 

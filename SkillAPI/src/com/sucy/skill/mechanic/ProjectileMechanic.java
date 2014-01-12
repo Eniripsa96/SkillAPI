@@ -69,7 +69,7 @@ public class ProjectileMechanic implements IMechanic, Listener {
         int removed = skill.getValue(USE_PROJECTILE);
         if (removed > 0) {
             Material mat;
-            if (!MATERIALS.containsKey(projectileId)) mat = MATERIALS.get(0);
+            if (!MATERIALS.containsKey(projectileId)) mat = Material.ARROW;
             else mat = MATERIALS.get(projectileId);
             if (player.getInventory().contains(mat, removed)) {
                 player.getInventory().removeItem(new ItemStack(mat, removed));

@@ -32,5 +32,10 @@ public class PermissionNodes {
         /**
          * Access to all classes
          */
-        CLASS = BASE + "class";
+        CLASS = BASE + "class",
+
+        /**
+         * Access to all skills
+         */
+        SKILL = BASE + "skill";
 }

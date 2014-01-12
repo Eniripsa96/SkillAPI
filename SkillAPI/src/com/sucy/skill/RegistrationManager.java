@@ -212,9 +212,10 @@ public class RegistrationManager {
                     config.set(attribute + "-scale", skill.getScale(attribute));
             }
             if (!config.contains(SkillValues.DESCRIPTION)) {
-                if (skill.getDescription() == null)
-                    config.set(SkillValues.DESCRIPTION, new ArrayList<String>());
-                else config.set(SkillValues.DESCRIPTION, skill.getDescription());
+                config.set(SkillValues.DESCRIPTION, skill.getDescription());
+            }
+            if (!config.contains(SkillValues.PERMISSIONS)) {
+                config.set(SkillValues.PERMISSIONS, skill.getPermissions());
             }
 
             // Add it to the list
@@ -319,6 +320,8 @@ public class RegistrationManager {
                 config.set(ClassValues.MANA_NAME, customClass.getManaName());
             if (!config.contains(ClassValues.PASSIVE_MANA_GAIN))
                 config.set(ClassValues.PASSIVE_MANA_GAIN, customClass.gainsMana());
+            if (!config.contains(ClassValues.PERMISSIONS))
+                config.set(ClassValues.PERMISSIONS, customClass.getDeclaredPermissions());
 
             // Add to table
             classes.put(customClass.getName().toLowerCase(), customClass);

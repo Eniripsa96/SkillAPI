@@ -24,7 +24,7 @@ public class PlayerStatusEvent extends Event implements Cancellable {
      * @param status     status being applied
      * @param duration   duration of the status in seconds
      */
-    public PlayerStatusEvent(PlayerSkills playerData, IStatus status, int duration) {
+    public PlayerStatusEvent(PlayerSkills playerData, IStatus status, double duration) {
         this.player = playerData;
         this.duration = duration;
         this.status = status;

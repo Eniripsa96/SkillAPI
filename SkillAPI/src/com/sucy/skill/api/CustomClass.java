@@ -46,6 +46,12 @@ public abstract class CustomClass extends Attributed {
     private int maxLevel;
 
     /**
+     * <p>Permissions granted upon professing as the class</p>
+     * <p>The permissions carry over via inheritance along with skills</p>
+     */
+    protected ArrayList<String> permissions = new ArrayList<String>();
+
+    /**
      * <p>An offset for the click skill combo IDs</p>
      * <p>Click skill combos follow the pattern of
      * resembling bit versions of their IDs where 0s are
@@ -139,6 +145,34 @@ public abstract class CustomClass extends Attributed {
      */
     public boolean gainsMana() {
         return gainMana;
+    }
+
+    /**
+     * <p>Retrieves the list of all permissions granted by this class</p>
+     * <p>This list includes those granted by classes this inherits from</p>
+     *
+     * @return list of all granted permissions
+     */
+    public List<String> getPermissions() {
+        List<String> list = new ArrayList<String>();
+        list.addAll(permissions);
+        for (String inherit : inheritance) {
+            CustomClass c = api.getClass(inherit);
+            if (c != null) {
+                list.addAll(c.getPermissions());
+            }
+        }
+        return list;
+    }
+
+    /**
+     * <p>Retrieves the permissions granted by this class</p>
+     * <p>This list does not include those obtained through inheritance</p>
+     *
+     * @return list of non-inherited permissions
+     */
+    public List<String> getDeclaredPermissions() {
+        return permissions;
     }
 
     /**
@@ -432,6 +466,10 @@ public abstract class CustomClass extends Attributed {
             offset = config.getInt(ClassValues.OFFSET);
         if (config.contains(ClassValues.INTERVAL))
             interval = config.getInt(ClassValues.INTERVAL);
+        if (config.contains(ClassValues.PERMISSIONS)) {
+            permissions.clear();
+            permissions.addAll(config.getStringList(ClassValues.PERMISSIONS));
+        }
     }
 
     /**
@@ -596,7 +634,7 @@ public abstract class CustomClass extends Attributed {
      */
     public void save(ConfigurationSection config) {
         config.set(ClassValues.PARENT, parent);
-        config.set(ClassValues.PREFIX, prefix.replace('§', '&'));
+        config.set(ClassValues.PREFIX, prefix.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(ClassValues.MAX_LEVEL, maxLevel);
         config.set(ClassValues.LEVEL, professLevel);
         config.set(ClassValues.SKILLS, skills);
@@ -606,7 +644,8 @@ public abstract class CustomClass extends Attributed {
         config.set(ClassValues.MANA_BASE, getBase(ClassAttribute.MANA));
         config.set(ClassValues.MANA_BONUS, getScale(ClassAttribute.MANA));
         config.set(ClassValues.PASSIVE_MANA_GAIN, gainMana);
-        config.set(ClassValues.MANA_NAME, manaName.replace('§', '&'));
+        config.set(ClassValues.MANA_NAME, manaName.replace(ChatColor.COLOR_CHAR, '&'));
+        config.set(ClassValues.PERMISSIONS, permissions);
     }
 
     /**

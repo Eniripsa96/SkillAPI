@@ -147,7 +147,9 @@ public class Mechanic {
         put("ATTACKMODIFIER", new AttackModifierMechanic());
         put("CHANCE", new ChanceMechanic());
         put("CLEANSE", new CleanseMechanic());
+        put("COMMAND", new CommandMechanic());
         put("CONDITION", new ConditionMechanic());
+        put("COOLDOWN", new CooldownMechanic());
         put("DAMAGE", new DamageMechanic());
         put("DAMAGEBONUS", new DamageBonusMechanic());
         put("DAMAGEPERCENT", new DamagePercentMechanic());
@@ -158,11 +160,14 @@ public class Mechanic {
         put("DOT", new DOTMechanic());
         put("FIRE", new FireMechanic());
         put("HEAL", new HealMechanic());
+        put("HEALPERCENT", new HealPercentMechanic());
+        put("HEALTHDAMAGE", new HealthDamageMechanic());
         put("HOT", new HOTMechanic());
         put("LAUNCH", new LaunchMechanic());
         put("LIGHTNING", new LightningMechanic());
         put("MANA", new ManaMechanic());
         put("MANADAMAGE", new ManaDamageMechanic());
+        put("MANAPERCENT", new ManaPercentMechanic());
         put("PARTICLE", new ParticleMechanic());
         put("PARTICLEPROJECTILE", new ParticleProjectileMechanic());
         put("POTION", new PotionMechanic());
@@ -173,6 +178,7 @@ public class Mechanic {
         put("STATUS", new StatusMechanic());
         put("TAUNT", new TauntMechanic());
         put("TELEPORT", new TeleportMechanic());
+        put("TELEPORTLOCATION", new TeleportLocationMechanic());
         put("TELEPORTTARGET", new TeleportTargetMechanic());
     }};
 }

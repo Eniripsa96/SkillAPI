@@ -1,11 +1,14 @@
 package com.sucy.skill.tree;
 
+import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.SkillTreeException;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.SkillAttribute;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -39,9 +42,12 @@ public abstract class SkillTree implements InventoryHolder {
      */
     public Inventory getInventory(PlayerSkills player, HashMap<String, Integer> skills) {
         Inventory inv = api.getServer().createInventory(this, height * 9, tree.getPrefix());
+        Player p = player.getPlayer();
 
         for (Map.Entry<Integer, ClassSkill> entry : skillSlots.entrySet()) {
-            inv.setItem(entry.getKey(), entry.getValue().getIndicator(player, player.getSkillLevel(entry.getValue().getName())));
+            if (p.hasPermission(PermissionNodes.SKILL) || p.hasPermission(PermissionNodes.SKILL + "." + entry.getValue().getName().toLowerCase().replaceAll(" ", "-"))) {
+                inv.setItem(entry.getKey(), entry.getValue().getIndicator(player, player.getSkillLevel(entry.getValue().getName())));
+            }
         }
 
         return inv;
@@ -106,8 +112,9 @@ public abstract class SkillTree implements InventoryHolder {
      * @param slot slot to check
      * @return     true if a skill, false otherwise
      */
-    public boolean isSkill(int slot) {
-        return skillSlots.containsKey(slot);
+    public boolean isSkill(HumanEntity player, int slot) {
+        if (!skillSlots.containsKey(slot)) return false;
+        return player.hasPermission(PermissionNodes.SKILL) || player.hasPermission(PermissionNodes.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-"));
     }
 
     /**

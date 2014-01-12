@@ -44,7 +44,7 @@ public class StatusMechanic implements IMechanic {
         boolean worked = false;
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
-                data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, (int)(duration * 1000));
+                data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, duration * 1000);
                 worked = true;
             }
             else if (status == Status.ROOT || status == Status.STUN) {

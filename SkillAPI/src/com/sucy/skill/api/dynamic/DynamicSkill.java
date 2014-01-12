@@ -30,13 +30,15 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         ALIASED = "aliased",
         EMBED = "embed",
         ITEM_REQ = "item-req",
-        PERIOD = "Period";
+        PERIOD = "Period",
+        STRINGS = "strings";
 
     public final List<Mechanic> activeMechanics = new ArrayList<Mechanic>();
     public final List<Mechanic> passiveMechanics = new ArrayList<Mechanic>();
     public final List<Mechanic> embedMechanics = new ArrayList<Mechanic>();
     public String prefix = "";
 
+    private final HashMap<String, String> strings = new HashMap<String, String>();
     private final HashMap<String, PassiveTask> tasks = new HashMap<String, PassiveTask>();
     private final HashMap<String, Boolean> aliased = new HashMap<String, Boolean>();
 
@@ -90,6 +92,14 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
             }
         }
 
+        // Load strings
+        ConfigurationSection stringSection = config.getConfigurationSection(STRINGS);
+        if (stringSection != null) {
+            for (String key : stringSection.getKeys(false)) {
+                strings.put(key, stringSection.getString(key));
+            }
+        }
+
         // Load passive mechanics
         ConfigurationSection passiveSection = config.getConfigurationSection(PASSIVE);
         if (passiveSection != null) {
@@ -124,6 +134,12 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
             }
         }
 
+        // Load permissions
+        if (config.contains(SkillValues.PERMISSIONS)) {
+            permissions.clear();
+            permissions.addAll(config.getStringList(SkillValues.PERMISSIONS));
+        }
+
         // If passive abilities, make sure there's a period
         if (passiveMechanics.size() > 0) {
             checkDefault(PERIOD, 3, 0);
@@ -146,6 +162,36 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      */
     public boolean hasEmbedEffects() {
         return embedMechanics.size() > 0;
+    }
+
+    /**
+     * Retrieves a string by it's key
+     *
+     * @param key string key
+     * @return    string value
+     */
+    public String getString(String key) {
+        return strings.get(key);
+    }
+
+    /**
+     * Checks if the skill has a value set for the string
+     *
+     * @param key string key
+     * @return    true if set, false otherwise
+     */
+    public boolean hasString(String key) {
+        return strings.containsKey(key);
+    }
+
+    /**
+     * Sets a string for the skill
+     *
+     * @param key   string key
+     * @param value string value
+     */
+    public void setString(String key, String value) {
+        strings.put(key, value);
     }
 
     /**
@@ -263,25 +309,18 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
     /**
      * Updates passive effects when the skill is upgraded
      *
-     * @param player   player unlocking the skill
-     * @param newLevel the new level of the skill
+     * @param player player unlocking the skill
+     * @param level  the new level of the skill
      */
     @Override
-    public void onUpgrade(Player player, int newLevel) {
-
-        // Cancel any previously running tasks
-        stopEffects(player, newLevel);
+    public void onUpgrade(Player player, int level) {
 
         // Do nothing if no mechanics present
         if (passiveMechanics.size() == 0) return;
 
-        // Start a new task
-        PlayerSkills data = api.getPlayer(player.getName());
-        PassiveTask task = new PassiveTask(this, data, player.getName());
-        int level = data.getSkillLevel(getName());
-        int period = (int)(getAttribute(PERIOD, level) * 20);
-        task.runTaskTimer(data.getAPI(), period, period);
-        tasks.put(player.getName(), task);
+        // Update the effects
+        stopEffects(player, level);
+        onInitialize(player, level);
     }
 
     /**
@@ -292,7 +331,15 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      */
     @Override
     public void onInitialize(Player player, int level) {
-        onUpgrade(player, level);
+
+        // Do nothing if no mechanics present
+        if (passiveMechanics.size() == 0) return;
+
+        PlayerSkills data = api.getPlayer(player.getName());
+        PassiveTask task = new PassiveTask(this, data, player.getName());
+        int period = (int)(getAttribute(PERIOD, level) * 20);
+        task.runTaskTimer(data.getAPI(), period, period);
+        tasks.put(player.getName(), task);
     }
 
     /**
@@ -344,6 +391,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         config.set(SkillValues.SKILL_REQ_LEVEL, getSkillReqLevel());
         config.set(SkillValues.DESCRIPTION, description);
         config.set(SkillValues.MESSAGE, message);
+        config.set(SkillValues.PERMISSIONS, permissions);
         config.set(ITEM_REQ, itemReq);
         saveAttributes(config.createSection(ATTRIBUTES));
         saveValues(config.createSection(VALUES));
@@ -352,6 +400,12 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         ConfigurationSection aliasSection = config.createSection(ALIASED);
         for (Map.Entry<String, Boolean> entry : aliased.entrySet()) {
             aliasSection.set(entry.getKey(), entry.getValue());
+        }
+
+        // Strings
+        ConfigurationSection stringSection = config.createSection(STRINGS);
+        for (Map.Entry<String, String> entry : strings.entrySet()) {
+            stringSection.set(entry.getKey(), entry.getValue());
         }
 
         // Passives
@@ -392,7 +446,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         boolean validItem = false;
         for (String item : items) {
             try {
-                Material mat = Material.valueOf(item);
+                Material mat = Material.valueOf(item.toUpperCase().replace(" ", "_"));
                 validItem = true;
                 if (player.getItemInHand().getType() == mat) {
                     return true;

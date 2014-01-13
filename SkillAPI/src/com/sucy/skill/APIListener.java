@@ -124,6 +124,7 @@ public class APIListener implements Listener {
 
             // Projectile damage
             if (event.getDamager() instanceof Projectile) {
+
                 Projectile projectile = (Projectile) event.getDamager();
                 PlayerSkills player = plugin.getPlayer(p.getName());
                 if (player != null && player.getClassName() != null) {
@@ -139,15 +140,15 @@ public class APIListener implements Listener {
 
                     // When the default damage isn't 0, set the damage relative
                     // to the default damage to account for varied damages
-                    else if (CustomClass.getDefaultDamage(projectile.getClass()) != 0) {
-                        double damage = event.getDamage() * playerClass.getDamage(projectile.getClass()) / CustomClass.getDefaultDamage(projectile.getClass());
+                    else if (CustomClass.getDefaultDamage(projectile.getLocation().getBlock().getType()) != 0) {
+                        double damage = event.getDamage() * playerClass.getDamage(projectile.getLocation().getBlock().getType()) / CustomClass.getDefaultDamage(projectile.getLocation().getBlock().getType());
                         event.setDamage(damage < 0 ? 0 : damage);
                     }
 
                     // Otherwise, just set the damage normally
                     else {
-                        double damage = playerClass.getDamage(projectile.getClass());
-                        int defaultDamage = CustomClass.getDefaultDamage(projectile.getClass());
+                        double damage = playerClass.getDamage(projectile.getLocation().getBlock().getType());
+                        int defaultDamage = CustomClass.getDefaultDamage(projectile.getLocation().getBlock().getType());
                         damage = event.getDamage() + damage - defaultDamage;
                         event.setDamage(damage < 0 ? 0 : damage);
                     }

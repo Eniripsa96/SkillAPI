@@ -98,12 +98,10 @@ public class SkillAPI extends JavaPlugin {
         BukkitHelper.initialize();
 
         // Make sure default config values are set
-        for (SettingValues value : SettingValues.values()) {
-            if (!getConfig().isSet(value.path())) {
-                getConfig().set(value.path(), getConfig().get(value.path()));
-            }
-        }
+        setDefaults(getConfig());
+        setDefaults(languageConfig.getConfig());
         saveConfig();
+        languageConfig.saveConfig();
 
         // Load options
         treeType = getConfig().getString(SettingValues.TREE_TYPE.path(), "requirement");
@@ -249,6 +247,24 @@ public class SkillAPI extends JavaPlugin {
             savePlayer(playerName);
         }
         playerConfig.saveConfig();
+    }
+
+    /**
+     * <p>Applies default values to a configuration section</p>
+     * <p>This copies over all unset default values that were added</p>
+     *
+     * @param config configuration section to apply default values for
+     */
+    private void setDefaults(ConfigurationSection config) {
+        if (config.getDefaultSection() == null) return;
+        for (String key : config.getDefaultSection().getKeys(false)) {
+            if (config.isConfigurationSection(key)) {
+                setDefaults(config.getConfigurationSection(key));
+            }
+            else if (!config.isSet(key)) {
+                config.set(key, config.get(key));
+            }
+        }
     }
 
     // ----------------------------- Settings Accessor Methods -------------------------------------- //
@@ -632,7 +648,7 @@ public class SkillAPI extends JavaPlugin {
      * @return       true if the player has permission, false otherwise
      */
     public boolean hasPermission(CommandSender sender, CustomClass t) {
-        return sender.hasPermission(PermissionNodes.CLASS) || sender.hasPermission(PermissionNodes.CLASS + "." + t.getName());
+        return !t.needsPermission() || sender.hasPermission(PermissionNodes.CLASS + "." + t.getName());
     }
 
     /**

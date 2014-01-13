@@ -16,7 +16,7 @@ public class ClassCommander extends CommandHandler {
      * @param plugin plugin reference
      */
     public ClassCommander(SkillAPI plugin) {
-        super(plugin, "SkillAPI - By Steven Sucy", "class");
+        super(plugin, "SkillAPI", "class");
     }
 
     /**
@@ -42,6 +42,8 @@ public class ClassCommander extends CommandHandler {
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.EXP_PLAYER, false), new CmdExpPlayer());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.LEVEL_CONSOLE, false), new CmdLevelConsole());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.LEVEL_PLAYER, false), new CmdLevelPlayer());
+        registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.POINTS_CONSOLE, false), new CmdPointsConsole());
+        registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.POINTS_PLAYER, false), new CmdPointsPlayer());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.RELOAD, false), new CmdReload());
     }
 }

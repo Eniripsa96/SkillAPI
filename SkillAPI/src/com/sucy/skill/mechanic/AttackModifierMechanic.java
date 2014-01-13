@@ -80,6 +80,9 @@ public class AttackModifierMechanic implements IMechanic, Listener {
     @EventHandler
     public void onAttack(PlayerOnHitEvent event) {
 
+        // Cannot be skill damage
+        if (!PlayerSkills.skillsBeingCast.isEmpty()) return;
+
         // Make sure the player is embedded
         int id = event.getPlayer().getEntityId();
         if (!activeEffects.containsKey(id)) return;
@@ -91,15 +94,10 @@ public class AttackModifierMechanic implements IMechanic, Listener {
             return;
         }
 
-        // Roll the chance
-        if (random.nextDouble() * 100 >= data.getValue(CHANCE)) {
-            return;
-        }
-
         // Make sure its the correct attack type
         int attackType = data.getSkill().getValue(TYPE);
-        if (event.getAttackType() == AttackType.MELEE && attackType == PROJECTILE) return;
-        if (event.getAttackType() == AttackType.PROJECTILE && attackType == MELEE) return;
+        if (attackType == PROJECTILE && event.getAttackType() != AttackType.PROJECTILE) return;
+        if (attackType == MELEE && event.getAttackType() != AttackType.MELEE) return;
 
         // Decrement the number of attacks left
         data.subtractValue(ATTACKS, 1);
@@ -107,6 +105,11 @@ public class AttackModifierMechanic implements IMechanic, Listener {
         // Remove it from the map if necessary
         if (data.getValue(ATTACKS) <= 0) {
             activeEffects.remove(id);
+        }
+
+        // Roll the chance
+        if (random.nextDouble() * 100 >= data.getValue(CHANCE)) {
+            return;
         }
 
         // Apply the embedded effects

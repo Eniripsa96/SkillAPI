@@ -80,6 +80,15 @@ public abstract class CustomClass extends Attributed {
     protected int interval = 1;
 
     /**
+     * <p>Whether or not the class requires permission to be used</p>
+     * <p>If you want this class to be a restricted class that is only
+     * visible to those who have permission such as a donator or an admin
+     * class, set this to true</p>
+     * <p>This should be set in the constructor of your class</p>
+     */
+    protected boolean needsPermission;
+
+    /**
      * Constructor
      *
      * @param name         class name
@@ -96,6 +105,7 @@ public abstract class CustomClass extends Attributed {
 
         api = (SkillAPI)Bukkit.getPluginManager().getPlugin("SkillAPI");
         manaName = api.getMessage(StatNodes.MANA, false);
+        needsPermission = false;
         gainMana = true;
 
         if (api.getTreeType().equalsIgnoreCase("BasicHorizontal")) this.tree = new BasicHorizontalTree(api, this);
@@ -145,6 +155,13 @@ public abstract class CustomClass extends Attributed {
      */
     public boolean gainsMana() {
         return gainMana;
+    }
+
+    /**
+     * @return whether or not the class requires permission to be used
+     */
+    public boolean needsPermission() {
+        return needsPermission;
     }
 
     /**
@@ -466,6 +483,8 @@ public abstract class CustomClass extends Attributed {
             offset = config.getInt(ClassValues.OFFSET);
         if (config.contains(ClassValues.INTERVAL))
             interval = config.getInt(ClassValues.INTERVAL);
+        if (config.contains(ClassValues.NEEDS_PERMISSION))
+            needsPermission = config.getBoolean(ClassValues.NEEDS_PERMISSION);
         if (config.contains(ClassValues.PERMISSIONS)) {
             permissions.clear();
             permissions.addAll(config.getStringList(ClassValues.PERMISSIONS));
@@ -646,6 +665,7 @@ public abstract class CustomClass extends Attributed {
         config.set(ClassValues.PASSIVE_MANA_GAIN, gainMana);
         config.set(ClassValues.MANA_NAME, manaName.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(ClassValues.PERMISSIONS, permissions);
+        config.set(ClassValues.NEEDS_PERMISSION, needsPermission);
     }
 
     /**

@@ -134,6 +134,11 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
             }
         }
 
+        // Needed permission
+        if (config.contains(SkillValues.NEEDS_PERMISSION)) {
+            needsPermission = config.getBoolean(SkillValues.NEEDS_PERMISSION);
+        }
+
         // Load permissions
         if (config.contains(SkillValues.PERMISSIONS)) {
             permissions.clear();
@@ -392,6 +397,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         config.set(SkillValues.DESCRIPTION, description);
         config.set(SkillValues.MESSAGE, message);
         config.set(SkillValues.PERMISSIONS, permissions);
+        config.set(SkillValues.NEEDS_PERMISSION, needsPermission);
         config.set(ITEM_REQ, itemReq);
         saveAttributes(config.createSection(ATTRIBUTES));
         saveValues(config.createSection(VALUES));
@@ -496,6 +502,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
             // Use the effect
             prefix = "Passive ";
+
             beginUsage();
             for (Mechanic mechanic : skill.passiveMechanics) {
                 mechanic.resolve(player, data, skill);

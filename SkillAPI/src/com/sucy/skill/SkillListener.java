@@ -556,7 +556,7 @@ public class SkillListener implements Listener {
      */
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onExpChange(PlayerExpChangeEvent event) {
-        if (plugin.usingExpOrbs()) {
+        if (plugin.usingExpOrbs() && event.getPlayer().hasPermission(PermissionNodes.BASIC)) {
             plugin.getPlayer(event.getPlayer().getName()).giveExp(event.getAmount());
         }
         if (plugin.usingLevelBar() && event.getPlayer().hasPermission(PermissionNodes.BASIC)) {

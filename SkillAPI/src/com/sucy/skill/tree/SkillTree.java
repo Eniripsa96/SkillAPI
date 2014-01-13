@@ -7,6 +7,7 @@ import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.SkillTreeException;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.SkillAttribute;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -45,7 +46,7 @@ public abstract class SkillTree implements InventoryHolder {
         Player p = player.getPlayer();
 
         for (Map.Entry<Integer, ClassSkill> entry : skillSlots.entrySet()) {
-            if (p.hasPermission(PermissionNodes.SKILL) || p.hasPermission(PermissionNodes.SKILL + "." + entry.getValue().getName().toLowerCase().replaceAll(" ", "-"))) {
+            if (!entry.getValue().needsPermission() || p.hasPermission(PermissionNodes.SKILL + "." + entry.getValue().getName().toLowerCase().replaceAll(" ", "-"))) {
                 inv.setItem(entry.getKey(), entry.getValue().getIndicator(player, player.getSkillLevel(entry.getValue().getName())));
             }
         }
@@ -114,7 +115,7 @@ public abstract class SkillTree implements InventoryHolder {
      */
     public boolean isSkill(HumanEntity player, int slot) {
         if (!skillSlots.containsKey(slot)) return false;
-        return player.hasPermission(PermissionNodes.SKILL) || player.hasPermission(PermissionNodes.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-"));
+        return !skillSlots.get(slot).needsPermission() || player.hasPermission(PermissionNodes.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-"));
     }
 
     /**

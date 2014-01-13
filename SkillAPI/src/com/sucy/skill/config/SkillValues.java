@@ -50,6 +50,11 @@ public class SkillValues {
     MESSAGE = "message",
 
     /**
+     * Whether or not the skill needs permission to be used
+     */
+    NEEDS_PERMISSION = "needs-permission",
+
+    /**
      * Permissions gained by having the skill
      */
     PERMISSIONS = "permissions"

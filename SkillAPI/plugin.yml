@@ -18,9 +18,6 @@ permissions:
   skillapi.reload:
     description: access to using the reload command
     default: op
-  skillapi.class:
-    description: access to using all classes
-    default: true
 
   skillapi.*:
     description: access to all commands
@@ -29,4 +26,3 @@ permissions:
       skillapi.basic: true
       skillapi.level: true
       skillapi.reload: true
-      skillapi.class: true

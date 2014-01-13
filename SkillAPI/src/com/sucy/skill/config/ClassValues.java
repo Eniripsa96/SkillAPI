@@ -85,6 +85,11 @@ public class ClassValues {
     INTERVAL = "interval",
 
     /**
+     * Whether or not the class needs permission to be used
+     */
+    NEEDS_PERMISSION = "needs-permission",
+
+    /**
      * Permissions granted by the class
      */
     PERMISSIONS = "permissions";

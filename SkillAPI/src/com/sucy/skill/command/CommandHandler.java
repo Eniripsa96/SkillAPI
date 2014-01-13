@@ -13,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>Command organizer and executor imported from MCCore</p>
@@ -23,9 +22,14 @@ public abstract class CommandHandler implements CommandExecutor {
     protected static final String BREAK = ChatColor.STRIKETHROUGH + "" + ChatColor.DARK_GRAY + TextSizer.createLine("", "", "-");
 
     /**
-     * Table of registered sub-commands
+     * Table of registered sub-commands for the console
      */
-    protected final Map<String, ICommand> commands = new HashMap<String, ICommand>();
+    protected final HashMap<String, ICommand> consoleCommands = new HashMap<String, ICommand>();
+
+    /**
+     * Table of registered sub-commands for players
+     */
+    protected final HashMap<String, ICommand> playerCommands = new HashMap<String, ICommand>();
 
     /**
      * Plugin reference
@@ -91,7 +95,8 @@ public abstract class CommandHandler implements CommandExecutor {
      * @param executor handler for the command
      */
     protected void registerCommand(String command, ICommand executor) {
-        commands.put(command, executor);
+        if (executor.getSenderType() != SenderType.CONSOLE_ONLY) playerCommands.put(command, executor);
+        if (executor.getSenderType() != SenderType.PLAYER_ONLY) consoleCommands.put(command, executor);
     }
 
     /**
@@ -109,12 +114,16 @@ public abstract class CommandHandler implements CommandExecutor {
         if (args.length == 0) displayUsage(sender);
 
             // If a sub-command is found, execute it
-        else if (commands.containsKey(args[0].toLowerCase())) {
-            ICommand command = commands.get(args[0].toLowerCase());
+        else if (sender instanceof Player && playerCommands.containsKey(args[0].toLowerCase())) {
+            ICommand command = playerCommands.get(args[0].toLowerCase());
             if (sender.hasPermission(command.getPermissionNode()))
                 command.execute(this, plugin, sender, trimArgs(args));
             else
                 sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to do that");
+        }
+        else if (!(sender instanceof Player) && consoleCommands.containsKey(args[0].toLowerCase())) {
+            ICommand command = consoleCommands.get(args[0].toLowerCase());
+            command.execute(this, plugin, sender, trimArgs(args));
         }
         else {
 
@@ -177,6 +186,9 @@ public abstract class CommandHandler implements CommandExecutor {
         if (page < 1) page = 1;
 
         // Get the key set alphabetized
+        HashMap<String, ICommand> commands;
+        if (sender instanceof Player) commands = playerCommands;
+        else commands = consoleCommands;
         ArrayList<String> keys = new ArrayList<String>(commands.keySet());
         Collections.sort(keys);
 

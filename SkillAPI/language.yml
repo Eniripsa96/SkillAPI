@@ -42,6 +42,8 @@ Commands:
     level-console: '<amount> <player>'
     level-player: '<amount> &a[player]'
     options: ''
+    points-console: '<amount> <player>'
+    points-player: '<amount> &a[player]'
     profess: '<class>'
     reload: ''
     reset: ''
@@ -97,6 +99,10 @@ Commands:
       - '&8{break}'
       - '&2Class Options &7- None'
       - '&8{break}'
+    points-console:
+    - '&6{player} &2gained &6{amount} &2skill points'
+    points-player:
+    - '&6{player} &2gained &6{amount} &2skill points'
     profess:
     - '&2You are now a &6{class}'
     reload:
@@ -120,6 +126,8 @@ Commands:
     level-console: 'Levels a player up'
     level-player: 'Levels a player up'
     options: 'View profession options'
+    points-console: 'Gives skill points'
+    points-player: 'Gives skill points'
     profess: 'Professes as the class'
     reload: 'Reloads the plugin'
     reset: 'Resets all stats'
@@ -127,6 +135,7 @@ Commands:
     unbind: 'Unbinds a skill'
   error:
     cannot-be-cast: '&4That skill cannot be cast'
+    cannot-get-points: '&4That player needs a class before receiving skill points'
     cannot-level: '&4That player needs a class before leveling up'
     cannot-profess: '&4You cannot profess at this time'
     max-level: '&4That player is already at the max level'
@@ -149,6 +158,8 @@ Commands:
     level-console: 'level'
     level-player: 'level'
     options: 'options'
+    points-console: 'points'
+    points-player: 'points'
     profess: 'profess'
     reload: 'reload'
     reset: 'reset'

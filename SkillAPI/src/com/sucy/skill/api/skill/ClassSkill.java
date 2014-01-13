@@ -102,6 +102,15 @@ public abstract class ClassSkill extends Attributed {
     protected String message;
 
     /**
+     * <p>Whether or not the skill requires permission to be used</p>
+     * <p>If you want this class to be a restricted skill that is only
+     * visible to those who have permission such as a donator or an admin
+     * skill or one obtained through a quest, set this to true</p>
+     * <p>This should be set in the constructor of your skill</p>
+     */
+    protected boolean needsPermission;
+
+    /**
      * <p>The permissions that are set when the skill is acquired</p>
      * <p>These are given to the player once they unlock the skill
      * and removed once they no longer have the skill</p>
@@ -183,6 +192,7 @@ public abstract class ClassSkill extends Attributed {
         this.maxLevel = maxLevel;
         this.skillReq = skillReq;
         this.skillReqLevel = skillReqLevel;
+        needsPermission = false;
         api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
     }
 
@@ -232,6 +242,13 @@ public abstract class ClassSkill extends Attributed {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * @return whether or not permission is needed to use this skill
+     */
+    public boolean needsPermission() {
+        return needsPermission;
     }
 
     /**
@@ -739,6 +756,11 @@ public abstract class ClassSkill extends Attributed {
 
         // Message
         message = config.getString(SkillValues.MESSAGE);
+
+        // Needed permission
+        if (config.contains(SkillValues.NEEDS_PERMISSION)) {
+            needsPermission = config.getBoolean(SkillValues.NEEDS_PERMISSION);
+        }
 
         // Permissions
         if (config.contains(SkillValues.PERMISSIONS)) {

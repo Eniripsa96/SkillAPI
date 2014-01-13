@@ -686,6 +686,18 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Gives the player skill points</p>
+     * <p>Negative values can be used with this method</p>
+     * <p>If this would drop the player below 0, it will be set to 0</p>
+     *
+     * @param amount amount of skill points to give
+     */
+    public void givePoints(int amount) {
+        points += amount;
+        if (points < 0) points = 0;
+    }
+
+    /**
      * <p>Awards the player experience</p>
      * <p>A PlayerExperienceGainEvent is called beforehand so it
      * can be cancelled or modified</p>

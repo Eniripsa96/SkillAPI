@@ -13,6 +13,21 @@ public class VaultChecker {
      * @return true if active, false otherwise
      */
     public static boolean isVaultActive() {
-        return Bukkit.getPluginManager().getPlugin("Vault") != null;
+        if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
+            return PermissionManager.isValid();
+        }
+        else return false;
+
+        /*
+        try {
+            if (Class.forName("net.milkbowl.vault.permission.Permission") != null) {
+                return PermissionManager.isValid();
+            }
+            else return false;
+        }
+        catch (Exception ex) {
+            return false;
+        }
+        */
     }
 }

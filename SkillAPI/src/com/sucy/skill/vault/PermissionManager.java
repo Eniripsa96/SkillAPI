@@ -11,15 +11,29 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 public class PermissionManager {
 
     private static Permission permission;
+    private static boolean checked = false;
 
     /**
      * Initializes the permissions manager
      */
-    public static void initialize() {
+    private static void initialize() {
         RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
         if (permissionProvider != null) {
             permission = permissionProvider.getProvider();
         }
+    }
+
+    /**
+     * Checks whether or not the Vault reference is valid with a permissions plugin
+     *
+     * @return true if valid, false otherwise
+     */
+    public static boolean isValid() {
+        if (!checked) {
+            initialize();
+            checked = true;
+        }
+        return permission != null;
     }
 
     /**
@@ -29,9 +43,7 @@ public class PermissionManager {
      * @param node   permission node to add
      */
     public static void add(Player player, String node) {
-        if (!has(player, node)) {
-            permission.playerAdd(player, node);
-        }
+        permission.playerAdd(player, node);
     }
 
     /**
@@ -41,9 +53,7 @@ public class PermissionManager {
      * @param node   permission node to remove
      */
     public static void remove(Player player, String node) {
-        if (has(player, node)) {
-            permission.playerRemove(player, node);
-        }
+        permission.playerRemove(player, node);
     }
 
     /**

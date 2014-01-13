@@ -116,6 +116,16 @@ public class CommandNodes {
     OPTIONS = "options",
 
     /**
+     * Points command by the console
+     */
+    POINTS_CONSOLE = "points-console",
+
+    /**
+     * Points command by the player
+     */
+    POINTS_PLAYER = "points-player",
+
+    /**
      * Profess command key
      */
     PROFESS = "profess",
@@ -151,6 +161,11 @@ public class CommandNodes {
      * A skill cannot be cast
      */
     CANNOT_BE_CAST = ERROR_BASE + "cannot-be-cast",
+
+    /**
+     * Error message for being unable to receive points
+     */
+    CANNOT_GET_POINTS = ERROR_BASE + "cannot-get-points",
 
     /**
      * When a player doesn't have a class to level up with

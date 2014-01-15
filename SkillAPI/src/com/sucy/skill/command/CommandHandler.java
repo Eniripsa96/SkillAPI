@@ -1,6 +1,8 @@
 package com.sucy.skill.command;
 
+import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.util.TextSizer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -203,9 +205,17 @@ public abstract class CommandHandler implements CommandExecutor {
             return;
         }
 
-        int maxPage = (validKeys + 6) / 7;
-        if (page > maxPage)
-            page = maxPage;
+        // Get number of entries
+        int entries = 7;
+
+        /*
+        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_7_2) && sender instanceof Player) {
+            entries = 5;
+        }
+        */
+
+        int maxPage = (validKeys + entries - 1) / entries;
+        if (page > maxPage) page = maxPage;
 
         sender.sendMessage(BREAK);
         sender.sendMessage(ChatColor.DARK_GREEN + title + " - Command Usage" + (maxPage > 1 ? " (Page " + page + "/" + maxPage + ")" : ""));
@@ -217,7 +227,7 @@ public abstract class CommandHandler implements CommandExecutor {
             if (!canUseCommand(sender, commands.get(key)))
                 continue;
             index++;
-            if (index <= (page - 1) * 7 || index > page * 7) continue;
+            if (index <= (page - 1) * entries || index > page * entries) continue;
             int size = TextSizer.measureString(key + " " + commands.get(key).getArgsString(plugin));
             if (size > maxSize) maxSize = size;
         }
@@ -229,12 +239,29 @@ public abstract class CommandHandler implements CommandExecutor {
             if (!canUseCommand(sender, commands.get(key)))
                 continue;
             index++;
-            if (index <= (page - 1) * 7 || index > page * 7) continue;
+            if (index <= (page - 1) * entries || index > page * entries) continue;
             sender.sendMessage(ChatColor.GOLD + "/" + label.toLowerCase() + " " + TextSizer.expand(key + " "
                     + ChatColor.LIGHT_PURPLE + commands.get(key).getArgsString(plugin) + ChatColor.GRAY, maxSize, false)
                     + ChatColor.GRAY + "- " + commands.get(key).getDescription(plugin));
         }
 
+        /*
+        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_7_2) && sender instanceof Player) {
+            sender.sendMessage(BREAK);
+            String ends = "PreviousNext";
+            String spacing = TextSizer.expand(" ", 320 - TextSizer.measureString(ends), true);
+            plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                    "tellraw " + sender.getName() +
+                    "{extra:[{text:\"Previous\"," +
+                            "clickEvent:{action:run_command,value:\"/class help " + ((page + maxPage - 2) % maxPage + 1) + "\"}," +
+                            "hoverEvent:{action:show_text,value:\"Previous page\"}}," +
+                        "\"" + spacing + "\"," +
+                        "{text:\"Next\"," +
+                            "clickEvent:{action:run_command,value:\"/class help " + ((page % maxPage + 1)) + "\"}," +
+                            "hoverEvent:{action:show_text,value:\"Next Page\"}}]}"
+            );
+        }
+        */
         sender.sendMessage(BREAK);
     }
 

@@ -37,19 +37,23 @@ public class StatusMechanic implements IMechanic {
 
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
-        Status status = STATUSES.get(skill.getValue(TYPE));
+        int statusValue = skill.getValue(TYPE) + 1;
         double duration = skill.getAttribute(LENGTH, target, level);
 
         // Apply  potion effect to all
         boolean worked = false;
-        for (LivingEntity t : targets) {
-            if (t instanceof Player) {
-                data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, duration * 1000);
-                worked = true;
-            }
-            else if (status == Status.ROOT || status == Status.STUN) {
-                t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, (int)(duration * 20)));
-                worked = true;
+        while (statusValue > 0) {
+            Status status = STATUSES.get((statusValue - 1) % 32);
+            statusValue /= 32;
+            for (LivingEntity t : targets) {
+                if (t instanceof Player) {
+                    data.getAPI().getPlayer(((Player) t).getName()).applyStatus(status, duration * 1000);
+                    worked = true;
+                }
+                else if (status == Status.ROOT || status == Status.STUN) {
+                    t.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, (int)(duration * 20)));
+                    worked = true;
+                }
             }
         }
         return worked;

@@ -10,10 +10,13 @@ import org.bukkit.potion.PotionEffectType;
 public class BukkitHelper {
 
     public static final int
-        MC_1_5_2 = 152,
-        MC_1_6_2 = 162,
-        MC_1_6_4 = 164,
-        MC_1_7_2 = 172;
+        MC_1_5_2_MIN = 2788,
+        MC_1_6_2_MIN = 2789,
+        MC_1_6_4_MIN = 2880,
+        MC_1_7_2_MIN = 2913,
+        MC_1_5_2_MAX = 2788,
+        MC_1_6_2_MAX = 2879,
+        MC_1_6_4_MAX = 2912;
 
     private static int version;
 
@@ -22,10 +25,10 @@ public class BukkitHelper {
      */
     public static void initialize() {
         String v = Bukkit.getServer().getVersion();
-        v = v.substring(v.indexOf("MC:") + 4);
-        v = v.substring(0, v.length() - 1);
-        String[] parts = v.split("\\.");
-        version = Integer.parseInt(parts[0]) * 100 + Integer.parseInt(parts[1]) * 10 + Integer.parseInt(parts[2]);
+        v = v.substring(v.indexOf("b") + 1);
+        v = v.substring(0, v.indexOf("jnks"));
+        Bukkit.getLogger().info("Detected CraftBukkit build " + v);
+        version = Integer.parseInt(v);
     }
 
     /**
@@ -58,7 +61,7 @@ public class BukkitHelper {
     public static void damage(LivingEntity target, LivingEntity damager, double damage) {
 
         // 1.5.2 and earlier used integer values
-        if (isVersionAtMost(MC_1_5_2)) {
+        if (isVersionAtMost(MC_1_5_2_MAX)) {
             target.damage((int)damage, damager);
         }
 
@@ -79,7 +82,7 @@ public class BukkitHelper {
         target.setNoDamageTicks(0);
 
         // 1.5.2 and earlier used integer values
-        if (isVersionAtMost(MC_1_5_2)) {
+        if (isVersionAtMost(MC_1_5_2_MAX)) {
             target.damage((int)damage);
         }
 
@@ -100,7 +103,7 @@ public class BukkitHelper {
         double prevHealth = entity.getHealth();
 
         // 1.5.2 and earlier used integer values
-        if (isVersionAtMost(MC_1_5_2)) {
+        if (isVersionAtMost(MC_1_5_2_MAX)) {
             entity.setMaxHealth((int) amount);
             entity.setHealth((int) Math.min(Math.max(1, prevHealth + amount - prevMax), amount));
         }
@@ -125,7 +128,7 @@ public class BukkitHelper {
         health = Math.min(entity.getMaxHealth(), health);
 
         // 1.5.2 and earlier used integer values
-        if (isVersionAtMost(MC_1_5_2)) {
+        if (isVersionAtMost(MC_1_5_2_MAX)) {
             entity.setHealth((int)health);
         }
 
@@ -142,7 +145,7 @@ public class BukkitHelper {
     public static void setDamage(EntityDamageEvent event, double damage) {
 
         // 1.5.2 and earlier used integer values
-        if (isVersionAtMost(MC_1_5_2)) {
+        if (isVersionAtMost(MC_1_5_2_MAX)) {
             event.setDamage((int)damage);
         }
 
@@ -158,7 +161,7 @@ public class BukkitHelper {
     public static PotionEffectType[] getPotionEffectTypes() {
 
         // 1.5.2 and earlier didn't have Absorption, Health Boost, or Saturation
-        if (isVersionAtMost(MC_1_5_2)) {
+        if (isVersionAtMost(MC_1_5_2_MAX)) {
             return new PotionEffectType[] {
                 PotionEffectType.BLINDNESS, PotionEffectType.BLINDNESS, PotionEffectType.CONFUSION,
                 PotionEffectType.DAMAGE_RESISTANCE, PotionEffectType.FAST_DIGGING, PotionEffectType.FIRE_RESISTANCE,

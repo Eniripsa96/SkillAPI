@@ -69,10 +69,37 @@ public class RegistrationManager {
             }
         }
 
-        // Load dynamic skills
-        for (String key : skillConfig.getConfig().getKeys(false)) {
-            if (!skills.containsKey(key.toLowerCase())) {
-                skills.put(key.toLowerCase(), new DynamicSkill(key));
+        // Load dynamic skills from skills.yml
+        if (!skillConfig.getConfig().getBoolean("loaded", false)) {
+            skillConfig.getConfig().set("loaded", true);
+            for (String key : skillConfig.getConfig().getKeys(false)) {
+                if (key.equals("loaded")) continue;
+                if (!skills.containsKey(key.toLowerCase())) {
+                    DynamicSkill skill = new DynamicSkill(key);
+                    skills.put(key.toLowerCase(), skill);
+                    skill.update(skillConfig.getConfig().getConfigurationSection(key));
+                    Config sConfig = new Config(api, "dynamic" + File.separator + "skill" + File.separator + key);
+                    skill.save(sConfig.getConfig().createSection(key));
+                    sConfig.saveConfig();
+                }
+            }
+        }
+
+        // Load individual dynamic skills
+        File skillRoot = new File(api.getDataFolder().getPath() + File.separator + "dynamic" + File.separator + "skill");
+        if (skillRoot.exists()) {
+            File[] files = skillRoot.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    String name = file.getName().replace(".yml", "");
+                    if (!skills.containsKey(name.toLowerCase())) {
+                        Config sConfig = new Config(api, "dynamic" + File.separator + "skill" + File.separator + name);
+                        DynamicSkill skill = new DynamicSkill(name);
+                        skills.put(name.toLowerCase(), skill);
+                        skill.update(sConfig.getConfig().getConfigurationSection(name));
+                        skill.save(skillConfig.getConfig().createSection(name));
+                    }
+                }
             }
         }
 
@@ -84,12 +111,42 @@ public class RegistrationManager {
             }
         }
 
-        // Load dynamic classes
-        for (String key : classConfig.getConfig().getKeys(false)) {
-            if (!classes.containsKey(key.toLowerCase())) {
-                classes.put(key.toLowerCase(), new DynamicClass(key));
+        // Load dynamic classes from classes.yml
+        if (!classConfig.getConfig().getBoolean("loaded", false)) {
+            classConfig.getConfig().set("loaded", true);
+            for (String key : classConfig.getConfig().getKeys(false)) {
+                if (key.equals("loaded")) continue;
+                if (!classes.containsKey(key.toLowerCase())) {
+                    DynamicClass tree = new DynamicClass(key);
+                    classes.put(key.toLowerCase(), tree);
+                    tree.update(classConfig.getConfig().getConfigurationSection(key));
+                    Config cConfig = new Config(api, "dynamic" + File.separator + "class" + File.separator + key);
+                    tree.save(cConfig.getConfig().createSection(key));
+                    cConfig.saveConfig();
+                }
             }
         }
+
+        // Load individual dynamic classes
+        File classRoot = new File(api.getDataFolder().getPath() + File.separator + "dynamic" + File.separator + "class");
+        if (classRoot.exists()) {
+            File[] files = classRoot.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    String name = file.getName().replace(".yml", "");
+                    if (!classes.containsKey(name.toLowerCase())) {
+                        Config cConfig = new Config(api, "dynamic" + File.separator + "class" + File.separator + name);
+                        DynamicClass tree = new DynamicClass(name);
+                        classes.put(name.toLowerCase(), tree);
+                        tree.update(cConfig.getConfig().getConfigurationSection(name));
+                        tree.save(classConfig.getConfig().createSection(name));
+                    }
+                }
+            }
+        }
+
+        skillConfig.saveConfig();
+        classConfig.saveConfig();
 
         // Done registering everything
         mode = RegisterMode.DONE;
@@ -97,10 +154,9 @@ public class RegistrationManager {
         // Load skill data
         for (ClassSkill skill : skills.values()) {
             try {
-                if (skill instanceof DynamicSkill) {
-                    skill.update(skillConfig.getConfig().getConfigurationSection(skill.getName()));
+                if (!(skill instanceof DynamicSkill)) {
+                    skill.update(new Config(api, "skill" + File.separator + skill.getName()).getConfig());
                 }
-                else skill.update(new Config(api, "skill" + File.separator + skill.getName()).getConfig());
             }
             catch (Exception e) {
                 api.getLogger().severe("Failed to load skill: " + skill.getName());
@@ -110,10 +166,9 @@ public class RegistrationManager {
 
         // Load skill tree data
         for (CustomClass tree : classes.values()) {
-            if (tree instanceof DynamicClass) {
-                tree.update(classConfig.getConfig().getConfigurationSection(tree.getName()));
+            if (!(tree instanceof DynamicClass)) {
+                tree.update(new Config(api, "class" + File.separator + tree.getName()).getConfig());
             }
-            else tree.update(new Config(api, "class" + File.separator + tree.getName()).getConfig());
         }
 
         // Arrange skill trees

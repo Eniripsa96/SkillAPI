@@ -138,6 +138,7 @@ Commands:
     cannot-get-points: '&4That player needs a class before receiving skill points'
     cannot-level: '&4That player needs a class before leveling up'
     cannot-profess: '&4You cannot profess at this time'
+    cannot-see-stats: '&4You are not allowed to see the stats of other players'
     max-level: '&4That player is already at the max level'
     no-bound-skill: '&4You do not have a skill bound to your held item'
     no-class: '&4You have not chosen a class yet'

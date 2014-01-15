@@ -115,17 +115,17 @@ public class TargetHelper {
     }
 
     /**
-     * Checks if the entity is in front of the player
+     * Checks if the target is in front of the entity
      *
-     * @param player player to check for
+     * @param entity entity to check for
      * @param target target to check against
-     * @return       true if the target is in front of the player
+     * @return       true if the target is in front of the entity
      */
-    public static boolean isInFront(Player player, Entity target) {
+    public static boolean isInFront(LivingEntity entity, Entity target) {
 
         // Get the necessary vectors
-        Vector facing = player.getLocation().getDirection();
-        Vector relative = target.getLocation().subtract(player.getLocation()).toVector();
+        Vector facing = entity.getLocation().getDirection();
+        Vector relative = target.getLocation().subtract(entity.getLocation()).toVector();
 
         // If the dot product is positive, the target is in front
         return facing.dot(relative) >= 0;

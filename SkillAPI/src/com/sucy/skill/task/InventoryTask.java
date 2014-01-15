@@ -99,16 +99,36 @@ public class InventoryTask extends BukkitRunnable {
                 else if (colorless.matches("Class Req: .+")) {
                     needsRequirement = true;
                     String name = colorless.substring(11);
-                    if (isMatchingClass(name, player.getClassName())) {
-                        hasRequirement = true;
+                    if (name.contains(", ")) {
+                        String[] names = name.split(", ");
+                        for (String n : names) {
+                            if (isMatchingClass(n, player.getClassName())) {
+                                hasRequirement = true;
+                            }
+                        }
+                    }
+                    else {
+                        if (isMatchingClass(name, player.getClassName())) {
+                            hasRequirement = true;
+                        }
                     }
                 }
 
                 // Class exclusion
                 else if (colorless.matches("Excluded Class: .+")) {
                     String name = colorless.substring(16);
-                    if (isMatchingClass(name, player.getClassName())) {
-                        return true;
+                    if (name.contains(", ")) {
+                        String[] names = name.split(", ");
+                        for (String n : names) {
+                            if (isMatchingClass(n, player.getClassName())) {
+                                return true;
+                            }
+                        }
+                    }
+                    else {
+                        if (isMatchingClass(name, player.getClassName())) {
+                            return true;
+                        }
                     }
                 }
             }

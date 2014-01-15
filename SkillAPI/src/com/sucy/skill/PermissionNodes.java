@@ -15,6 +15,11 @@ public class PermissionNodes {
         BASIC = BASE + "basic",
 
         /**
+         * Permission to view other players' stats
+         */
+        STATS = BASE + "stats",
+
+        /**
          * Permission to gain experience
          */
         EXP = BASE + "exp",

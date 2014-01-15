@@ -7,8 +7,12 @@ import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
+import com.sucy.skill.api.util.TargetHelper;
+import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
@@ -56,7 +60,46 @@ public class ConditionMechanic implements IMechanic {
         ABSORPTION = 27,
         SATURATION = 28,
         POTION = 29,
-        STATUS = 30;
+        STATUS = 30,
+        BIOME_BEACH = 31,
+        BIOME_DESERT = 32,
+        BIOME_DESERT_HILLS = 33,
+        BIOME_EXTREME_HILLS = 34,
+        BIOME_FOREST = 35,
+        BIOME_FOREST_HILLS = 36,
+        BIOME_FROZEN_OCEAN = 37,
+        BIOME_FROZEN_RIVER = 38,
+        BIOME_HELL = 39,
+        BIOME_ICE_MOUNTAINS = 40,
+        BIOME_ICE_PLAINS = 41,
+        BIOME_JUNGLE = 42,
+        BIOME_JUNGLE_HILLS = 43,
+        BIOME_MUSHROOM_ISLAND = 44,
+        BIOME_MUSHROOM_SHORE = 45,
+        BIOME_OCEAN = 46,
+        BIOME_PLAINS = 47,
+        BIOME_RIVER = 48,
+        BIOME_SKY = 49,
+        BIOME_SMALL_MOUNTAINS = 50,
+        BIOME_SWAMPLAND = 51,
+        BIOME_TAIGA = 52,
+        BIOME_TAIGA_HILLS = 53,
+        TIME_DAY = 54,
+        TIME_NIGHT = 55,
+        IN_WATER = 56,
+        OUT_OF_WATER = 57,
+        ITEM_AXE = 58,
+        ITEM_HOE = 59,
+        ITEM_PICKAXE = 60,
+        ITEM_SHOVEL = 61,
+        ITEM_SWORD = 62,
+        ITEM_WOOD = 63,
+        ITEM_STONE = 64,
+        ITEM_IRON = 65,
+        ITEM_GOLD = 66,
+        ITEM_DIAMOND = 67,
+        TARGET_FRONT = 68,
+        TARGET_BACK = 69;
 
     private static final int
         STOP = 0,
@@ -107,6 +150,9 @@ public class ConditionMechanic implements IMechanic {
 
                 // Check the condition
                 boolean passed = false;
+                Biome biome = player.getLocation().getBlock().getBiome();
+                ItemType type = ItemType.getType(player.getItemInHand());
+                ItemMat mat = ItemMat.getMat(type == ItemType.NULL ? null : player.getItemInHand());
                 if (condition == STUN && data.getAPI().getStatusHolder(t).hasStatus(Status.STUN)) passed = true;
                 else if (condition == ROOT && data.getAPI().getStatusHolder(t).hasStatus(Status.ROOT)) passed = true;
                 else if (condition == INVINCIBLE && data.getAPI().getStatusHolder(t).hasStatus(Status.INVINCIBLE)) passed = true;
@@ -133,11 +179,50 @@ public class ConditionMechanic implements IMechanic {
                 else if (condition == WEAKNESS && t.hasPotionEffect(PotionEffectType.WEAKNESS)) passed = true;
                 else if (condition == POISON && t.hasPotionEffect(PotionEffectType.POISON)) passed = true;
                 else if (condition == WITHER && t.hasPotionEffect(PotionEffectType.WITHER)) passed = true;
-                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2) && condition == HEALTH && t.hasPotionEffect(PotionEffectType.HEALTH_BOOST)) passed = true;
-                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2) && condition == ABSORPTION && t.hasPotionEffect(PotionEffectType.ABSORPTION)) passed = true;
-                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2) && condition == SATURATION && t.hasPotionEffect(PotionEffectType.SATURATION)) passed = true;
+                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == HEALTH && t.hasPotionEffect(PotionEffectType.HEALTH_BOOST)) passed = true;
+                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == ABSORPTION && t.hasPotionEffect(PotionEffectType.ABSORPTION)) passed = true;
+                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == SATURATION && t.hasPotionEffect(PotionEffectType.SATURATION)) passed = true;
                 else if (condition == POTION && t.getActivePotionEffects().size() > 0) passed = true;
                 else if (condition == STATUS && data.getAPI().getStatusHolder(t).hasStatuses()) passed = true;
+                else if (condition == BIOME_BEACH && biome == Biome.BEACH) passed = true;
+                else if (condition == BIOME_DESERT && biome == Biome.DESERT) passed = true;
+                else if (condition == BIOME_DESERT_HILLS && biome == Biome.DESERT_HILLS) passed = true;
+                else if (condition == BIOME_EXTREME_HILLS && biome == Biome.EXTREME_HILLS) passed = true;
+                else if (condition == BIOME_FOREST && biome == Biome.FOREST) passed = true;
+                else if (condition == BIOME_FOREST_HILLS && biome == Biome.FOREST_HILLS) passed = true;
+                else if (condition == BIOME_FROZEN_OCEAN && biome == Biome.FROZEN_OCEAN) passed = true;
+                else if (condition == BIOME_FROZEN_RIVER && biome == Biome.FROZEN_RIVER) passed = true;
+                else if (condition == BIOME_HELL && biome == Biome.HELL) passed = true;
+                else if (condition == BIOME_ICE_MOUNTAINS && biome == Biome.ICE_MOUNTAINS) passed = true;
+                else if (condition == BIOME_ICE_PLAINS && biome == Biome.ICE_PLAINS) passed = true;
+                else if (condition == BIOME_JUNGLE && biome == Biome.JUNGLE) passed = true;
+                else if (condition == BIOME_JUNGLE_HILLS && biome == Biome.JUNGLE_HILLS) passed = true;
+                else if (condition == BIOME_MUSHROOM_ISLAND && biome == Biome.MUSHROOM_ISLAND) passed = true;
+                else if (condition == BIOME_MUSHROOM_SHORE && biome == Biome.MUSHROOM_SHORE) passed = true;
+                else if (condition == BIOME_OCEAN && biome == Biome.OCEAN) passed = true;
+                else if (condition == BIOME_PLAINS && biome == Biome.PLAINS) passed = true;
+                else if (condition == BIOME_RIVER && biome == Biome.RIVER) passed = true;
+                else if (condition == BIOME_SKY && biome == Biome.SKY) passed = true;
+                else if (condition == BIOME_SMALL_MOUNTAINS && biome == Biome.SMALL_MOUNTAINS) passed = true;
+                else if (condition == BIOME_SWAMPLAND && biome == Biome.SWAMPLAND) passed = true;
+                else if (condition == BIOME_TAIGA && biome == Biome.TAIGA) passed = true;
+                else if (condition == BIOME_TAIGA_HILLS && biome == Biome.TAIGA_HILLS) passed = true;
+                else if (condition == TIME_DAY && (player.getWorld().getTime() < 12300 || player.getWorld().getTime() > 23850)) passed = true;
+                else if (condition == TIME_NIGHT && (player.getWorld().getTime() >= 12300 && player.getWorld().getTime() <= 23850)) passed = true;
+                else if (condition == IN_WATER && player.getLocation().getBlock().getType() == Material.WATER) passed = true;
+                else if (condition == OUT_OF_WATER && player.getLocation().getBlock().getType() != Material.WATER) passed = true;
+                else if (condition == ITEM_AXE && type == ItemType.AXE) passed = true;
+                else if (condition == ITEM_HOE && type == ItemType.HOE) passed = true;
+                else if (condition == ITEM_PICKAXE && type == ItemType.PICKAXE) passed = true;
+                else if (condition == ITEM_SHOVEL && type == ItemType.SHOVEL) passed = true;
+                else if (condition == ITEM_SWORD && type == ItemType.SWORD) passed = true;
+                else if (condition == ITEM_WOOD && mat == ItemMat.WOOD) passed = true;
+                else if (condition == ITEM_STONE && mat == ItemMat.STONE) passed = true;
+                else if (condition == ITEM_IRON && mat == ItemMat.IRON) passed = true;
+                else if (condition == ITEM_GOLD && mat == ItemMat.GOLD) passed = true;
+                else if (condition == ITEM_DIAMOND && mat == ItemMat.DIAMOND) passed = true;
+                else if (condition == TARGET_FRONT && TargetHelper.isInFront(t, player)) passed = true;
+                else if (condition == TARGET_BACK && !TargetHelper.isInFront(t, player)) passed = true;
 
                 // Operators
                 if (operator == AND) success = success && passed;
@@ -184,5 +269,67 @@ public class ConditionMechanic implements IMechanic {
     @Override
     public String[] getAttributeNames() {
         return new String[0];
+    }
+
+    /**
+     * Tool type enum for items
+     */
+    public enum ItemType {
+
+        AXE,
+        HOE,
+        PICKAXE,
+        SHOVEL,
+        SWORD,
+        NULL
+        ;
+
+        /**
+         * Retrieves the tool type of the item
+         *
+         * @param item item to retrieve for
+         * @return     tool type of the item
+         */
+        public static ItemType getType(ItemStack item) {
+            if (item == null) return NULL;
+            String name = item.getType().name();
+            if (name.contains("PICKAXE")) return PICKAXE;
+            if (name.contains("AXE")) return AXE;
+            if (name.contains("HOE")) return HOE;
+            if (name.contains("SPADE")) return SHOVEL;
+            if (name.contains("SWORD")) return SWORD;
+            return null;
+        }
+    }
+
+    /**
+     * Material type enum for tools
+     */
+    public enum ItemMat {
+
+        WOOD,
+        STONE,
+        IRON,
+        GOLD,
+        DIAMOND,
+        NULL
+        ;
+
+        /**
+         * Retrieves the item material of the item
+         *
+         * @param item item to retrieve for
+         * @return     material type of the item
+         */
+        public static ItemMat getMat(ItemStack item) {
+            if (item == null) return NULL;
+            String name = item.getType().name();
+            if (name.contains("WOOD")) return WOOD;
+            if (name.contains("STONE")) return STONE;
+            if (name.contains("IRON")) return IRON;
+            if (name.contains("GOLD")) return GOLD;
+            if (name.contains("DIAMOND")) return DIAMOND;
+            return NULL;
+        }
     }
 }

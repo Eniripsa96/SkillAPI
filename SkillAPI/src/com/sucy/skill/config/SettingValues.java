@@ -46,6 +46,11 @@ public enum SettingValues {
     POINTS_PER_LEVEL,
 
     /**
+     * Whether or not players can downgrade their skills
+     */
+    ALLOW_DOWNGRADING_SKILLS,
+
+    /**
      * Whether or not lore requirements are enabled
      */
     LORE_REQUIREMENTS,

@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 2.26
+version: 2.27
 author: Eniripsa96
 softdepend: [Vault]
 
@@ -12,17 +12,36 @@ permissions:
   skillapi.basic:
     description: access to skill trees and using skills
     default: true
+  skillapi.stats:
+    description: access to viewing other player stats
+    default: true
+  skillapi.exp:
+    description: access to gaining exp
+    default: true
   skillapi.level:
-    description: access to using the level command
+    description: access to using the level and exp commands
+    default: op
+  skillapi.points:
+    description: access to using the points command
     default: op
   skillapi.reload:
     description: access to using the reload command
     default: op
+  skillapi.class:
+    description: access to all classes
+    default: op
+  skillapi.skill:
+    description: access to all skills
 
   skillapi.*:
     description: access to all commands
     default: op
     children:
       skillapi.basic: true
+      skillapi.stats: true
+      skillapi.exp: true
       skillapi.level: true
+      skillapi.points: true
       skillapi.reload: true
+      skillapi.class: true
+      skillapi.skill: true

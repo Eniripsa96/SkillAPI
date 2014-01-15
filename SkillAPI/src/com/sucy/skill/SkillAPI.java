@@ -69,6 +69,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean levelBar;
     private boolean clickCombo;
     private boolean expOrbs;
+    private boolean allowDowngrade;
     private boolean defaultOneDamage;
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
@@ -109,6 +110,7 @@ public class SkillAPI extends JavaPlugin {
         mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path(), true);
         startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path(), 1);
         pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path(), 1);
+        allowDowngrade = getConfig().getBoolean(SettingValues.ALLOW_DOWNGRADING_SKILLS.path(), true);
         oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path(), false);
         levelBar = getConfig().getBoolean(SettingValues.USE_LEVEL_BAR.path(), false);
         clickCombo = getConfig().getBoolean(SettingValues.USE_CLICK_COMBOS.path(), false);
@@ -303,6 +305,13 @@ public class SkillAPI extends JavaPlugin {
      */
     public int getPointsPerLevel() {
         return pointsPerLevel;
+    }
+
+    /**
+     * @return whether or not downgrading skills is allowed
+     */
+    public boolean isAllowingDowngrade() {
+        return allowDowngrade;
     }
 
     /**

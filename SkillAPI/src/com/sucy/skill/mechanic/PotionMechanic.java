@@ -38,7 +38,7 @@ public class PotionMechanic implements IMechanic {
 
         // Get attributes
         int level = data.getSkillLevel(skill.getName());
-        PotionEffectType potionType = PotionEffectType.values()[skill.getValue(TYPE)];
+        int potionValue = skill.getValue(TYPE);
         int duration = (int)(skill.getAttribute(DURATION, target, level) * 20);
         int tier = (int)skill.getAttribute(TIER, target, level);
 
@@ -46,8 +46,12 @@ public class PotionMechanic implements IMechanic {
         if (targets.size() == 0) return false;
 
         // Apply  potion effect to all
-        for (LivingEntity t : targets) {
-            t.addPotionEffect(new PotionEffect(potionType, duration, tier), true);
+        while (potionValue > 0) {
+            PotionEffectType potionType = POTION_TYPES.get(potionValue % 32);
+            potionValue /= 32;
+            for (LivingEntity t : targets) {
+                t.addPotionEffect(new PotionEffect(potionType, duration, tier), true);
+            }
         }
         return true;
     }
@@ -95,7 +99,7 @@ public class PotionMechanic implements IMechanic {
         put(19, PotionEffectType.POISON);
         put(20, PotionEffectType.WITHER);
 
-        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2)) {
+        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
             put(21, PotionEffectType.HEALTH_BOOST);
             put(22, PotionEffectType.ABSORPTION);
             put(23, PotionEffectType.SATURATION);

@@ -7,6 +7,7 @@ import com.sucy.skill.command.CommandHandler;
 import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -34,6 +35,13 @@ public class CmdInfoPlayer implements ICommand {
         // 0 arguments for own info
         if (args.length == 0) {
             player = api.getPlayer(sender.getName());
+        }
+
+        // Not having the permission is not allowed
+        else if (!sender.hasPermission(PermissionNodes.STATS)) {
+            String error = api.getMessage(CommandNodes.CANNOT_SEE_STATS, true);
+            sender.sendMessage(error);
+            return;
         }
 
         // Otherwise get the target player

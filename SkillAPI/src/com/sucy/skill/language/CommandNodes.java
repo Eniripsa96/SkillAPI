@@ -178,6 +178,11 @@ public class CommandNodes {
     CANNOT_PROFESS = ERROR_BASE + "cannot-profess",
 
     /**
+     * Cannot view the stats of other players
+     */
+    CANNOT_SEE_STATS = ERROR_BASE + "cannot-see-stats",
+
+    /**
      * Player already is the maximum level
      */
     MAX_LEVEL = ERROR_BASE + "max-level",

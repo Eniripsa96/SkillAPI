@@ -289,12 +289,20 @@ public final class PlayerSkills extends Valued {
         if (skill.getSkillReq() != null && getSkillLevel(skill.getSkillReq()) < skill.getSkillReqLevel())
             return false;
 
+        // Call the upgrade event
+        int cost = (int)skill.getAttribute(SkillAttribute.COST, level + 1);
+        PlayerSkillUpgradeEvent event = new PlayerSkillUpgradeEvent(this, skill, cost);
+        plugin.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) return false;
+
         // Apply passive skill effects
-        if (skill instanceof PassiveSkill)
-            ((PassiveSkill) skill).onUpgrade(plugin.getServer().getPlayer(getName()), level + 1);
+        if (skill instanceof PassiveSkill) {
+            if (level == 0) ((PassiveSkill) skill).onInitialize(getPlayer(), level + 1);
+            else ((PassiveSkill) skill).onUpgrade(getPlayer(), level + 1);
+        }
 
         // Upgrade the skill
-        this.points -= (int)skill.getAttribute(SkillAttribute.COST, level + 1);
+        this.points -= cost;
         skills.put(skill.getName().toLowerCase(), level + 1);
 
         // If first level, call the unlock event and give permissions
@@ -307,10 +315,6 @@ public final class PlayerSkills extends Valued {
                 }
             }
         }
-
-        // Call the upgrade event
-        plugin.getServer().getPluginManager().callEvent(
-                new PlayerSkillUpgradeEvent(this, skill));
 
         return true;
     }
@@ -356,7 +360,7 @@ public final class PlayerSkills extends Valued {
         // Update passive skill effects
         if (skill instanceof PassiveSkill) {
             ((PassiveSkill) skill).stopEffects(getPlayer(), level);
-            ((PassiveSkill) skill).onInitialize(getPlayer(), level - 1);
+            if (level > 1) ((PassiveSkill) skill).onInitialize(getPlayer(), level - 1);
         }
 
         // Downgrade the skill
@@ -516,7 +520,7 @@ public final class PlayerSkills extends Valued {
         }
 
         // Apply health scaling
-        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2)) {
+        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
             if (plugin.oldHealthEnabled()) plugin.getServer().getPlayer(player).setHealthScale(20);
             else plugin.getServer().getPlayer(player).setHealthScaled(false);
         }
@@ -706,6 +710,7 @@ public final class PlayerSkills extends Valued {
      */
     public void giveExp(int amount) {
         if (plugin.getClass(tree) == null) return;
+        if (!getPlayer().hasPermission(PermissionNodes.EXP)) return;
 
         // Call an event
         PlayerExperienceGainEvent event = new PlayerExperienceGainEvent(this, amount);

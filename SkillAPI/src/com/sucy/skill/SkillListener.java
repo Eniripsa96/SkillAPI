@@ -534,7 +534,7 @@ public class SkillListener implements Listener {
                             tree.update(event.getInventory(), player);
                         }
                     }
-                    else if (event.isRightClick()) {
+                    else if (event.isRightClick() && plugin.isAllowingDowngrade()) {
                         if (player.downgradeSkill(tree.getSkill(event.getSlot()))) {
                             tree.update(event.getInventory(), player);
                         }

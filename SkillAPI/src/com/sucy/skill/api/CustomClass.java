@@ -463,22 +463,22 @@ public abstract class CustomClass extends Attributed {
         // Stats
         if (hasAttribute(ClassAttribute.HEALTH)) {
             if (config.contains(ClassValues.HEALTH_BASE))
-                setBase(ClassAttribute.HEALTH, config.getInt(ClassValues.HEALTH_BASE));
+                setBase(ClassAttribute.HEALTH, config.getDouble(ClassValues.HEALTH_BASE));
             if (config.contains(ClassValues.HEALTH_BONUS))
-                setScale(ClassAttribute.HEALTH, config.getInt(ClassValues.HEALTH_BONUS));
+                setScale(ClassAttribute.HEALTH, config.getDouble(ClassValues.HEALTH_BONUS));
         }
         else {
             if (config.contains(ClassValues.HEALTH_BASE)) {
-                setAttribute(ClassAttribute.HEALTH, config.getInt(ClassValues.HEALTH_BASE), config.getInt(ClassValues.HEALTH_BONUS));
+                setAttribute(ClassAttribute.HEALTH, config.getDouble(ClassValues.HEALTH_BASE), config.getInt(ClassValues.HEALTH_BONUS));
             }
             if (config.contains(ClassValues.MANA_BASE)) {
-                setAttribute(ClassAttribute.MANA, config.getInt(ClassValues.MANA_BASE), config.getInt(ClassValues.MANA_BONUS));
+                setAttribute(ClassAttribute.MANA, config.getDouble(ClassValues.MANA_BASE), config.getInt(ClassValues.MANA_BONUS));
             }
         }
         if (config.contains(ClassValues.MANA_BASE))
-            setBase(ClassAttribute.MANA, config.getInt(ClassValues.MANA_BASE));
+            setBase(ClassAttribute.MANA, config.getDouble(ClassValues.MANA_BASE));
         if (config.contains(ClassValues.MANA_BONUS))
-            setScale(ClassAttribute.MANA, config.getInt(ClassValues.MANA_BONUS));
+            setScale(ClassAttribute.MANA, config.getDouble(ClassValues.MANA_BONUS));
         if (config.contains(ClassValues.OFFSET))
             offset = config.getInt(ClassValues.OFFSET);
         if (config.contains(ClassValues.INTERVAL))

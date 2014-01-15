@@ -242,7 +242,7 @@ public class SoundMechanic implements IMechanic {
         put(192, Sound.ZOMBIE_WOODBREAK);
 
         // Sounds in only 1.6.2 and beyond
-        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2)) {
+        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
             put(41, Sound.DONKEY_ANGRY);
             put(42, Sound.DONKEY_DEATH);
             put(43, Sound.DONKEY_HIT);
@@ -280,7 +280,7 @@ public class SoundMechanic implements IMechanic {
         }
 
         // 1.7.2 differences
-        if (!BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_7_2)) {
+        if (!BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_7_2_MIN)) {
             put(15, Sound.BREATH);
             put(96, Sound.HURT);
         }

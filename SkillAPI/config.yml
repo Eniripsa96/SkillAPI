@@ -22,6 +22,7 @@ players-per-check: 1
 old-health-bar: false
 use-level-bar: false
 use-click-combos: false
+use-skill-bars: false
 default-one-damage: false
 block-mob-spawner-exp: true
 block-mob-egg-exp: true
@@ -29,6 +30,16 @@ block-creative-exp: true
 use-exp-orbs: false
 skill-message-radius: 20
 percent-exp-lost-on-death: 0.0
+skill-bar:
+  1: skill
+  2: skill
+  3: skill
+  4: skill
+  5: skill
+  6: skill
+  7: skill
+  8: weapon
+  9: weapon
 exp-formula:
   x: 1
   y: 4

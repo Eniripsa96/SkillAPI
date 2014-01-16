@@ -15,6 +15,8 @@ import com.sucy.skill.config.SettingValues;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
+import com.sucy.skill.skillbar.PlayerSkillBar;
+import com.sucy.skill.skillbar.SkillBarListener;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import org.bukkit.Bukkit;
@@ -51,6 +53,7 @@ public class SkillAPI extends JavaPlugin {
 
     // Utility
     private RegistrationManager registration;
+    private SkillBarListener barListener;
     private DOTHelper dotHelper;
 
     // Tasks
@@ -63,6 +66,7 @@ public class SkillAPI extends JavaPlugin {
 
     // Settings
     private String treeType;
+    private boolean[] bar;
     private boolean mana;
     private boolean reset;
     private boolean oldHealth;
@@ -74,6 +78,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
     private boolean blockCreativeExp;
+    private boolean usingSkillBars;
     private double expLost;
     private int startingPoints;
     private int pointsPerLevel;
@@ -121,6 +126,19 @@ public class SkillAPI extends JavaPlugin {
         expOrbs = getConfig().getBoolean(SettingValues.USE_EXP_ORBS.path(), false);
         messageRadius = getConfig().getInt(SettingValues.SKILL_MESSAGE_RADIUS.path(), 20);
         expLost = getConfig().getDouble(SettingValues.PERCENT_EXP_LOST_ON_DEATH.path(), 0);
+        usingSkillBars = getConfig().getBoolean(SettingValues.USE_SKILL_BARS.path(), false);
+        bar = new boolean[9];
+        boolean hasWeapon = false;
+        for (int i = 1; i <= 9; i++) {
+            if (getConfig().getString(SettingValues.SKILL_BAR.path() + "." + i, "skill").equalsIgnoreCase("skill")) {
+                bar[i - 1] = true;
+            }
+            else {
+                bar[i - 1] = false;
+                hasWeapon = true;
+            }
+        }
+        if (!hasWeapon) bar[8] = false;
 
         // Experience formula
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
@@ -132,6 +150,12 @@ public class SkillAPI extends JavaPlugin {
         // Register classes and skills
         registration = new RegistrationManager(this);
         registration.initialize();
+
+        // Skill bar setup
+        if (usingSkillBars) {
+            barListener = new SkillBarListener(this);
+            getLogger().info("Skill bars have been enabled");
+        }
 
         // Set up the mana task
         int manaFreq = getConfig().getInt(SettingValues.MANA_GAIN_FREQ.path());
@@ -189,6 +213,11 @@ public class SkillAPI extends JavaPlugin {
         if (invTask != null) {
             invTask.cancel();
             invTask = null;
+        }
+
+        // Save skill bar data
+        if (usingSkillBars) {
+            barListener.disable();
         }
 
         // Save player data
@@ -361,6 +390,20 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * @return whether or not skill bars are being used
+     */
+    public boolean isUsingSkillBars() {
+        return usingSkillBars;
+    }
+
+    /**
+     * @return the default layout for the skill bar
+     */
+    public boolean[] getDefaultBar() {
+        return bar;
+    }
+
+    /**
      * @return whether or not the experience from mob spawners is being blocked
      */
     public boolean blockingSpawnerExp() {
@@ -499,6 +542,19 @@ public class SkillAPI extends JavaPlugin {
      */
     public DOTHelper getDOTHelper() {
         return dotHelper;
+    }
+
+    /**
+     * <p>Retrieves the skill bar for a player</p>
+     * <p>If skill bars are disabled or the player
+     * doesn't have a class, this returns null</p>
+     *
+     * @param player player to get the skill bar for
+     * @return       the player's skill bar
+     */
+    public PlayerSkillBar getSkillBar(Player player) {
+        if (!usingSkillBars) return null;
+        return barListener.getSkillBar(player);
     }
 
     /**
@@ -657,7 +713,9 @@ public class SkillAPI extends JavaPlugin {
      * @return       true if the player has permission, false otherwise
      */
     public boolean hasPermission(CommandSender sender, CustomClass t) {
-        return !t.needsPermission() || sender.hasPermission(PermissionNodes.CLASS + "." + t.getName());
+        return !t.needsPermission() ||
+                sender.hasPermission(PermissionNodes.CLASS) ||
+                sender.hasPermission(PermissionNodes.CLASS + "." + t.getName());
     }
 
     /**

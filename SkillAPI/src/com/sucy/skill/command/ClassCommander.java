@@ -36,6 +36,7 @@ public class ClassCommander extends CommandHandler {
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.RESET, false), new CmdReset());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.SKILLS, false), new CmdSkills());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.UNBIND, false), new CmdUnbind());
+        if (api.isUsingSkillBars()) registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.TOGGLE_BAR, false), new CmdToggleBar());
 
         // Admin commands
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.EXP_CONSOLE, false), new CmdExpConsole());

@@ -309,7 +309,7 @@ public class ParticleHelper {
         put(12, "happyVillager");
         put(13, "heart");
         put(14, "hugeexplosion");
-        put(15, "iconcrack_");
+        put(15, "iconcrack");
         put(16, "instantSpell");
         put(17, "largeexplode");
         put(18, "largesmoke");
@@ -326,7 +326,7 @@ public class ParticleHelper {
         put(29, "spell");
         put(30, "splash");
         put(31, "suspend");
-        put(32, "tilecrack_");
+        put(32, "tilecrack");
         put(33, "townaura");
         put(34, "witchMagic");
     }};

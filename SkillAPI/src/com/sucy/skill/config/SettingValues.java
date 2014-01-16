@@ -120,6 +120,16 @@ public enum SettingValues {
      */
     SKILL_MESSAGE_RADIUS,
 
+    /**
+     * Whether or not skill bars are enabled
+     */
+    USE_SKILL_BARS,
+
+    /**
+     * The slot for weapons when using skill bars
+     */
+    SKILL_BAR,
+
     ;
 
     /**

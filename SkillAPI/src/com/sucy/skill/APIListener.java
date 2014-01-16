@@ -19,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -132,24 +133,24 @@ public class APIListener implements Listener {
                     // Custom items get flat damages
                     if (projectile.hasMetadata(P_TYPE)) {
                         FixedMetadataValue metaValue = (FixedMetadataValue)projectile.getMetadata(P_TYPE).get(0);
-                        int id = metaValue.asInt();
-                        int damage = playerClass.getCustomDamage(id);
-                        if (damage > 0) event.setDamage(damage);
-                    }
-
-                    // When the default damage isn't 0, set the damage relative
-                    // to the default damage to account for varied damages
-                    else if (CustomClass.getDefaultDamage(projectile.getClass()) != 0) {
-                        double damage = event.getDamage() * playerClass.getDamage(projectile.getClass()) / CustomClass.getDefaultDamage(projectile.getClass());
-                        event.setDamage(damage < 0 ? 0 : damage);
-                    }
-
-                    // Otherwise, just set the damage normally
-                    else {
-                        double damage = playerClass.getDamage(projectile.getClass());
-                        int defaultDamage = CustomClass.getDefaultDamage(projectile.getClass());
-                        damage = event.getDamage() + damage - defaultDamage;
-                        event.setDamage(damage < 0 ? 0 : damage);
+                        if (metaValue.value() instanceof Material) {
+                            Material mat = (Material)metaValue.value();
+                            if (CustomClass.getDefaultProjectileDamage(mat) != 0) {
+                                double damage = event.getDamage() * playerClass.getProjectileDamage(mat) / CustomClass.getDefaultProjectileDamage(mat);
+                                event.setDamage(damage < 0 ? 0 : damage);
+                            }
+                            else {
+                                double damage = playerClass.getProjectileDamage(mat);
+                                int defaultDamage = CustomClass.getDefaultProjectileDamage(mat);
+                                damage = event.getDamage() + damage - defaultDamage;
+                                event.setDamage(damage < 0 ? 0 : 0);
+                            }
+                        }
+                        else {
+                            int id = metaValue.asInt();
+                            int damage = playerClass.getCustomDamage(id);
+                            if (damage > 0) event.setDamage(damage);
+                        }
                     }
                 }
             }
@@ -196,6 +197,7 @@ public class APIListener implements Listener {
             if (item.getType().toString().toLowerCase().startsWith("x")) {
                 event.getEntity().setMetadata(P_TYPE, new FixedMetadataValue(plugin, item.getTypeId()));
             }
+            else event.getEntity().setMetadata(P_TYPE, new FixedMetadataValue(plugin, item.getType()));
         }
     }
 
@@ -451,6 +453,10 @@ public class APIListener implements Listener {
 
             // Do nothing when clicking outside the inventory
             if (event.getSlot() == -999) return;
+            if (event.getAction() == InventoryAction.HOTBAR_SWAP) {
+                event.setCancelled(true);
+                return;
+            }
 
             boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
 
@@ -459,7 +465,7 @@ public class APIListener implements Listener {
                 event.setCancelled(tree.checkClick(event.getSlot()));
 
                 // If they clicked on a skill, try upgrading it
-                if (tree.isSkill(event.getSlot())) {
+                if (tree.isSkill(event.getWhoClicked(), event.getSlot())) {
                     PlayerSkills player = plugin.getPlayer(event.getWhoClicked().getName());
                     if (event.isLeftClick()) {
                         if (player.upgradeSkill(tree.getSkill(event.getSlot()))) {

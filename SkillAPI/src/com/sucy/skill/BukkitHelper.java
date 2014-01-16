@@ -9,7 +9,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class BukkitHelper {
 
-    public static final int
+    public static int
         MC_1_5_2_MIN = 2788,
         MC_1_6_2_MIN = 2789,
         MC_1_6_4_MIN = 2880,
@@ -25,8 +25,21 @@ public class BukkitHelper {
      */
     public static void initialize() {
         String v = Bukkit.getServer().getVersion();
-        v = v.substring(v.indexOf("b") + 1);
-        v = v.substring(0, v.indexOf("jnks"));
+        if (v.contains("jnks")) {
+            v = v.substring(v.indexOf("-b") + 2);
+            v = v.substring(0, v.indexOf("jnks"));
+        }
+        else {
+            MC_1_5_2_MIN = 832;
+            MC_1_6_2_MIN = 1016;
+            MC_1_6_4_MIN = 1108;
+            MC_1_7_2_MIN = 1141;
+            MC_1_5_2_MAX = 964;
+            MC_1_6_2_MAX = 1107;
+            MC_1_6_4_MAX = 1138;
+            v = v.substring(v.lastIndexOf("-") + 1);
+            v = v.substring(0, v.indexOf(" "));
+        }
         Bukkit.getLogger().info("Detected CraftBukkit build " + v);
         version = Integer.parseInt(v);
     }

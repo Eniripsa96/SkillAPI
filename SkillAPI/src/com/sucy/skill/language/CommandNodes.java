@@ -68,6 +68,16 @@ public class CommandNodes {
      */
     NOT_CONFIRMED = ".not-confirmed",
 
+    /**
+     * Toggling something on
+     */
+    ON = ".enable",
+
+    /**
+     * Toggling something off
+     */
+    OFF = ".disable",
+
     // --------------------- Commands ---------------------------- //
 
     /**
@@ -144,6 +154,11 @@ public class CommandNodes {
      * Reloads the plugin data
      */
     RELOAD = "reload",
+
+    /**
+     * Toggles the skill bar
+     */
+    TOGGLE_BAR = "bar",
 
     /**
      * Unbinding a skill

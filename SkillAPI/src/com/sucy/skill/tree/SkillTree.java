@@ -115,7 +115,9 @@ public abstract class SkillTree implements InventoryHolder {
      */
     public boolean isSkill(HumanEntity player, int slot) {
         if (!skillSlots.containsKey(slot)) return false;
-        return !skillSlots.get(slot).needsPermission() || player.hasPermission(PermissionNodes.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-"));
+        return !skillSlots.get(slot).needsPermission() ||
+                player.hasPermission(PermissionNodes.SKILL) ||
+                player.hasPermission(PermissionNodes.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-"));
     }
 
     /**

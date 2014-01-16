@@ -33,6 +33,7 @@ Skill Tree:
   - '{description}'
 Commands:
   arguments:
+    bar: ''
     bind: '<skill>'
     cast: '<skill>'
     exp-console: '<amount> <player>'
@@ -50,6 +51,9 @@ Commands:
     skills: ''
     unbind: ''
   complete:
+    bar:
+      enable: '&4Your skill bar is now enabled'
+      disable: '&4Your skill bar is now disabled'
     bind:
     - '&6{skill} &2has been bound to the item &6{item}'
     cast: []
@@ -117,6 +121,7 @@ Commands:
     unbind:
     - '&6{item} &2is no longer bound to a skill'
   description:
+    bar: 'Toggles the skill bar'
     bind: 'Binds skill to held item'
     cast: 'Casts the skill'
     exp-console: 'Gives a player exp'
@@ -150,6 +155,7 @@ Commands:
     not-positive: '&4{value} must be a positive number'
     skill-not-owned: '&4You do not have that skill'
   name:
+    bar: 'bar'
     bind: 'bind'
     cast: 'cast'
     exp-console: 'exp'

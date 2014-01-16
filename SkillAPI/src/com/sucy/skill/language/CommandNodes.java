@@ -71,12 +71,12 @@ public class CommandNodes {
     /**
      * Toggling something on
      */
-    ON = ".enable",
+    ON = ".toggle-on",
 
     /**
      * Toggling something off
      */
-    OFF = ".disable",
+    OFF = ".toggle-off",
 
     // --------------------- Commands ---------------------------- //
 
@@ -213,9 +213,19 @@ public class CommandNodes {
     NO_CHOSEN_CLASS = ERROR_BASE + "no-class",
 
     /**
+     * A player cannot be in creative mode
+     */
+    NO_CREATIVE = ERROR_BASE + "no-creative",
+
+    /**
      * A player doesn't have a held item
      */
     NO_HELD_ITEM = ERROR_BASE + "no-held-item",
+
+    /**
+     * A player doesn't have enough space in there inventory
+     */
+    NO_SPACE = ERROR_BASE + "no-space",
 
     /**
      * No target for a targeted skill

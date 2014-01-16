@@ -174,7 +174,7 @@ public class SkillBarListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGHEST)
     public void onAssign(InventoryClickEvent event) {
 
         // Players without a class aren't effected
@@ -187,9 +187,12 @@ public class SkillBarListener implements Listener {
         if (!skillBar.isEnabled()) return;
 
         // Prevent moving skill icons
+        plugin.getLogger().info("Hotbar: " + event.getHotbarButton());
+        plugin.getLogger().info("Action: " + event.getAction().name());
         if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
             if (!skillBar.isWeaponSlot(event.getHotbarButton())) {
                 event.setCancelled(true);
+                plugin.getLogger().info("Was cancelled");
             }
         }
         else if (event.getSlotType() == InventoryType.SlotType.QUICKBAR) {

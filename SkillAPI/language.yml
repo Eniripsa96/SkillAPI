@@ -52,8 +52,10 @@ Commands:
     unbind: ''
   complete:
     bar:
-      enable: '&4Your skill bar is now enabled'
-      disable: '&4Your skill bar is now disabled'
+      toggle-on:
+      - '&2Your skill bar is now enabled'
+      toggle-off:
+      - '&4Your skill bar is now disabled'
     bind:
     - '&6{skill} &2has been bound to the item &6{item}'
     cast: []
@@ -147,7 +149,9 @@ Commands:
     max-level: '&4That player is already at the max level'
     no-bound-skill: '&4You do not have a skill bound to your held item'
     no-class: '&4You have not chosen a class yet'
+    no-creative: '&4You cannot be in creative mode'
     no-held-item: '&4You do not have a held item'
+    no-space: '&4You do not have enough space in your inventory'
     no-target: '&4There is no target in range'
     not-a-class: '&4Invalid class name'
     not-a-player: '&4Invalid player name'

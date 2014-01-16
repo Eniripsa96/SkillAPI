@@ -110,6 +110,44 @@ public class PlayerSkillBar {
     }
 
     /**
+     * <p>Counts the item in the owning player's inventory in the skill slots</p>
+     * <p>If the player is offline, this returns -1</p>
+     *
+     * @return number of items in the skill slots
+     */
+    public int getItemsInSkillSlots() {
+        int count = 0;
+        Player p = plugin.getServer().getPlayer(name);
+        if (p == null) return -1;
+        for (int slot : slots.keySet()) {
+            if (p.getInventory().getItem(slot - 1) != null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * <p>Counts the number of open slots in the player's
+     * inventory besides skill slots</p>
+     * <p>This returns -1 if the player is offline</p>
+     *
+     * @return open slots in the players inventory
+     */
+    public int countOpenSlots() {
+        int count = 0;
+        Player p = plugin.getServer().getPlayer(name);
+        if (p == null) return -1;
+        ItemStack[] items = p.getInventory().getContents();
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] == null && !slots.containsKey(i + 1)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
      * Toggles the enabled state of the skill bar
      */
     public void toggleEnabled() {
@@ -133,12 +171,8 @@ public class PlayerSkillBar {
         slot++;
 
         // Make sure there is always at least one weapon slot
-        if (!slots.containsKey(slot)) {
-            int weapons = 0;
-            for (int i = 0; i < 9; i++) {
-                if (isWeaponSlot(i)) weapons++;
-            }
-            if (weapons < 2) return;
+        if (!slots.containsKey(slot) && (slots.size() == 8 || countOpenSlots() == 0)) {
+            return;
         }
 
         // Toggle the slot

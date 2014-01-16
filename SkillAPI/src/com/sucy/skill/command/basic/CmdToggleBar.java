@@ -9,6 +9,7 @@ import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.skillbar.PlayerSkillBar;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
@@ -33,12 +34,24 @@ public class CmdToggleBar implements ICommand {
         SkillAPI api = (SkillAPI)plugin;
         PlayerSkills player = api.getPlayer(sender.getName());
 
-        // View the skills and if it failed, they didn't have any skills to view
+        // Player must have a class
         if (!player.hasClass()) {
             sender.sendMessage(api.getMessage(CommandNodes.NO_CHOSEN_CLASS, true));
         }
+
+        // Cannot be in creative mode
+        else if (player.getPlayer().getGameMode() == GameMode.CREATIVE) {
+            sender.sendMessage(api.getMessage(CommandNodes.NO_CREATIVE, true));
+        }
         else {
             PlayerSkillBar bar = api.getSkillBar(player.getPlayer());
+
+            // Not enough space
+            if (!bar.isEnabled() && bar.countOpenSlots() < bar.getItemsInSkillSlots()) {
+                sender.sendMessage(api.getMessage(CommandNodes.NO_SPACE, true));
+                return;
+            }
+
             bar.toggleEnabled();
             String base = CommandNodes.COMPLETE + CommandNodes.TOGGLE_BAR;
             if (bar.isEnabled()) {

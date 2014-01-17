@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -22,7 +23,8 @@ public class PlayerSkillBar {
 
     private static final ItemStack EMPTY = new ItemStack(Material.PUMPKIN_SEEDS);
     private static final String
-        ENABLED = "e";
+        ENABLED = "e",
+        UNASSIGNED = "e";
 
     /**
      * Sets up the unassigned indicator
@@ -50,7 +52,7 @@ public class PlayerSkillBar {
         this.name = name;
         for (int i = 1; i <= 9; i++) {
             if (plugin.getDefaultBar()[i - 1]) {
-                slots.put(i, "");
+                slots.put(i, UNASSIGNED);
             }
         }
     }
@@ -69,7 +71,7 @@ public class PlayerSkillBar {
             else if (plugin.getSkill(key) != null) {
                 slots.put(config.getInt(key), key);
             }
-            else slots.put(config.getInt(key), "");
+            else slots.put(config.getInt(key), UNASSIGNED);
         }
     }
 
@@ -175,11 +177,17 @@ public class PlayerSkillBar {
             return;
         }
 
+        // Cannot have item in cursor
+        Player p = plugin.getServer().getPlayer(name);
+        if (p == null || (p.getItemOnCursor() != null && p.getItemOnCursor().getType() != Material.AIR)) {
+            return;
+        }
+
         // Toggle the slot
-        clear(plugin.getServer().getPlayer(name));
+        clear(p);
         if (slots.containsKey(slot)) slots.remove(slot);
-        else slots.put(slot, "");
-        setup(plugin.getServer().getPlayer(name));
+        else slots.put(slot, UNASSIGNED);
+        setup(p);
     }
 
     /**
@@ -208,13 +216,28 @@ public class PlayerSkillBar {
         }
     }
 
+    public void clear(PlayerDeathEvent event) {
+        if (!enabled || event.getEntity().getGameMode() == GameMode.CREATIVE) return;
+        for (int i = 0; i < 9; i++) {
+            if (isWeaponSlot(i)) continue;
+            event.getDrops().remove(event.getEntity().getInventory().getItem(i));
+            event.getEntity().getInventory().setItem(i, null);
+        }
+    }
+
     /**
      * Sets up the player for the skill bar
      *
      * @param player player to set up for
      */
     public void setup(HumanEntity player) {
-        if (!isEnabled()) return;
+        if (!enabled || player.getGameMode() == GameMode.CREATIVE) return;
+
+        // Disable the skill bar if there isn't enough space
+        if (countOpenSlots() < getItemsInSkillSlots()) {
+            enabled = false;
+            return;
+        }
 
         // Set it to a weapon slot
         if (!isWeaponSlot(player.getInventory().getHeldItemSlot())) {
@@ -230,7 +253,7 @@ public class PlayerSkillBar {
         }
 
         // Update the slots
-        update();
+        update(player);
         setup = true;
     }
 
@@ -241,9 +264,9 @@ public class PlayerSkillBar {
      */
     public void unlock(ClassSkill skill) {
         for (int i = 1; i <= 9; i++) {
-            if (slots.containsKey(i) && slots.get(i).equals("")) {
+            if (slots.containsKey(i) && slots.get(i).equals(UNASSIGNED)) {
                 slots.put(i, skill.getName());
-                update();
+                update(plugin.getServer().getPlayer(name));
                 return;
             }
         }
@@ -259,31 +282,30 @@ public class PlayerSkillBar {
         if (isWeaponSlot(slot)) return;
         for (Map.Entry<Integer, String> entry : slots.entrySet()) {
             if (entry.getValue().equals(skill.getName())) {
-                slots.put(entry.getKey(), "");
+                slots.put(entry.getKey(), UNASSIGNED);
                 break;
             }
         }
         slots.put(slot + 1, skill.getName());
-        update();
+        update(plugin.getServer().getPlayer(name));
     }
 
     /**
      * Updates the player's skill bar icons
      */
-    public void update() {
+    public void update(HumanEntity player) {
         PlayerSkills data = plugin.getPlayer(name);
-        Player player = data.getPlayer();
         for (int i = 1; i <= 9; i++) {
             int index = i - 1;
             if (isWeaponSlot(index)) continue;
 
             ClassSkill skill = plugin.getSkill(slots.get(i));
             if (skill == null || !data.hasSkillUnlocked(skill.getName())) {
-                if (isEnabled()) {
+                if (enabled && player != null && player.getGameMode() != GameMode.CREATIVE) {
                     player.getInventory().setItem(index, EMPTY);
                 }
             }
-            else if (isEnabled()) {
+            else if (enabled && player != null && player.getGameMode() != GameMode.CREATIVE) {
                 player.getInventory().setItem(index, skill.getIndicator(data));
             }
         }

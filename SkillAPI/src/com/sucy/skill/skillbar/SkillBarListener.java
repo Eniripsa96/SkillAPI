@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -127,7 +128,7 @@ public class SkillBarListener implements Listener {
         else if (event.getPreviousClass() != null && event.getNewClass() == null) {
             PlayerSkillBar bar = getSkillBar(p);
             bar.clear(p);
-            bar.update();
+            bar.update(p);
         }
     }
 
@@ -154,7 +155,7 @@ public class SkillBarListener implements Listener {
         plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
-                getSkillBar(player.getPlayer()).update();
+                getSkillBar(player).update(player);
             }
         }, 0);
     }
@@ -166,7 +167,32 @@ public class SkillBarListener implements Listener {
      */
     @EventHandler
     public void onDowngrade(PlayerSkillDowngradeEvent event) {
-        getSkillBar(event.getPlayerData().getPlayer()).update();
+        getSkillBar(event.getPlayerData().getPlayer()).update(event.getPlayerData().getPlayer());
+    }
+
+    /**
+     * Clears the skill bar on death
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        if (plugin.getPlayer(event.getEntity().getName()).hasClass()) {
+            getSkillBar(event.getEntity()).clear(event);
+        }
+    }
+
+    /**
+     * Sets the skill bar back up on respawn
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        if (plugin.getPlayer(event.getPlayer().getName()).hasClass()) {
+            getSkillBar(event.getPlayer()).setup(event.getPlayer());
+            getSkillBar(event.getPlayer()).update(event.getPlayer());
+        }
     }
 
     /**
@@ -183,16 +209,13 @@ public class SkillBarListener implements Listener {
         }
 
         // Disabled skill bars aren't affected either
-        PlayerSkillBar skillBar = getSkillBar(event.getWhoClicked());
+        final PlayerSkillBar skillBar = getSkillBar(event.getWhoClicked());
         if (!skillBar.isEnabled()) return;
 
         // Prevent moving skill icons
-        plugin.getLogger().info("Hotbar: " + event.getHotbarButton());
-        plugin.getLogger().info("Action: " + event.getAction().name());
         if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
             if (!skillBar.isWeaponSlot(event.getHotbarButton())) {
                 event.setCancelled(true);
-                plugin.getLogger().info("Was cancelled");
             }
         }
         else if (event.getSlotType() == InventoryType.SlotType.QUICKBAR) {

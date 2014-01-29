@@ -65,12 +65,14 @@ public class RegistrationManager {
         mode = RegisterMode.SKILL;
         for (Plugin plugin : api.getServer().getPluginManager().getPlugins()) {
             if (plugin instanceof SkillPlugin) {
+                log("Retrieving skills from " + plugin.getName(), 1);
                 ((SkillPlugin) plugin).registerSkills(api);
             }
         }
 
         // Load dynamic skills from skills.yml
         if (!skillConfig.getConfig().getBoolean("loaded", false)) {
+            log("Loading dynamic skills from skills.yml...", 1);
             skillConfig.getConfig().set("loaded", true);
             for (String key : skillConfig.getConfig().getKeys(false)) {
                 if (key.equals("loaded")) continue;
@@ -81,11 +83,16 @@ public class RegistrationManager {
                     Config sConfig = new Config(api, "dynamic" + File.separator + "skill" + File.separator + key);
                     skill.save(sConfig.getConfig().createSection(key));
                     sConfig.saveConfig();
+                    log("Loaded the dynamic skill: " + key, 1);
+                    log(key + " has " + skill.activeMechanics.size() + " active, " + skill.passiveMechanics.size() + " passive, and " + skill.embedMechanics.size() + " embedded mechanics", 3);
                 }
+                else api.getLogger().severe("Duplicate skill detected: " + key);
             }
         }
+        else log("skills.yml doesn't have any changes, skipping it", 1);
 
         // Load individual dynamic skills
+        log("Loading individual dynamic skill files...", 1);
         File skillRoot = new File(api.getDataFolder().getPath() + File.separator + "dynamic" + File.separator + "skill");
         if (skillRoot.exists()) {
             File[] files = skillRoot.listFiles();
@@ -98,7 +105,11 @@ public class RegistrationManager {
                         skills.put(name.toLowerCase(), skill);
                         skill.update(sConfig.getConfig().getConfigurationSection(name));
                         skill.save(skillConfig.getConfig().createSection(name));
+                        log("Loaded the dynamic skill: " + name, 1);
+                        log(name + " has " + skill.activeMechanics.size() + " active, " + skill.passiveMechanics.size() + " passive, and " + skill.embedMechanics.size() + " embedded mechanics", 3);
                     }
+                    else if (getSkill(name) instanceof DynamicSkill) log(name + " is already loaded, skipping it", 2);
+                    else api.getLogger().severe("Duplicate skill detected: " + name);
                 }
             }
         }
@@ -107,12 +118,14 @@ public class RegistrationManager {
         mode = RegisterMode.CLASS;
         for (Plugin plugin : api.getServer().getPluginManager().getPlugins()) {
             if (plugin instanceof SkillPlugin) {
+                log("Getting classes from: " + plugin.getName(), 1);
                 ((SkillPlugin) plugin).registerClasses(api);
             }
         }
 
         // Load dynamic classes from classes.yml
         if (!classConfig.getConfig().getBoolean("loaded", false)) {
+            log("Loading dynamic classes from classes.yml...", 1);
             classConfig.getConfig().set("loaded", true);
             for (String key : classConfig.getConfig().getKeys(false)) {
                 if (key.equals("loaded")) continue;
@@ -123,11 +136,15 @@ public class RegistrationManager {
                     Config cConfig = new Config(api, "dynamic" + File.separator + "class" + File.separator + key);
                     tree.save(cConfig.getConfig().createSection(key));
                     cConfig.saveConfig();
+                    log("Loaded the dynamic class: " + key, 1);
                 }
+                else api.getLogger().severe("Duplicate class detected: " + key);
             }
         }
+        else log("classes.yml doesn't have any changes, skipping it", 1);
 
         // Load individual dynamic classes
+        log("Loading individual dynamic class files...", 1);
         File classRoot = new File(api.getDataFolder().getPath() + File.separator + "dynamic" + File.separator + "class");
         if (classRoot.exists()) {
             File[] files = classRoot.listFiles();
@@ -140,7 +157,10 @@ public class RegistrationManager {
                         classes.put(name.toLowerCase(), tree);
                         tree.update(cConfig.getConfig().getConfigurationSection(name));
                         tree.save(classConfig.getConfig().createSection(name));
+                        log("Loaded the dynamic class: " + name, 1);
                     }
+                    else if (getClass(name) instanceof DynamicClass) log(name + " is already loaded, skipping it", 2);
+                    else api.getLogger().severe("Duplicate class detected: " + name);
                 }
             }
         }
@@ -167,7 +187,12 @@ public class RegistrationManager {
         // Load skill tree data
         for (CustomClass tree : classes.values()) {
             if (!(tree instanceof DynamicClass)) {
-                tree.update(new Config(api, "class" + File.separator + tree.getName()).getConfig());
+                try {
+                    tree.update(new Config(api, "class" + File.separator + tree.getName()).getConfig());
+                }
+                catch (Exception ex) {
+                    api.getLogger().severe("Failed to load class: " + tree.getName());
+                }
             }
         }
 
@@ -175,6 +200,7 @@ public class RegistrationManager {
         List<CustomClass> classList = new ArrayList<CustomClass>(this.classes.values());
         for (CustomClass tree : classList) {
             try {
+                log("Arranging the skill tree for the class: " + tree.getName(), 2);
                 tree.getTree().arrange();
             }
             catch (Exception ex) {
@@ -183,27 +209,12 @@ public class RegistrationManager {
             }
         }
 
-        // Save dynamic skills
-        for (Map.Entry<String, ClassSkill> entry : skills.entrySet()) {
-            if (entry.getValue() instanceof DynamicSkill) {
-                DynamicSkill skill = (DynamicSkill)entry.getValue();
-                skill.save(skillConfig.getConfig().createSection(skill.getName()));
-            }
-        }
-        skillConfig.saveConfig();
-
-        // Save dynamic classes
-        for (Map.Entry<String, CustomClass> entry : classes.entrySet()) {
-            if (entry.getValue() instanceof DynamicClass) {
-                DynamicClass c = (DynamicClass)entry.getValue();
-                c.save(classConfig.getConfig().createSection(c.getName()));
-            }
-        }
-        classConfig.saveConfig();
-
-        api.getLogger().info("Loaded " + skills.size() + " skills and " + classes.size() + " skill trees");
+        log("Loaded " + skills.size() + " skills and " + classes.size() + " skill trees", 0);
     }
 
+    /**
+     * Clears the skill and class data
+     */
     public void clearData() {
         skills.clear();
         classes.clear();
@@ -281,6 +292,7 @@ public class RegistrationManager {
             if (skill instanceof Listener) {
                 Listener listener = (Listener)skill;
                 api.getServer().getPluginManager().registerEvents(listener, api);
+                log("Registered the skill: " + skill.getName(), 1);
             }
         }
         catch (Exception e) {
@@ -381,6 +393,7 @@ public class RegistrationManager {
             // Add to table
             classes.put(customClass.getName().toLowerCase(), customClass);
             configFile.saveConfig();
+            log("Registered the class: " + customClass.getName(), 1);
         }
         catch (Exception e) {
             api.getLogger().severe("Failed to register class - " + customClass.getName() + " - Invalid values");
@@ -480,5 +493,17 @@ public class RegistrationManager {
      */
     public Collection<CustomClass> getClasses() {
         return classes.values();
+    }
+
+    /**
+     * Logs a message if the logging level is at least the specified value
+     *
+     * @param message message to log
+     * @param level   required logging level
+     */
+    private void log(String message, int level) {
+        if (api.getLoggingLevel() >= level) {
+            api.getLogger().info(message);
+        }
     }
 }

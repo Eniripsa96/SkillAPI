@@ -179,9 +179,9 @@ public class ConditionMechanic implements IMechanic {
                 else if (condition == WEAKNESS && t.hasPotionEffect(PotionEffectType.WEAKNESS)) passed = true;
                 else if (condition == POISON && t.hasPotionEffect(PotionEffectType.POISON)) passed = true;
                 else if (condition == WITHER && t.hasPotionEffect(PotionEffectType.WITHER)) passed = true;
-                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == HEALTH && t.hasPotionEffect(PotionEffectType.HEALTH_BOOST)) passed = true;
-                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == ABSORPTION && t.hasPotionEffect(PotionEffectType.ABSORPTION)) passed = true;
-                else if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == SATURATION && t.hasPotionEffect(PotionEffectType.SATURATION)) passed = true;
+                else if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == HEALTH && t.hasPotionEffect(PotionEffectType.HEALTH_BOOST)) passed = true;
+                else if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == ABSORPTION && t.hasPotionEffect(PotionEffectType.ABSORPTION)) passed = true;
+                else if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_6_2_MIN) && condition == SATURATION && t.hasPotionEffect(PotionEffectType.SATURATION)) passed = true;
                 else if (condition == POTION && t.getActivePotionEffects().size() > 0) passed = true;
                 else if (condition == STATUS && data.getAPI().getStatusHolder(t).hasStatuses()) passed = true;
                 else if (condition == BIOME_BEACH && biome == Biome.BEACH) passed = true;

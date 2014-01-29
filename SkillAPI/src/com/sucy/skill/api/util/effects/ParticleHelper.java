@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -202,7 +203,7 @@ public class ParticleHelper {
      * @param loc    location to play at
      * @param radius radius of the effect
      */
-    private static void send(String particle, Location loc, int radius) {
+    public static void send(String particle, Location loc, int radius) {
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (player.getWorld() == loc.getWorld() && player.getLocation().distanceSquared(loc) < radius * radius) {
                 sendToPlayer(particle, player, loc);

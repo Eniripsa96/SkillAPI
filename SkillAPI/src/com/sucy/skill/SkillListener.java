@@ -6,7 +6,6 @@ import com.sucy.skill.api.Status;
 import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.util.effects.ParticleProjectile;
-import com.sucy.skill.api.util.effects.ParticleType;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
@@ -26,7 +25,6 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scoreboard.DisplaySlot;
 
 /**
  * <p>Main listener for the API</p>

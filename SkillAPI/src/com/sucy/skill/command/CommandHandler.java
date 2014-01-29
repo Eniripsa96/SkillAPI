@@ -209,7 +209,7 @@ public abstract class CommandHandler implements CommandExecutor {
         int entries = 7;
 
         /*
-        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_7_2) && sender instanceof Player) {
+        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_7_2) && sender instanceof Player) {
             entries = 5;
         }
         */
@@ -246,7 +246,7 @@ public abstract class CommandHandler implements CommandExecutor {
         }
 
         /*
-        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_7_2) && sender instanceof Player) {
+        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_7_2) && sender instanceof Player) {
             sender.sendMessage(BREAK);
             String ends = "PreviousNext";
             String spacing = TextSizer.expand(" ", 320 - TextSizer.measureString(ends), true);

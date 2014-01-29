@@ -5,7 +5,6 @@ import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -242,7 +241,7 @@ public class SoundMechanic implements IMechanic {
         put(192, Sound.ZOMBIE_WOODBREAK);
 
         // Sounds in only 1.6.2 and beyond
-        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
+        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
             put(41, Sound.DONKEY_ANGRY);
             put(42, Sound.DONKEY_DEATH);
             put(43, Sound.DONKEY_HIT);
@@ -280,7 +279,7 @@ public class SoundMechanic implements IMechanic {
         }
 
         // 1.7.2 differences
-        if (!BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_7_2_MIN)) {
+        if (!BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_7_2_MIN)) {
             put(15, Sound.BREATH);
             put(96, Sound.HURT);
         }

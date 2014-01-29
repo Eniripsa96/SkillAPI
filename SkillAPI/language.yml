@@ -189,6 +189,9 @@ Skill Types:
   skill-shot-aoe: 'Skill Shot AOE'
   target-aoe: 'Target AOE'
   passive: 'Passive'
+  area: 'Area'
+  self: 'Self'
+  linear: 'Linear'
 Status:
   silenced: '&4You are silenced for another &6{duration} &4seconds'
   stunned: '&4You are stunned for another &6{duration} &4seconds'

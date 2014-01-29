@@ -5,9 +5,9 @@
 # but would like to change how the plugin shows  #
 # text, visit the BukkitDev page at:             #
 # http://dev.bukkit.org/bukkit-plugins/skillapi/ #
-# and look at the tutorials section for the      #
-# configuration tutorials.                       #
+# and look at the default configuration section  #
 # ---------------------------------------------- #
+default-class: none
 profess-reset: false
 tree-type: Requirement
 mana-enabled: true
@@ -30,6 +30,7 @@ block-creative-exp: true
 use-exp-orbs: false
 skill-message-radius: 20
 percent-exp-lost-on-death: 0.0
+load-logging: 0
 skill-bar:
   1: skill
   2: skill

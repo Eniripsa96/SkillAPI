@@ -317,28 +317,20 @@ public class APIListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
 
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
 
         // Level bar
-        skills.updateLevelBar();
+        skills.updateLevelBar(event.getPlayer());
 
         // Effects when a player has a class
         if (skills.hasClass()) {
 
-            // Update the player health
-            skills.updateHealth();
-
-            // Apply passive skills
-            for (Map.Entry<String, Integer> entry : skills.getSkills().entrySet()) {
-                if (entry.getValue() >= 1) {
-                    ClassSkill s = plugin.getSkill(entry.getKey());
-                    if (s != null && s instanceof PassiveSkill)
-                        ((PassiveSkill) s).onInitialize(event.getPlayer(), entry.getValue());
-                }
-            }
+            // Update the player data
+            skills.updateHealth(event.getPlayer());
+            skills.startPassiveAbilities(event.getPlayer());
 
             // Apply class prefixes
             if (CoreChecker.isCoreActive()) {
@@ -368,7 +360,7 @@ public class APIListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
         skills.stopPassiveAbilities();

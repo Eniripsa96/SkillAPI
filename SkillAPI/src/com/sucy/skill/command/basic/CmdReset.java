@@ -64,7 +64,7 @@ public class CmdReset implements ICommand {
      */
     @Override
     public String getPermissionNode() {
-        return PermissionNodes.BASIC;
+        return PermissionNodes.RESET;
     }
 
     /**

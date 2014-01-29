@@ -25,10 +25,15 @@ public class BukkitHelper {
      */
     public static void initialize() {
         String v = Bukkit.getServer().getVersion();
+
+        // Load the bukkit version if applicable
         if (v.contains("jnks")) {
             v = v.substring(v.indexOf("-b") + 2);
             v = v.substring(0, v.indexOf("jnks"));
+            Bukkit.getLogger().info("Detected CraftBukkit build " + v);
         }
+
+        // Spigot modification in case someone is using it
         else {
             MC_1_5_2_MIN = 832;
             MC_1_6_2_MIN = 1016;
@@ -39,8 +44,10 @@ public class BukkitHelper {
             MC_1_6_4_MAX = 1138;
             v = v.substring(v.lastIndexOf("-") + 1);
             v = v.substring(0, v.indexOf(" "));
+            Bukkit.getLogger().info("Detected Spigot build " + v);
         }
-        Bukkit.getLogger().info("Detected CraftBukkit build " + v);
+
+        // Get the actual build number
         version = Integer.parseInt(v);
     }
 
@@ -50,8 +57,8 @@ public class BukkitHelper {
      * @param v version to check
      * @return  true if the actual version is at least the provided one
      */
-    public static boolean isVerstionAtLeast(int v) {
-        return version >= v;
+    public static boolean isVersionAtLeast(int v) {
+        return version <= v;
     }
 
     /**
@@ -61,7 +68,7 @@ public class BukkitHelper {
      * @return  true if the actual version is at most the provided one
      */
     public static boolean isVersionAtMost(int v) {
-        return version <= v;
+        return version >= v;
     }
 
     /**

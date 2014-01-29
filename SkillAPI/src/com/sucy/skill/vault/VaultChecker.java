@@ -17,17 +17,5 @@ public class VaultChecker {
             return PermissionManager.isValid();
         }
         else return false;
-
-        /*
-        try {
-            if (Class.forName("net.milkbowl.vault.permission.Permission") != null) {
-                return PermissionManager.isValid();
-            }
-            else return false;
-        }
-        catch (Exception ex) {
-            return false;
-        }
-        */
     }
 }

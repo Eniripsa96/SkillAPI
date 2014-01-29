@@ -59,6 +59,9 @@ public final class PlayerSkills extends Valued {
         this.level = 1;
         this.exp = 0;
         this.points = plugin.getStartingPoints();
+        if (plugin.getDefaultClass() != null) {
+            setClass(plugin.getDefaultClass().getName());
+        }
     }
 
     /**
@@ -82,9 +85,17 @@ public final class PlayerSkills extends Valued {
         if (config.contains(PlayerValues.CLASS))
             tree = config.getString(PlayerValues.CLASS);
 
+        // Default class
+        if (!hasClass() && plugin.getDefaultClass() != null) {
+            setClass(plugin.getDefaultClass().getName());
+            level = 1;
+            points = plugin.getStartingPoints();
+            exp = 0;
+        }
+
         // Class skill tree
-        ConfigurationSection skillConfig = config.getConfigurationSection(PlayerValues.SKILLS);
-        if (this.tree != null) {
+        if (hasClass()) {
+            ConfigurationSection skillConfig = config.getConfigurationSection(PlayerValues.SKILLS);
             CustomClass tree = plugin.getClass(this.tree);
             if (tree == null) {
                 setClass(null);
@@ -107,21 +118,21 @@ public final class PlayerSkills extends Valued {
                     skills.put(skill.toLowerCase(), 0);
                 }
             }
-        }
 
-        // Dynamic values
-        if (config.contains(PlayerValues.VALUES)) {
-            ConfigurationSection values = config.getConfigurationSection(PlayerValues.VALUES);
-            for (String key : values.getKeys(false)) {
-                setValue(key, values.getInt(key));
+            // Dynamic values
+            if (config.contains(PlayerValues.VALUES)) {
+                ConfigurationSection values = config.getConfigurationSection(PlayerValues.VALUES);
+                for (String key : values.getKeys(false)) {
+                    setValue(key, values.getInt(key));
+                }
             }
-        }
 
-        // Skill bindings
-        ConfigurationSection bindConfig = config.getConfigurationSection(PlayerValues.BIND);
-        if (bindConfig != null) {
-            for (String bind : bindConfig.getKeys(false)) {
-                binds.put(Material.getMaterial(bind), bindConfig.getString(bind));
+            // Skill bindings
+            ConfigurationSection bindConfig = config.getConfigurationSection(PlayerValues.BIND);
+            if (bindConfig != null) {
+                for (String bind : bindConfig.getKeys(false)) {
+                    binds.put(Material.getMaterial(bind), bindConfig.getString(bind));
+                }
             }
         }
 
@@ -412,7 +423,8 @@ public final class PlayerSkills extends Valued {
         }
 
         // If the player was reverted to no class, clear all data
-        if (plugin.getClass(this.tree) == null) {
+        if (!hasClass()) {
+            stopPassiveAbilities();
             level = 1;
             points = plugin.getStartingPoints();
             exp = 0;
@@ -507,7 +519,19 @@ public final class PlayerSkills extends Valued {
      * <p>Updates the health of the player, applying the type of health bar the plugin settings indicates</p>
      */
     public void updateHealth() {
-        if (plugin.getServer().getPlayer(player) == null) return;
+        updateHealth(getPlayer());
+    }
+
+    /**
+     * <p>Updates the health of the player, applying the type of health bar the plugin settings indicates</p>
+     * <p>Normally, you can just use updateHealth() but in case you need to do it when getting the player
+     * reference cannot be done through the server, you can use this method to get around it (generally
+     * for updating during logging in/out)</p>
+     *
+     * @param player player reference
+     */
+    public void updateHealth(Player player) {
+        if (player == null) return;
 
         // No class just has the default 20hp
         if (plugin.getClass(tree) == null) {
@@ -520,9 +544,9 @@ public final class PlayerSkills extends Valued {
         }
 
         // Apply health scaling
-        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
-            if (plugin.oldHealthEnabled()) plugin.getServer().getPlayer(player).setHealthScale(20);
-            else plugin.getServer().getPlayer(player).setHealthScaled(false);
+        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
+            if (plugin.oldHealthEnabled()) player.setHealthScale(20);
+            else player.setHealthScaled(false);
         }
     }
 
@@ -534,7 +558,7 @@ public final class PlayerSkills extends Valued {
      * @param amount new max health
      */
     public void applyMaxHealth(double amount) {
-        Player p = plugin.getServer().getPlayer(player);
+        Player p = getPlayer();
         if (p == null) return;
         BukkitHelper.setMaxHealth(p, amount);
     }
@@ -547,7 +571,7 @@ public final class PlayerSkills extends Valued {
             if (entry.getValue() >= 1) {
                 ClassSkill s = plugin.getSkill(entry.getKey());
                 if (s != null && s instanceof PassiveSkill)
-                    ((PassiveSkill) s).stopEffects(plugin.getServer().getPlayer(player), entry.getValue());
+                    ((PassiveSkill) s).stopEffects(getPlayer(), entry.getValue());
             }
         }
     }
@@ -557,7 +581,6 @@ public final class PlayerSkills extends Valued {
      * <p>If the player is currently respawning or offline, this will not work</p>
      */
     public void startPassiveAbilities() {
-        if (getPlayer() == null) return;
         startPassiveAbilities(getPlayer());
     }
 
@@ -590,7 +613,7 @@ public final class PlayerSkills extends Valued {
      * @return true if the player has a class, false otherwise
      */
     public boolean hasClass() {
-        return tree != null;
+        return getAPI().getClass(tree) != null;
     }
 
     /**
@@ -857,7 +880,21 @@ public final class PlayerSkills extends Valued {
      * next level.</p>
      */
     public void updateLevelBar() {
-        Player player = getPlayer();
+        updateLevelBar(getPlayer());
+    }
+
+    /**
+     * <p>Updates the enchanting level bar for the player</p>
+     * <p>This sets the enchanting level to the player's class level
+     * and the progress to the player's class experience progress to the
+     * next level.</p>
+     * <p>Normally, you can just use updateHealth() but in case you need to do it when getting the player
+     * reference cannot be done through the server, you can use this method to get around it (generally
+     * for updating during logging in/out)</p>
+     *
+     * @param player player reference
+     */
+    public void updateLevelBar(Player player) {
 
         // Must be online with permission while the plugin is using level bars
         if (player == null || !player.hasPermission(PermissionNodes.BASIC) || !plugin.usingLevelBar()) {

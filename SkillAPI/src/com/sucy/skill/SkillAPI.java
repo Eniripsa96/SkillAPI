@@ -15,6 +15,7 @@ import com.sucy.skill.config.SettingValues;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
+import com.sucy.skill.quests.QuestsModuleManager;
 import com.sucy.skill.skillbar.PlayerSkillBar;
 import com.sucy.skill.skillbar.SkillBarListener;
 import com.sucy.skill.task.InventoryTask;
@@ -66,6 +67,7 @@ public class SkillAPI extends JavaPlugin {
 
     // Settings
     private String treeType;
+    private String defaultClass;
     private boolean[] bar;
     private boolean mana;
     private boolean reset;
@@ -83,6 +85,7 @@ public class SkillAPI extends JavaPlugin {
     private int startingPoints;
     private int pointsPerLevel;
     private int messageRadius;
+    private int logging;
     private int x;
     private int y;
     private int z;
@@ -97,6 +100,8 @@ public class SkillAPI extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        QuestsModuleManager.copyQuestsModule();
+
         reloadConfig();
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
@@ -110,6 +115,7 @@ public class SkillAPI extends JavaPlugin {
         languageConfig.saveConfig();
 
         // Load options
+        defaultClass = getConfig().getString(SettingValues.DEFAULT_CLASS.path(), "none");
         treeType = getConfig().getString(SettingValues.TREE_TYPE.path(), "requirement");
         reset = getConfig().getBoolean(SettingValues.PROFESS_RESET.path(), false);
         mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path(), true);
@@ -127,6 +133,7 @@ public class SkillAPI extends JavaPlugin {
         messageRadius = getConfig().getInt(SettingValues.SKILL_MESSAGE_RADIUS.path(), 20);
         expLost = getConfig().getDouble(SettingValues.PERCENT_EXP_LOST_ON_DEATH.path(), 0);
         usingSkillBars = getConfig().getBoolean(SettingValues.USE_SKILL_BARS.path(), false);
+        logging = getConfig().getInt(SettingValues.LOAD_LOGGING.path(), 0);
         bar = new boolean[9];
         boolean hasWeapon = false;
         for (int i = 1; i <= 9; i++) {
@@ -301,6 +308,15 @@ public class SkillAPI extends JavaPlugin {
     // ----------------------------- Settings Accessor Methods -------------------------------------- //
 
     /**
+     * Retrieves the default class for the plugin
+     *
+     * @return default class
+     */
+    public CustomClass getDefaultClass() {
+        return getClass(defaultClass);
+    }
+
+    /**
      * @return type of tree arrangement being used
      */
     public String getTreeType() {
@@ -443,6 +459,13 @@ public class SkillAPI extends JavaPlugin {
     public int getRequiredExp(int level) {
         int value = level + y;
         return x * value * value + z * level + w;
+    }
+
+    /**
+     * @return level of logging for loading
+     */
+    public int getLoggingLevel() {
+        return logging;
     }
 
     // ----------------------------- Registration methods -------------------------------------- //

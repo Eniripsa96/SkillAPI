@@ -20,6 +20,11 @@ public class PermissionNodes {
         STATS = BASE + "stats",
 
         /**
+         * Permission to reset your class
+         */
+        RESET = BASE + "reset",
+
+        /**
          * Permission to gain experience
          */
         EXP = BASE + "exp",

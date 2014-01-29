@@ -6,6 +6,11 @@ package com.sucy.skill.config;
 public enum SettingValues {
 
     /**
+     * The starting class for players
+     */
+    DEFAULT_CLASS,
+
+    /**
      * Whether or not players reset their profession on profession
      */
     PROFESS_RESET,
@@ -129,6 +134,11 @@ public enum SettingValues {
      * The slot for weapons when using skill bars
      */
     SKILL_BAR,
+
+    /**
+     * Level of logging for skills
+     */
+    LOAD_LOGGING,
 
     ;
 

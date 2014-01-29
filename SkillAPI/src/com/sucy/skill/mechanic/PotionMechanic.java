@@ -99,7 +99,7 @@ public class PotionMechanic implements IMechanic {
         put(19, PotionEffectType.POISON);
         put(20, PotionEffectType.WITHER);
 
-        if (BukkitHelper.isVerstionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
+        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
             put(21, PotionEffectType.HEALTH_BOOST);
             put(22, PotionEffectType.ABSORPTION);
             put(23, PotionEffectType.SATURATION);

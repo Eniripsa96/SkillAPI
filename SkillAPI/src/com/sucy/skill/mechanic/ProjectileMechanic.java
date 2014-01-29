@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -25,14 +26,13 @@ import java.util.List;
 public class ProjectileMechanic implements IMechanic, Listener {
 
     private static final String
+            META_KEY = "PM_KEY",
             PROJECTILE = "Projectile",
             SPEED = "Speed",
             ANGLE = "Angle",
             SPREAD = "Spread",
             QUANTITY = "Quantity",
             USE_PROJECTILE = "Use Arrow";
-
-    private final HashMap<Integer, EmbedData> projectiles = new HashMap<Integer, EmbedData>();
 
     /**
      * Constructor
@@ -78,14 +78,14 @@ public class ProjectileMechanic implements IMechanic, Listener {
         }
 
         // Firing the projectiles
-        List<Integer> list;
+        List<Projectile> list;
         if (spread == 0) list = ProjectileHelper.launchHorizontalCircle(player, projectile, amount, angle, speed);
         else list = ProjectileHelper.launchCircle(player, projectile, amount, angle, speed);
 
         // Applying embed data
         if (skill.hasEmbedEffects()) {
-            for (int id : list) {
-                projectiles.put(id, new EmbedData(player, data, skill));
+            for (Projectile p : list) {
+                p.setMetadata(META_KEY, new FixedMetadataValue(skill.getAPI(), new EmbedData(player, data, skill)));
             }
         }
 
@@ -99,14 +99,8 @@ public class ProjectileMechanic implements IMechanic, Listener {
      */
     @EventHandler
     public void onProjectileHit(final ProjectileHitEvent event) {
-        Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable() {
-            @Override
-            public void run() {
-                projectiles.remove(event.getEntity().getEntityId());
-            }
-        }, 1);
-        if (projectiles.containsKey(event.getEntity().getEntityId())) {
-            EmbedData data = projectiles.get(event.getEntity().getEntityId());
+        if (event.getEntity().hasMetadata(META_KEY)) {
+            EmbedData data = (EmbedData)event.getEntity().getMetadata(META_KEY).get(0).value();
             data.getSkill().beginUsage();
             data.resolveNonTarget(event.getEntity().getLocation());
             data.getSkill().stopUsage();
@@ -120,9 +114,8 @@ public class ProjectileMechanic implements IMechanic, Listener {
      */
     @EventHandler
     public void onProjectileHit(EntityDamageByEntityEvent event) {
-
-        if (projectiles.containsKey(event.getDamager().getEntityId()) && event.getEntity() instanceof LivingEntity) {
-            EmbedData data = projectiles.get(event.getDamager().getEntityId());
+        if (event.getDamager().hasMetadata(META_KEY) && event.getEntity() instanceof LivingEntity) {
+            EmbedData data = (EmbedData)event.getDamager().getMetadata(META_KEY).get(0).value();
             data.getSkill().beginUsage();
             data.resolveTarget((LivingEntity)event.getEntity());
             data.getSkill().stopUsage();

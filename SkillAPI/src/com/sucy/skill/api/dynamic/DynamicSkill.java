@@ -468,7 +468,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
     /**
      * Private task for passive mechanics
      */
-    private class PassiveTask extends BukkitRunnable {
+    public class PassiveTask extends BukkitRunnable {
 
         private DynamicSkill skill;
         private PlayerSkills data;
@@ -481,7 +481,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
          * @param data       data of the player with the passive
          * @param playerName name of the player with the passive
          */
-        private PassiveTask(DynamicSkill skill, PlayerSkills data, String playerName) {
+        public PassiveTask(DynamicSkill skill, PlayerSkills data, String playerName) {
             this.skill = skill;
             this.data = data;
             this.playerName = playerName;

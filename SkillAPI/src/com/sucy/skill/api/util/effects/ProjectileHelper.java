@@ -30,8 +30,8 @@ public class ProjectileHelper {
      * @param speed          speed of the projectiles
      * @return               list of projectile entity IDs
      */
-    public static List<Integer> launchHorizontalCircle(Player source, Class<? extends Projectile> projectileType, int amount, int angle, double speed) {
-        List<Integer> list = new ArrayList<Integer>();
+    public static List<Projectile> launchHorizontalCircle(Player source, Class<? extends Projectile> projectileType, int amount, int angle, double speed) {
+        List<Projectile> list = new ArrayList<Projectile>();
 
         vel = source.getLocation().getDirection();
         vel.setY(0);
@@ -44,7 +44,7 @@ public class ProjectileHelper {
                 ((Fireball)projectile).setDirection(vel);
             }
             else projectile.setVelocity(vel);
-            list.add(projectile.getEntityId());
+            list.add(projectile);
             amount--;
         }
 
@@ -70,7 +70,7 @@ public class ProjectileHelper {
                     ((Fireball)projectile).setDirection(v);
                 }
                 else projectile.setVelocity(v);
-                list.add(projectile.getEntityId());
+                list.add(projectile);
             }
         }
 
@@ -87,8 +87,8 @@ public class ProjectileHelper {
      * @param speed          speed of the projectiles
      * @return               list of projectile entity IDs
      */
-    public static List<Integer> launchCircle(LivingEntity source, Class<? extends Projectile> projectileType, int amount, int angle, double speed) {
-        List<Integer> list = new ArrayList<Integer>();
+    public static List<Projectile> launchCircle(LivingEntity source, Class<? extends Projectile> projectileType, int amount, int angle, double speed) {
+        List<Projectile> list = new ArrayList<Projectile>();
 
         // Fire one straight ahead if odd
         if (amount % 2 == 1) {
@@ -98,7 +98,7 @@ public class ProjectileHelper {
                 ((Fireball)projectile).setDirection(vel);
             }
             else projectile.setVelocity(vel);
-            list.add(projectile.getEntityId());
+            list.add(projectile);
             amount--;
         }
 
@@ -138,7 +138,7 @@ public class ProjectileHelper {
                     ((Fireball)projectile).setDirection(vel);
                 }
                 else projectile.setVelocity(vel);
-                list.add(projectile.getEntityId());
+                list.add(projectile);
             }
         }
 
@@ -157,10 +157,10 @@ public class ProjectileHelper {
      * @param speed      speed of the projectiles
      * @return           list of projectile entity IDs
      */
-    public static List<Integer> rainProjectiles(LivingEntity source, Location target, Class<? extends Projectile> projectile, int amount, int height, double radius, int speed) {
+    public static List<Projectile> rainProjectiles(LivingEntity source, Location target, Class<? extends Projectile> projectile, int amount, int height, double radius, int speed) {
 
         // Initialize data
-        List<Integer> list = new ArrayList<Integer>();
+        List<Projectile> list = new ArrayList<Projectile>();
         if (amount <= 0) return list;
         target.add(0, height, 0);
         Vector vel = new Vector(0, -speed, 0);
@@ -172,7 +172,7 @@ public class ProjectileHelper {
             ((Fireball)p).setDirection(vel);
         }
         else p.setVelocity(vel);
-        list.add(p.getEntityId());
+        list.add(p);
         amount--;
 
         // Launch projectiles
@@ -193,7 +193,7 @@ public class ProjectileHelper {
                     ((Fireball)p).setDirection(vel);
                 }
                 else p.setVelocity(vel);
-                list.add(p.getEntityId());
+                list.add(p);
                 angle += increment;
             }
             amount -= tierNum;

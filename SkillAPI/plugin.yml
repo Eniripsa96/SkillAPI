@@ -1,8 +1,9 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 2.27
+version: 2.29
 author: Eniripsa96
 softdepend: [Vault]
+loadbefore: [Quests]
 
 commands:
   class:
@@ -14,6 +15,9 @@ permissions:
     default: true
   skillapi.stats:
     description: access to viewing other player stats
+    default: true
+  skillapi.reset:
+    description: access to resetting your class
     default: true
   skillapi.exp:
     description: access to gaining exp
@@ -39,6 +43,7 @@ permissions:
     children:
       skillapi.basic: true
       skillapi.stats: true
+      skillapi.reset: true
       skillapi.exp: true
       skillapi.level: true
       skillapi.points: true

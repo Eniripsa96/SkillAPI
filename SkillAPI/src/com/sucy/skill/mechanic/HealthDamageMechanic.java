@@ -1,6 +1,6 @@
 package com.sucy.skill.mechanic;
 
-import com.sucy.skill.BukkitHelper;
+import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
@@ -50,7 +50,7 @@ public class HealthDamageMechanic implements IMechanic {
             else damage = amount * t.getMaxHealth() / 100;
 
             double prevHealth = t.getHealth();
-            BukkitHelper.damage(t, player, damage);
+            VersionManager.damage(t, player, damage);
             worked = worked || prevHealth != t.getHealth();
         }
 

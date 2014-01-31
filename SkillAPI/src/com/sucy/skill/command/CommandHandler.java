@@ -1,8 +1,6 @@
 package com.sucy.skill.command;
 
-import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.util.TextSizer;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -209,7 +207,7 @@ public abstract class CommandHandler implements CommandExecutor {
         int entries = 7;
 
         /*
-        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_7_2) && sender instanceof Player) {
+        if (VersionManager.isVersionAtLeast(VersionManager.MC_1_7_2) && sender instanceof Player) {
             entries = 5;
         }
         */
@@ -246,7 +244,7 @@ public abstract class CommandHandler implements CommandExecutor {
         }
 
         /*
-        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_7_2) && sender instanceof Player) {
+        if (VersionManager.isVersionAtLeast(VersionManager.MC_1_7_2) && sender instanceof Player) {
             sender.sendMessage(BREAK);
             String ends = "PreviousNext";
             String spacing = TextSizer.expand(" ", 320 - TextSizer.measureString(ends), true);

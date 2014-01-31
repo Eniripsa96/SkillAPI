@@ -1,19 +1,12 @@
 package com.sucy.skill.mechanic;
 
-import com.sucy.skill.BukkitHelper;
 import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.api.Status;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
-import com.sucy.skill.api.util.TargetHelper;
-import org.bukkit.Material;
-import org.bukkit.block.Biome;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
 

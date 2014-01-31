@@ -1,4 +1,4 @@
-package com.sucy.skill;
+package com.sucy.skill.version;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -7,7 +7,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffectType;
 
-public class BukkitHelper {
+public class VersionManager {
 
     public static int
         MC_1_5_2_MIN = 2788,
@@ -57,7 +57,7 @@ public class BukkitHelper {
      * @param v version to check
      * @return  true if the actual version is at least the provided one
      */
-    public static boolean isVersionAtLeast(int v) {
+    public static boolean isVersionAtMost(int v) {
         return version <= v;
     }
 
@@ -67,7 +67,7 @@ public class BukkitHelper {
      * @param v version to check
      * @return  true if the actual version is at most the provided one
      */
-    public static boolean isVersionAtMost(int v) {
+    public static boolean isVersionAtLeast(int v) {
         return version >= v;
     }
 

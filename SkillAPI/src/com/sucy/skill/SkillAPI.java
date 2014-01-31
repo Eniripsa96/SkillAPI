@@ -20,6 +20,7 @@ import com.sucy.skill.skillbar.PlayerSkillBar;
 import com.sucy.skill.skillbar.SkillBarListener;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
+import com.sucy.skill.version.VersionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -106,7 +107,7 @@ public class SkillAPI extends JavaPlugin {
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
         languageConfig.saveDefaultConfig();
-        BukkitHelper.initialize();
+        VersionManager.initialize();
 
         // Make sure default config values are set
         setDefaults(getConfig());

@@ -1,6 +1,6 @@
 package com.sucy.skill.api.util.effects;
 
-import com.sucy.skill.BukkitHelper;
+import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.event.ParticleProjectileHitEvent;
@@ -9,7 +9,6 @@ import com.sucy.skill.api.event.ParticleProjectileLaunchEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -172,7 +171,7 @@ public class ParticleProjectile extends BukkitRunnable {
                         embed.getSkill().beginUsage();
                     }
                     plugin.getServer().getPluginManager().callEvent(new ParticleProjectileHitEvent(this, entity));
-                    BukkitHelper.damage(entity, shooter, damage);
+                    VersionManager.damage(entity, shooter, damage);
                     if (embed != null) {
                         embed.resolveNonTarget(entity.getLocation());
                         embed.resolveTarget(entity);

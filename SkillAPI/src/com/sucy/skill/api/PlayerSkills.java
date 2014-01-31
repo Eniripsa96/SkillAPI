@@ -1,6 +1,6 @@
 package com.sucy.skill.api;
 
-import com.sucy.skill.BukkitHelper;
+import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.*;
@@ -544,7 +544,7 @@ public final class PlayerSkills extends Valued {
         }
 
         // Apply health scaling
-        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
+        if (VersionManager.isVersionAtLeast(VersionManager.MC_1_6_2_MIN)) {
             if (plugin.oldHealthEnabled()) player.setHealthScale(20);
             else player.setHealthScaled(false);
         }
@@ -560,7 +560,7 @@ public final class PlayerSkills extends Valued {
     public void applyMaxHealth(double amount) {
         Player p = getPlayer();
         if (p == null) return;
-        BukkitHelper.setMaxHealth(p, amount);
+        VersionManager.setMaxHealth(p, amount);
     }
 
     /**

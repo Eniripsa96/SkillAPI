@@ -1,6 +1,6 @@
 package com.sucy.skill.mechanic;
 
-import com.sucy.skill.BukkitHelper;
+import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
@@ -41,7 +41,7 @@ public class HealMechanic implements IMechanic {
                 worked = true;
             }
             else {
-                BukkitHelper.heal(t, amount);
+                VersionManager.heal(t, amount);
             }
             worked = worked || prevHealth != t.getHealth();
         }

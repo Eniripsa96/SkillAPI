@@ -1,6 +1,6 @@
 package com.sucy.skill.mechanic;
 
-import com.sucy.skill.BukkitHelper;
+import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
@@ -50,7 +50,7 @@ public class HealthMechanic implements IMechanic {
             // Non-players
             else {
                 double maxHealth = t.getMaxHealth() + amount;
-                BukkitHelper.setMaxHealth(t, maxHealth);
+                VersionManager.setMaxHealth(t, maxHealth);
                 mobBonuses.put(t.getEntityId(), amount);
             }
         }
@@ -146,7 +146,7 @@ public class HealthMechanic implements IMechanic {
                 maxHealth = 1;
                 bonus = maxHealth - entity.getMaxHealth();
             }
-            BukkitHelper.setMaxHealth(entity, maxHealth);
+            VersionManager.setMaxHealth(entity, maxHealth);
         }
 
         /**
@@ -154,7 +154,7 @@ public class HealthMechanic implements IMechanic {
          */
         @Override
         protected void clear() {
-            BukkitHelper.setMaxHealth(entity, entity.getMaxHealth() - bonus);
+            VersionManager.setMaxHealth(entity, entity.getMaxHealth() - bonus);
         }
     }
 }

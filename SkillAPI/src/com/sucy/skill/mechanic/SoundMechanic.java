@@ -1,6 +1,6 @@
 package com.sucy.skill.mechanic;
 
-import com.sucy.skill.BukkitHelper;
+import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mechanic for damaging targets based on missing mana
@@ -241,7 +242,7 @@ public class SoundMechanic implements IMechanic {
         put(192, Sound.ZOMBIE_WOODBREAK);
 
         // Sounds in only 1.6.2 and beyond
-        if (BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_6_2_MIN)) {
+        if (VersionManager.isVersionAtLeast(VersionManager.MC_1_6_2_MIN)) {
             put(41, Sound.DONKEY_ANGRY);
             put(42, Sound.DONKEY_DEATH);
             put(43, Sound.DONKEY_HIT);
@@ -279,7 +280,7 @@ public class SoundMechanic implements IMechanic {
         }
 
         // 1.7.2 differences
-        if (!BukkitHelper.isVersionAtLeast(BukkitHelper.MC_1_7_2_MIN)) {
+        if (!VersionManager.isVersionAtLeast(VersionManager.MC_1_7_2_MIN)) {
             put(15, Sound.BREATH);
             put(96, Sound.HURT);
         }

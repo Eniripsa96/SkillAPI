@@ -75,7 +75,10 @@ public class RegistrationManager {
             log("Loading dynamic skills from skills.yml...", 1);
             skillConfig.getConfig().set("loaded", true);
             for (String key : skillConfig.getConfig().getKeys(false)) {
-                if (key.equals("loaded")) continue;
+                if (!skillConfig.getConfig().isConfigurationSection(key)) {
+                    log("Skipping " + key + " because it isn't a configuration section", 2);
+                    continue;
+                }
                 if (!skills.containsKey(key.toLowerCase())) {
                     DynamicSkill skill = new DynamicSkill(key);
                     skills.put(key.toLowerCase(), skill);

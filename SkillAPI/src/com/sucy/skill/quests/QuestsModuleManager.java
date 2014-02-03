@@ -20,7 +20,6 @@ public class QuestsModuleManager {
 
         // Don't copy if it's already there
         File target = new File(TARGET);
-        if (target.exists()) return;
 
         try {
 

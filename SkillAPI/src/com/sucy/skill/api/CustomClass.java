@@ -133,7 +133,9 @@ public abstract class CustomClass extends Attributed {
      * @return parent class or null if none
      */
     public String getParent() {
-        return parent;
+        CustomClass parent = getAPI().getClass(this.parent);
+        if (parent == null) return null;
+        return parent.getName();
     }
 
     /**
@@ -443,7 +445,7 @@ public abstract class CustomClass extends Attributed {
      * @param config configuration to update from
      */
     public void update(ConfigurationSection config) {
-        setParent(getAPI().getClass(config.getString(ClassValues.PARENT)));
+        parent = config.getString(ClassValues.PARENT, null);
         setPrefix(config.getString(ClassValues.PREFIX));
         setMaxLevel(config.getInt(ClassValues.MAX_LEVEL));
         setProfessLevel(config.getInt(ClassValues.LEVEL));

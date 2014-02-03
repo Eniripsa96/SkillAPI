@@ -3,151 +3,72 @@ package com.sucy.skill.config;
 /**
  * Configuration nodes for setting values
  */
-public enum SettingValues {
+public class SettingValues {
 
-    /**
-     * The starting class for players
-     */
-    DEFAULT_CLASS,
+    public static final String
 
-    /**
-     * Whether or not players reset their profession on profession
-     */
-    PROFESS_RESET,
+    // -------------------------- Class Nodes -------------------------- //
 
-    /**
-     * Type of the skill tree to use
-     */
-    TREE_TYPE,
+    CLASS_ROOT = "Classes.",
+    CLASS_DEFAULT = CLASS_ROOT + "default",
+    CLASS_HP = CLASS_ROOT + "classless-hp",
+    CLASS_STARTING_POINTS = CLASS_ROOT + "starting-points",
+    CLASS_POINTS_PER_LEVEL = CLASS_ROOT + "points-per-level",
+    CLASS_RESET = CLASS_DEFAULT + "profess-reset",
 
-    /**
-     * Whether or not the mana system is enabled
-     */
-    MANA_ENABLED,
+    // -------------------------- Mana Nodes -------------------------- //
 
-    /**
-     * Whether or not the scoreboard is enabled
-     */
-    SCOREBOARD_ENABLED,
+    MANA_ROOT = "Mana.",
+    MANA_ENABLED = MANA_ROOT + "enabled",
+    MANA_GAIN_FREQ = MANA_ROOT + "gain-freq",
+    MANA_GAIN_AMOUNT = MANA_ROOT + "gain-amount",
 
-    /**
-     * Time between players regaining mana
-     */
-    MANA_GAIN_FREQ,
+    // -------------------------- Skill Nodes -------------------------- //
 
-    /**
-     * Amount of mana to gain each interval
-     */
-    MANA_GAIN_AMOUNT,
+    SKILL_ROOT = "Skills.",
+    SKILL_ALLOW_DOWNGRADE = SKILL_ROOT + "allow-downgrade",
+    SKILL_TREE_TYPE = SKILL_ROOT + "tree-type",
+    SKILL_MESSAGE_RADIUS = SKILL_ROOT + "message-radius",
 
-    /**
-     * Number of points to start with at level 1
-     */
-    STARTING_POINTS,
+    // -------------------------- Item Nodes -------------------------- //
 
-    /**
-     * Number of points to gain each time a player levels up
-     */
-    POINTS_PER_LEVEL,
+    ITEM_ROOT = "Items.",
+    ITEM_LORE_REQUIREMENTS = ITEM_ROOT + "lore-requirements",
+    ITEM_PLAYERS_PER_CHECK = ITEM_ROOT + "players-per-check",
+    ITEM_DEFAULT_ONE_DAMAGE = ITEM_ROOT + "default-one-damage",
 
-    /**
-     * Whether or not players can downgrade their skills
-     */
-    ALLOW_DOWNGRADING_SKILLS,
+    // -------------------------- GUI Nodes -------------------------- //
 
-    /**
-     * Whether or not lore requirements are enabled
-     */
-    LORE_REQUIREMENTS,
+    GUI_ROOT = "GUI.",
+    GUI_OLD_HEALTH = GUI_ROOT + "old-health-bar",
+    GUI_LEVEL_BAR = GUI_ROOT + "use-level-bar",
+    GUI_SCOREBOARD = GUI_ROOT + "scoreboard-enabled",
+    GUI_CLASS_NAME = GUI_ROOT + "show-class-name",
+    GUI_CLASS_LEVEL = GUI_ROOT + "show-class-level",
 
-    /**
-     * Number of players to check for item restrictions each tick
-     */
-    PLAYERS_PER_CHECK,
+    // -------------------------- Casting Nodes  -------------------------- //
 
-    /**
-     * Whether or not the API uses old health bar mechanics
-     */
-    OLD_HEALTH_BAR,
+    CAST_ROOT = "Casting.",
+    CAST_SKILL_BARS = CAST_ROOT + "use-skill-bars",
+    CAST_CLICK_COMBOS = CAST_ROOT + "use-click-combos",
 
-    /**
-     * Whether or not to default unknown items to 1 damage
-     */
-    DEFAULT_ONE_DAMAGE,
+    // -------------------------- Experience Nodes -------------------------- //
 
-    /**
-     * Whether or not the API uses the level bar to display class level
-     */
-    USE_LEVEL_BAR,
+    EXP_ROOT = "Experience.",
+    EXP_USE_ORBS = EXP_ROOT + "use-exp-orbs",
+    EXP_LOST_ON_DEATH = EXP_ROOT + "lost-on-death",
+    EXP_BLOCK_SPAWNER = EXP_ROOT + "block-mob-spawner",
+    EXP_BLOCK_EGG = EXP_ROOT + "block-mob-egg",
+    EXP_BLOCK_CREATIVE = EXP_ROOT + "block-creative",
+    EXP_FORMULA = EXP_ROOT + "formula",
+    EXP_YIELDS = EXP_ROOT + "yields",
 
-    /**
-     * Whether or not to use click combos for skill shots
-     */
-    USE_CLICK_COMBOS,
+    // -------------------------- Skill Bar Nodes -------------------------- //
 
-    /**
-     * Whether or not to use experience orbs instead of the settings values
-     */
-    USE_EXP_ORBS,
+    SKILL_BAR = "Skill Bar",
 
-    /**
-     * Whether or not to block experience gain from mob spawners
-     */
-    BLOCK_MOB_SPAWNER_EXP,
+    // -------------------------- Logging Nodes -------------------------- //
 
-    /**
-     * Whether or not to block experience gain from mob eggs
-     */
-    BLOCK_MOB_EGG_EXP,
-
-    /**
-     * Blocks experience while in creative mode
-     */
-    BLOCK_CREATIVE_EXP,
-
-    /**
-     * Experience yield for kills
-     */
-    KILLS,
-
-    /**
-     * Percentage of experience to lose upon dying
-     */
-    PERCENT_EXP_LOST_ON_DEATH,
-
-    /**
-     * Formula for experience requirements
-     */
-    EXP_FORMULA,
-
-    /**
-     * How large of an area to say that a player used a skill
-     */
-    SKILL_MESSAGE_RADIUS,
-
-    /**
-     * Whether or not skill bars are enabled
-     */
-    USE_SKILL_BARS,
-
-    /**
-     * The slot for weapons when using skill bars
-     */
-    SKILL_BAR,
-
-    /**
-     * Level of logging for skills
-     */
-    LOAD_LOGGING,
-
-    ;
-
-    /**
-     * Path to the setting value
-     *
-     * @return path
-     */
-    public String path() {
-        return name().toLowerCase().replace("_", "-");
-    }
+    LOG_ROOT = "Logging.",
+    LOG_LOAD = LOG_ROOT + "load";
 }

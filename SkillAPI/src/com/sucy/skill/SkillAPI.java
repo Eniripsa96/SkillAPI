@@ -9,10 +9,9 @@ import com.sucy.skill.api.util.effects.DOTHelper;
 import com.sucy.skill.api.util.effects.ParticleHelper;
 import com.sucy.skill.click.ClickListener;
 import com.sucy.skill.command.ClassCommander;
-import com.sucy.skill.config.Config;
-import com.sucy.skill.config.PlayerValues;
-import com.sucy.skill.config.SettingValues;
+import com.sucy.skill.config.*;
 import com.sucy.skill.language.OtherNodes;
+import com.sucy.skill.language.StatNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.quests.QuestsModuleManager;
@@ -56,6 +55,7 @@ public class SkillAPI extends JavaPlugin {
     // Utility
     private RegistrationManager registration;
     private SkillBarListener barListener;
+    private ClickListener clickListener;
     private DOTHelper dotHelper;
 
     // Tasks
@@ -70,23 +70,21 @@ public class SkillAPI extends JavaPlugin {
     private String treeType;
     private String defaultClass;
     private boolean[] bar;
-    private boolean mana;
     private boolean reset;
     private boolean oldHealth;
     private boolean levelBar;
-    private boolean clickCombo;
     private boolean expOrbs;
     private boolean allowDowngrade;
     private boolean defaultOneDamage;
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
     private boolean blockCreativeExp;
-    private boolean usingSkillBars;
     private double expLost;
     private int startingPoints;
     private int pointsPerLevel;
     private int messageRadius;
     private int logging;
+    private int baseHp;
     private int x;
     private int y;
     private int z;
@@ -112,33 +110,67 @@ public class SkillAPI extends JavaPlugin {
         // Make sure default config values are set
         setDefaults(getConfig());
         setDefaults(languageConfig.getConfig());
+        ConfigConverter.convert(getConfig());
         saveConfig();
         languageConfig.saveConfig();
 
-        // Load options
-        defaultClass = getConfig().getString(SettingValues.DEFAULT_CLASS.path(), "none");
-        treeType = getConfig().getString(SettingValues.TREE_TYPE.path(), "requirement");
-        reset = getConfig().getBoolean(SettingValues.PROFESS_RESET.path(), false);
-        mana = getConfig().getBoolean(SettingValues.MANA_ENABLED.path(), true);
-        startingPoints = getConfig().getInt(SettingValues.STARTING_POINTS.path(), 1);
-        pointsPerLevel = getConfig().getInt(SettingValues.POINTS_PER_LEVEL.path(), 1);
-        allowDowngrade = getConfig().getBoolean(SettingValues.ALLOW_DOWNGRADING_SKILLS.path(), true);
-        oldHealth = getConfig().getBoolean(SettingValues.OLD_HEALTH_BAR.path(), false);
-        levelBar = getConfig().getBoolean(SettingValues.USE_LEVEL_BAR.path(), false);
-        clickCombo = getConfig().getBoolean(SettingValues.USE_CLICK_COMBOS.path(), false);
-        defaultOneDamage = getConfig().getBoolean(SettingValues.DEFAULT_ONE_DAMAGE.path(), false);
-        blockSpawnerExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_SPAWNER_EXP.path(), true);
-        blockEggExp = getConfig().getBoolean(SettingValues.BLOCK_MOB_EGG_EXP.path(), true);
-        blockCreativeExp = getConfig().getBoolean(SettingValues.BLOCK_CREATIVE_EXP.path(), true);
-        expOrbs = getConfig().getBoolean(SettingValues.USE_EXP_ORBS.path(), false);
-        messageRadius = getConfig().getInt(SettingValues.SKILL_MESSAGE_RADIUS.path(), 20);
-        expLost = getConfig().getDouble(SettingValues.PERCENT_EXP_LOST_ON_DEATH.path(), 0);
-        usingSkillBars = getConfig().getBoolean(SettingValues.USE_SKILL_BARS.path(), false);
-        logging = getConfig().getInt(SettingValues.LOAD_LOGGING.path(), 0);
+        // Class options
+        defaultClass = getConfig().getString(SettingValues.CLASS_DEFAULT, "none");
+        reset = getConfig().getBoolean(SettingValues.CLASS_RESET, false);
+        startingPoints = getConfig().getInt(SettingValues.CLASS_STARTING_POINTS, 1);
+        pointsPerLevel = getConfig().getInt(SettingValues.CLASS_POINTS_PER_LEVEL, 1);
+        baseHp = getConfig().getInt(SettingValues.CLASS_HP, 20);
+
+        // Skill options
+        treeType = getConfig().getString(SettingValues.SKILL_TREE_TYPE, "requirement");
+        allowDowngrade = getConfig().getBoolean(SettingValues.SKILL_ALLOW_DOWNGRADE, true);
+        messageRadius = getConfig().getInt(SettingValues.SKILL_MESSAGE_RADIUS, 20);
+
+        // Mana options
+        if (getConfig().getBoolean(SettingValues.MANA_ENABLED, true)) {
+            int manaFreq = getConfig().getInt(SettingValues.MANA_GAIN_FREQ);
+            int manaGain = getConfig().getInt(SettingValues.MANA_GAIN_AMOUNT);
+            manaTask = new ManaTask(this, manaFreq, manaGain);
+        }
+
+        // GUI options
+        oldHealth = getConfig().getBoolean(SettingValues.GUI_OLD_HEALTH, false);
+        levelBar = getConfig().getBoolean(SettingValues.GUI_LEVEL_BAR, false);
+        if (CoreChecker.isCoreActive()) {
+            PrefixManager.registerText(getMessage(StatNodes.LEVEL, true));
+            PrefixManager.showClasses = getConfig().getBoolean(SettingValues.GUI_CLASS_NAME, true);
+            PrefixManager.showLevels = getConfig().getBoolean(SettingValues.GUI_CLASS_LEVEL, true);
+            PrefixManager.showSidebar = getConfig().getBoolean(SettingValues.GUI_SCOREBOARD, true);
+        }
+
+        // Item options
+        defaultOneDamage = getConfig().getBoolean(SettingValues.ITEM_DEFAULT_ONE_DAMAGE, false);
+        if (getConfig().getBoolean(SettingValues.ITEM_LORE_REQUIREMENTS, true)) {
+            int playersPerTick = getConfig().getInt(SettingValues.ITEM_PLAYERS_PER_CHECK);
+            invTask = new InventoryTask(this, playersPerTick);
+        }
+
+        // Experience options
+        blockSpawnerExp = getConfig().getBoolean(SettingValues.EXP_BLOCK_SPAWNER, true);
+        blockEggExp = getConfig().getBoolean(SettingValues.EXP_BLOCK_EGG, true);
+        blockCreativeExp = getConfig().getBoolean(SettingValues.EXP_BLOCK_CREATIVE, true);
+        expOrbs = getConfig().getBoolean(SettingValues.EXP_USE_ORBS, false);
+        expLost = getConfig().getDouble(SettingValues.EXP_LOST_ON_DEATH, 0);
+        ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA);
+        x = formula.getInt("x");
+        y = formula.getInt("y");
+        z = formula.getInt("z");
+        w = formula.getInt("w");
+        ConfigurationSection section = getConfig().getConfigurationSection(SettingValues.EXP_YIELDS);
+        for (String mob : section.getKeys(false)) {
+            exp.put(mob, section.getInt(mob));
+        }
+
+        // Skill bar options
         bar = new boolean[9];
         boolean hasWeapon = false;
         for (int i = 1; i <= 9; i++) {
-            if (getConfig().getString(SettingValues.SKILL_BAR.path() + "." + i, "skill").equalsIgnoreCase("skill")) {
+            if (getConfig().getString(SettingValues.SKILL_BAR + "." + i, "skill").equalsIgnoreCase("skill")) {
                 bar[i - 1] = true;
             }
             else {
@@ -148,37 +180,20 @@ public class SkillAPI extends JavaPlugin {
         }
         if (!hasWeapon) bar[8] = false;
 
-        // Experience formula
-        ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA.path());
-        x = formula.getInt("x");
-        y = formula.getInt("y");
-        z = formula.getInt("z");
-        w = formula.getInt("w");
+        // Cast options
+        if (getConfig().getBoolean(SettingValues.CAST_CLICK_COMBOS, false)) {
+            clickListener = new ClickListener(this);
+        }
+        if (getConfig().getBoolean(SettingValues.CAST_SKILL_BARS, false)) {
+            barListener = new SkillBarListener(this);
+        }
+
+        // Logging options
+        logging = getConfig().getInt(SettingValues.LOG_LOAD, 0);
 
         // Register classes and skills
         registration = new RegistrationManager(this);
         registration.initialize();
-
-        // Skill bar setup
-        if (usingSkillBars) {
-            barListener = new SkillBarListener(this);
-            getLogger().info("Skill bars have been enabled");
-        }
-
-        // Set up the mana task
-        int manaFreq = getConfig().getInt(SettingValues.MANA_GAIN_FREQ.path());
-        int manaGain = getConfig().getInt(SettingValues.MANA_GAIN_AMOUNT.path());
-        if (mana) manaTask = new ManaTask(this, manaFreq, manaGain);
-
-        // Set up the inventory task
-        int playersPerTick = getConfig().getInt(SettingValues.PLAYERS_PER_CHECK.path());
-        if (getConfig().getBoolean(SettingValues.LORE_REQUIREMENTS.path(), true)) invTask = new InventoryTask(this, playersPerTick);
-
-        // Load experience yields
-        ConfigurationSection section = getConfig().getConfigurationSection(SettingValues.KILLS.path());
-        for (String mob : section.getKeys(false)) {
-            exp.put(mob, section.getInt(mob));
-        }
 
         // Load player data
         if (playerConfig.getConfig().contains(PlayerValues.ROOT) && playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false) != null) {
@@ -198,7 +213,6 @@ public class SkillAPI extends JavaPlugin {
         // Setup Helper classes
         new SkillListener(this);
         new ClassCommander(this);
-        if (clickCombo) new ClickListener(this);
         dotHelper = new DOTHelper(this);
         ParticleHelper.initialize();
     }
@@ -224,7 +238,7 @@ public class SkillAPI extends JavaPlugin {
         }
 
         // Save skill bar data
-        if (usingSkillBars) {
+        if (isUsingSkillBars()) {
             barListener.disable();
         }
 
@@ -318,6 +332,13 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * @return base health for classless players
+     */
+    public int getBaseHp() {
+        return baseHp;
+    }
+
+    /**
      * @return type of tree arrangement being used
      */
     public String getTreeType() {
@@ -329,7 +350,7 @@ public class SkillAPI extends JavaPlugin {
      * @return whether or not mana is enabled
      */
     public boolean isManaEnabled() {
-        return mana;
+        return manaTask != null;
     }
 
     /**
@@ -389,7 +410,7 @@ public class SkillAPI extends JavaPlugin {
      * @return whether or not click combos are being used
      */
     public boolean usingClickCombos() {
-        return clickCombo;
+        return clickListener != null;
     }
 
     /**
@@ -410,7 +431,7 @@ public class SkillAPI extends JavaPlugin {
      * @return whether or not skill bars are being used
      */
     public boolean isUsingSkillBars() {
-        return usingSkillBars;
+        return barListener != null;
     }
 
     /**
@@ -577,7 +598,7 @@ public class SkillAPI extends JavaPlugin {
      * @return       the player's skill bar
      */
     public PlayerSkillBar getSkillBar(Player player) {
-        if (!usingSkillBars) return null;
+        if (!isUsingSkillBars()) return null;
         return barListener.getSkillBar(player);
     }
 

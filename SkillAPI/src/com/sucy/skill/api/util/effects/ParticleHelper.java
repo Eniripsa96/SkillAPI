@@ -1,12 +1,14 @@
 package com.sucy.skill.api.util.effects;
 
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -58,9 +60,7 @@ public class ParticleHelper {
 
             if (temp.distanceSquared(loc) > rSquared) continue;
 
-            if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
-            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), temp, 25);
-            else loc.getWorld().playEffect(temp, type.getEffect(), data);
+            play(temp, type, data);
             index++;
         }
     }
@@ -100,9 +100,7 @@ public class ParticleHelper {
 
             if (temp.distanceSquared(loc) > rSquared) continue;
 
-            if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
-            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), temp, 25);
-            else loc.getWorld().playEffect(temp, type.getEffect(), data);
+            play(temp, type, data);
             index++;
         }
     }
@@ -142,9 +140,7 @@ public class ParticleHelper {
 
             if (temp.distanceSquared(loc) > rSquared) continue;
 
-            if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
-            if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), temp, 25);
-            else loc.getWorld().playEffect(temp, type.getEffect(), data);
+            play(temp, type, data);
             index++;
         }
     }
@@ -167,8 +163,16 @@ public class ParticleHelper {
      * @param data data value for the particle
      */
     public static void play(Location loc, ParticleType type, int data) {
-        if (!OTHER_VALUES.containsKey(data) && type == ParticleType.OTHER) data = 0;
-        if (type == ParticleType.OTHER) send(OTHER_VALUES.get(data), loc, 25);
+        if (type == ParticleType.OTHER) {
+            if (!OTHER_VALUES.containsKey(data)) data = 0;
+            send(OTHER_VALUES.get(data), loc, 25);
+        }
+        else if (type == ParticleType.ENTITY) {
+            if (!ENTITY_VALUES.containsKey(data)) data = 0;
+            Entity wolf = loc.getWorld().spawnEntity(loc, EntityType.WOLF);
+            wolf.playEffect(ENTITY_VALUES.get(data));
+            wolf.remove();
+        }
         else loc.getWorld().playEffect(loc, type.getEffect(), data);
     }
 
@@ -293,6 +297,15 @@ public class ParticleHelper {
         }
         catch (Exception ex) { /* Do Nothing */ }
     }
+
+    private static final HashMap<Integer, EntityEffect> ENTITY_VALUES = new HashMap<Integer, EntityEffect>() {{
+        put(0, EntityEffect.WOLF_SMOKE);
+        put(1, EntityEffect.WOLF_HEARTS);
+        put(2, EntityEffect.WOLF_SHAKE);
+        put(3, EntityEffect.SHEEP_EAT);
+        put(4, EntityEffect.DEATH);
+        put(5, EntityEffect.HURT);
+    }};
 
     private static final HashMap<Integer, String> OTHER_VALUES = new HashMap<Integer, String>() {{
         put(0, "angryVillager");

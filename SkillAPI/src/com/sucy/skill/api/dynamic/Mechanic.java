@@ -180,5 +180,6 @@ public class Mechanic {
         put("TELEPORT", new TeleportMechanic());
         put("TELEPORTLOCATION", new TeleportLocationMechanic());
         put("TELEPORTTARGET", new TeleportTargetMechanic());
+        put("VALUECONDITION", new ValueConditionMechanic());
     }};
 }

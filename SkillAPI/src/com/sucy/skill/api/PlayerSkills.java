@@ -533,14 +533,14 @@ public final class PlayerSkills extends Valued {
     public void updateHealth(Player player) {
         if (player == null) return;
 
-        // No class just has the default 20hp
-        if (plugin.getClass(tree) == null) {
-            applyMaxHealth(20 + bonusHealth);
+        // Apply class health
+        if (hasClass()) {
+            applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level) + bonusHealth);
         }
 
-        // Apply class health
+        // No class just has the default 20hp
         else {
-            applyMaxHealth(plugin.getClass(tree).getAttribute(ClassAttribute.HEALTH, level) + bonusHealth);
+            applyMaxHealth(plugin.getBaseHp() + bonusHealth);
         }
 
         // Apply health scaling
@@ -787,6 +787,11 @@ public final class PlayerSkills extends Valued {
         level += amount;
         points += amount * plugin.getPointsPerLevel();
         updateHealth();
+
+        // Update level score
+        if (CoreChecker.isCoreActive()) {
+            PrefixManager.updateLevel(this);
+        }
 
         // Display a message
         Player p = plugin.getServer().getPlayer(player);

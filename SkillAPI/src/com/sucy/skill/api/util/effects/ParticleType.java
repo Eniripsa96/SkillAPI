@@ -28,6 +28,11 @@ public enum ParticleType {
     POTION_BREAK (Effect.POTION_BREAK),
 
     /**
+     * Entity particles
+     */
+    ENTITY (null),
+
+    /**
      * Packet-based effects
      */
     OTHER (null)

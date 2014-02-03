@@ -12,6 +12,8 @@ import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.config.ClassValues;
 import com.sucy.skill.config.Config;
 import com.sucy.skill.config.SkillValues;
+import com.sucy.skill.mccore.CoreChecker;
+import com.sucy.skill.mccore.PrefixManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
@@ -76,7 +78,7 @@ public class RegistrationManager {
             skillConfig.getConfig().set("loaded", true);
             for (String key : skillConfig.getConfig().getKeys(false)) {
                 if (!skillConfig.getConfig().isConfigurationSection(key)) {
-                    log("Skipping " + key + " because it isn't a configuration section", 2);
+                    log("Skipping " + key + " because it isn't a configuration section", 3);
                     continue;
                 }
                 if (!skills.containsKey(key.toLowerCase())) {
@@ -86,8 +88,7 @@ public class RegistrationManager {
                     Config sConfig = new Config(api, "dynamic" + File.separator + "skill" + File.separator + key);
                     skill.save(sConfig.getConfig().createSection(key));
                     sConfig.saveConfig();
-                    log("Loaded the dynamic skill: " + key, 1);
-                    log(key + " has " + skill.activeMechanics.size() + " active, " + skill.passiveMechanics.size() + " passive, and " + skill.embedMechanics.size() + " embedded mechanics", 3);
+                    log("Loaded the dynamic skill: " + key, 2);
                 }
                 else api.getLogger().severe("Duplicate skill detected: " + key);
             }
@@ -108,10 +109,9 @@ public class RegistrationManager {
                         skills.put(name.toLowerCase(), skill);
                         skill.update(sConfig.getConfig().getConfigurationSection(name));
                         skill.save(skillConfig.getConfig().createSection(name));
-                        log("Loaded the dynamic skill: " + name, 1);
-                        log(name + " has " + skill.activeMechanics.size() + " active, " + skill.passiveMechanics.size() + " passive, and " + skill.embedMechanics.size() + " embedded mechanics", 3);
+                        log("Loaded the dynamic skill: " + name, 2);
                     }
-                    else if (getSkill(name) instanceof DynamicSkill) log(name + " is already loaded, skipping it", 2);
+                    else if (getSkill(name) instanceof DynamicSkill) log(name + " is already loaded, skipping it", 3);
                     else api.getLogger().severe("Duplicate skill detected: " + name);
                 }
             }
@@ -139,7 +139,7 @@ public class RegistrationManager {
                     Config cConfig = new Config(api, "dynamic" + File.separator + "class" + File.separator + key);
                     tree.save(cConfig.getConfig().createSection(key));
                     cConfig.saveConfig();
-                    log("Loaded the dynamic class: " + key, 1);
+                    log("Loaded the dynamic class: " + key, 2);
                 }
                 else api.getLogger().severe("Duplicate class detected: " + key);
             }
@@ -153,17 +153,22 @@ public class RegistrationManager {
             File[] files = classRoot.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    String name = file.getName().replace(".yml", "");
-                    if (!classes.containsKey(name.toLowerCase())) {
-                        Config cConfig = new Config(api, "dynamic" + File.separator + "class" + File.separator + name);
-                        DynamicClass tree = new DynamicClass(name);
-                        classes.put(name.toLowerCase(), tree);
-                        tree.update(cConfig.getConfig().getConfigurationSection(name));
-                        tree.save(classConfig.getConfig().createSection(name));
-                        log("Loaded the dynamic class: " + name, 1);
+                    try {
+                        String name = file.getName().replace(".yml", "");
+                        if (!classes.containsKey(name.toLowerCase())) {
+                            Config cConfig = new Config(api, "dynamic" + File.separator + "class" + File.separator + name);
+                            DynamicClass tree = new DynamicClass(name);
+                            classes.put(name.toLowerCase(), tree);
+                            tree.update(cConfig.getConfig().getConfigurationSection(name));
+                            tree.save(classConfig.getConfig().createSection(name));
+                            log("Loaded the dynamic class: " + name, 2);
+                        }
+                        else if (getClass(name) instanceof DynamicClass) log(name + " is already loaded, skipping it", 3);
+                        else api.getLogger().severe("Duplicate class detected: " + name);
                     }
-                    else if (getClass(name) instanceof DynamicClass) log(name + " is already loaded, skipping it", 2);
-                    else api.getLogger().severe("Duplicate class detected: " + name);
+                    catch (Exception ex) {
+                        api.getLogger().severe("Failed to load class file: " + file.getName() + " - Invalid format");
+                    }
                 }
             }
         }
@@ -202,8 +207,11 @@ public class RegistrationManager {
         // Arrange skill trees
         List<CustomClass> classList = new ArrayList<CustomClass>(this.classes.values());
         for (CustomClass tree : classList) {
+            if (CoreChecker.isCoreActive()) {
+                PrefixManager.registerClass(tree);
+            }
             try {
-                log("Arranging the skill tree for the class: " + tree.getName(), 2);
+                log("Arranging the skill tree for the class: " + tree.getName(), 5);
                 tree.getTree().arrange();
             }
             catch (Exception ex) {
@@ -295,7 +303,7 @@ public class RegistrationManager {
             if (skill instanceof Listener) {
                 Listener listener = (Listener)skill;
                 api.getServer().getPluginManager().registerEvents(listener, api);
-                log("Registered the skill: " + skill.getName(), 1);
+                log("Registered the skill: " + skill.getName(), 2);
             }
         }
         catch (Exception e) {
@@ -396,7 +404,7 @@ public class RegistrationManager {
             // Add to table
             classes.put(customClass.getName().toLowerCase(), customClass);
             configFile.saveConfig();
-            log("Registered the class: " + customClass.getName(), 1);
+            log("Registered the class: " + customClass.getName(), 2);
         }
         catch (Exception e) {
             api.getLogger().severe("Failed to register class - " + customClass.getName() + " - Invalid values");

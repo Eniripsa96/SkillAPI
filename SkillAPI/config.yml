@@ -7,31 +7,65 @@
 # http://dev.bukkit.org/bukkit-plugins/skillapi/ #
 # and look at the default configuration section  #
 # ---------------------------------------------- #
-default-class: none
-profess-reset: false
-tree-type: Requirement
-mana-enabled: true
-scoreboard-enabled: true
-mana-gain-freq: 1
-mana-gain-amount: 2
-starting-points: 1
-points-per-level: 1
-allow-downgrading-skills: true
-lore-requirements: true
-players-per-check: 1
-old-health-bar: false
-use-level-bar: false
-use-click-combos: false
-use-skill-bars: false
-default-one-damage: false
-block-mob-spawner-exp: true
-block-mob-egg-exp: true
-block-creative-exp: true
-use-exp-orbs: false
-skill-message-radius: 20
-percent-exp-lost-on-death: 0.0
-load-logging: 0
-skill-bar:
+Classes:
+  default: none
+  classless-hp: 20
+  starting-points: 1
+  points-per-level: 1
+  profess-reset: false
+Mana:
+  enabled: true
+  gain-freq: 1
+  gain-amount: 2
+Skills:
+  allow-downgrade: true
+  tree-type: Requirement
+  message-radius: 20
+Items:
+  lore-requirements: true
+  players-per-check: 1
+  default-one-damage: false
+GUI:
+  old-health-bar: false
+  use-level-bar: false
+  scoreboard-enabled: true
+  show-class-name: true
+  show-class-level: true
+Casting:
+  use-skill-bars: false
+  use-click-combos: false
+Experience:
+  use-exp-orbs: false
+  lost-on-death: 0.0
+  block-mob-spawner: true
+  block-mob-egg: true
+  block-creative: true
+  formula:
+    x: 1
+    y: 4
+    z: 0
+    w: 0
+  yields:
+    blaze: 10
+    cavespider: 5
+    creeper: 3
+    enderdragon: 400
+    enderman: 5
+    ghast: 5
+    giant: 20
+    irongolem: 10
+    magmacube: 1
+    pigzombie: 5
+    player: 5
+    silverfish: 2
+    skeleton: 3
+    slime: 1
+    spider: 3
+    witch: 3
+    wither: 500
+    witherskeleton: 5
+    zombie: 2
+Skill Bar:
   1: skill
   2: skill
   3: skill
@@ -41,28 +75,5 @@ skill-bar:
   7: skill
   8: weapon
   9: weapon
-exp-formula:
-  x: 1
-  y: 4
-  z: 0
-  w: 0
-kills:
-  blaze: 10
-  cavespider: 5
-  creeper: 3
-  enderdragon: 400
-  enderman: 5
-  ghast: 5
-  giant: 20
-  irongolem: 10
-  magmacube: 1
-  pigzombie: 5
-  player: 5
-  silverfish: 2
-  skeleton: 3
-  slime: 1
-  spider: 3
-  witch: 3
-  wither: 500
-  witherskeleton: 5
-  zombie: 2
+Logging:
+  load: 0

@@ -99,7 +99,42 @@ public class ConditionMechanic implements IMechanic {
         ITEM_GOLD = 66,
         ITEM_DIAMOND = 67,
         TARGET_FRONT = 68,
-        TARGET_BACK = 69;
+        TARGET_BACK = 69,
+        CASTER_FRONT = 70,
+        CASTER_BACK = 71,
+        CASTER_SNEAKING = 72,
+        CASTER_SPRINTING = 73,
+        CASTER_STUN = 74,
+        CASTER_ROOT = 75,
+        CASTER_INVINCIBLE = 76,
+        CASTER_ABSORB = 77,
+        CASTER_SILENCE = 78,
+        CASTER_DISARM = 79,
+        CASTER_CURSE = 80,
+        CASTER_FIRE = 81,
+        CASTER_SPEED = 82,
+        CASTER_SLOWNESS = 83,
+        CASTER_HASTE = 84,
+        CASTER_FATIGUE = 85,
+        CASTER_STRENGTH = 86,
+        CASTER_JUMP = 87,
+        CASTER_NAUSEA = 88,
+        CASTER_REGENERATION = 89,
+        CASTER_RESISTANCE = 90,
+        CASTER_FIRE_RESISTANCE = 91,
+        CASTER_WATER_BREATHING = 92,
+        CASTER_INVISIBILITY = 93,
+        CASTER_BLINDNESS = 94,
+        CASTER_NIGHT_VISION = 95,
+        CASTER_HUNGER = 96,
+        CASTER_WEAKNESS = 97,
+        CASTER_POISON = 98,
+        CASTER_WITHER = 99,
+        CASTER_HEALTH = 100,
+        CASTER_ABSORPTION = 101,
+        CASTER_SATURATION = 102,
+        CASTER_POTION = 103,
+        CASTER_STATUS = 104;
 
     private static final int
         STOP = 0,
@@ -223,6 +258,41 @@ public class ConditionMechanic implements IMechanic {
                 else if (condition == ITEM_DIAMOND && mat == ItemMat.DIAMOND) passed = true;
                 else if (condition == TARGET_FRONT && TargetHelper.isInFront(t, player)) passed = true;
                 else if (condition == TARGET_BACK && !TargetHelper.isInFront(t, player)) passed = true;
+                else if (condition == CASTER_FRONT && TargetHelper.isInFront(player, t)) passed = true;
+                else if (condition == CASTER_BACK && !TargetHelper.isInFront(player, t)) passed = true;
+                else if (condition == CASTER_SNEAKING && player.isSneaking()) passed = true;
+                else if (condition == CASTER_SPRINTING && player.isSprinting()) passed = true;
+                else if (condition == CASTER_STUN && data.getAPI().getStatusHolder(player).hasStatus(Status.STUN)) passed = true;
+                else if (condition == CASTER_ROOT && data.getAPI().getStatusHolder(player).hasStatus(Status.ROOT)) passed = true;
+                else if (condition == CASTER_INVINCIBLE && data.getAPI().getStatusHolder(player).hasStatus(Status.INVINCIBLE)) passed = true;
+                else if (condition == CASTER_ABSORB && data.getAPI().getStatusHolder(player).hasStatus(Status.ABSORB)) passed = true;
+                else if (condition == CASTER_SILENCE && data.getAPI().getStatusHolder(player).hasStatus(Status.SILENCE)) passed = true;
+                else if (condition == CASTER_DISARM && data.getAPI().getStatusHolder(player).hasStatus(Status.DISARM)) passed = true;
+                else if (condition == CASTER_CURSE && data.getAPI().getStatusHolder(player).hasStatus(Status.CURSE)) passed = true;
+                else if (condition == CASTER_FIRE && player.getFireTicks() > 0) passed = true;
+                else if (condition == CASTER_SPEED && player.hasPotionEffect(PotionEffectType.SPEED)) passed = true;
+                else if (condition == CASTER_SLOWNESS && player.hasPotionEffect(PotionEffectType.SLOW)) passed = true;
+                else if (condition == CASTER_HASTE && player.hasPotionEffect(PotionEffectType.FAST_DIGGING)) passed = true;
+                else if (condition == CASTER_FATIGUE && player.hasPotionEffect(PotionEffectType.SLOW_DIGGING)) passed = true;
+                else if (condition == CASTER_STRENGTH && player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) passed = true;
+                else if (condition == CASTER_JUMP && player.hasPotionEffect(PotionEffectType.JUMP)) passed = true;
+                else if (condition == CASTER_NAUSEA && player.hasPotionEffect(PotionEffectType.CONFUSION)) passed = true;
+                else if (condition == CASTER_REGENERATION && player.hasPotionEffect(PotionEffectType.REGENERATION)) passed = true;
+                else if (condition == CASTER_RESISTANCE && player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) passed = true;
+                else if (condition == CASTER_FIRE_RESISTANCE && player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) passed = true;
+                else if (condition == CASTER_WATER_BREATHING && player.hasPotionEffect(PotionEffectType.WATER_BREATHING)) passed = true;
+                else if (condition == CASTER_INVISIBILITY && player.hasPotionEffect(PotionEffectType.INVISIBILITY)) passed = true;
+                else if (condition == CASTER_BLINDNESS && player.hasPotionEffect(PotionEffectType.BLINDNESS)) passed = true;
+                else if (condition == CASTER_NIGHT_VISION && player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) passed = true;
+                else if (condition == CASTER_HUNGER && player.hasPotionEffect(PotionEffectType.HUNGER)) passed = true;
+                else if (condition == CASTER_WEAKNESS && player.hasPotionEffect(PotionEffectType.WEAKNESS)) passed = true;
+                else if (condition == CASTER_POISON && player.hasPotionEffect(PotionEffectType.POISON)) passed = true;
+                else if (condition == CASTER_WITHER && player.hasPotionEffect(PotionEffectType.WITHER)) passed = true;
+                else if (VersionManager.isVersionAtLeast(VersionManager.MC_1_6_2_MIN) && condition == CASTER_HEALTH && player.hasPotionEffect(PotionEffectType.HEALTH_BOOST)) passed = true;
+                else if (VersionManager.isVersionAtLeast(VersionManager.MC_1_6_2_MIN) && condition == CASTER_ABSORPTION && player.hasPotionEffect(PotionEffectType.ABSORPTION)) passed = true;
+                else if (VersionManager.isVersionAtLeast(VersionManager.MC_1_6_2_MIN) && condition == CASTER_SATURATION && player.hasPotionEffect(PotionEffectType.SATURATION)) passed = true;
+                else if (condition == CASTER_POTION && player.getActivePotionEffects().size() > 0) passed = true;
+                else if (condition == CASTER_STATUS && data.getAPI().getStatusHolder(player).hasStatuses()) passed = true;
 
                 // Operators
                 if (operator == AND) success = success && passed;

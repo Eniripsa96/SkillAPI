@@ -106,5 +106,6 @@ public class ParticleProjectileMechanic implements IMechanic, Listener {
         put(2, ParticleType.MOBSPAWNER_FLAMES);
         put(3, ParticleType.POTION_BREAK);
         put(4, ParticleType.OTHER);
+        put(5, ParticleType.ENTITY);
     }};
 }

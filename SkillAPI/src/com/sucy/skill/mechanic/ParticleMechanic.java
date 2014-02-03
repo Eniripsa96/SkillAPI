@@ -25,7 +25,8 @@ public class ParticleMechanic implements IMechanic {
             AMOUNT_BASE = "Particle Amount Base",
             AMOUNT_BONUS = "Particle Amount Bonus",
             RADIUS_BASE = "Particle Radius Base",
-            RADIUS_BONUS = "Particle Radius Bonus";
+            RADIUS_BONUS = "Particle Radius Bonus",
+            HEIGHT = "Particle Height";
 
     /**
      * Damages targets based on missing mana
@@ -49,6 +50,7 @@ public class ParticleMechanic implements IMechanic {
         int radius = skill.getValue(RADIUS_BASE) + skill.getValue(RADIUS_BONUS) * (level - 1);
         int particle = skill.getValue(PARTICLE);
         int area = skill.getValue(AREA);
+        int height = skill.getValue(HEIGHT);
         ParticleType type;
         int value = skill.getValue(PARTICLE_DATA);
         if (PARTICLES.containsKey(particle)) type = PARTICLES.get(particle);
@@ -59,17 +61,17 @@ public class ParticleMechanic implements IMechanic {
 
             // Sphere
             if (area == 1) {
-                ParticleHelper.fillSphere(entity.getLocation(), type, value, radius, amount);
+                ParticleHelper.fillSphere(entity.getLocation().add(0, height, 0), type, value, radius, amount);
             }
 
             // Hemisphere
             else if (area == 2) {
-                ParticleHelper.fillHemisphere(entity.getLocation(), type, value, radius, amount);
+                ParticleHelper.fillHemisphere(entity.getLocation().add(0, height, 0), type, value, radius, amount);
             }
 
             // Circle
             else {
-                ParticleHelper.fillCircle(entity.getLocation(), type, value, radius, amount, Direction.XZ);
+                ParticleHelper.fillCircle(entity.getLocation().add(0, height, 0), type, value, radius, amount, Direction.XZ);
             }
         }
 
@@ -91,6 +93,7 @@ public class ParticleMechanic implements IMechanic {
         if (!skill.isSet(AMOUNT_BONUS)) skill.setValue(AMOUNT_BONUS, 0);
         if (!skill.isSet(RADIUS_BASE)) skill.setValue(RADIUS_BASE, 8);
         if (!skill.isSet(RADIUS_BONUS)) skill.setValue(RADIUS_BONUS, 0);
+        if (!skill.isSet(HEIGHT)) skill.setValue(HEIGHT, 0);
     }
 
     /**
@@ -107,5 +110,6 @@ public class ParticleMechanic implements IMechanic {
         put(2, ParticleType.MOBSPAWNER_FLAMES);
         put(3, ParticleType.POTION_BREAK);
         put(4, ParticleType.OTHER);
+        put(5, ParticleType.ENTITY);
     }};
 }

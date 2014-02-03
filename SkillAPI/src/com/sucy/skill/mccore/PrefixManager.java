@@ -4,6 +4,8 @@ import com.rit.sucy.chat.Chat;
 import com.rit.sucy.chat.Prefix;
 import com.rit.sucy.scoreboard.BoardManager;
 import com.rit.sucy.scoreboard.StatBoard;
+import com.rit.sucy.scoreboard.Team;
+import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import org.bukkit.ChatColor;
 
@@ -13,6 +15,10 @@ import org.bukkit.ChatColor;
  */
 public class PrefixManager {
 
+    public static boolean showSidebar;
+    public static  boolean showClasses;
+    public static boolean showLevels;
+
     /**
      * Clears a class prefix
      *
@@ -21,6 +27,8 @@ public class PrefixManager {
     public static void clearPrefix(String player) {
         Chat.getPlayerData(player).clearPluginPrefix("SkillAPI");
         BoardManager.getPlayerBoards(player).removeBoards("SkillAPI");
+        BoardManager.clearTeam(player);
+        BoardManager.clearScore(player);
     }
 
     /**
@@ -38,12 +46,48 @@ public class PrefixManager {
      * @param braceColor color of braces
      */
     public static void setPrefix(PlayerSkills player, String prefix, ChatColor braceColor) {
+
+        // Give a chat prefix
         Chat.getPlayerData(player.getName()).setPluginPrefix(
                 new Prefix("SkillAPI", prefix, braceColor)
         );
+
+        // Clear previous data
         BoardManager.getPlayerBoards(player.getName()).removeBoards("SkillAPI");
-        StatBoard board = new StatBoard(player.getPrefix(), "SkillAPI");
-        board.addStats(new PlayerStats(player));
-        BoardManager.getPlayerBoards(player.getName()).addBoard(board);
+        BoardManager.clearTeam(player.getName());
+
+        // Apply new data
+        if (showSidebar) {
+            StatBoard board = new StatBoard(player.getPrefix(), "SkillAPI");
+            board.addStats(new PlayerStats(player));
+            BoardManager.getPlayerBoards(player.getName()).addBoard(board);
+        }
+        if (showClasses) BoardManager.setTeam(player.getName(), player.getClassName());
+        if (showLevels) BoardManager.setBelowNameScore(player.getName(), player.getLevel());
+    }
+
+    /**
+     * Registers a class with the MCCore scoreboards
+     *
+     * @param c class to register
+     */
+    public static void registerClass(CustomClass c) {
+        BoardManager.registerTeam(new Team(c.getName(), c.getPrefix() + ChatColor.RESET + " ", null));
+    }
+
+    /**
+     * Updates the player's level in the scoreboards
+     *
+     * @param data player's data to use for the update
+     */
+    public static void updateLevel(PlayerSkills data) {
+        BoardManager.setBelowNameScore(data.getName(), data.getLevel());
+    }
+
+    /**
+     * Registers the text below player names
+     */
+    public static void registerText(String text) {
+        BoardManager.setTextBelowNames("Level");
     }
 }

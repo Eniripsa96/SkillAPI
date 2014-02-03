@@ -336,14 +336,14 @@ public class SkillListener implements Listener {
 
         PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
 
+        // Update the player health
+        skills.updateHealth(event.getPlayer());
+
         // Level bar
         skills.updateLevelBar();
 
         // Effects when a player has a class
         if (skills.hasClass() && !event.getPlayer().isDead()) {
-
-            // Update the player health
-            skills.updateHealth();
 
             // Apply passive skills
             skills.startPassiveAbilities();

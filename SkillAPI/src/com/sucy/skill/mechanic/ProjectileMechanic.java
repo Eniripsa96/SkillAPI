@@ -35,13 +35,6 @@ public class ProjectileMechanic implements IMechanic, Listener {
             USE_PROJECTILE = "Use Arrow";
 
     /**
-     * Constructor
-     */
-    public ProjectileMechanic() {
-        Bukkit.getPluginManager().registerEvents(this, Bukkit.getPluginManager().getPlugin("SkillAPI"));
-    }
-
-    /**
      * Launches projectiles from a source
      *
      * @param player  player using the skill

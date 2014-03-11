@@ -10,9 +10,14 @@ public class CommandNodes {
     public static final String
 
     /**
-     * Root node for all command messages
+     * Base node for all command messages
      */
     BASE = "Commands.",
+
+    /**
+     * Root command for the sub commands
+     */
+    ROOT = BASE + "root",
 
     // --------------------- Sections ---------------------------- //
 
@@ -79,6 +84,16 @@ public class CommandNodes {
     OFF = ".toggle-off",
 
     // --------------------- Commands ---------------------------- //
+
+    /**
+     * Admin command for professing players
+     */
+    ADMIN_PROFESS = "admin-profess",
+
+    /**
+     * Admin command for resetting players
+     */
+    ADMIN_RESET = "admin-reset",
 
     /**
      * Bind command key

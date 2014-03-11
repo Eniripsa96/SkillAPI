@@ -6,6 +6,7 @@ import com.sucy.skill.api.Status;
 import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.util.effects.ParticleProjectile;
+import com.sucy.skill.language.CommandNodes;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatusNodes;
 import com.sucy.skill.mccore.CoreChecker;
@@ -24,8 +25,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * <p>Main listener for the API</p>
@@ -197,6 +200,53 @@ public class SkillListener implements Listener {
         }
         if (target != null) {
             VersionManager.setDamage(event, plugin.getStatusHolder(target).modifyDamageTaken(event.getDamage()));
+        }
+    }
+
+    /**
+     * Handles player commands
+     *
+     * @param event event details
+     */
+    @EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = false)
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        String root = "/" + plugin.getMessage(CommandNodes.ROOT, false);
+        if(event.getMessage().matches(root + "( .*)?")) {
+            String text = event.getMessage().replaceAll("^" + root, "");
+            while (text.startsWith(" ")) text = text.substring(1);
+            String[] args;
+            if (text.length() == 0) {
+                args = new String[0];
+            }
+            else {
+                String command = event.getMessage().substring(event.getMessage().indexOf(" ") + 1);
+                args = command.split(" ");
+            }
+            plugin.getCommander().onCommand(event.getPlayer(), null, root.substring(1), args);
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Handles server commands
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onCommand(ServerCommandEvent event) {
+        String root = plugin.getMessage(CommandNodes.ROOT, false);
+        if(event.getCommand().matches(root + "( .*)?")) {
+            String text = event.getCommand().replaceAll("^" + root, "");
+            while (text.startsWith(" ")) text = text.substring(1);
+            String[] args;
+            if (text.length() == 0) {
+                args = new String[0];
+            }
+            else {
+                String command = event.getCommand().substring(event.getCommand().indexOf(" ") + 1);
+                args = command.split(" ");
+            }
+            plugin.getCommander().onCommand(event.getSender(), null, root, args);
         }
     }
 

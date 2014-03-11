@@ -16,6 +16,7 @@ import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
@@ -103,16 +104,21 @@ public class RegistrationManager {
             if (files != null) {
                 for (File file : files) {
                     String name = file.getName().replace(".yml", "");
-                    if (!skills.containsKey(name.toLowerCase())) {
-                        Config sConfig = new Config(api, "dynamic" + File.separator + "skill" + File.separator + name);
-                        DynamicSkill skill = new DynamicSkill(name);
-                        skills.put(name.toLowerCase(), skill);
-                        skill.update(sConfig.getConfig().getConfigurationSection(name));
-                        skill.save(skillConfig.getConfig().createSection(name));
-                        log("Loaded the dynamic skill: " + name, 2);
+                    try {
+                        if (!skills.containsKey(name.toLowerCase())) {
+                            Config sConfig = new Config(api, "dynamic" + File.separator + "skill" + File.separator + name);
+                            DynamicSkill skill = new DynamicSkill(name);
+                            skills.put(name.toLowerCase(), skill);
+                            skill.update(sConfig.getConfig().getConfigurationSection(name));
+                            skill.save(skillConfig.getConfig().createSection(name));
+                            log("Loaded the dynamic skill: " + name, 2);
+                        }
+                        else if (getSkill(name) instanceof DynamicSkill) log(name + " is already loaded, skipping it", 3);
+                        else api.getLogger().severe("Duplicate skill detected: " + name);
                     }
-                    else if (getSkill(name) instanceof DynamicSkill) log(name + " is already loaded, skipping it", 3);
-                    else api.getLogger().severe("Duplicate skill detected: " + name);
+                    catch (Exception ex) {
+                        api.getLogger().severe("Failed to load skill: " + name);
+                    }
                 }
             }
         }
@@ -298,12 +304,11 @@ public class RegistrationManager {
             // Add it to the list
             skills.put(skill.getName().toLowerCase(), skill);
             configFile.saveConfig();
+            log("Registered the skill: " + skill.getName(), 2);
 
             // Register any listeners for skills
             if (skill instanceof Listener) {
-                Listener listener = (Listener)skill;
-                api.getServer().getPluginManager().registerEvents(listener, api);
-                log("Registered the skill: " + skill.getName(), 2);
+                api.getServer().getPluginManager().registerEvents((Listener)skill, api);
             }
         }
         catch (Exception e) {
@@ -405,6 +410,11 @@ public class RegistrationManager {
             classes.put(customClass.getName().toLowerCase(), customClass);
             configFile.saveConfig();
             log("Registered the class: " + customClass.getName(), 2);
+
+            // Register events
+            if (customClass instanceof Listener) {
+                api.getServer().getPluginManager().registerEvents((Listener)customClass, api);
+            }
         }
         catch (Exception e) {
             api.getLogger().severe("Failed to register class - " + customClass.getName() + " - Invalid values");

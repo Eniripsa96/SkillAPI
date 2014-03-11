@@ -3,7 +3,11 @@ package com.sucy.skill.command;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.command.admin.*;
 import com.sucy.skill.command.basic.*;
+import com.sucy.skill.command.basic.CmdProfess;
+import com.sucy.skill.command.basic.CmdReset;
+import com.sucy.skill.command.console.*;
 import com.sucy.skill.language.CommandNodes;
+import org.bukkit.command.Command;
 
 /**
  * Handler for class commands
@@ -16,7 +20,7 @@ public class ClassCommander extends CommandHandler {
      * @param plugin plugin reference
      */
     public ClassCommander(SkillAPI plugin) {
-        super(plugin, "SkillAPI", "class");
+        super(plugin, "SkillAPI", plugin.getMessage(CommandNodes.ROOT, false));
     }
 
     /**
@@ -46,5 +50,9 @@ public class ClassCommander extends CommandHandler {
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.POINTS_CONSOLE, false), new CmdPointsConsole());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.POINTS_PLAYER, false), new CmdPointsPlayer());
         registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.RELOAD, false), new CmdReload());
+
+        // Console Commands
+        registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.ADMIN_PROFESS, false), new com.sucy.skill.command.console.CmdProfess());
+        registerCommand(api.getMessage(CommandNodes.NAME + CommandNodes.ADMIN_RESET, false), new com.sucy.skill.command.console.CmdReset());
     }
 }

@@ -3,6 +3,8 @@ package com.sucy.skill;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.StatusHolder;
+import com.sucy.skill.api.dynamic.IMechanic;
+import com.sucy.skill.api.dynamic.Mechanic;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.api.util.effects.DOTHelper;
@@ -14,12 +16,14 @@ import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatNodes;
 import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
+import com.sucy.skill.mechanic.HealthMechanic;
 import com.sucy.skill.quests.QuestsModuleManager;
 import com.sucy.skill.skillbar.PlayerSkillBar;
 import com.sucy.skill.skillbar.SkillBarListener;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.version.VersionManager;
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -27,6 +31,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -57,6 +62,7 @@ public class SkillAPI extends JavaPlugin {
     private SkillBarListener barListener;
     private ClickListener clickListener;
     private DOTHelper dotHelper;
+    private ClassCommander commander;
 
     // Tasks
     private InventoryTask invTask;
@@ -180,14 +186,6 @@ public class SkillAPI extends JavaPlugin {
         }
         if (!hasWeapon) bar[8] = false;
 
-        // Cast options
-        if (getConfig().getBoolean(SettingValues.CAST_CLICK_COMBOS, false)) {
-            clickListener = new ClickListener(this);
-        }
-        if (getConfig().getBoolean(SettingValues.CAST_SKILL_BARS, false)) {
-            barListener = new SkillBarListener(this);
-        }
-
         // Logging options
         logging = getConfig().getInt(SettingValues.LOG_LOAD, 0);
 
@@ -208,13 +206,29 @@ public class SkillAPI extends JavaPlugin {
         for (Player player : getServer().getOnlinePlayers()) {
             if (!players.containsKey(player.getName().toLowerCase()))
                 players.put(player.getName().toLowerCase(), new PlayerSkills(this, player.getName()));
+            else getPlayer(player.getName()).startPassiveAbilities();
+        }
+
+        // Cast options
+        if (getConfig().getBoolean(SettingValues.CAST_CLICK_COMBOS, false)) {
+            clickListener = new ClickListener(this);
+        }
+        if (getConfig().getBoolean(SettingValues.CAST_SKILL_BARS, false)) {
+            barListener = new SkillBarListener(this);
         }
 
         // Setup Helper classes
         new SkillListener(this);
-        new ClassCommander(this);
+        commander = new ClassCommander(this);
         dotHelper = new DOTHelper(this);
         ParticleHelper.initialize();
+
+        // Setup listeners
+        for (IMechanic mechanic : Mechanic.MECHANICS.values()) {
+            if (mechanic instanceof Listener) {
+                getServer().getPluginManager().registerEvents((Listener)mechanic, this);
+            }
+        }
     }
 
     /**
@@ -226,6 +240,8 @@ public class SkillAPI extends JavaPlugin {
 
         // Clear listeners
         HandlerList.unregisterAll(this);
+
+        ((HealthMechanic)Mechanic.MECHANICS.get("HEALTH")).clear();
 
         // Tasks
         if (manaTask != null) {
@@ -587,6 +603,16 @@ public class SkillAPI extends JavaPlugin {
      */
     public DOTHelper getDOTHelper() {
         return dotHelper;
+    }
+
+    /**
+     * <p>The command handler for SkillAPI</p>
+     * <p>This is not to be used by other plugins</p>
+     *
+     * @return SkillAPI command handler
+     */
+    public ClassCommander getCommander() {
+        return commander;
     }
 
     /**

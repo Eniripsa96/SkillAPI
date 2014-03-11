@@ -1,5 +1,6 @@
 package com.sucy.skill.command;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.TextSizer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -58,9 +59,11 @@ public abstract class CommandHandler implements CommandExecutor {
         this.title = title;
         this.label = command;
         registerCommands();
-        PluginCommand cmd = ((JavaPlugin)plugin).getCommand(command);
-        if (cmd != null) {
-            cmd.setExecutor(this);
+        if (!(plugin instanceof SkillAPI)) {
+            PluginCommand cmd = ((JavaPlugin)plugin).getCommand(command);
+            if (cmd != null) {
+                cmd.setExecutor(this);
+            }
         }
     }
 
@@ -240,6 +243,18 @@ public abstract class CommandHandler implements CommandExecutor {
             if (index <= (page - 1) * entries || index > page * entries) continue;
             sender.sendMessage(ChatColor.GOLD + "/" + label.toLowerCase() + " " + TextSizer.expand(key + " "
                     + ChatColor.LIGHT_PURPLE + commands.get(key).getArgsString(plugin) + ChatColor.GRAY, maxSize, false)
+                    + ChatColor.GRAY + "- " + commands.get(key).getDescription(plugin));
+        }
+
+        // Display usage, squaring everything up nicely
+        index = 0;
+        for (String key : keys) {
+            if (!canUseCommand(sender, commands.get(key)))
+                continue;
+            index++;
+            if (index <= (page - 1) * entries || index > page * entries) continue;
+            sender.sendMessage(ChatColor.GOLD + "/" + label.toLowerCase() + " " + key + " "
+                    + ChatColor.LIGHT_PURPLE + commands.get(key).getArgsString(plugin) + ChatColor.GRAY
                     + ChatColor.GRAY + "- " + commands.get(key).getDescription(plugin));
         }
 

@@ -794,12 +794,19 @@ public final class PlayerSkills extends Valued {
         }
 
         // Display a message
-        Player p = plugin.getServer().getPlayer(player);
+        Player p = getPlayer();
         List<String> messages = plugin.getMessages(OtherNodes.LEVEL_UP, true);
+        double healthScale = (int)skillTree.getScale(ClassAttribute.HEALTH);
+        double manaScale = (int)skillTree.getScale(ClassAttribute.MANA);
         for (String message : messages) {
             message = message.replace("{level}", level + "")
+                    .replace("{class}", tree)
                     .replace("{points}", points + "")
-                    .replace("{class}", tree);
+                    .replace("{health}", (int)p.getMaxHealth() + "")
+                    .replace("{mana}", getMaxMana() + "")
+                    .replace("{pointsgain}", plugin.getPointsPerLevel() * amount + "")
+                    .replace("{healthgain}", (int)(level * healthScale) - (int)((level - amount) * healthScale) + "")
+                    .replace("{managain}", (int)(level * manaScale) - (int)((level - amount) * manaScale) + "");
 
             p.sendMessage(message);
         }

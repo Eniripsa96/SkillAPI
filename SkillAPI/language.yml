@@ -33,6 +33,8 @@ Skill Tree:
   - '{description}'
 Commands:
   arguments:
+    admin-profess: '<class> <player>'
+    admin-reset: '<player>'
     bar: ''
     bind: '<skill>'
     cast: '<skill>'
@@ -51,6 +53,10 @@ Commands:
     skills: ''
     unbind: ''
   complete:
+    admin-profess:
+    - '&2You are now a &6{class}'
+    admin-reset:
+    - '&4Your data has been cleared'
     bar:
       toggle-on:
       - '&2Your skill bar is now enabled'
@@ -123,6 +129,8 @@ Commands:
     unbind:
     - '&6{item} &2is no longer bound to a skill'
   description:
+    admin-profess: 'Professes a player'
+    admin-reset: 'Resets a player'
     bar: 'Toggles the skill bar'
     bind: 'Binds skill to held item'
     cast: 'Casts the skill'
@@ -159,6 +167,7 @@ Commands:
     not-positive: '&4{value} must be a positive number'
     skill-not-owned: '&4You do not have that skill'
   name:
+    admin-profess: 'profess'
     bar: 'bar'
     bind: 'bind'
     cast: 'cast'
@@ -176,6 +185,7 @@ Commands:
     reset: 'reset'
     skills: 'skills'
     unbind: 'unbind'
+  root: 'class'
 Stats:
   health: '&2Health'
   mana: '&2Mana'

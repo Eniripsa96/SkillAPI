@@ -513,7 +513,7 @@ public abstract class ClassSkill extends Attributed {
                     else attLine = api.getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, false);
 
                     attLine = attLine.replace("{value}", format(oldValue) + "")
-                            .replace("{name}", attribute);
+                            .replace("{name}", attribute.replace("Mana", c.getManaName()));
 
                     // Line replace
                     if (useLine) {

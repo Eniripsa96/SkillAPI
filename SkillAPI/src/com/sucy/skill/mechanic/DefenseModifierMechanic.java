@@ -39,14 +39,6 @@ public class DefenseModifierMechanic implements IMechanic, Listener {
     private final Random random = new Random();
 
     /**
-     * Constructor
-     */
-    public DefenseModifierMechanic() {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("SkillAPI");
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
-    /**
      * Grants a temporary damage bonus to the targets
      *
      * @param player  player using the skill

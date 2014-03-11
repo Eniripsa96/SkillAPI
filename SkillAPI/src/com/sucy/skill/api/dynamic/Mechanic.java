@@ -161,6 +161,7 @@ public class Mechanic {
         put("FIRE", new FireMechanic());
         put("HEAL", new HealMechanic());
         put("HEALPERCENT", new HealPercentMechanic());
+        put("HEALTH", new HealthMechanic());
         put("HEALTHDAMAGE", new HealthDamageMechanic());
         put("HOT", new HOTMechanic());
         put("LAUNCH", new LaunchMechanic());

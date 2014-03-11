@@ -1,13 +1,19 @@
 package com.sucy.skill.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
 import com.sucy.skill.api.util.effects.TimedEffect;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +21,14 @@ import java.util.List;
 /**
  * Mechanic for healing all targets
  */
-public class HealthMechanic implements IMechanic {
+public class HealthMechanic implements IMechanic, Listener {
 
-    private static final String HEALTH = "Health";
+    private static final String
+            HEALTH = "Health",
+            DURATION = "Health Duration";
 
-    private HashMap<String, Integer> playerBonuses = new HashMap<String, Integer>();
-    private HashMap<Integer, Integer> mobBonuses = new HashMap<Integer, Integer>();
+    private HashMap<String, HealthEffect> playerBonuses = new HashMap<String, HealthEffect>();
+    private HashMap<Integer, HealthEffect> mobBonuses = new HashMap<Integer, HealthEffect>();
 
     /**
      * Grants bonus health to all targets
@@ -38,20 +46,27 @@ public class HealthMechanic implements IMechanic {
         // Grant health to all targets
         int level = data.getSkillLevel(skill.getName());
         int amount = (int)skill.getAttribute(HEALTH, target, level);
+        int duration = (int)(skill.getAttribute(DURATION, level) * 20);
         for (LivingEntity t : targets) {
+
+            HealthEffect effect = new HealthEffect(skill.getAPI(), t, duration, amount);
+            effect.start();
 
             // Players
             if (t instanceof Player) {
                 Player p = (Player)t;
-                data.getAPI().getPlayer(p.getName()).addMaxHealth(amount);
-                playerBonuses.put(p.getName(), amount);
+                if (playerBonuses.containsKey(p.getName())) {
+                    playerBonuses.get(p.getName()).stop();
+                }
+                playerBonuses.put(p.getName(), effect);
             }
 
             // Non-players
             else {
-                double maxHealth = t.getMaxHealth() + amount;
-                VersionManager.setMaxHealth(t, maxHealth);
-                mobBonuses.put(t.getEntityId(), amount);
+                if (mobBonuses.containsKey(t.getEntityId())) {
+                    mobBonuses.get(t.getEntityId()).stop();
+                }
+                mobBonuses.put(t.getEntityId(), effect);
             }
         }
 
@@ -78,48 +93,32 @@ public class HealthMechanic implements IMechanic {
     }
 
     /**
-     * Health effect for players
+     * Clears health effects when a player quits
+     *
+     * @param event event details
      */
-    private class PlayerHealthEffect extends TimedEffect {
-
-        private PlayerSkills player;
-        private double bonus;
-
-        /**
-         * Constructor
-         *
-         * @param player player reference
-         * @param ticks  ticks to last for
-         * @param bonus  bonus health to give
-         */
-        public PlayerHealthEffect(PlayerSkills player, int ticks, double bonus) {
-            super(ticks);
-            this.player = player;
-            this.bonus = bonus;
-        }
-
-        /**
-         * Adds maximum health to the player
-         */
-        @Override
-        protected void setup() {
-            player.addMaxHealth((int)bonus);
-        }
-
-        /**
-         * Removes maximum health from the player
-         */
-        @Override
-        protected void clear() {
-            player.addMaxHealth(-(int)bonus);
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        if (playerBonuses.containsKey(event.getPlayer().getName())) {
+            playerBonuses.get(event.getPlayer().getName()).stop();
         }
     }
 
     /**
-     * Health effect for mobs
+     * Clears all health effects
      */
-    private class MobHealthEffect extends TimedEffect {
+    public void clear() {
+        for (HealthEffect effect : playerBonuses.values()) {
+            effect.stop();
+        }
+    }
 
+    /**
+     * Health task for resetting entity health
+     */
+    private class HealthEffect extends TimedEffect {
+
+        private SkillAPI api;
         private LivingEntity entity;
         private double bonus;
 
@@ -130,8 +129,9 @@ public class HealthMechanic implements IMechanic {
          * @param ticks  number of ticks to last
          * @param bonus  amount of health to give
          */
-        public MobHealthEffect(LivingEntity entity, int ticks, double bonus) {
+        public HealthEffect(SkillAPI plugin, LivingEntity entity, int ticks, double bonus) {
             super(ticks);
+            this.api = plugin;
             this.entity = entity;
             this.bonus = bonus;
         }
@@ -141,12 +141,17 @@ public class HealthMechanic implements IMechanic {
          */
         @Override
         protected void setup() {
-            double maxHealth = entity.getMaxHealth() + bonus;
-            if (maxHealth < 1) {
-                maxHealth = 1;
-                bonus = maxHealth - entity.getMaxHealth();
+            if (entity instanceof Player) {
+                api.getPlayer(((Player) entity).getName()).addMaxHealth((int)bonus);
             }
-            VersionManager.setMaxHealth(entity, maxHealth);
+            else {
+                double maxHealth = entity.getMaxHealth() + bonus;
+                if (maxHealth < 1) {
+                    maxHealth = 1;
+                    bonus = maxHealth - entity.getMaxHealth();
+                }
+                VersionManager.setMaxHealth(entity, maxHealth);
+            }
         }
 
         /**
@@ -154,7 +159,15 @@ public class HealthMechanic implements IMechanic {
          */
         @Override
         protected void clear() {
-            VersionManager.setMaxHealth(entity, entity.getMaxHealth() - bonus);
+            if (entity instanceof Player) {
+                api.getPlayer(((Player) entity).getName()).addMaxHealth(-(int)bonus);
+                playerBonuses.remove(((Player) entity).getName());
+            }
+            else {
+                VersionManager.setMaxHealth(entity, entity.getMaxHealth() - bonus);
+                mobBonuses.remove(entity.getEntityId());
+            }
+            entity = null;
         }
     }
 }

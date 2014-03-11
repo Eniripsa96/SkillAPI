@@ -36,13 +36,6 @@ public class ParticleProjectileMechanic implements IMechanic, Listener {
     private final HashMap<Integer, EmbedData> projectiles = new HashMap<Integer, EmbedData>();
 
     /**
-     * Constructor
-     */
-    public ParticleProjectileMechanic() {
-        Bukkit.getPluginManager().registerEvents(this, Bukkit.getPluginManager().getPlugin("SkillAPI"));
-    }
-
-    /**
      * Launches projectiles from a source
      *
      * @param player  player using the skill

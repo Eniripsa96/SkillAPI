@@ -36,9 +36,7 @@ public class TargetHelper {
             double rLengthSq = relative.lengthSquared();
             double cosSquared = (dot * dot) / (rLengthSq * fLengthSq);
             double sinSquared = 1 - cosSquared;
-
-            relative = player.getLocation().subtract(entity.getLocation()).toVector();
-            double dSquared = relative.lengthSquared() * sinSquared;
+            double dSquared = rLengthSq * sinSquared;
 
             // If close enough to vision line, return the entity
             if (dSquared < 4) targets.add((LivingEntity)entity);

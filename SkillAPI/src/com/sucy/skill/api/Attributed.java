@@ -28,8 +28,6 @@ public abstract class Attributed extends Valued {
      * @throws IllegalArgumentException if attribute is already defined
      */
     public void setAttribute(String name, double base, double scale) {
-        if (this.base.containsKey(name)) throw new IllegalArgumentException("Attribute is already defined: " + name);
-
         this.base.put(name, base);
         this.scale.put(name, scale);
     }
@@ -48,8 +46,6 @@ public abstract class Attributed extends Valued {
      * @throws IllegalArgumentException if attribute is already defined
      */
     public void setAttribute(String name, int base, int scale) {
-        if (this.base.containsKey(name)) throw new IllegalArgumentException("Attribute is already defined: " + name);
-
         this.base.put(name, (double)base);
         this.scale.put(name, (double)scale);
     }

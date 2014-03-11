@@ -38,14 +38,6 @@ public class AttackModifierMechanic implements IMechanic, Listener {
     private final Random random = new Random();
 
     /**
-     * Constructor
-     */
-    public AttackModifierMechanic() {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("SkillAPI");
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
-    /**
      * Grants a temporary damage bonus to the targets
      *
      * @param player  player using the skill

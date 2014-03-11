@@ -77,6 +77,17 @@ public abstract class TimedEffect extends BukkitRunnable {
     }
 
     /**
+     * <p>Ends the timed effect prematurely, clearing all effects</p>
+     * <p>If the effect already wasn't active, this will do nothing</p>
+     */
+    public void stop() {
+        if (running) {
+            cancel();
+            clear();
+        }
+    }
+
+    /**
      * <p>Sets up the effect</p>
      * <p>This is called when the effect begins</p>
      * <p>If the effect is reapplied before a previous

@@ -15,13 +15,6 @@ import java.util.List;
  */
 public class Protection {
 
-    /**
-     * Checks if a player can be PvPed
-     *
-     * @param attacker player attacking the other
-     * @param target   player being attacked
-     * @return         true if the attack is allowed
-     */
     public static boolean canAttack(Player attacker, LivingEntity target) {
         if (target instanceof Tameable) {
             Tameable entity = (Tameable)target;
@@ -29,6 +22,17 @@ public class Protection {
                 return false;
             }
         }
+        return canAttack((LivingEntity)attacker, target);
+    }
+
+    /**
+     * Checks if a player can be PvPed
+     *
+     * @param attacker player attacking the other
+     * @param target   player being attacked
+     * @return         true if the attack is allowed
+     */
+    public static boolean canAttack(LivingEntity attacker, LivingEntity target) {
         if (attacker == target) return false;
         EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(attacker, target, EntityDamageEvent.DamageCause.CUSTOM, 1);
         Bukkit.getPluginManager().callEvent(event);

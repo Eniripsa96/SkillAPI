@@ -243,6 +243,38 @@ public class SkillMeta implements MetadataValue {
     }
 
     /**
+     * Removes metadata from the target for the skill
+     *
+     * @param target target to remove the metadata from
+     * @param skill  skill to remove the metadata for
+     * @return       removed metadata or null if it wasn't attached
+     */
+    public static SkillMeta removeMeta(Metadatable target, ClassSkill skill) {
+        if (hasMeta(target, skill)) {
+            SkillMeta meta = getMeta(target, skill);
+            target.removeMetadata(META_NAME + skill.getName(), meta.getOwningPlugin());
+            return meta;
+        }
+        else return null;
+    }
+
+    /**
+     * Removes metadata from the target using a custom key
+     *
+     * @param target target to remove the metadata from
+     * @param key    key used for the metadata
+     * @return       removed metadata or null if it wasn't attached
+     */
+    public static SkillMeta removeMeta(Metadatable target, String key) {
+        if (hasMeta(target, key)) {
+            SkillMeta meta = getMeta(target, key);
+            target.removeMetadata(META_NAME + key, meta.getOwningPlugin());
+            return meta;
+        }
+        else return null;
+    }
+
+    /**
      * <p>Retrieves the skill meta from the target</p>
      * <p>If you provided a custom key when adding the metadata, use getMeta(Metadatable, String) instead.</p>
      *

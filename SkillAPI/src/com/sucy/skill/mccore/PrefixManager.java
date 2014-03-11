@@ -72,7 +72,7 @@ public class PrefixManager {
      * @param c class to register
      */
     public static void registerClass(CustomClass c) {
-        BoardManager.registerTeam(new Team(c.getName(), c.getPrefix() + ChatColor.RESET + " ", null));
+        if (showClasses) BoardManager.registerTeam(new Team(c.getName(), c.getPrefix() + ChatColor.RESET + " ", null));
     }
 
     /**
@@ -81,13 +81,13 @@ public class PrefixManager {
      * @param data player's data to use for the update
      */
     public static void updateLevel(PlayerSkills data) {
-        BoardManager.setBelowNameScore(data.getName(), data.getLevel());
+        if (showLevels) BoardManager.setBelowNameScore(data.getName(), data.getLevel());
     }
 
     /**
      * Registers the text below player names
      */
     public static void registerText(String text) {
-        BoardManager.setTextBelowNames("Level");
+        if (showLevels) BoardManager.setTextBelowNames("Level");
     }
 }

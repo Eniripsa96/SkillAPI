@@ -216,12 +216,27 @@ public class PlayerSkillBar {
         }
     }
 
+    /**
+     * Clears the skill bar icons for the player and prevents them from dropping on death
+     *
+     * @param event death event of the player to clear for
+     */
     public void clear(PlayerDeathEvent event) {
         if (!enabled || event.getEntity().getGameMode() == GameMode.CREATIVE) return;
         for (int i = 0; i < 9; i++) {
             if (isWeaponSlot(i)) continue;
             event.getDrops().remove(event.getEntity().getInventory().getItem(i));
             event.getEntity().getInventory().setItem(i, null);
+        }
+    }
+
+    /**
+     * Resets the skill bar
+     */
+    public void reset() {
+        for (int i = 0; i < 9; i++) {
+            if (isWeaponSlot(i)) continue;
+            slots.put(i, UNASSIGNED);
         }
     }
 

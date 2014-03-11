@@ -127,6 +127,7 @@ public class SkillBarListener implements Listener {
         // Resetting your class clears the skill bar
         else if (event.getPreviousClass() != null && event.getNewClass() == null) {
             PlayerSkillBar bar = getSkillBar(p);
+            bar.reset();
             bar.clear(p);
             bar.update(p);
         }

@@ -1,5 +1,6 @@
 package com.sucy.skill.api.util.effects;
 
+import com.sucy.skill.api.util.Protection;
 import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.dynamic.EmbedData;
@@ -8,6 +9,7 @@ import com.sucy.skill.api.event.ParticleProjectileLandEvent;
 import com.sucy.skill.api.event.ParticleProjectileLaunchEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -32,6 +34,7 @@ public class ParticleProjectile extends BukkitRunnable {
     private int delay;
     private int count;
     private double damage;
+    private double explodeRadius;
 
     /**
      * Constructor
@@ -104,6 +107,15 @@ public class ParticleProjectile extends BukkitRunnable {
     }
 
     /**
+     * Sets the explosion radius for the impact
+     *
+     * @param radius radius of the explosion
+     */
+    public void setExplodeRadius(double radius) {
+        this.explodeRadius = radius;
+    }
+
+    /**
      * Sets the velocity of the projectile
      *
      * @param vel new velocity
@@ -153,6 +165,14 @@ public class ParticleProjectile extends BukkitRunnable {
                     embed.getSkill().beginUsage();
                 }
                 plugin.getServer().getPluginManager().callEvent(new ParticleProjectileLandEvent(this));
+                if (explodeRadius > 0) {
+                    ParticleHelper.fillSphere(loc, particle, data, (int)(explodeRadius + 0.5), (int)(explodeRadius * explodeRadius * 3 + 0.5));
+                    for (LivingEntity entity : loc.getWorld().getLivingEntities()) {
+                        if (entity.getLocation().distance(loc) < explodeRadius * explodeRadius && Protection.canAttack(shooter, entity)) {
+                            VersionManager.damage(entity, shooter, damage);
+                        }
+                    }
+                }
                 if (embed != null) {
                     embed.resolveNonTarget(loc);
                     embed.getSkill().stopUsage();
@@ -171,6 +191,17 @@ public class ParticleProjectile extends BukkitRunnable {
                         embed.getSkill().beginUsage();
                     }
                     plugin.getServer().getPluginManager().callEvent(new ParticleProjectileHitEvent(this, entity));
+                    if (explodeRadius > 0) {
+                        ParticleHelper.fillSphere(entity.getLocation(), particle, data, (int)(explodeRadius + 0.5), (int)(explodeRadius * explodeRadius * 3 + 0.5));
+                        for (Entity e : entity.getNearbyEntities(explodeRadius, explodeRadius, explodeRadius)) {
+                            if (e instanceof LivingEntity) {
+                                LivingEntity t = (LivingEntity)e;
+                                if (Protection.canAttack(shooter, t)) {
+                                    VersionManager.damage(t, shooter, damage);
+                                }
+                            }
+                        }
+                    }
                     VersionManager.damage(entity, shooter, damage);
                     if (embed != null) {
                         embed.resolveNonTarget(entity.getLocation());

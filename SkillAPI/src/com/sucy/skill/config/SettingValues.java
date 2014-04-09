@@ -62,7 +62,6 @@ public class SettingValues {
     EXP_BLOCK_CREATIVE = EXP_ROOT + "block-creative",
     EXP_FORMULA = EXP_ROOT + "formula",
     EXP_YIELDS = EXP_ROOT + "yields",
-    EXP_USE_YIELDS = EXP_ROOT+ "use-yields",
 
     // -------------------------- Skill Bar Nodes -------------------------- //
 

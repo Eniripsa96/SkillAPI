@@ -85,6 +85,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
     private boolean blockCreativeExp;
+    private boolean setExpYields;
     private double expLost;
     private int startingPoints;
     private int pointsPerLevel;
@@ -162,6 +163,7 @@ public class SkillAPI extends JavaPlugin {
         blockCreativeExp = getConfig().getBoolean(SettingValues.EXP_BLOCK_CREATIVE, true);
         expOrbs = getConfig().getBoolean(SettingValues.EXP_USE_ORBS, false);
         expLost = getConfig().getDouble(SettingValues.EXP_LOST_ON_DEATH, 0);
+        setExpYields = getConfig().getBoolean(SettingValues.EXP_SET_YIELDS, false);
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA);
         x = formula.getInt("x");
         y = formula.getInt("y");
@@ -434,6 +436,12 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean usingExpOrbs() {
         return expOrbs;
+    }
+    /**
+     * @return whether or not the experience yields are forced
+     */
+    public boolean usingSetYields(){
+        return setExpYields;
     }
 
     /**

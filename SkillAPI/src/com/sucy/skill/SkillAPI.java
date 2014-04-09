@@ -163,7 +163,7 @@ public class SkillAPI extends JavaPlugin {
         blockCreativeExp = getConfig().getBoolean(SettingValues.EXP_BLOCK_CREATIVE, true);
         expOrbs = getConfig().getBoolean(SettingValues.EXP_USE_ORBS, false);
         expLost = getConfig().getDouble(SettingValues.EXP_LOST_ON_DEATH, 0);
-        setExpYields = getConfig().getBoolean(SettingValues.EXP_SET_YIELDS, false);
+        setExpYields = getConfig().getBoolean(SettingValues.EXP_SET_YIELDS, !expOrbs);
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA);
         x = formula.getInt("x");
         y = formula.getInt("y");

@@ -45,6 +45,8 @@ Experience:
     y: 4
     z: 0
     w: 0
+#The use-yields option should only be disabled if exp-orbs are already disabled, and only when other plugins have modified xp drops for some mobs.
+  use-yields: true  
   yields:
     blaze: 10
     cavespider: 5

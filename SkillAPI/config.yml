@@ -45,6 +45,7 @@ Experience:
     y: 4
     z: 0
     w: 0
+  set-exp-yields: false
   yields:
     blaze: 10
     cavespider: 5

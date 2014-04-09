@@ -397,7 +397,8 @@ public class APIListener implements Listener {
         }
         if (event.getEntity().getKiller() != null && event.getEntity().getKiller().hasPermission(PermissionNodes.BASIC)) {
             PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller().getName());
-            player.giveExp(plugin.getExp(getName(event.getEntity())));
+            if(plugin.usingSetYields()) player.giveExp(plugin.getExp(getName(event.getEntity())));
+            else player.giveExp(event.getDroppedExp());
         }
     }
 

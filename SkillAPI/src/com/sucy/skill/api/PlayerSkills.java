@@ -14,6 +14,7 @@ import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.vault.PermissionManager;
 import com.sucy.skill.vault.VaultChecker;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -37,7 +38,7 @@ public final class PlayerSkills extends Valued {
     private HashMap<String, Integer> skills = new HashMap<String, Integer>();
     private HashMap<Material, String> binds = new HashMap<Material, String>();
     private SkillAPI plugin;
-    private String player;
+    private VersionPlayer player;
     private String tree;
     private int bonusHealth;
     private int points;
@@ -51,9 +52,35 @@ public final class PlayerSkills extends Valued {
      * SkillAPI via the getPlayer(String) method.</p>
      *
      * @param plugin API reference
-     * @param player player name
+     * @param name   player name
+     *
+     * @deprecated   Use PlayerSkills(SkillAPI, UUID) instead
      */
-    public PlayerSkills(SkillAPI plugin, String player) {
+    public PlayerSkills(SkillAPI plugin, String name) {
+        this(plugin, new VersionPlayer(name));
+    }
+
+    /**
+     * <p>Constructor</p>
+     * <p>Do not use this. Instead, get a reference through
+     * SkillAPI via the getPlayer(String) method.</p>
+     *
+     * @param plugin API reference
+     * @param id     player id
+     */
+    public PlayerSkills(SkillAPI plugin, UUID id) {
+        this(plugin, new VersionPlayer(id));
+    }
+
+    /**
+     * <p>Constructor</p>
+     * <p>Do not use this. Instead, get a reference through
+     * SkillAPI via the getPlayer(String) method.</p>
+     *
+     * @param plugin API reference
+     * @param player player reference
+     */
+    public PlayerSkills(SkillAPI plugin, VersionPlayer player) {
         this.plugin = plugin;
         this.player = player;
         this.level = 1;
@@ -72,8 +99,35 @@ public final class PlayerSkills extends Valued {
      * @param plugin API reference
      * @param player player name
      * @param config config section to load from
+     * @deprecated use PlayerSkills(plugin, id, config) instead
      */
     public PlayerSkills(SkillAPI plugin, String player, ConfigurationSection config) {
+        this(plugin, new VersionPlayer(player), config);
+    }
+
+    /**
+     * <p>Constructor</p>
+     * <p>Do not use this. Instead, get a reference through
+     * SkillAPI via the getPlayer(String) method.</p>
+     *
+     * @param plugin API reference
+     * @param id     player UUID
+     * @param config config section to load from
+     */
+    public PlayerSkills(SkillAPI plugin, UUID id, ConfigurationSection config) {
+        this(plugin, new VersionPlayer(id), config);
+    }
+
+    /**
+     * <p>Constructor</p>
+     * <p>Do not use this. Instead, get a reference through
+     * SkillAPI via the getPlayer(String) method.</p>
+     *
+     * @param plugin API reference
+     * @param player player reference
+     * @param config config section to load from
+     */
+    public PlayerSkills(SkillAPI plugin, VersionPlayer player, ConfigurationSection config) {
         this.plugin = plugin;
         this.player = player;
 
@@ -102,7 +156,7 @@ public final class PlayerSkills extends Valued {
                 return;
             }
 
-            if (plugin.getServer().getPlayer(player) != null && CoreChecker.isCoreActive()) {
+            if (player.getPlayer() != null && CoreChecker.isCoreActive()) {
                 PrefixManager.setPrefix(this, tree.getPrefix(), tree.getBraceColor());
             }
             if (skillConfig != null) {
@@ -158,7 +212,7 @@ public final class PlayerSkills extends Valued {
      * @return player reference
      */
     public Player getPlayer() {
-        return plugin.getServer().getPlayer(player);
+        return player.getPlayer();
     }
 
     /**
@@ -167,7 +221,7 @@ public final class PlayerSkills extends Valued {
      * @return offline player reference
      */
     public OfflinePlayer getOfflinePlayer() {
-        return plugin.getServer().getOfflinePlayer(player);
+        return player.getOfflinePlayer();
     }
 
     /**
@@ -176,7 +230,7 @@ public final class PlayerSkills extends Valued {
      * @return player name
      */
     public String getName() {
-        return player;
+        return getPlayer().getName();
     }
 
     /**
@@ -462,7 +516,7 @@ public final class PlayerSkills extends Valued {
                     points += (int)s.getAttribute(SkillAttribute.COST, i);
                 }
                 if (s instanceof PassiveSkill) {
-                    ((PassiveSkill)s).stopEffects(plugin.getServer().getPlayer(player), level);
+                    ((PassiveSkill)s).stopEffects(player.getPlayer(), level);
                 }
                 ArrayList<Material> keys = new ArrayList<Material>();
                 for (Map.Entry<Material, String> entry : binds.entrySet())
@@ -478,7 +532,9 @@ public final class PlayerSkills extends Valued {
 
         // Add any new skills from the skill tree
         for (String skill : tree.getSkills()) {
-            skills.put(skill.toLowerCase(), 0);
+            if (!skills.containsKey(skill.toLowerCase())) {
+                skills.put(skill.toLowerCase(), 0);
+            }
         }
 
         // Set mana if just starting
@@ -671,7 +727,7 @@ public final class PlayerSkills extends Valued {
         if (plugin.getClass(tree) == null)
             return false;
 
-        Player p = plugin.getServer().getPlayer(player);
+        Player p = player.getPlayer();
         if (p.getOpenInventory() != null)
             p.closeInventory();
         p.openInventory(plugin.getClass(tree).getTree().getInventory(this, skills));
@@ -841,7 +897,7 @@ public final class PlayerSkills extends Valued {
         if (skillTree == null) return false;
         else if (plugin.getClass(tree) == null) return skillTree.getParent() == null;
         else if (getProfessionLevel() < 1) return false;
-        else if (!plugin.hasPermission(plugin.getServer().getPlayer(player), skillTree)) return false;
+        else if (!plugin.hasPermission(player.getPlayer(), skillTree)) return false;
         return skillTree.getParent() != null && skillTree.getParent().equalsIgnoreCase(tree) && plugin.getClass(tree).getProfessLevel() <= level;
     }
 
@@ -856,7 +912,7 @@ public final class PlayerSkills extends Valued {
         if (hasStatus(Status.CURSE)) amount *= -1;
         if (hasStatus(Status.INVINCIBLE) && amount < 0) return;
 
-        Player p = plugin.getServer().getPlayer(player);
+        Player p = player.getPlayer();
         double health;
 
         // Call the event
@@ -985,7 +1041,7 @@ public final class PlayerSkills extends Valued {
      * @return the status data for the player
      */
     public StatusHolder getStatusData() {
-        return getAPI().getStatusHolder(getAPI().getServer().getPlayer(player));
+        return getAPI().getStatusHolder(player.getPlayer());
     }
 
     /**
@@ -1062,7 +1118,7 @@ public final class PlayerSkills extends Valued {
                 node = StatusNodes.SILENCED;
                 left = getTimeLeft(Status.SILENCE);
             }
-            plugin.sendStatusMessage(plugin.getServer().getPlayer(player), node, left);
+            plugin.sendStatusMessage(player.getPlayer(), node, left);
         }
 
         // Skill is on cooldown
@@ -1072,7 +1128,7 @@ public final class PlayerSkills extends Valued {
                 message = message.replace("{cooldown}", skill.getCooldown(this) + "")
                         .replace("{skill}", skill.getName());
 
-                plugin.getServer().getPlayer(player).sendMessage(message);
+                player.getPlayer().sendMessage(message);
             }
         }
 
@@ -1086,7 +1142,7 @@ public final class PlayerSkills extends Valued {
                         .replace("{cost}", cost + "")
                         .replace("{skill}", skill.getName());
 
-                plugin.getServer().getPlayer(player).sendMessage(message);
+                player.getPlayer().sendMessage(message);
             }
         }
 

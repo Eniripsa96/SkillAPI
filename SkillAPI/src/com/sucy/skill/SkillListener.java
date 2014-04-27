@@ -14,6 +14,7 @@ import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.tree.SkillTree;
 import com.sucy.skill.version.VersionManager;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -68,7 +69,7 @@ public class SkillListener implements Listener {
             return;
         }
 
-        PlayerSkills data = plugin.getPlayer(player.getName());
+        PlayerSkills data = plugin.getPlayer(player);
         Material heldItem = player.getItemInHand().getType();
 
         // Must be on right click
@@ -124,6 +125,7 @@ public class SkillListener implements Listener {
         if (damager instanceof Player && PlayerSkills.skillsBeingCast.isEmpty() && !ParticleProjectile.damaging) {
 
             Player p = (Player)damager;
+            VersionPlayer vp = new VersionPlayer(p);
 
             // Requires permission
             if (!p.hasPermission(PermissionNodes.BASIC)) {
@@ -131,7 +133,7 @@ public class SkillListener implements Listener {
             }
 
             // Unusable weapon
-            if (InventoryTask.cannotUse(plugin.getPlayer(p.getName()), p.getItemInHand())) {
+            if (InventoryTask.cannotUse(plugin.getPlayer(vp), p.getItemInHand())) {
                 event.setDamage(1);
                 return;
             }
@@ -139,7 +141,7 @@ public class SkillListener implements Listener {
             // Projectile damage
             if (event.getDamager() instanceof Projectile) {
                 Projectile projectile = (Projectile) event.getDamager();
-                PlayerSkills player = plugin.getPlayer(p.getName());
+                PlayerSkills player = plugin.getPlayer(vp);
 
                 if (player.getClassName() != null) {
                     CustomClass playerClass = plugin.getClass(player.getClassName());
@@ -174,7 +176,7 @@ public class SkillListener implements Listener {
 
             // Melee damage
             else {
-                PlayerSkills player = plugin.getPlayer(p.getName());
+                PlayerSkills player = plugin.getPlayer(vp);
                 if (player != null && player.getClassName() != null) {
                     CustomClass playerClass = plugin.getClass(player.getClassName());
 
@@ -384,7 +386,7 @@ public class SkillListener implements Listener {
     @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
 
-        PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
+        PlayerSkills skills = plugin.getPlayer(event.getPlayer());
 
         // Update the player health
         skills.updateHealth(event.getPlayer());
@@ -416,7 +418,7 @@ public class SkillListener implements Listener {
         if (entity instanceof LivingEntity) return (LivingEntity)entity;
         if (entity instanceof Projectile) {
             Projectile projectile = (Projectile)entity;
-            return projectile.getShooter();
+            return (LivingEntity)projectile.getShooter();
         }
         return null;
     }
@@ -429,7 +431,7 @@ public class SkillListener implements Listener {
     @EventHandler (priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         if (!event.getPlayer().isDead()) {
-            PlayerSkills skills = plugin.getPlayer(event.getPlayer().getName());
+            PlayerSkills skills = plugin.getPlayer(event.getPlayer());
             skills.stopPassiveAbilities();
             skills.clearHealthBonuses();
             skills.applyMaxHealth(20);
@@ -444,7 +446,7 @@ public class SkillListener implements Listener {
     @EventHandler (priority = EventPriority.MONITOR)
     public void onDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player) {
-            PlayerSkills player = plugin.getPlayer(((Player) event.getEntity()).getName());
+            PlayerSkills player = plugin.getPlayer((Player) event.getEntity());
             player.stopPassiveAbilities();
         }
     }
@@ -457,7 +459,7 @@ public class SkillListener implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         if (plugin.getLostExp() > 0 && event.getEntity().getGameMode() != GameMode.CREATIVE) {
-            PlayerSkills player = plugin.getPlayer(event.getEntity().getName());
+            PlayerSkills player = plugin.getPlayer(event.getEntity());
             if (player.hasClass()) {
                 int exp = player.loseExp(plugin.getLostExp());
                 if (exp > 0) {
@@ -475,7 +477,7 @@ public class SkillListener implements Listener {
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
-        PlayerSkills player = plugin.getPlayer(event.getPlayer().getName());
+        PlayerSkills player = plugin.getPlayer(event.getPlayer());
         player.startPassiveAbilities(event.getPlayer());
     }
 
@@ -518,7 +520,7 @@ public class SkillListener implements Listener {
                 return;
             }
             if (!plugin.usingExpOrbs()) {
-                PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller().getName());
+                PlayerSkills player = plugin.getPlayer(event.getEntity().getKiller());
                 player.giveExp(plugin.getExp(getName(event.getEntity())));
             }
         }
@@ -531,7 +533,7 @@ public class SkillListener implements Listener {
      */
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        PlayerSkills player = plugin.getPlayer(event.getPlayer().getName());
+        PlayerSkills player = plugin.getPlayer(event.getPlayer());
         if (player != null && (player.hasStatus(Status.STUN) ||  player.hasStatus(Status.ROOT))) {
             Location from = event.getFrom();
             Location to = event.getTo();
@@ -577,7 +579,7 @@ public class SkillListener implements Listener {
 
                 // If they clicked on a skill, try upgrading it
                 if (tree.isSkill(event.getWhoClicked(), event.getSlot())) {
-                    PlayerSkills player = plugin.getPlayer(event.getWhoClicked().getName());
+                    PlayerSkills player = plugin.getPlayer(event.getWhoClicked());
                     if (event.isLeftClick()) {
                         if (player.upgradeSkill(tree.getSkill(event.getSlot()))) {
                             tree.update(event.getInventory(), player);
@@ -606,7 +608,7 @@ public class SkillListener implements Listener {
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onExpChange(PlayerExpChangeEvent event) {
         if (plugin.usingExpOrbs() && event.getPlayer().hasPermission(PermissionNodes.BASIC)) {
-            plugin.getPlayer(event.getPlayer().getName()).giveExp(event.getAmount());
+            plugin.getPlayer(event.getPlayer()).giveExp(event.getAmount());
         }
         if (plugin.usingLevelBar() && event.getPlayer().hasPermission(PermissionNodes.BASIC)) {
             event.setAmount(0);

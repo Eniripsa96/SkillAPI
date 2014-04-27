@@ -74,7 +74,7 @@ public class ValueConditionMechanic implements IMechanic {
             // Initial values
             boolean passed = false;
             PlayerSkills tData = null;
-            if (t instanceof Player) tData = skill.getAPI().getPlayer(((Player) t).getName());
+            if (t instanceof Player) tData = skill.getAPI().getPlayer((Player) t);
 
             // Check the condition
             if (condition == HEALTH && compare(value, (int)t.getHealth(), type)) passed = true;

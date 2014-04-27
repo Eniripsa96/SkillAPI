@@ -3,6 +3,7 @@ package com.sucy.skill.skillbar;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.skill.ClassSkill;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -37,7 +38,7 @@ public class PlayerSkillBar {
 
     private final HashMap<Integer, String> slots = new HashMap<Integer, String>();
     private final SkillAPI plugin;
-    private final String name;
+    private final VersionPlayer player;
     private boolean enabled = true;
     private boolean setup = false;
 
@@ -45,11 +46,11 @@ public class PlayerSkillBar {
      * Initial constructor
      *
      * @param plugin plugin reference
-     * @param name   player name
+     * @param player player reference
      */
-    public PlayerSkillBar(SkillAPI plugin, String name) {
+    public PlayerSkillBar(SkillAPI plugin, VersionPlayer player) {
         this.plugin = plugin;
-        this.name = name;
+        this.player = player;
         for (int i = 1; i <= 9; i++) {
             if (plugin.getDefaultBar()[i - 1]) {
                 slots.put(i, UNASSIGNED);
@@ -61,11 +62,11 @@ public class PlayerSkillBar {
      * Constructor from config data
      *
      * @param plugin plugin reference
-     * @param name   player name
+     * @param player player name
      * @param config config to load from
      */
-    public PlayerSkillBar(SkillAPI plugin, String name, ConfigurationSection config) {
-        this(plugin, name);
+    public PlayerSkillBar(SkillAPI plugin, VersionPlayer player, ConfigurationSection config) {
+        this(plugin, player);
         for (String key : config.getKeys(false)) {
             if (key.equals("e")) enabled = config.getBoolean(key);
             else if (plugin.getSkill(key) != null) {
@@ -79,7 +80,7 @@ public class PlayerSkillBar {
      * @return whether or not the skill bar is enabled
      */
     public boolean isEnabled() {
-        Player p = plugin.getServer().getPlayer(name);
+        Player p = player.getPlayer();
         return enabled && p != null && p.getGameMode() != GameMode.CREATIVE;
     }
 
@@ -96,7 +97,16 @@ public class PlayerSkillBar {
      * @return name of the player owning the skill bar
      */
     public String getPlayerName() {
-        return name;
+        return player.getName();
+    }
+
+    /**
+     * Gets the player owning the skill bar
+     *
+     * @return owning player
+     */
+    public Player getPlayer() {
+        return player.getPlayer();
     }
 
     /**
@@ -119,7 +129,7 @@ public class PlayerSkillBar {
      */
     public int getItemsInSkillSlots() {
         int count = 0;
-        Player p = plugin.getServer().getPlayer(name);
+        Player p = player.getPlayer();
         if (p == null) return -1;
         for (int slot : slots.keySet()) {
             if (p.getInventory().getItem(slot - 1) != null) {
@@ -138,7 +148,7 @@ public class PlayerSkillBar {
      */
     public int countOpenSlots() {
         int count = 0;
-        Player p = plugin.getServer().getPlayer(name);
+        Player p = player.getPlayer();
         if (p == null) return -1;
         ItemStack[] items = p.getInventory().getContents();
         for (int i = 0; i < items.length; i++) {
@@ -154,12 +164,12 @@ public class PlayerSkillBar {
      */
     public void toggleEnabled() {
         if (enabled) {
-            clear(plugin.getServer().getPlayer(name));
+            clear(player.getPlayer());
             enabled = false;
         }
         else {
             enabled = true;
-            setup(plugin.getServer().getPlayer(name));
+            setup(player.getPlayer());
         }
     }
 
@@ -178,7 +188,7 @@ public class PlayerSkillBar {
         }
 
         // Cannot have item in cursor
-        Player p = plugin.getServer().getPlayer(name);
+        Player p = player.getPlayer();
         if (p == null || (p.getItemOnCursor() != null && p.getItemOnCursor().getType() != Material.AIR)) {
             return;
         }
@@ -200,7 +210,7 @@ public class PlayerSkillBar {
         if (isWeaponSlot(slot)) return;
         ClassSkill skill = plugin.getSkill(slots.get(slot + 1));
         if (skill == null) return;
-        plugin.getPlayer(name).castSkill(skill.getName());
+        plugin.getPlayer(player).castSkill(skill.getName());
     }
 
     /**
@@ -281,7 +291,7 @@ public class PlayerSkillBar {
         for (int i = 1; i <= 9; i++) {
             if (slots.containsKey(i) && slots.get(i).equals(UNASSIGNED)) {
                 slots.put(i, skill.getName());
-                update(plugin.getServer().getPlayer(name));
+                update(player.getPlayer());
                 return;
             }
         }
@@ -302,14 +312,14 @@ public class PlayerSkillBar {
             }
         }
         slots.put(slot + 1, skill.getName());
-        update(plugin.getServer().getPlayer(name));
+        update(player.getPlayer());
     }
 
     /**
      * Updates the player's skill bar icons
      */
     public void update(HumanEntity player) {
-        PlayerSkills data = plugin.getPlayer(name);
+        PlayerSkills data = plugin.getPlayer(this.player);
         for (int i = 1; i <= 9; i++) {
             int index = i - 1;
             if (isWeaponSlot(index)) continue;

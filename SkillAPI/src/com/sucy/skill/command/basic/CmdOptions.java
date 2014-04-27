@@ -8,6 +8,7 @@ import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class CmdOptions implements ICommand {
     public void execute(CommandHandler handler, Plugin plugin, CommandSender sender, String[] args) {
 
         SkillAPI api = (SkillAPI)plugin;
-        PlayerSkills player = api.getPlayer(sender.getName());
+        PlayerSkills player = api.getPlayer((Player)sender);
         int level = player.getProfessionLevel();
 
         // Get the messages
@@ -44,7 +45,7 @@ public class CmdOptions implements ICommand {
 
             // Option filters display all options
             if (string.contains("{option}")) {
-                for (String tree : api.getChildren(player.getClassName(), plugin.getServer().getPlayer(player.getName()))) {
+                for (String tree : api.getChildren(player.getClassName(), player.getPlayer())) {
                     String copy = string.replace("{option}", tree);
                     sender.sendMessage(copy);
                 }

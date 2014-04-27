@@ -6,10 +6,12 @@ import com.sucy.skill.api.skill.PassiveSkill;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.SkillType;
 import com.sucy.skill.config.SkillValues;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import sun.net.www.content.text.plain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -340,8 +342,8 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         // Do nothing if no mechanics present
         if (passiveMechanics.size() == 0) return;
 
-        PlayerSkills data = api.getPlayer(player.getName());
-        PassiveTask task = new PassiveTask(this, data, player.getName());
+        PlayerSkills data = api.getPlayer(player);
+        PassiveTask task = new PassiveTask(this, data, new VersionPlayer(player));
         int period = (int)(getAttribute(PERIOD, level) * 20);
         task.runTaskTimer(data.getAPI(), period, period);
         tasks.put(player.getName(), task);
@@ -375,7 +377,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         if (!hasItemReq(player)) return false;
 
         prefix = "";
-        PlayerSkills data = api.getPlayer(player.getName());
+        PlayerSkills data = api.getPlayer(player);
         boolean successful = false;
         for (Mechanic mechanic : activeMechanics) {
             successful = mechanic.resolve(player, data, this) || successful;
@@ -472,19 +474,19 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
         private DynamicSkill skill;
         private PlayerSkills data;
-        private String playerName;
+        private VersionPlayer player;
 
         /**
          * Constructor
          *
-         * @param skill      passive skill
-         * @param data       data of the player with the passive
-         * @param playerName name of the player with the passive
+         * @param skill  passive skill
+         * @param data   data of the player with the passive
+         * @param player reference of the player with the passive
          */
-        public PassiveTask(DynamicSkill skill, PlayerSkills data, String playerName) {
+        public PassiveTask(DynamicSkill skill, PlayerSkills data, VersionPlayer player) {
             this.skill = skill;
             this.data = data;
-            this.playerName = playerName;
+            this.player = player;
         }
 
         /**
@@ -493,7 +495,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         @Override
         public void run() {
 
-            Player player = getAPI().getServer().getPlayer(playerName);
+            Player player = this.player.getPlayer();
 
             // Cannot use the effect
             if (player == null || player.isDead() || !skill.hasItemReq(player)) {

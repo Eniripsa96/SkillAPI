@@ -39,7 +39,7 @@ public class ManaDamageMechanic implements IMechanic {
         int damageType = skill.getValue(TYPE);
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
-                PlayerSkills p = skill.getAPI().getPlayer(((Player) t).getName());
+                PlayerSkills p = skill.getAPI().getPlayer((Player) t);
                 if (!p.hasClass()) continue;
                 double damage;
 

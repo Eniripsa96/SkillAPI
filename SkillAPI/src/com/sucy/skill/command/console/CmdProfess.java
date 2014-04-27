@@ -7,6 +7,7 @@ import com.sucy.skill.command.CommandHandler;
 import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -53,7 +54,7 @@ public class CmdProfess implements ICommand {
 
             // Profess
             else {
-                PlayerSkills player = api.getPlayer(p.getName());
+                PlayerSkills player = api.getPlayer(p);
 
                 // Must be able to profess to the class
                 if (player.canProfess(args[0])) {
@@ -62,7 +63,7 @@ public class CmdProfess implements ICommand {
 
                     // Notify them if they're online
                     if (p.isOnline()) {
-                        Player target = api.getServer().getPlayer(p.getName());
+                        Player target = new VersionPlayer(p).getPlayer();
                         List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.PROFESS, true);
                         for (String message : messages) {
                             message = message.replace("{class}", api.getClass(args[0]).getName());

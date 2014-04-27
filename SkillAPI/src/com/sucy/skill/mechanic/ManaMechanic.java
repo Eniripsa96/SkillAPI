@@ -35,7 +35,7 @@ public class ManaMechanic implements IMechanic {
         int amount = (int)skill.getAttribute(MANA, target, level);
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
-                PlayerSkills p = skill.getAPI().getPlayer(((Player) t).getName());
+                PlayerSkills p = skill.getAPI().getPlayer((Player) t);
                 int prevMana = p.getMana();
                 p.gainMana(amount);
                 worked = worked || (p.getMana() != prevMana);

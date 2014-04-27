@@ -4,6 +4,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.skill.ClassSkill;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class ClickHistory {
 
     private final ArrayList<MouseClick> entries = new ArrayList<MouseClick>();
     private final SkillAPI api;
-    private final String player;
+    private final VersionPlayer player;
 
     private long timer;
 
@@ -28,7 +29,7 @@ public class ClickHistory {
      */
     public ClickHistory(SkillAPI api, Player player) {
         this.api = api;
-        this.player = player.getName();
+        this.player = new VersionPlayer(player);
     }
 
     /**

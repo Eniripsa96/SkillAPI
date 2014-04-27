@@ -9,6 +9,7 @@ import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class CmdSkills implements ICommand {
     public void execute(CommandHandler handler, Plugin plugin, CommandSender sender, String[] args) {
 
         SkillAPI api = (SkillAPI)plugin;
-        PlayerSkills player = api.getPlayer(sender.getName());
+        PlayerSkills player = api.getPlayer((Player)sender);
 
         // View the skills and if it failed, they didn't have any skills to view
         if (player.viewSkills()) {

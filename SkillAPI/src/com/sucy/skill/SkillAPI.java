@@ -23,21 +23,20 @@ import com.sucy.skill.skillbar.SkillBarListener;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.version.VersionManager;
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -196,17 +195,23 @@ public class SkillAPI extends JavaPlugin {
         // Load player data
         if (playerConfig.getConfig().contains(PlayerValues.ROOT) && playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false) != null) {
             for (String player : playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false)) {
-                PlayerSkills data = new PlayerSkills(this, player, playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT + "." + player));
-                players.put(player.toLowerCase(), data);
+                Object id = player;
+                VersionPlayer vp = new VersionPlayer(id);
+                PlayerSkills data = new PlayerSkills(this, vp, playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT + "." + player));
+                players.put(vp.getIdString(), data);
                 data.updateHealth();
+                if (logging >= 2) {
+                    getLogger().info("Loaded the player: " + vp.getName() + " with ID " + vp.getIdString());
+                }
             }
         }
 
         // Append player data
         for (Player player : getServer().getOnlinePlayers()) {
-            if (!players.containsKey(player.getName().toLowerCase()))
-                players.put(player.getName().toLowerCase(), new PlayerSkills(this, player.getName()));
-            else getPlayer(player.getName()).startPassiveAbilities();
+            VersionPlayer p = new VersionPlayer(player);
+            if (!players.containsKey(p.getIdString()))
+                players.put(p.getIdString(), new PlayerSkills(this, p));
+            else getPlayer(p.getIdString()).startPassiveAbilities();
         }
 
         // Cast options
@@ -582,18 +587,82 @@ public class SkillAPI extends JavaPlugin {
      *
      * @param name player name
      * @return     player class data
+     *
+     * @deprecated 1.7+ doesn't use names anymore. Use getPLayer(VersionPlayer) or getPlayer(UUID) instead
      */
     public PlayerSkills getPlayer(String name) {
+        return getPlayer(new VersionPlayer(name));
+    }
 
-        String lower = name.toLowerCase();
+    /**
+     * <p>Retrieves data for a player</p>
+     * <p>If no data is found for the player, new data is created</p>
+     *
+     * @param player player reference
+     */
+    public PlayerSkills getPlayer(VersionPlayer player) {
 
-        // If the player data doesn't exist, create a new instance
-        if (!players.containsKey(lower)) {
-            players.put(lower, new PlayerSkills(this, name));
+        // If the data doesn't exist, create a new instance
+        if (!players.containsKey(player.getIdString())) {
+            PlayerSkills data = new PlayerSkills(this, player);
+            players.put(player.getIdString(), data);
+            return data;
         }
 
-        // Return the player data
-        return players.get(lower);
+        // When the data is there, just return it
+        else return players.get(player.getIdString());
+    }
+
+    /**
+     * <p>Retrieves data for a player</p>
+     * <p>If no data is found for the player, new data is created</p>
+     *
+     * @param player player reference
+     */
+    public PlayerSkills getPlayer(OfflinePlayer player) {
+        return getPlayer(new VersionPlayer(player));
+    }
+
+    /**
+     * <p>Retrieves data for a player</p>
+     * <p>If no data is found for the player, new data is created</p>
+     *
+     * @param player player reference
+     */
+    public PlayerSkills getPlayer(Player player) {
+        return getPlayer(new VersionPlayer(player));
+    }
+
+    /**
+     * <p>Retrieves data for a player</p>
+     * <p>If no data is found for the player, new data is created</p>
+     *
+     * @param player player reference
+     */
+    public PlayerSkills getPlayer(HumanEntity player) {
+        return getPlayer(new VersionPlayer(player));
+    }
+
+    /**
+     * <p>Retrieves data for a player</p>
+     * <p>If no data is found for the player, new data is created</p>
+     *
+     * @param id player UUID
+     */
+    public PlayerSkills getPlayer(UUID id) {
+        return getPlayer(new VersionPlayer(id));
+    }
+
+    /**
+     * Refunds all points to a player
+     */
+    public void refundPlayerSkills() {
+        for (PlayerSkills player : players.values()) {
+            for (String skillName : player.getSkills().keySet()) {
+                player.getSkills().put(skillName, 0);
+            }
+            player.givePoints(startingPoints + pointsPerLevel * (player.getLevel() - 1) - player.getPoints());
+        }
     }
 
     // ----------------------------- Data Accessor Methods -------------------------------------- //

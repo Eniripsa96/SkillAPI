@@ -142,7 +142,7 @@ public class HealthMechanic implements IMechanic, Listener {
         @Override
         protected void setup() {
             if (entity instanceof Player) {
-                api.getPlayer(((Player) entity).getName()).addMaxHealth((int)bonus);
+                api.getPlayer((Player) entity).addMaxHealth((int)bonus);
             }
             else {
                 double maxHealth = entity.getMaxHealth() + bonus;
@@ -160,7 +160,7 @@ public class HealthMechanic implements IMechanic, Listener {
         @Override
         protected void clear() {
             if (entity instanceof Player) {
-                api.getPlayer(((Player) entity).getName()).addMaxHealth(-(int)bonus);
+                api.getPlayer((Player) entity).addMaxHealth(-(int)bonus);
                 playerBonuses.remove(((Player) entity).getName());
             }
             else {

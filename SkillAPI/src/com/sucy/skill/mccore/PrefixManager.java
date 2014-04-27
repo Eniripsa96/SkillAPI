@@ -7,6 +7,7 @@ import com.rit.sucy.scoreboard.StatBoard;
 import com.rit.sucy.scoreboard.Team;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.ChatColor;
 
 /**
@@ -23,12 +24,22 @@ public class PrefixManager {
      * Clears a class prefix
      *
      * @param player player name
+     * @deprecated use clearPrefix(VersionPlayer) instead
      */
     public static void clearPrefix(String player) {
-        Chat.getPlayerData(player).clearPluginPrefix("SkillAPI");
-        BoardManager.getPlayerBoards(player).removeBoards("SkillAPI");
-        BoardManager.clearTeam(player);
-        BoardManager.clearScore(player);
+        clearPrefix(new VersionPlayer(player));
+    }
+
+    /**
+     * Clears the prefix for a player
+     *
+     * @param player player reference
+     */
+    public static void clearPrefix(VersionPlayer player) {
+        Chat.getPlayerData(player.getName()).clearPluginPrefix("SkillAPI");
+        BoardManager.getPlayerBoards(player.getName()).removeBoards("SkillAPI");
+        BoardManager.clearTeam(player.getName());
+        BoardManager.clearScore(player.getName());
     }
 
     /**

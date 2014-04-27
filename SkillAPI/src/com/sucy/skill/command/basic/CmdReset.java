@@ -8,6 +8,7 @@ import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class CmdReset implements ICommand {
     public void execute(CommandHandler handler, Plugin plugin, CommandSender sender, String[] args) {
 
         SkillAPI api = (SkillAPI)plugin;
-        PlayerSkills player = api.getPlayer(sender.getName());
+        PlayerSkills player = api.getPlayer((Player)sender);
 
         // Requires a class to reset
         if (player.getClassName() != null) {

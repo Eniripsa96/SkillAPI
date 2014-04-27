@@ -14,10 +14,16 @@ public class VersionManager {
         MC_1_5_2_MIN = 2788,
         MC_1_6_2_MIN = 2789,
         MC_1_6_4_MIN = 2880,
-        MC_1_7_2_MIN = 2913,
+        MC_1_7_2_MIN = 2922,
+        MC_1_7_5_MIN = 3026,
+        MC_1_7_8_MIN = 3043,
+        MC_1_7_9_MIN = 3057,
         MC_1_5_2_MAX = 2788,
         MC_1_6_2_MAX = 2879,
-        MC_1_6_4_MAX = 2912;
+        MC_1_6_4_MAX = 2919,
+        MC_1_7_2_MAX = 3024,
+        MC_1_7_5_MAX = 3042,
+        MC_1_7_8_MAX = 3055;
 
     private static int version;
 
@@ -40,9 +46,15 @@ public class VersionManager {
             MC_1_6_2_MIN = 1016;
             MC_1_6_4_MIN = 1108;
             MC_1_7_2_MIN = 1141;
+            MC_1_7_5_MIN = 1342;
+            MC_1_7_8_MIN = 1388;
+            MC_1_7_9_MIN = 1434;
             MC_1_5_2_MAX = 964;
             MC_1_6_2_MAX = 1107;
             MC_1_6_4_MAX = 1138;
+            MC_1_7_2_MAX = 1339;
+            MC_1_7_5_MAX = 1387;
+            MC_1_7_8_MAX = 1433;
             v = v.substring(v.lastIndexOf("-") + 1);
             v = v.substring(0, v.indexOf(" "));
             Bukkit.getLogger().info("Detected Spigot build " + v);

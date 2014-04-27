@@ -280,9 +280,11 @@ public class SoundMechanic implements IMechanic {
         }
 
         // 1.7.2 differences
+        /*
         if (!VersionManager.isVersionAtLeast(VersionManager.MC_1_7_2_MIN)) {
             put(15, Sound.BREATH);
             put(96, Sound.HURT);
         }
+        */
     }};
 }

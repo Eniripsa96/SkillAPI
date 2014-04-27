@@ -8,6 +8,7 @@ import com.sucy.skill.command.ICommand;
 import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class CmdExpPlayer implements ICommand {
             PlayerSkills player;
 
             // Get the target
-            if (args.length == 1) player = api.getPlayer(sender.getName());
+            if (args.length == 1) player = api.getPlayer((Player)sender);
             else player = api.getPlayer(args[1]);
 
             // Get the amount

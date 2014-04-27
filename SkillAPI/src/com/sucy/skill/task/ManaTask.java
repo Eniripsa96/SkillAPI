@@ -34,12 +34,12 @@ public class ManaTask extends BukkitRunnable {
      */
     public void run() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            PlayerSkills data = plugin.getPlayer(player.getName());
+            PlayerSkills data = plugin.getPlayer(player);
             if (data != null) {
                 if (data.hasClass()) {
                     CustomClass c = plugin.getClass(data.getClassName());
                     if (c.gainsMana()) {
-                        plugin.getPlayer(player.getName()).gainMana(amount);
+                        plugin.getPlayer(player).gainMana(amount);
                     }
                 }
             }

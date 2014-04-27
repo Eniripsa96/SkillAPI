@@ -11,6 +11,7 @@ import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.config.Config;
 import com.sucy.skill.tree.SkillTree;
+import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -46,8 +47,9 @@ public class SkillBarListener implements Listener {
         config = new Config(plugin, "skillBars");
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         for (String key : config.getConfig().getKeys(false)) {
-            skillBars.put(key, new PlayerSkillBar(plugin, key, config.getConfig().getConfigurationSection(key)));
-            Player player = plugin.getServer().getPlayer(key);
+            VersionPlayer vp = new VersionPlayer((Object)key);
+            skillBars.put(key, new PlayerSkillBar(plugin, vp, config.getConfig().getConfigurationSection(key)));
+            Player player = vp.getPlayer();
             if (player != null) {
                 skillBars.get(key).setup(player);
             }
@@ -60,7 +62,7 @@ public class SkillBarListener implements Listener {
     public void disable() {
         for (PlayerSkillBar bar : skillBars.values()) {
             bar.save(config.getConfig().createSection(bar.getPlayerName()));
-            Player player = plugin.getServer().getPlayer(bar.getPlayerName());
+            Player player = bar.getPlayer();
             if (player != null) {
                 bar.clear(player);
             }
@@ -77,7 +79,7 @@ public class SkillBarListener implements Listener {
     public PlayerSkillBar getSkillBar(HumanEntity player) {
         if (!skillBars.containsKey(player.getName())) {
             player.getInventory().setHeldItemSlot(8);
-            PlayerSkillBar bar = new PlayerSkillBar(plugin, player.getName());
+            PlayerSkillBar bar = new PlayerSkillBar(plugin, new VersionPlayer(player));
             skillBars.put(player.getName(),bar);
             bar.setup(player);
         }
@@ -91,7 +93,7 @@ public class SkillBarListener implements Listener {
      */
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (plugin.getPlayer(event.getPlayer().getName()).hasClass()) {
+        if (plugin.getPlayer(event.getPlayer()).hasClass()) {
             getSkillBar(event.getPlayer()).setup(event.getPlayer());
         }
     }
@@ -103,7 +105,7 @@ public class SkillBarListener implements Listener {
      */
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        if (plugin.getPlayer(event.getPlayer().getName()).hasClass()) {
+        if (plugin.getPlayer(event.getPlayer()).hasClass()) {
             getSkillBar(event.getPlayer()).clear(event.getPlayer());
         }
     }
@@ -178,7 +180,7 @@ public class SkillBarListener implements Listener {
      */
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
-        if (plugin.getPlayer(event.getEntity().getName()).hasClass()) {
+        if (plugin.getPlayer(event.getEntity()).hasClass()) {
             getSkillBar(event.getEntity()).clear(event);
         }
     }
@@ -190,7 +192,7 @@ public class SkillBarListener implements Listener {
      */
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
-        if (plugin.getPlayer(event.getPlayer().getName()).hasClass()) {
+        if (plugin.getPlayer(event.getPlayer()).hasClass()) {
             getSkillBar(event.getPlayer()).setup(event.getPlayer());
             getSkillBar(event.getPlayer()).update(event.getPlayer());
         }
@@ -205,7 +207,7 @@ public class SkillBarListener implements Listener {
     public void onAssign(InventoryClickEvent event) {
 
         // Players without a class aren't effected
-        if (!plugin.getPlayer(event.getWhoClicked().getName()).hasClass()) {
+        if (!plugin.getPlayer(new VersionPlayer(event.getWhoClicked())).hasClass()) {
             return;
         }
 
@@ -261,7 +263,7 @@ public class SkillBarListener implements Listener {
      */
     @EventHandler
     public void onCast(PlayerItemHeldEvent event) {
-        if (!plugin.getPlayer(event.getPlayer().getName()).hasClass()) return;
+        if (!plugin.getPlayer(event.getPlayer()).hasClass()) return;
 
         PlayerSkillBar bar = getSkillBar(event.getPlayer());
         if (!bar.isWeaponSlot(event.getNewSlot()) && bar.isEnabled()) {
@@ -279,12 +281,12 @@ public class SkillBarListener implements Listener {
     public void onChangeMode(PlayerGameModeChangeEvent event) {
 
         // Clear on entering creative mode
-        if (event.getNewGameMode() == GameMode.CREATIVE && plugin.getPlayer(event.getPlayer().getName()).hasClass()) {
+        if (event.getNewGameMode() == GameMode.CREATIVE && plugin.getPlayer(event.getPlayer()).hasClass()) {
             getSkillBar(event.getPlayer()).clear(event.getPlayer());
         }
 
         // Setup on leaving creative mode
-        else if (event.getPlayer().getGameMode() == GameMode.CREATIVE && plugin.getPlayer(event.getPlayer().getName()).hasClass()) {
+        else if (event.getPlayer().getGameMode() == GameMode.CREATIVE && plugin.getPlayer(event.getPlayer()).hasClass()) {
             final Player player = event.getPlayer();
             plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override

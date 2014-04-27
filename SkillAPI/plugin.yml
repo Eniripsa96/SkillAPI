@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 2.34
+version: 2.35
 author: Eniripsa96
 softdepend: [Vault, MCCore]
 loadbefore: [Quests]

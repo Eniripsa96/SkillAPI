@@ -11,6 +11,7 @@ import com.sucy.skill.skillbar.PlayerSkillBar;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class CmdToggleBar implements ICommand {
     public void execute(CommandHandler handler, Plugin plugin, CommandSender sender, String[] args) {
 
         SkillAPI api = (SkillAPI)plugin;
-        PlayerSkills player = api.getPlayer(sender.getName());
+        PlayerSkills player = api.getPlayer((Player)sender);
 
         // Player must have a class
         if (!player.hasClass()) {

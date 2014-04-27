@@ -51,7 +51,7 @@ public class HealPercentMechanic implements IMechanic {
 
             double prevHealth = t.getHealth();
             if (t instanceof Player) {
-                skill.getAPI().getPlayer(((Player) t).getName()).heal(damage);
+                skill.getAPI().getPlayer((Player) t).heal(damage);
             }
             else VersionManager.heal(t, damage);
             worked = worked || prevHealth != t.getHealth();

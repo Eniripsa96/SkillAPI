@@ -16,6 +16,7 @@ import java.util.Map;
 public class PlayerStats implements StatHolder {
 
     private PlayerSkills player;
+    private HashMap<String, Integer> stats;
 
     /**
      * Constructor
@@ -24,6 +25,19 @@ public class PlayerStats implements StatHolder {
      */
     public PlayerStats(PlayerSkills player) {
         this.player = player;
+        this.stats = new HashMap<String, Integer>();
+        SkillAPI plugin = player.getAPI();
+        double health = player.getPlayer().getHealth();
+        stats.put(plugin.getMessage(StatNodes.HEALTH, true), (int)health);
+        if (plugin.isManaEnabled()) {
+            if (player.hasClass()) {
+                CustomClass c = player.getAPI().getClass(player.getClassName());
+                stats.put(TextFormatter.colorString(c.getManaName()), player.getMana());
+            }
+        }
+        stats.put(plugin.getMessage(StatNodes.POINTS, true), player.getPoints());
+        stats.put(plugin.getMessage(StatNodes.LEVEL, true), player.getLevel());
+        stats.put(plugin.getMessage(StatNodes.EXP, true), player.getExp());
     }
 
     /**
@@ -32,18 +46,17 @@ public class PlayerStats implements StatHolder {
     @Override
     public Map<String, Integer> getStats() {
         SkillAPI plugin = player.getAPI();
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
-        double health = plugin.getServer().getPlayer(player.getName()).getHealth();
-        map.put(plugin.getMessage(StatNodes.HEALTH, true), (int)health);
+        double health = player.getPlayer().getHealth();
+        stats.put(plugin.getMessage(StatNodes.HEALTH, true), (int)health);
         if (plugin.isManaEnabled()) {
             if (player.hasClass()) {
                 CustomClass c = player.getAPI().getClass(player.getClassName());
-                map.put(TextFormatter.colorString(c.getManaName()), player.getMana());
+                stats.put(TextFormatter.colorString(c.getManaName()), player.getMana());
             }
         }
-        map.put(plugin.getMessage(StatNodes.POINTS, true), player.getPoints());
-        map.put(plugin.getMessage(StatNodes.LEVEL, true), player.getLevel());
-        map.put(plugin.getMessage(StatNodes.EXP, true), player.getExp());
-        return map;
+        stats.put(plugin.getMessage(StatNodes.POINTS, true), player.getPoints());
+        stats.put(plugin.getMessage(StatNodes.LEVEL, true), player.getLevel());
+        stats.put(plugin.getMessage(StatNodes.EXP, true), player.getExp());
+        return stats;
     }
 }

@@ -35,7 +35,7 @@ public class ManaPercentMechanic implements IMechanic {
         double amount = skill.getAttribute(MANA, target, level);
         for (LivingEntity t : targets) {
             if (t instanceof Player) {
-                PlayerSkills p = skill.getAPI().getPlayer(((Player) t).getName());
+                PlayerSkills p = skill.getAPI().getPlayer((Player) t);
                 int prevMana = p.getMana();
                 p.gainMana((int)Math.max(1, amount * p.getMaxMana() / 100));
                 worked = worked || (p.getMana() != prevMana);

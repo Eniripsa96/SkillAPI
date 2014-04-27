@@ -55,7 +55,7 @@ public class InventoryTask extends BukkitRunnable {
             // Get the player data
             Player player = players[index];
             if (player.getGameMode() == GameMode.CREATIVE) continue;
-            PlayerSkills data = plugin.getPlayer(player.getName());
+            PlayerSkills data = plugin.getPlayer(player);
 
             // Check for lore strings
             int index = 0;

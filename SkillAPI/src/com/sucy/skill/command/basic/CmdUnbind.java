@@ -32,7 +32,7 @@ public class CmdUnbind implements ICommand {
     public void execute(CommandHandler handler, Plugin plugin, CommandSender sender, String[] args) {
 
         SkillAPI api = (SkillAPI)plugin;
-        PlayerSkills player = api.getPlayer(sender.getName());
+        PlayerSkills player = api.getPlayer((Player)sender);
 
         // No held item
         Material mat = ((Player)sender).getItemInHand().getType();

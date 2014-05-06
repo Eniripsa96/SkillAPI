@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Command to bind a skill to an item
@@ -46,7 +47,10 @@ public class CmdInfoPlayer implements ICommand {
         }
 
         // Otherwise get the target player
-        else player = api.getPlayer(args[0]);
+        else {
+            UUID id = api.getPlayerUUID(args[1]);
+            player = id == null ? null : api.getPlayer(id);
+        }
 
 
         // Invalid player

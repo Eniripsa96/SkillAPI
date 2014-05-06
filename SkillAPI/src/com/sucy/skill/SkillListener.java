@@ -386,6 +386,7 @@ public class SkillListener implements Listener {
     @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
 
+        plugin.registerPlayer(event.getPlayer());
         PlayerSkills skills = plugin.getPlayer(event.getPlayer());
 
         // Update the player health
@@ -430,6 +431,7 @@ public class SkillListener implements Listener {
      */
     @EventHandler (priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
+        plugin.unregisterPlayer(event.getPlayer());
         if (!event.getPlayer().isDead()) {
             PlayerSkills skills = plugin.getPlayer(event.getPlayer());
             skills.stopPassiveAbilities();

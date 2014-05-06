@@ -15,7 +15,7 @@ public abstract class Attributed extends Valued {
     private final HashMap<String, Double> scale = new HashMap<String, Double>();
 
     /**
-     * <p>Defines a new attribute for the skill</p>
+     * <p>Defines a new attribute</p>
      * <p>Values are overwritten after the configuration
      * is loaded. Using this method is simply to define
      * the default values before configuration changes.</p>
@@ -33,7 +33,7 @@ public abstract class Attributed extends Valued {
     }
 
     /**
-     * <p>Defines a new attribute for the skill</p>
+     * <p>Defines a new attribute</p>
      * <p>Values are overwritten after the configuration
      * is loaded. Using this method is simply to define
      * the default values before configuration changes.</p>
@@ -43,7 +43,6 @@ public abstract class Attributed extends Valued {
      * @param name  attribute name
      * @param base  base value
      * @param scale value scale
-     * @throws IllegalArgumentException if attribute is already defined
      */
     public void setAttribute(String name, int base, int scale) {
         this.base.put(name, (double)base);
@@ -67,7 +66,7 @@ public abstract class Attributed extends Valued {
      * Gets the bonus for an attribute value per level
      *
      * @param attribute attribute name
-     * @return          change in value per skill level (adding, can be negative value)
+     * @return          change in value per level
      * @throws IllegalArgumentException if the attribute is not defined
      */
     public double getScale(String attribute) {
@@ -78,7 +77,7 @@ public abstract class Attributed extends Valued {
 
     /**
      * <p>Sets the base value of an attribute</p>
-     * <p>This is used by the API to override the default values.
+     * <p>This is used to override the default values.
      * You should not use this method. When defining attributes,
      * use setAttribute(int, int)</p>
      *

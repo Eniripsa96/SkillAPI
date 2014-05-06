@@ -52,8 +52,9 @@ import java.util.regex.Pattern;
 public class SkillAPI extends JavaPlugin {
 
     // Data
-    private final Hashtable<String, PlayerSkills> players = new Hashtable<String, PlayerSkills>();
-    private final Hashtable<String, Integer> exp = new Hashtable<String, Integer>();
+    private final HashMap<String, PlayerSkills> players = new HashMap<String, PlayerSkills>();
+    private final HashMap<String, Integer> exp = new HashMap<String, Integer>();
+    private final HashMap<String, UUID> ids = new HashMap<String, UUID>();
     private final HashMap<Integer, StatusHolder> holders = new HashMap<Integer, StatusHolder>();
 
     // Utility
@@ -663,6 +664,18 @@ public class SkillAPI extends JavaPlugin {
             }
             player.givePoints(startingPoints + pointsPerLevel * (player.getLevel() - 1) - player.getPoints());
         }
+    }
+
+    public UUID getPlayerUUID(String name) {
+        return ids.get(name.toLowerCase());
+    }
+
+    public void registerPlayer(Player player) {
+        ids.put(player.getName().toLowerCase(), player.getUniqueId());
+    }
+
+    public void unregisterPlayer(Player player) {
+        ids.remove(player.getName().toLowerCase());
     }
 
     // ----------------------------- Data Accessor Methods -------------------------------------- //

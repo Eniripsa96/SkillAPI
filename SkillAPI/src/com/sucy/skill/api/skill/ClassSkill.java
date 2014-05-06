@@ -667,6 +667,7 @@ public abstract class ClassSkill extends Attributed {
      * @param seconds seconds to reduce the cooldown by
      */
     public void subtractCooldown(PlayerSkills player, int seconds) {
+        if (!timers.containsKey(player.getName())) return;
         timers.put(player.getName(), timers.get(player.getName()) - seconds * 1000);
     }
 
@@ -693,16 +694,13 @@ public abstract class ClassSkill extends Attributed {
      */
     public int getCooldown(PlayerSkills player) {
 
-        // Make sure they have a timer
-        if (!timers.containsKey(player.getName())) {
-            timers.put(player.getName(), 0L);
-        }
+        // No timer means its not on cooldown
+        if (!timers.containsKey(player.getName())) return 0;
 
         int level = player.getSkillLevel(name);
         long passed = System.currentTimeMillis() - timers.get(player.getName());
         long cd = (long)(1000 * getAttribute(SkillAttribute.COOLDOWN, level));
-        int left = (int)((cd - passed) / 1000 + 1);
-        return left > 0 ? left : 0;
+        return cd > passed ? (int)((cd - passed) / 1000 + 1) : 0;
     }
 
     /**

@@ -249,8 +249,10 @@ public class SkillBarListener implements Listener {
                 if ((skill instanceof DynamicSkill && ((DynamicSkill)skill).hasActiveEffects())
                         || (!(skill instanceof DynamicSkill) && (skill instanceof TargetSkill || skill instanceof SkillShot))) {
 
-                    // Assign the skill
-                    skillBar.assign(skill, event.getHotbarButton());
+                    // Assign the skill if the player has it
+                    if (plugin.getPlayer(event.getWhoClicked()).hasSkill(skill.getName())) {
+                        skillBar.assign(skill, event.getHotbarButton());
+                    }
                 }
             }
         }

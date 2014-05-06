@@ -168,6 +168,7 @@ Commands:
     skill-not-owned: '&4You do not have that skill'
   name:
     admin-profess: 'profess'
+    admin-reset: 'reset'
     bar: 'bar'
     bind: 'bind'
     cast: 'cast'
@@ -202,6 +203,8 @@ Skill Types:
   area: 'Area'
   self: 'Self'
   linear: 'Linear'
+  cone: 'Cone'
+  summon: 'Summon'
 Status:
   silenced: '&4You are silenced for another &6{duration} &4seconds'
   stunned: '&4You are stunned for another &6{duration} &4seconds'

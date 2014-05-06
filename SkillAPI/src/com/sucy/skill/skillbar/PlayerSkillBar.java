@@ -326,6 +326,7 @@ public class PlayerSkillBar {
 
             ClassSkill skill = plugin.getSkill(slots.get(i));
             if (skill == null || !data.hasSkillUnlocked(skill.getName())) {
+                slots.put(index, UNASSIGNED);
                 if (enabled && player != null && player.getGameMode() != GameMode.CREATIVE) {
                     player.getInventory().setItem(index, EMPTY);
                 }

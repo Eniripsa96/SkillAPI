@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Command to level a player up
@@ -35,7 +36,8 @@ public class CmdLevelConsole implements ICommand {
             PlayerSkills player;
 
             // Get the target
-            player = api.getPlayer(args[1]);
+            UUID id = api.getPlayerUUID(args[1]);
+            player = id == null ? null : api.getPlayer(id);
 
             // Get the amount
             int amount = 0;

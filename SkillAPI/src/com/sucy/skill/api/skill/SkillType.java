@@ -49,6 +49,16 @@ public enum SkillType {
      * A linear target skill
      */
     LINEAR ("linear"),
+
+    /**
+     * A cone target skill
+     */
+    CONE ("cone"),
+
+    /**
+     * A summoning skill
+     */
+    SUMMON ("summon")
     ;
 
     private final String name;

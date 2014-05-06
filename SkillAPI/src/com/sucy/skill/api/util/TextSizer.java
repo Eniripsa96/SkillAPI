@@ -62,6 +62,41 @@ public class TextSizer {
     }
 
     /**
+     * Expands a string to meet the desired size for the console
+     *
+     * @param message message to expand
+     * @param size    desired size
+     * @param front   whether or not to add to the front of the string
+     * @return        the resulting message
+     * @throws IllegalArgumentException when the string is too large or null
+     */
+    public static String expandConsole(String message, int size, boolean front) {
+
+        // Make sure the message isn't null
+        if (message == null)
+            throw new IllegalArgumentException("Invalid string - null");
+
+        // Get the length of the message
+        int currentSize = ChatColor.stripColor(message).length();
+
+        // Already the correct size
+        if (currentSize == size) return message;
+
+        // Too large of a string
+        if (currentSize > size)
+            throw new IllegalArgumentException("Invalid string - larger than desired size");
+
+        // Expand the string
+        StringBuilder sb = new StringBuilder(size);
+        sb.append(message);
+        for (int i = 0; i < size - currentSize; i++) {
+            sb.append(" ");
+        }
+
+        return sb.toString();
+    }
+
+    /**
      * Expands a string to meet the desired size
      *
      * @param message message to expand

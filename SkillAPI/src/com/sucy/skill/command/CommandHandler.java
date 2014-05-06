@@ -1,7 +1,10 @@
 package com.sucy.skill.command;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.FancyMessage;
 import com.sucy.skill.api.util.TextSizer;
+import com.sucy.skill.version.VersionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>Command organizer and executor imported from MCCore</p>
@@ -207,13 +211,11 @@ public abstract class CommandHandler implements CommandExecutor {
         }
 
         // Get number of entries
-        int entries = 7;
+        int entries = 8;
 
-        /*
-        if (VersionManager.isVersionAtLeast(VersionManager.MC_1_7_2) && sender instanceof Player) {
-            entries = 5;
+        if (VersionManager.isVersionAtLeast(VersionManager.MC_1_7_9_MIN) && sender instanceof Player) {
+            entries = 6;
         }
-        */
 
         int maxPage = (validKeys + entries - 1) / entries;
         if (page > maxPage) page = maxPage;
@@ -229,10 +231,11 @@ public abstract class CommandHandler implements CommandExecutor {
                 continue;
             index++;
             if (index <= (page - 1) * entries || index > page * entries) continue;
-            int size = TextSizer.measureString(key + " " + commands.get(key).getArgsString(plugin));
+            int size = sender instanceof Player ? TextSizer.measureString(key + " " + commands.get(key).getArgsString(plugin)) : (key + " " + commands.get(key).getArgsString(plugin)).length();
             if (size > maxSize) maxSize = size;
         }
-        maxSize += 4;
+        if (sender instanceof Player) maxSize += 4;
+        else maxSize += 1;
 
         // Display usage, squaring everything up nicely
         index = 0;
@@ -241,41 +244,56 @@ public abstract class CommandHandler implements CommandExecutor {
                 continue;
             index++;
             if (index <= (page - 1) * entries || index > page * entries) continue;
-            sender.sendMessage(ChatColor.GOLD + "/" + label.toLowerCase() + " " + TextSizer.expand(key + " "
-                    + ChatColor.LIGHT_PURPLE + commands.get(key).getArgsString(plugin) + ChatColor.GRAY, maxSize, false)
+            if (sender instanceof Player) {
+                sender.sendMessage(ChatColor.GOLD + "/" + label.toLowerCase() + " " + TextSizer.expand(key + " "
+                    + ChatColor.LIGHT_PURPLE + commands.get(key).getArgsString(plugin), maxSize, false)
                     + ChatColor.GRAY + "- " + commands.get(key).getDescription(plugin));
+            }
+            else {
+                sender.sendMessage(ChatColor.GOLD + "/" + label.toLowerCase() + " " + TextSizer.expandConsole(key + " "
+                        + ChatColor.LIGHT_PURPLE + commands.get(key).getArgsString(plugin), maxSize, false)
+                        + ChatColor.GRAY + "- " + commands.get(key).getDescription(plugin));
+            }
         }
 
-        // Display usage, squaring everything up nicely
-        index = 0;
-        for (String key : keys) {
-            if (!canUseCommand(sender, commands.get(key)))
-                continue;
-            index++;
-            if (index <= (page - 1) * entries || index > page * entries) continue;
-            sender.sendMessage(ChatColor.GOLD + "/" + label.toLowerCase() + " " + key + " "
-                    + ChatColor.LIGHT_PURPLE + commands.get(key).getArgsString(plugin) + ChatColor.GRAY
-                    + ChatColor.GRAY + "- " + commands.get(key).getDescription(plugin));
-        }
-
-        /*
-        if (VersionManager.isVersionAtLeast(VersionManager.MC_1_7_2) && sender instanceof Player) {
+        if (VersionManager.isVersionAtLeast(VersionManager.MC_1_7_9_MIN) && sender instanceof Player) {
             sender.sendMessage(BREAK);
             String ends = "PreviousNext";
             String spacing = TextSizer.expand(" ", 320 - TextSizer.measureString(ends), true);
-            plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-                    "tellraw " + sender.getName() +
-                    "{extra:[{text:\"Previous\"," +
-                            "clickEvent:{action:run_command,value:\"/class help " + ((page + maxPage - 2) % maxPage + 1) + "\"}," +
-                            "hoverEvent:{action:show_text,value:\"Previous page\"}}," +
-                        "\"" + spacing + "\"," +
-                        "{text:\"Next\"," +
-                            "clickEvent:{action:run_command,value:\"/class help " + ((page % maxPage + 1)) + "\"}," +
-                            "hoverEvent:{action:show_text,value:\"Next Page\"}}]}"
-            );
+            while (!spacing.startsWith(" ")) spacing = spacing.substring(1);
+            String JSON = "{\"text\":\"\"," +
+                    "\"extra\":[" +
+                        "{" +
+                            "\"text\":\"Previous\"," +
+                            "\"clickEvent\":{" +
+                                "\"action\":\"run_command\"," +
+                                "\"value\":\"/class " + ((page + maxPage - 2) % maxPage + 1) + "\"" +
+                            "}," +
+                            "\"hoverEvent\":{" +
+                                "\"action\":\"show_text\"," +
+                                "\"value\":\"Previous page\"" +
+                            "}" +
+                        "}," +
+                        "{" +
+                            "\"text\":\"" + spacing + "\"" +
+                        "}," +
+                        "{" +
+                            "\"text\":\"Next\"," +
+                            "\"clickEvent\":{" +
+                                "\"action\":\"run_command\"," +
+                                "\"value\":\"/class " + ((page % maxPage + 1)) + "\"" +
+                            "}," +
+                            "\"hoverEvent\":{" +
+                                "\"action\":\"show_text\"," +
+                                "\"value\":\"Next Page\"" +
+                            "}" +
+                        "}" +
+                    "]" +
+                "}";
+            plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + sender.getName() + " " + JSON);
         }
-        */
-        sender.sendMessage(BREAK);
+
+        else sender.sendMessage(BREAK);
     }
 
     /**

@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Command to bind a skill to an item
@@ -36,7 +37,8 @@ public class CmdProfess implements ICommand {
         // Requires at least 2 arguments
         if (args.length >= 2) {
 
-            OfflinePlayer p = api.getServer().getOfflinePlayer(args[1]);
+            UUID id = api.getPlayerUUID(args[1]);
+            PlayerSkills player = id == null ? null : api.getPlayer(id);
 
             // Invalid class
             if (api.getClass(args[0]) == null) {
@@ -46,7 +48,7 @@ public class CmdProfess implements ICommand {
             }
 
             // Invalid player
-            else if (!p.hasPlayedBefore()) {
+            else if (player == null) {
                 String error = api.getMessage(CommandNodes.NOT_A_PLAYER, true);
                 error = error.replace("{player}", args[1]);
                 sender.sendMessage(error);
@@ -54,21 +56,18 @@ public class CmdProfess implements ICommand {
 
             // Profess
             else {
-                PlayerSkills player = api.getPlayer(p);
 
                 // Must be able to profess to the class
                 if (player.canProfess(args[0])) {
                     args[0] = api.getClass(args[0]).getName();
                     player.setClass(args[0]);
 
-                    // Notify them if they're online
-                    if (p.isOnline()) {
-                        Player target = new VersionPlayer(p).getPlayer();
-                        List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.PROFESS, true);
-                        for (String message : messages) {
-                            message = message.replace("{class}", api.getClass(args[0]).getName());
-                            target.sendMessage(message);
-                        }
+                    // Notify them of the profession
+                    Player target = player.getPlayer();
+                    List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.PROFESS, true);
+                    for (String message : messages) {
+                        message = message.replace("{class}", api.getClass(args[0]).getName());
+                        target.sendMessage(message);
                     }
                 }
             }

@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Command to bind a skill to an item
@@ -36,19 +37,27 @@ public class CmdReset implements ICommand {
         }
 
         // Invalid player
-        else if (!api.getServer().getOfflinePlayer(args[0]).hasPlayedBefore()) {
-            String error = api.getMessage(CommandNodes.NOT_A_PLAYER, true);
-            error = error.replace("{player}", args[1]);
-            sender.sendMessage(error);
-        }
-
-        // Try to reset the player
         else {
+            UUID id = api.getPlayerUUID(args[1]);
+            PlayerSkills player = id == null ? null : api.getPlayer(id);
 
-            // Reset the player's stats
-            PlayerSkills data = api.getPlayer(args[0]);
-            if (data.hasClass()) {
-                data.setClass(null);
+            // Invalid player
+            if (player == null) {
+                String error = api.getMessage(CommandNodes.NOT_A_PLAYER, true);
+                error = error.replace("{player}", args[1]);
+                sender.sendMessage(error);
+            }
+
+            // No class chosen
+            else if (!player.hasClass()) {
+                String error = api.getMessage(CommandNodes.NO_CHOSEN_CLASS, true);
+                error = error.replace("{player}", args[1]);
+                sender.sendMessage(error);
+            }
+
+            // Reset the player
+            else {
+                player.setClass(null);
                 List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.RESET, true);
                 for (String message : messages) {
                     sender.sendMessage(message);

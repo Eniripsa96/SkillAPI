@@ -38,7 +38,7 @@ public class CmdReset implements ICommand {
 
         // Invalid player
         else {
-            UUID id = api.getPlayerUUID(args[1]);
+            UUID id = api.getPlayerUUID(args[0]);
             PlayerSkills player = id == null ? null : api.getPlayer(id);
 
             // Invalid player

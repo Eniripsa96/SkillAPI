@@ -1,7 +1,6 @@
 package com.sucy.skill.command;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.FancyMessage;
 import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.version.VersionManager;
 import org.bukkit.Bukkit;
@@ -17,7 +16,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>Command organizer and executor imported from MCCore</p>

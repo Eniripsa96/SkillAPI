@@ -132,7 +132,7 @@ public class PlayerSkillBar {
         Player p = player.getPlayer();
         if (p == null) return -1;
         for (int slot : slots.keySet()) {
-            if (p.getInventory().getItem(slot - 1) != null) {
+            if (slot > 0 && slot < 10 && p.getInventory().getItem(slot - 1) != null) {
                 count++;
             }
         }
@@ -246,7 +246,7 @@ public class PlayerSkillBar {
     public void reset() {
         for (int i = 0; i < 9; i++) {
             if (isWeaponSlot(i)) continue;
-            slots.put(i, UNASSIGNED);
+            slots.put(i + 1, UNASSIGNED);
         }
     }
 
@@ -326,7 +326,7 @@ public class PlayerSkillBar {
 
             ClassSkill skill = plugin.getSkill(slots.get(i));
             if (skill == null || !data.hasSkillUnlocked(skill.getName())) {
-                slots.put(index, UNASSIGNED);
+                slots.put(i, UNASSIGNED);
                 if (enabled && player != null && player.getGameMode() != GameMode.CREATIVE) {
                     player.getInventory().setItem(index, EMPTY);
                 }
@@ -355,6 +355,7 @@ public class PlayerSkillBar {
     public void save(ConfigurationSection config) {
         config.set(ENABLED, enabled);
         for (Map.Entry<Integer, String> entry : slots.entrySet()) {
+            if (entry.getValue().equals(UNASSIGNED)) continue;
             config.set(entry.getValue(), entry.getKey());
         }
     }

@@ -56,6 +56,7 @@ public class SkillAPI extends JavaPlugin {
     private final HashMap<String, Integer> exp = new HashMap<String, Integer>();
     private final HashMap<String, UUID> ids = new HashMap<String, UUID>();
     private final HashMap<Integer, StatusHolder> holders = new HashMap<Integer, StatusHolder>();
+    private final HashMap<String, OfflinePlayer> scoreboardStats = new HashMap<String, OfflinePlayer>();
 
     // Utility
     private RegistrationManager registration;
@@ -119,6 +120,16 @@ public class SkillAPI extends JavaPlugin {
         ConfigConverter.convert(getConfig());
         saveConfig();
         languageConfig.saveConfig();
+
+        // Pre-load stat offline players
+        scoreboardStats.put(StatNodes.EXP_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.EXP, true)));
+        scoreboardStats.put(StatNodes.HEALTH_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.HEALTH, true)));
+        scoreboardStats.put(StatNodes.LEVEL_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.LEVEL, true)));
+        scoreboardStats.put(StatNodes.MANA_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.MANA, true)));
+        scoreboardStats.put(StatNodes.POINTS_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.POINTS, true)));
+        for (String key : scoreboardStats.keySet()) {
+            getLogger().info("Scoreboard Key: " + key);
+        }
 
         // Class options
         defaultClass = getConfig().getString(SettingValues.CLASS_DEFAULT, "none");
@@ -892,6 +903,16 @@ public class SkillAPI extends JavaPlugin {
      */
     public void clearStatusHolder(LivingEntity entity) {
         holders.remove(entity.getEntityId());
+    }
+
+    /**
+     * <p>Retrieves the OfflinePlayer representing the
+     * stat for the scoreboard.</p>
+     * @param key StatNode String key
+     * @return    OfflinePlayer representation
+     */
+    public OfflinePlayer getScoreboardStat(String key) {
+        return scoreboardStats.get(key);
     }
 
     // ----------------------------- Language Methods -------------------------------------- //

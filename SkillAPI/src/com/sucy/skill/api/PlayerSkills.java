@@ -624,10 +624,12 @@ public final class PlayerSkills extends Valued {
      */
     public void stopPassiveAbilities() {
         for (Map.Entry<String, Integer> entry : getSkills().entrySet()) {
+            Player p = getPlayer();
+            if (p == null) return;
             if (entry.getValue() >= 1) {
                 ClassSkill s = plugin.getSkill(entry.getKey());
                 if (s != null && s instanceof PassiveSkill)
-                    ((PassiveSkill) s).stopEffects(getPlayer(), entry.getValue());
+                    ((PassiveSkill) s).stopEffects(p, entry.getValue());
             }
         }
     }
@@ -789,6 +791,7 @@ public final class PlayerSkills extends Valued {
      */
     public void giveExp(int amount) {
         if (plugin.getClass(tree) == null) return;
+        if (getPlayer() == null) return;
         if (!getPlayer().hasPermission(PermissionNodes.EXP)) return;
 
         // Call an event
@@ -798,6 +801,12 @@ public final class PlayerSkills extends Valued {
 
         // Add the experience
         exp += event.getExp();
+        String message = plugin.getMessage(OtherNodes.EXP_GAINED, true);
+        message = message.replace("{amount}", event.getExp() + "")
+                .replace("{current}", exp + "")
+                .replace("{left}", getExpToNextLevel() + "")
+                .replace("{required}", getRequiredExp() + "");
+        getPlayer().sendMessage(message + ChatColor.RESET);
 
         // Level up if there's enough exp
         int levels = 0;
@@ -1001,7 +1010,7 @@ public final class PlayerSkills extends Valued {
      * @return experience to the next level
      */
     public int getExpToNextLevel() {
-        return getRequiredExp() - exp;
+        return Math.max(0, getRequiredExp() - exp);
     }
 
     /**

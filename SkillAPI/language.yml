@@ -225,5 +225,7 @@ Other:
   - '&4You cannot use that item'
   skill-cast:
   - '&6{player} &2has cast &6{skill}&r'
+  exp-gained:
+  - '&7(&6{current}&7/&6{required}&7) &2You gained &6{amount} experience'
   exp-lost:
   - '&4You lost &6{exp} experience'

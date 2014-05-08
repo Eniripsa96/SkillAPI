@@ -47,5 +47,10 @@ public class OtherNodes {
     /**
      * Message for when a player loses experience
      */
-    EXP_LOST = BASE + "exp-lost";
+    EXP_LOST = BASE + "exp-lost",
+
+    /**
+     * Message for when a player gaines experience
+     */
+    EXP_GAINED = BASE + "exp-gained";
 }

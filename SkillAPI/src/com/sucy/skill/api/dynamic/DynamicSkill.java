@@ -288,8 +288,10 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
 
                     // Reassign the old attribute if applicable
                     if (hasAttribute(fullName)) {
+                        double base = getBase(fullName);
+                        double scale = getScale(fullName);
                         removeAttribute(prefix + attribute);
-                        setAttribute(prefix + m.getTarget().getAlias(this, attribute), getBase(fullName), getScale(fullName));
+                        setAttribute(prefix + m.getTarget().getAlias(this, attribute), base, scale);
                     }
 
                     // Add the new attribute

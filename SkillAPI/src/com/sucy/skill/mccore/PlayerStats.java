@@ -6,8 +6,11 @@ import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.util.TextFormatter;
 import com.sucy.skill.language.StatNodes;
+import org.bukkit.OfflinePlayer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +19,6 @@ import java.util.Map;
 public class PlayerStats implements StatHolder {
 
     private PlayerSkills player;
-    private HashMap<String, Integer> stats;
 
     /**
      * Constructor
@@ -25,38 +27,45 @@ public class PlayerStats implements StatHolder {
      */
     public PlayerStats(PlayerSkills player) {
         this.player = player;
-        this.stats = new HashMap<String, Integer>();
-        SkillAPI plugin = player.getAPI();
-        double health = player.getPlayer().getHealth();
-        stats.put(plugin.getMessage(StatNodes.HEALTH, true), (int)health);
-        if (plugin.isManaEnabled()) {
-            if (player.hasClass()) {
-                CustomClass c = player.getAPI().getClass(player.getClassName());
-                stats.put(TextFormatter.colorString(c.getManaName()), player.getMana());
-            }
-        }
-        stats.put(plugin.getMessage(StatNodes.POINTS, true), player.getPoints());
-        stats.put(plugin.getMessage(StatNodes.LEVEL, true), player.getLevel());
-        stats.put(plugin.getMessage(StatNodes.EXP, true), player.getExp());
     }
 
     /**
      * @return map of stats for the scoreboard
      */
     @Override
-    public Map<String, Integer> getStats() {
+    public ArrayList<OfflinePlayer> getStats() {
         SkillAPI plugin = player.getAPI();
-        double health = player.getPlayer().getHealth();
-        stats.put(plugin.getMessage(StatNodes.HEALTH, true), (int)health);
+        ArrayList<OfflinePlayer> stats = new ArrayList<OfflinePlayer>();
+        stats.add(plugin.getScoreboardStat(StatNodes.HEALTH_KEY));
         if (plugin.isManaEnabled()) {
             if (player.hasClass()) {
                 CustomClass c = player.getAPI().getClass(player.getClassName());
-                stats.put(TextFormatter.colorString(c.getManaName()), player.getMana());
+                stats.add(plugin.getScoreboardStat(StatNodes.MANA_KEY));
             }
         }
-        stats.put(plugin.getMessage(StatNodes.POINTS, true), player.getPoints());
-        stats.put(plugin.getMessage(StatNodes.LEVEL, true), player.getLevel());
-        stats.put(plugin.getMessage(StatNodes.EXP, true), player.getExp());
+        stats.add(plugin.getScoreboardStat(StatNodes.POINTS_KEY));
+        stats.add(plugin.getScoreboardStat(StatNodes.LEVEL_KEY));
+        stats.add(plugin.getScoreboardStat(StatNodes.EXP_KEY));
+
         return stats;
+    }
+
+    @Override
+    public ArrayList<Integer> getValues() {
+        SkillAPI plugin = player.getAPI();
+        double health = player.getPlayer().getHealth();
+        ArrayList<Integer> values = new ArrayList<Integer>();
+        values.add((int)health);
+        if (plugin.isManaEnabled()) {
+            if (player.hasClass()) {
+                CustomClass c = player.getAPI().getClass(player.getClassName());
+                values.add(player.getMana());
+            }
+        }
+        values.add(player.getPoints());
+        values.add(player.getLevel());
+        values.add(player.getExp());
+
+        return values;
     }
 }

@@ -7,14 +7,11 @@ import com.sucy.skill.api.dynamic.Target;
 import com.sucy.skill.api.dynamic.TimedEmbedData;
 import com.sucy.skill.api.event.AttackType;
 import com.sucy.skill.api.event.PlayerOnDamagedEvent;
-import com.sucy.skill.api.event.PlayerOnHitEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
 import java.util.HashMap;
 import java.util.List;

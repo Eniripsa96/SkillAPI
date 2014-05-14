@@ -1,9 +1,9 @@
 package com.sucy.skill.skillbar;
 
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -14,7 +14,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +27,7 @@ public class PlayerSkillBar {
     private static final ItemStack EMPTY = new ItemStack(Material.PUMPKIN_SEEDS);
     private static final String
         ENABLED = "e",
+        SLOTS = "skill-slots",
         UNASSIGNED = "e";
 
     /**
@@ -66,13 +69,19 @@ public class PlayerSkillBar {
      * @param config config to load from
      */
     public PlayerSkillBar(SkillAPI plugin, VersionPlayer player, ConfigurationSection config) {
-        this(plugin, player);
+        this.plugin = plugin;
+        this.player = player;
         for (String key : config.getKeys(false)) {
             if (key.equals("e")) enabled = config.getBoolean(key);
+            else if (key.equals(SLOTS)) {
+                List<Integer> slots = config.getIntegerList(SLOTS);
+                for (int i : slots) {
+                    this.slots.put(i, UNASSIGNED);
+                }
+            }
             else if (plugin.getSkill(key) != null) {
                 slots.put(config.getInt(key), key);
             }
-            else slots.put(config.getInt(key), UNASSIGNED);
         }
     }
 
@@ -91,6 +100,15 @@ public class PlayerSkillBar {
      */
     public boolean isSetup() {
         return setup;
+    }
+
+    /**
+     * <p>Retrieves the owner of the skill bar represented as a VersionPlayer</p>
+     *
+     * @return VersionPlayer of the owner
+     */
+    public VersionPlayer getOwner() {
+        return player;
     }
 
     /**
@@ -354,6 +372,7 @@ public class PlayerSkillBar {
      */
     public void save(ConfigurationSection config) {
         config.set(ENABLED, enabled);
+        config.set(SLOTS, new ArrayList<Integer>(slots.keySet()));
         for (Map.Entry<Integer, String> entry : slots.entrySet()) {
             if (entry.getValue().equals(UNASSIGNED)) continue;
             config.set(entry.getValue(), entry.getKey());

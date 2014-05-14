@@ -1,20 +1,32 @@
 package com.sucy.skill;
 
+import com.rit.sucy.commands.CommandManager;
+import com.rit.sucy.commands.ConfigurableCommand;
+import com.rit.sucy.commands.SenderType;
+import com.rit.sucy.config.Config;
+import com.rit.sucy.text.TextSizer;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.StatusHolder;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Mechanic;
 import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.api.util.TextSizer;
 import com.sucy.skill.api.util.effects.DOTHelper;
 import com.sucy.skill.api.util.effects.ParticleHelper;
 import com.sucy.skill.click.ClickListener;
-import com.sucy.skill.command.ClassCommander;
-import com.sucy.skill.config.*;
+import com.sucy.skill.command.admin.CmdExp;
+import com.sucy.skill.command.admin.CmdLevelPlayer;
+import com.sucy.skill.command.admin.CmdPointsPlayer;
+import com.sucy.skill.command.admin.CmdReload;
+import com.sucy.skill.command.basic.*;
+import com.sucy.skill.command.console.CmdProfessConsole;
+import com.sucy.skill.command.console.CmdResetConsole;
+import com.sucy.skill.config.ConfigConverter;
+import com.sucy.skill.config.PlayerValues;
+import com.sucy.skill.config.SettingValues;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatNodes;
-import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.mechanic.HealthMechanic;
 import com.sucy.skill.quests.QuestsModuleManager;
@@ -22,8 +34,6 @@ import com.sucy.skill.skillbar.PlayerSkillBar;
 import com.sucy.skill.skillbar.SkillBarListener;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
-import com.sucy.skill.version.VersionManager;
-import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -36,7 +46,10 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,7 +76,6 @@ public class SkillAPI extends JavaPlugin {
     private SkillBarListener barListener;
     private ClickListener clickListener;
     private DOTHelper dotHelper;
-    private ClassCommander commander;
 
     // Tasks
     private InventoryTask invTask;
@@ -108,18 +120,18 @@ public class SkillAPI extends JavaPlugin {
 
         QuestsModuleManager.copyQuestsModule();
 
+        saveDefaultConfig();
         reloadConfig();
+        ConfigConverter.convert(getConfig());
+        Config.trim(getConfig());
+        Config.setDefaults(getConfig());
+        saveConfig();
         playerConfig = new Config(this, "players");
         languageConfig = new Config(this, "language");
         languageConfig.saveDefaultConfig();
-        VersionManager.initialize();
-
-        // Make sure default config values are set
-        setDefaults(getConfig());
-        setDefaults(languageConfig.getConfig());
-        ConfigConverter.convert(getConfig());
-        saveConfig();
-        languageConfig.saveConfig();
+        ConfigConverter.convertCommands(this);
+        languageConfig.trim();
+        languageConfig.checkDefaults();
 
         // Pre-load stat offline players
         scoreboardStats.put(StatNodes.EXP_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.EXP, true)));
@@ -127,9 +139,6 @@ public class SkillAPI extends JavaPlugin {
         scoreboardStats.put(StatNodes.LEVEL_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.LEVEL, true)));
         scoreboardStats.put(StatNodes.MANA_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.MANA, true)));
         scoreboardStats.put(StatNodes.POINTS_KEY, getServer().getOfflinePlayer(getMessage(StatNodes.POINTS, true)));
-        for (String key : scoreboardStats.keySet()) {
-            getLogger().info("Scoreboard Key: " + key);
-        }
 
         // Class options
         defaultClass = getConfig().getString(SettingValues.CLASS_DEFAULT, "none");
@@ -153,12 +162,10 @@ public class SkillAPI extends JavaPlugin {
         // GUI options
         oldHealth = getConfig().getBoolean(SettingValues.GUI_OLD_HEALTH, false);
         levelBar = getConfig().getBoolean(SettingValues.GUI_LEVEL_BAR, false);
-        if (CoreChecker.isCoreActive()) {
-            PrefixManager.registerText(getMessage(StatNodes.LEVEL, true));
-            PrefixManager.showClasses = getConfig().getBoolean(SettingValues.GUI_CLASS_NAME, true);
-            PrefixManager.showLevels = getConfig().getBoolean(SettingValues.GUI_CLASS_LEVEL, true);
-            PrefixManager.showSidebar = getConfig().getBoolean(SettingValues.GUI_SCOREBOARD, true);
-        }
+        PrefixManager.registerText(getMessage(StatNodes.LEVEL, true));
+        PrefixManager.showClasses = getConfig().getBoolean(SettingValues.GUI_CLASS_NAME, true);
+        PrefixManager.showLevels = getConfig().getBoolean(SettingValues.GUI_CLASS_LEVEL, true);
+        PrefixManager.showSidebar = getConfig().getBoolean(SettingValues.GUI_SCOREBOARD, true);
 
         // Item options
         defaultOneDamage = getConfig().getBoolean(SettingValues.ITEM_DEFAULT_ONE_DAMAGE, false);
@@ -223,7 +230,7 @@ public class SkillAPI extends JavaPlugin {
             VersionPlayer p = new VersionPlayer(player);
             if (!players.containsKey(p.getIdString()))
                 players.put(p.getIdString(), new PlayerSkills(this, p));
-            else getPlayer(p.getIdString()).startPassiveAbilities();
+            else getPlayer(p).startPassiveAbilities();
         }
 
         // Cast options
@@ -234,18 +241,38 @@ public class SkillAPI extends JavaPlugin {
             barListener = new SkillBarListener(this);
         }
 
-        // Setup Helper classes
+        // Set up Helper classes
         new SkillListener(this);
-        commander = new ClassCommander(this);
         dotHelper = new DOTHelper(this);
         ParticleHelper.initialize();
 
-        // Setup listeners
+        // Set up listeners
         for (IMechanic mechanic : Mechanic.MECHANICS.values()) {
             if (mechanic instanceof Listener) {
                 getServer().getPluginManager().registerEvents((Listener)mechanic, this);
             }
         }
+
+        // Set up commands
+        ConfigurableCommand root = new ConfigurableCommand(this, "class", SenderType.ANYONE);
+        root.addSubCommands(
+            new ConfigurableCommand(this, "forceprofess", SenderType.CONSOLE_ONLY, new CmdProfessConsole(), "Professes a player", "<class> <player>"),
+            new ConfigurableCommand(this, "forcereset", SenderType.CONSOLE_ONLY, new CmdResetConsole(), "Resets a player", "<player>"),
+            new ConfigurableCommand(this, "bar", SenderType.PLAYER_ONLY, new CmdToggleBar(), "Toggles the skill bar", "", PermissionNodes.BASIC),
+            new ConfigurableCommand(this, "bind", SenderType.PLAYER_ONLY, new CmdBind(), "Binds skill to held item", "<skill>", PermissionNodes.BASIC),
+            new ConfigurableCommand(this, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "Casts a skill", "<skill>", PermissionNodes.BASIC),
+            new ConfigurableCommand(this, "exp", SenderType.ANYONE, new CmdExp(), "Gives a player exp", "<amount> [player]", PermissionNodes.EXP),
+            new ConfigurableCommand(this, "info", SenderType.ANYONE, new CmdInfoPlayer(), "Views details of player", "[player]", PermissionNodes.BASIC),
+            new ConfigurableCommand(this, "level", SenderType.ANYONE, new CmdLevelPlayer(), "Levels a player up", "<amount> [player]", PermissionNodes.LEVEL),
+            new ConfigurableCommand(this, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profession options", "", PermissionNodes.BASIC),
+            new ConfigurableCommand(this, "points", SenderType.ANYONE, new CmdPointsPlayer(), "Gives skill points", "<amount> [player]", PermissionNodes.POINTS),
+            new ConfigurableCommand(this, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes as a class", "<class>", PermissionNodes.BASIC),
+            new ConfigurableCommand(this, "reload", SenderType.ANYONE, new CmdReload(), "Reloads the plugin", "", PermissionNodes.RELOAD),
+            new ConfigurableCommand(this, "reset", SenderType.PLAYER_ONLY, new CmdReset(), "Resets all stats", "", PermissionNodes.RESET),
+            new ConfigurableCommand(this, "skills", SenderType.PLAYER_ONLY, new CmdSkills(), "Opens skill tree", "", PermissionNodes.BASIC),
+            new ConfigurableCommand(this, "unbind", SenderType.PLAYER_ONLY, new CmdUnbind(), "Unbinds held item", "", PermissionNodes.BASIC)
+        );
+        CommandManager.registerCommand(root);
     }
 
     /**
@@ -291,8 +318,7 @@ public class SkillAPI extends JavaPlugin {
         }
 
         // Clear scoreboards
-        if (CoreChecker.isCoreActive())
-            PrefixManager.clearAll();
+        PrefixManager.clearAll();
 
         // Clear all data
         registration.clearData();
@@ -599,8 +625,6 @@ public class SkillAPI extends JavaPlugin {
      *
      * @param name player name
      * @return     player class data
-     *
-     * @deprecated 1.7+ doesn't use names anymore. Use getPLayer(VersionPlayer) or getPlayer(UUID) instead
      */
     public PlayerSkills getPlayer(String name) {
         return getPlayer(new VersionPlayer(name));
@@ -696,16 +720,6 @@ public class SkillAPI extends JavaPlugin {
      */
     public DOTHelper getDOTHelper() {
         return dotHelper;
-    }
-
-    /**
-     * <p>The command handler for SkillAPI</p>
-     * <p>This is not to be used by other plugins</p>
-     *
-     * @return SkillAPI command handler
-     */
-    public ClassCommander getCommander() {
-        return commander;
     }
 
     /**
@@ -958,7 +972,7 @@ public class SkillAPI extends JavaPlugin {
 
         // Invalid message
         if (message == null) {
-            return message;
+            return null;
         }
 
         // Apply filters if applicable

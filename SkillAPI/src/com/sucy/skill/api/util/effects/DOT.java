@@ -1,6 +1,6 @@
 package com.sucy.skill.api.util.effects;
 
-import com.sucy.skill.version.VersionManager;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.skill.ClassSkill;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

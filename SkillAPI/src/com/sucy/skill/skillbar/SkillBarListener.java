@@ -1,5 +1,7 @@
 package com.sucy.skill.skillbar;
 
+import com.rit.sucy.config.Config;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
@@ -9,10 +11,9 @@ import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
-import com.sucy.skill.config.Config;
 import com.sucy.skill.tree.SkillTree;
-import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.GameMode;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -47,7 +48,7 @@ public class SkillBarListener implements Listener {
         config = new Config(plugin, "skillBars");
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         for (String key : config.getConfig().getKeys(false)) {
-            VersionPlayer vp = new VersionPlayer((Object)key);
+            VersionPlayer vp = new VersionPlayer(key);
             skillBars.put(key, new PlayerSkillBar(plugin, vp, config.getConfig().getConfigurationSection(key)));
             Player player = vp.getPlayer();
             if (player != null) {
@@ -60,14 +61,18 @@ public class SkillBarListener implements Listener {
      * Saves the data config
      */
     public void disable() {
+        ConfigurationSection config = this.config.getConfig();
+        for (String key : config.getKeys(false)) {
+            config.set(key, null);
+        }
         for (PlayerSkillBar bar : skillBars.values()) {
-            bar.save(config.getConfig().createSection(bar.getPlayerName()));
+            bar.save(config.createSection(bar.getOwner().getIdString()));
             Player player = bar.getPlayer();
             if (player != null) {
                 bar.clear(player);
             }
         }
-        config.saveConfig();
+        this.config.saveConfig();
     }
 
     /**
@@ -77,13 +82,14 @@ public class SkillBarListener implements Listener {
      * @return       skill bar of the player
      */
     public PlayerSkillBar getSkillBar(HumanEntity player) {
-        if (!skillBars.containsKey(player.getName())) {
+        VersionPlayer vp = new VersionPlayer(player);
+        if (!skillBars.containsKey(vp.getIdString())) {
             player.getInventory().setHeldItemSlot(8);
-            PlayerSkillBar bar = new PlayerSkillBar(plugin, new VersionPlayer(player));
-            skillBars.put(player.getName(),bar);
+            PlayerSkillBar bar = new PlayerSkillBar(plugin, vp);
+            skillBars.put(vp.getIdString(), bar);
             bar.setup(player);
         }
-        return skillBars.get(player.getName());
+        return skillBars.get(vp.getIdString());
     }
 
     /**

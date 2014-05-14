@@ -2,7 +2,10 @@ package com.sucy.skill.quests;
 
 import org.bukkit.Bukkit;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Helper class for checking for Vault

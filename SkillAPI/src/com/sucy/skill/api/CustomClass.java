@@ -1,11 +1,11 @@
 package com.sucy.skill.api;
 
+import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
-import com.sucy.skill.api.util.TextFormatter;
 import com.sucy.skill.click.MouseClick;
 import com.sucy.skill.config.ClassValues;
 import com.sucy.skill.language.StatNodes;

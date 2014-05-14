@@ -5,18 +5,13 @@ import com.sucy.skill.api.dynamic.DynamicSkill;
 import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
-import com.sucy.skill.api.event.ParticleProjectileHitEvent;
 import com.sucy.skill.api.util.effects.ParticleType;
 import com.sucy.skill.api.util.effects.ProjectileHelper;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**

@@ -4,14 +4,10 @@ import com.rit.sucy.scoreboard.StatHolder;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.api.util.TextFormatter;
 import com.sucy.skill.language.StatNodes;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Stat provider for the MCCore stat scoreboard

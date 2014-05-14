@@ -1,17 +1,16 @@
 package com.sucy.skill.api.dynamic;
 
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.PassiveSkill;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.SkillType;
 import com.sucy.skill.config.SkillValues;
-import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import sun.net.www.content.text.plain;
 
 import java.util.ArrayList;
 import java.util.HashMap;

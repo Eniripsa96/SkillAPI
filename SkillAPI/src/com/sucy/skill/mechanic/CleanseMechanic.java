@@ -1,6 +1,5 @@
 package com.sucy.skill.mechanic;
 
-import com.sucy.skill.version.VersionManager;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.Status;
 import com.sucy.skill.api.dynamic.DynamicSkill;
@@ -17,10 +16,8 @@ import java.util.List;
  */
 public class CleanseMechanic implements IMechanic {
 
-    private static final Status[] STATUSES = new Status[] {
-            Status.ABSORB, Status.CURSE, Status.DISARM,
-            Status.INVINCIBLE, Status.ROOT, Status.SILENCE, Status.STUN };
-    private static final PotionEffectType[] POTIONS = VersionManager.getPotionEffectTypes();
+    private static final Status[] STATUSES = Status.values();
+    private static final PotionEffectType[] POTIONS = PotionEffectType.values();
 
     private static final String CLEANSE = "Cleanse";
 

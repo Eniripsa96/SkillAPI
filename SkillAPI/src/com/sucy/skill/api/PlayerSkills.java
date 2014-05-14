@@ -1,20 +1,19 @@
 package com.sucy.skill.api;
 
-import com.sucy.skill.version.VersionManager;
+import com.rit.sucy.player.Protection;
+import com.rit.sucy.player.TargetHelper;
+import com.rit.sucy.version.VersionManager;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.skill.*;
-import com.sucy.skill.api.util.Protection;
-import com.sucy.skill.api.util.TargetHelper;
 import com.sucy.skill.config.PlayerValues;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatusNodes;
-import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import com.sucy.skill.vault.PermissionManager;
 import com.sucy.skill.vault.VaultChecker;
-import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -156,7 +155,7 @@ public final class PlayerSkills extends Valued {
                 return;
             }
 
-            if (player.getPlayer() != null && CoreChecker.isCoreActive()) {
+            if (player.getPlayer() != null) {
                 PrefixManager.setPrefix(this, tree.getPrefix(), tree.getBraceColor());
             }
             if (skillConfig != null) {
@@ -485,8 +484,7 @@ public final class PlayerSkills extends Valued {
             stopPassiveAbilities();
             skills.clear();
             binds.clear();
-            if (CoreChecker.isCoreActive())
-                PrefixManager.clearPrefix(player);
+            PrefixManager.clearPrefix(player);
             updateHealth();
             updateLevelBar();
 
@@ -543,8 +541,7 @@ public final class PlayerSkills extends Valued {
         }
 
         // Set the new prefix for the class
-        if (CoreChecker.isCoreActive())
-            PrefixManager.setPrefix(this, tree.getPrefix(), tree.getBraceColor());
+        PrefixManager.setPrefix(this, tree.getPrefix(), tree.getBraceColor());
 
         updateHealth();
         updateLevelBar();
@@ -601,7 +598,10 @@ public final class PlayerSkills extends Valued {
 
         // Apply health scaling
         if (VersionManager.isVersionAtLeast(VersionManager.MC_1_6_2_MIN)) {
-            if (plugin.oldHealthEnabled()) player.setHealthScale(20);
+            if (plugin.oldHealthEnabled()) {
+                player.setHealthScaled(true);
+                player.setHealthScale(20);
+            }
             else player.setHealthScaled(false);
         }
     }
@@ -854,9 +854,7 @@ public final class PlayerSkills extends Valued {
         updateHealth();
 
         // Update level score
-        if (CoreChecker.isCoreActive()) {
-            PrefixManager.updateLevel(this);
-        }
+        PrefixManager.updateLevel(this);
 
         // Display a message
         Player p = getPlayer();

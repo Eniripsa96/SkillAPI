@@ -1,6 +1,6 @@
 package com.sucy.skill.api.dynamic;
 
-import com.sucy.skill.api.util.Protection;
+import com.rit.sucy.player.Protection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 

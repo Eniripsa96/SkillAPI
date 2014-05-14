@@ -1,5 +1,9 @@
 package com.sucy.skill.config;
 
+import com.rit.sucy.commands.CommandManager;
+import com.rit.sucy.config.Config;
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.language.CommandNodes;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
@@ -25,6 +29,58 @@ public class ConfigConverter {
             }
         }
     }
+
+    /**
+     * Converts the command nodes from the language file to the new command file
+     * for MCCore's configurable commands.
+     *
+     * @param plugin plugin reference
+     */
+    public static void convertCommands(SkillAPI plugin) {
+        Config targetFile = CommandManager.getConfig(plugin);
+        ConfigurationSection target = targetFile.getConfig();
+
+        target.set("class.name", plugin.getMessage(CommandNodes.ROOT, false));
+
+        for (int vi = 0; vi < VALUES.length / 2; vi++) {
+            String tv = VALUES[vi * 2];
+            String sv = VALUES[vi * 2 + 1];
+
+            for (int vc = 0; vc < COMMANDS.length / 2; vc++) {
+
+                String msg = plugin.getMessage(sv + COMMANDS[vc * 2], false);
+                if (msg != null) {
+                    target.set(COMMANDS[vc * 2 + 1] + "." + tv, msg);
+                }
+            }
+        }
+
+        targetFile.saveConfig();
+        targetFile.reloadConfig();
+    }
+
+    private static final String[] VALUES = new String [] {
+            "name", CommandNodes.NAME,
+            "description", CommandNodes.DESCRIPTION,
+            "args", CommandNodes.ARGUMENTS
+    };
+
+    private static final String[] COMMANDS = new String[] {
+            "admin-profess", "forceprofess",
+            "admin-reset", "forcereset",
+            "bar", "bar",
+            "bind", "bind",
+            "exp-player", "exp",
+            "info-player", "info",
+            "level-player", "level",
+            "options", "options",
+            "points-player", "points",
+            "profess", "profess",
+            "reload", "reload",
+            "reset", "reset",
+            "skills", "skills",
+            "unbind", "unbind"
+    };
 
     /**
      * Map of old keys to new ones

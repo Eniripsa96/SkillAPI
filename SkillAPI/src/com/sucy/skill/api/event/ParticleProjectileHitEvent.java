@@ -1,7 +1,5 @@
 package com.sucy.skill.api.event;
 
-import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.util.effects.ParticleProjectile;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;

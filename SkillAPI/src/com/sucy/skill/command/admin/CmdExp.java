@@ -1,13 +1,13 @@
 package com.sucy.skill.command.admin;
 
-import com.sucy.skill.PermissionNodes;
+import com.rit.sucy.commands.CommandManager;
+import com.rit.sucy.commands.ConfigurableCommand;
+import com.rit.sucy.commands.IFunction;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.command.CommandHandler;
-import com.sucy.skill.command.ICommand;
-import com.sucy.skill.command.SenderType;
 import com.sucy.skill.language.CommandNodes;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -16,28 +16,34 @@ import java.util.UUID;
 /**
  * Command to give a player experience
  */
-public class CmdExpConsole implements ICommand {
+public class CmdExp implements IFunction {
 
     /**
      * Executes the command
      *
-     * @param handler handler for the command
+     * @param command handler for the command
      * @param plugin  plugin reference
      * @param sender  sender of the command
      * @param args    arguments
      */
     @Override
-    public void execute(CommandHandler handler, Plugin plugin, CommandSender sender, String[] args) {
+    public void execute(ConfigurableCommand command, Plugin plugin, CommandSender sender, String[] args) {
 
         SkillAPI api = (SkillAPI)plugin;
 
         // Requires at least 1 argument
-        if (args.length >= 2) {
+        if (args.length >= 1) {
             PlayerSkills player;
 
             // Get the target
-            UUID id = api.getPlayerUUID(args[1]);
-            player = id == null ? null : api.getPlayer(id);
+            if (args.length == 1) {
+                if (sender instanceof Player) player = api.getPlayer((Player)sender);
+                else player = null;
+            }
+            else {
+                UUID id = api.getPlayerUUID(args[1]);
+                player = id == null ? null : api.getPlayer(id);
+            }
 
             // Get the amount
             int amount = 0;
@@ -78,12 +84,12 @@ public class CmdExpConsole implements ICommand {
                 sender.sendMessage(error);
             }
 
-            // Give them the levels
+            // Give them the experience
             else {
                 player.giveExp(amount);
 
                 // Confirmation message
-                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.EXP_CONSOLE, true);
+                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.EXP_PLAYER, true);
                 for (String message : messages) {
                     message = message.replace("{player}", player.getName())
                             .replace("{amount}", amount + "")
@@ -95,38 +101,6 @@ public class CmdExpConsole implements ICommand {
         }
 
         // Incorrect arguments
-        else handler.displayUsage(sender);
-    }
-
-    /**
-     * @return permission required for this command
-     */
-    @Override
-    public String getPermissionNode() {
-        return PermissionNodes.LEVEL;
-    }
-
-    /**
-     * @return arguments used by this command
-     */
-    @Override
-    public String getArgsString(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.ARGUMENTS + CommandNodes.EXP_CONSOLE, true);
-    }
-
-    /**
-     * @return the description of this command
-     */
-    @Override
-    public String getDescription(Plugin plugin) {
-        return ((SkillAPI)plugin).getMessage(CommandNodes.DESCRIPTION + CommandNodes.EXP_CONSOLE, true);
-    }
-
-    /**
-     * @return required sender type for this command
-     */
-    @Override
-    public SenderType getSenderType() {
-        return SenderType.CONSOLE_ONLY;
+        else CommandManager.displayUsage(command, sender, 1);
     }
 }

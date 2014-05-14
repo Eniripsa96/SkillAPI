@@ -1,5 +1,6 @@
 package com.sucy.skill;
 
+import com.rit.sucy.config.Config;
 import com.sucy.skill.api.ClassAttribute;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.SkillPlugin;
@@ -10,18 +11,18 @@ import com.sucy.skill.api.skill.SkillAttribute;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.config.ClassValues;
-import com.sucy.skill.config.Config;
 import com.sucy.skill.config.SkillValues;
-import com.sucy.skill.mccore.CoreChecker;
 import com.sucy.skill.mccore.PrefixManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * <p>Registration manager for SkillAPI</p>
@@ -213,9 +214,7 @@ public class RegistrationManager {
         // Arrange skill trees
         List<CustomClass> classList = new ArrayList<CustomClass>(this.classes.values());
         for (CustomClass tree : classList) {
-            if (CoreChecker.isCoreActive()) {
-                PrefixManager.registerClass(tree);
-            }
+            PrefixManager.registerClass(tree);
             try {
                 log("Arranging the skill tree for the class: " + tree.getName(), 5);
                 tree.getTree().arrange();

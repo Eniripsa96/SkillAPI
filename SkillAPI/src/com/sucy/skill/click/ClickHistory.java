@@ -1,10 +1,10 @@
 package com.sucy.skill.click;
 
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.skill.ClassSkill;
-import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

@@ -7,7 +7,6 @@ import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.SkillTreeException;
 import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.skill.SkillAttribute;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

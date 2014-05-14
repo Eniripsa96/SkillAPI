@@ -6,7 +6,6 @@ import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.dynamic.IMechanic;
 import com.sucy.skill.api.dynamic.Target;
 import com.sucy.skill.api.util.effects.ProjectileHelper;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;

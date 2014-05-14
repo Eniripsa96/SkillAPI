@@ -1,7 +1,7 @@
 package com.sucy.skill.api.util.effects;
 
-import com.sucy.skill.api.util.Protection;
-import com.sucy.skill.version.VersionManager;
+import com.rit.sucy.player.Protection;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.dynamic.EmbedData;
 import com.sucy.skill.api.event.ParticleProjectileHitEvent;

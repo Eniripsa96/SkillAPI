@@ -5,9 +5,9 @@ import com.rit.sucy.chat.Prefix;
 import com.rit.sucy.scoreboard.BoardManager;
 import com.rit.sucy.scoreboard.StatBoard;
 import com.rit.sucy.scoreboard.Team;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.CustomClass;
 import com.sucy.skill.api.PlayerSkills;
-import com.sucy.skill.version.VersionPlayer;
 import org.bukkit.ChatColor;
 
 /**

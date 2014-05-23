@@ -106,44 +106,29 @@ public class CommandNodes {
     CAST = "cast",
 
     /**
-     * Experience command by the console
-     */
-    EXP_CONSOLE = "exp-console",
-
-    /**
      * Experience command by the player
      */
-    EXP_PLAYER = "exp-player",
+    EXP = "exp-player",
 
     /**
      * Info player command key
      */
-    INFO_PLAYER = "info-player",
-
-    /**
-     * Info console command key
-     */
-    INFO_CONSOLE = "info-console",
-
-    /**
-     * Level console command key
-     */
-    LEVEL_CONSOLE = "level-console",
+    INFO = "info-player",
 
     /**
      * Level player command key
      */
-    LEVEL_PLAYER = "level-player",
+    LEVEL = "level-player",
+
+    /**
+     * Mana command key
+     */
+    MANA = "mana",
 
     /**
      * Options command key
      */
     OPTIONS = "options",
-
-    /**
-     * Points command by the console
-     */
-    POINTS_CONSOLE = "points-console",
 
     /**
      * Points command by the player

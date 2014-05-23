@@ -801,12 +801,14 @@ public final class PlayerSkills extends Valued {
 
         // Add the experience
         exp += event.getExp();
-        String message = plugin.getMessage(OtherNodes.EXP_GAINED, true);
-        message = message.replace("{amount}", event.getExp() + "")
-                .replace("{current}", exp + "")
-                .replace("{left}", getExpToNextLevel() + "")
-                .replace("{required}", getRequiredExp() + "");
-        getPlayer().sendMessage(message + ChatColor.RESET);
+        if (plugin.isExpMessageEnabled()) {
+            String message = plugin.getMessage(OtherNodes.EXP_GAINED, true);
+            message = message.replace("{amount}", event.getExp() + "")
+                    .replace("{current}", exp + "")
+                    .replace("{left}", getExpToNextLevel() + "")
+                    .replace("{required}", getRequiredExp() + "");
+            getPlayer().sendMessage(message + ChatColor.RESET);
+        }
 
         // Level up if there's enough exp
         int levels = 0;

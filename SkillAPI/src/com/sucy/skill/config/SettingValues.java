@@ -60,6 +60,7 @@ public class SettingValues {
     EXP_BLOCK_SPAWNER = EXP_ROOT + "block-mob-spawner",
     EXP_BLOCK_EGG = EXP_ROOT + "block-mob-egg",
     EXP_BLOCK_CREATIVE = EXP_ROOT + "block-creative",
+    EXP_MESSAGE_ENABLED = EXP_ROOT + "messages-enabled",
     EXP_FORMULA = EXP_ROOT + "formula",
     EXP_YIELDS = EXP_ROOT + "yields",
 

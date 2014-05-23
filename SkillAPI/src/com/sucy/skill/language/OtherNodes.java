@@ -52,5 +52,11 @@ public class OtherNodes {
     /**
      * Message for when a player gaines experience
      */
-    EXP_GAINED = BASE + "exp-gained";
+    EXP_GAINED = BASE + "exp-gained",
+
+    ITEM_FORMAT = BASE + "item-format.",
+    ONLY_ITEM = ITEM_FORMAT + "only-item",
+    LAST_ITEM = ITEM_FORMAT + "last-item",
+    NOT_LAST_ITEM = ITEM_FORMAT + "not-last-item",
+    ITEM_REQUIRED = BASE + "item-required";
 }

@@ -13,6 +13,7 @@ import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.TargetSkill;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -230,12 +231,14 @@ public class SkillBarListener implements Listener {
         else if (event.getSlotType() == InventoryType.SlotType.QUICKBAR) {
             int slot = event.getSlot();
             if (slot < 9 && slot >= 0) {
-                if (event.getClick() == ClickType.RIGHT) {
+                if (!skillBar.isWeaponSlot(slot)) {
                     event.setCancelled(true);
-                    skillBar.toggleSlot(slot);
                 }
-                else if (!skillBar.isWeaponSlot(slot)) {
-                    event.setCancelled(true);
+                if (event.getClick() == ClickType.RIGHT) {
+                    if (!skillBar.isWeaponSlot(slot) || (skillBar.isWeaponSlot(slot) && (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR))) {
+                        event.setCancelled(true);
+                        skillBar.toggleSlot(slot);
+                    }
                 }
             }
         }

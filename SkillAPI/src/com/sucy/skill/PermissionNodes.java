@@ -35,6 +35,11 @@ public class PermissionNodes {
         LEVEL = BASE + "level",
 
         /**
+         * Permission to give players mana
+         */
+        MANA = BASE + "mana",
+
+        /**
          * Permission to give players skill points
          */
         POINTS = BASE + "points",

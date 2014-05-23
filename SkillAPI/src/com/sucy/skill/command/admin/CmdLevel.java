@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Command to give a player experience
+ * Command to level a player up
  */
-public class CmdExp implements IFunction {
+public class CmdLevel implements IFunction {
 
     /**
      * Executes the command
      *
-     * @param command handler for the command
+     * @param command owning command
      * @param plugin  plugin reference
      * @param sender  sender of the command
      * @param args    arguments
@@ -36,9 +36,7 @@ public class CmdExp implements IFunction {
             PlayerSkills player;
 
             // Get the target
-            if (args.length == 1) {
-                player = api.getPlayer((Player)sender);
-            }
+            if (args.length == 1) player = api.getPlayer((Player)sender);
             else {
                 UUID id = api.getPlayerUUID(args[1]);
                 player = id == null ? null : api.getPlayer(id);
@@ -47,7 +45,7 @@ public class CmdExp implements IFunction {
             // Get the amount
             int amount = 0;
             try {
-                amount = (int)Double.parseDouble(args[0]);
+                amount = Integer.parseInt(args[0]);
             }
             catch (Exception ex) {
                 // Do nothing
@@ -83,16 +81,16 @@ public class CmdExp implements IFunction {
                 sender.sendMessage(error);
             }
 
-            // Give them the experience
+            // Give them the levels
             else {
-                player.giveExp(amount);
+                player.levelUp(amount);
 
                 // Confirmation message
-                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.EXP, true);
+                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.LEVEL, true);
                 for (String message : messages) {
                     message = message.replace("{player}", player.getName())
-                            .replace("{amount}", amount + "")
-                            .replace("{level}", player.getLevel() + "");
+                                     .replace("{amount}", amount + "")
+                                     .replace("{level}", player.getLevel() + "");
 
                     sender.sendMessage(message);
                 }

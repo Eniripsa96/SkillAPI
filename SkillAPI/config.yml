@@ -40,6 +40,7 @@ Experience:
   block-mob-spawner: true
   block-mob-egg: true
   block-creative: true
+  messages-enabled: true
   formula:
     x: 1
     y: 4

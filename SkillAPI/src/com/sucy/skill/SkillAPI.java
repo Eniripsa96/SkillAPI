@@ -15,10 +15,7 @@ import com.sucy.skill.api.skill.ClassSkill;
 import com.sucy.skill.api.util.effects.DOTHelper;
 import com.sucy.skill.api.util.effects.ParticleHelper;
 import com.sucy.skill.click.ClickListener;
-import com.sucy.skill.command.admin.CmdExp;
-import com.sucy.skill.command.admin.CmdLevelPlayer;
-import com.sucy.skill.command.admin.CmdPointsPlayer;
-import com.sucy.skill.command.admin.CmdReload;
+import com.sucy.skill.command.admin.*;
 import com.sucy.skill.command.basic.*;
 import com.sucy.skill.command.console.CmdProfessConsole;
 import com.sucy.skill.command.console.CmdResetConsole;
@@ -98,6 +95,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean blockSpawnerExp;
     private boolean blockEggExp;
     private boolean blockCreativeExp;
+    private boolean showExpMessage;
     private double expLost;
     private int startingPoints;
     private int pointsPerLevel;
@@ -180,6 +178,7 @@ public class SkillAPI extends JavaPlugin {
         blockCreativeExp = getConfig().getBoolean(SettingValues.EXP_BLOCK_CREATIVE, true);
         expOrbs = getConfig().getBoolean(SettingValues.EXP_USE_ORBS, false);
         expLost = getConfig().getDouble(SettingValues.EXP_LOST_ON_DEATH, 0);
+        showExpMessage = getConfig().getBoolean(SettingValues.EXP_MESSAGE_ENABLED, true);
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA);
         x = formula.getInt("x");
         y = formula.getInt("y");
@@ -262,10 +261,11 @@ public class SkillAPI extends JavaPlugin {
             new ConfigurableCommand(this, "bind", SenderType.PLAYER_ONLY, new CmdBind(), "Binds skill to held item", "<skill>", PermissionNodes.BASIC),
             new ConfigurableCommand(this, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "Casts a skill", "<skill>", PermissionNodes.BASIC),
             new ConfigurableCommand(this, "exp", SenderType.ANYONE, new CmdExp(), "Gives a player exp", "<amount> [player]", PermissionNodes.EXP),
-            new ConfigurableCommand(this, "info", SenderType.ANYONE, new CmdInfoPlayer(), "Views details of player", "[player]", PermissionNodes.BASIC),
-            new ConfigurableCommand(this, "level", SenderType.ANYONE, new CmdLevelPlayer(), "Levels a player up", "<amount> [player]", PermissionNodes.LEVEL),
+            new ConfigurableCommand(this, "info", SenderType.ANYONE, new CmdInfo(), "Views details of player", "[player]", PermissionNodes.BASIC),
+            new ConfigurableCommand(this, "level", SenderType.ANYONE, new CmdLevel(), "Levels a player up", "<amount> [player]", PermissionNodes.LEVEL),
+            new ConfigurableCommand(this, "mana", SenderType.ANYONE, new CmdMana(), "Gives a player mana", "<amount> [player]", PermissionNodes.MANA),
             new ConfigurableCommand(this, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profession options", "", PermissionNodes.BASIC),
-            new ConfigurableCommand(this, "points", SenderType.ANYONE, new CmdPointsPlayer(), "Gives skill points", "<amount> [player]", PermissionNodes.POINTS),
+            new ConfigurableCommand(this, "points", SenderType.ANYONE, new CmdPoints(), "Gives skill points", "<amount> [player]", PermissionNodes.POINTS),
             new ConfigurableCommand(this, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes as a class", "<class>", PermissionNodes.BASIC),
             new ConfigurableCommand(this, "reload", SenderType.ANYONE, new CmdReload(), "Reloads the plugin", "", PermissionNodes.RELOAD),
             new ConfigurableCommand(this, "reset", SenderType.PLAYER_ONLY, new CmdReset(), "Resets all stats", "", PermissionNodes.RESET),
@@ -547,6 +547,13 @@ public class SkillAPI extends JavaPlugin {
      */
     public int getLoggingLevel() {
         return logging;
+    }
+
+    /**
+     * @return whether or not messages for gaining exp are shown
+     */
+    public boolean isExpMessageEnabled() {
+        return showExpMessage;
     }
 
     // ----------------------------- Registration methods -------------------------------------- //
@@ -1041,7 +1048,7 @@ public class SkillAPI extends JavaPlugin {
         message = filterSizer(message, false);
 
         // Return the result
-        return message;
+        return message + ChatColor.RESET;
     }
 
     /**

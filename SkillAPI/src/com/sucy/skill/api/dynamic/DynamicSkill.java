@@ -1,5 +1,6 @@
 package com.sucy.skill.api.dynamic;
 
+import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.api.skill.ClassSkill;
@@ -7,6 +8,7 @@ import com.sucy.skill.api.skill.PassiveSkill;
 import com.sucy.skill.api.skill.SkillShot;
 import com.sucy.skill.api.skill.SkillType;
 import com.sucy.skill.config.SkillValues;
+import com.sucy.skill.language.OtherNodes;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -375,7 +377,30 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
      */
     @Override
     public boolean cast(Player player, int level) {
-        if (!hasItemReq(player)) return false;
+        if (!hasItemReq(player)) {
+            String required = api.getMessage(OtherNodes.ITEM_REQUIRED, true);
+
+            // Multiple items
+            if (itemReq.contains(",")) {
+                String last = api.getMessage(OtherNodes.LAST_ITEM, true);
+                String notLast = api.getMessage(OtherNodes.NOT_LAST_ITEM, true);
+                String[] items = itemReq.split(",");
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < items.length - 1; i++) {
+                    sb.append(notLast.replace("{item}", TextFormatter.format(items[i])));
+                }
+                sb.append(last.replace("{item}", TextFormatter.format(items[items.length - 1])));
+                player.sendMessage(required.replace("{items}", sb.toString()));
+            }
+
+            // One item
+            else {
+                String only = api.getMessage(OtherNodes.ONLY_ITEM, true);
+                player.sendMessage(required.replace("{items}", only.replace("{item}", TextFormatter.format(itemReq))));
+            }
+
+            return false;
+        }
 
         prefix = "";
         PlayerSkills data = api.getPlayer(player);

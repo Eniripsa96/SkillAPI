@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Command to give a player experience
+ * Command to give a player mana
  */
-public class CmdExp implements IFunction {
+public class CmdMana implements IFunction {
 
     /**
      * Executes the command
      *
-     * @param command handler for the command
+     * @param command owning command
      * @param plugin  plugin reference
      * @param sender  sender of the command
      * @param args    arguments
@@ -36,9 +36,7 @@ public class CmdExp implements IFunction {
             PlayerSkills player;
 
             // Get the target
-            if (args.length == 1) {
-                player = api.getPlayer((Player)sender);
-            }
+            if (args.length == 1) player = api.getPlayer((Player)sender);
             else {
                 UUID id = api.getPlayerUUID(args[1]);
                 player = id == null ? null : api.getPlayer(id);
@@ -47,7 +45,7 @@ public class CmdExp implements IFunction {
             // Get the amount
             int amount = 0;
             try {
-                amount = (int)Double.parseDouble(args[0]);
+                amount = Integer.parseInt(args[0]);
             }
             catch (Exception ex) {
                 // Do nothing
@@ -69,30 +67,22 @@ public class CmdExp implements IFunction {
 
             // Target doesn't have a class
             else if (player.getClassName() == null) {
-                String error = api.getMessage(CommandNodes.CANNOT_LEVEL, true);
+                String error = api.getMessage(CommandNodes.NO_CHOSEN_CLASS, true);
                 error = error.replace("{player}", player.getName());
                 sender.sendMessage(error);
             }
 
-            // Target is max level
-            else if (player.getLevel() >= api.getClass(player.getClassName()).getMaxLevel()) {
-                String error = api.getMessage(CommandNodes.MAX_LEVEL, true);
-                error = error.replace("{player}", player.getName())
-                        .replace("{level}", player.getLevel() + "");
-
-                sender.sendMessage(error);
-            }
-
-            // Give them the experience
+            // Give them the mana
             else {
-                player.giveExp(amount);
+                player.gainMana(amount);
 
                 // Confirmation message
-                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.EXP, true);
+                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.MANA, true);
                 for (String message : messages) {
                     message = message.replace("{player}", player.getName())
                             .replace("{amount}", amount + "")
-                            .replace("{level}", player.getLevel() + "");
+                            .replace("{mana}", player.getMana() + "")
+                            .replace("{max}", player.getMaxMana() + "");
 
                     sender.sendMessage(message);
                 }

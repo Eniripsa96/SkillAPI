@@ -349,7 +349,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         PassiveTask task = new PassiveTask(this, data, new VersionPlayer(player));
         int period = (int)(getAttribute(PERIOD, level) * 20);
         task.runTaskTimer(data.getAPI(), period, period);
-        tasks.put(player.getName(), task);
+        tasks.put(player.getName().toLowerCase(), task);
     }
 
     /**
@@ -405,6 +405,7 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         prefix = "";
         PlayerSkills data = api.getPlayer(player);
         boolean successful = false;
+        data.getAPI().getLogger().info("Mechanic Amount: " + activeMechanics.size());
         for (Mechanic mechanic : activeMechanics) {
             successful = mechanic.resolve(player, data, this) || successful;
         }

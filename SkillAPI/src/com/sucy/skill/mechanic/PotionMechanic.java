@@ -42,6 +42,8 @@ public class PotionMechanic implements IMechanic {
         int duration = (int)(skill.getAttribute(DURATION, target, level) * 20);
         int tier = (int)skill.getAttribute(TIER, target, level);
 
+        data.getAPI().getLogger().info("Targets: " + targets.size() + ", Potion: " + potionValue + ", Tier: " + tier);
+
         // Must have a target
         if (targets.size() == 0) return false;
 
@@ -49,6 +51,7 @@ public class PotionMechanic implements IMechanic {
         while (potionValue > 0) {
             PotionEffectType potionType = POTION_TYPES.get(potionValue % 32);
             potionValue /= 32;
+            data.getAPI().getLogger().info("Appling " + potionType.getName() + "...");
             for (LivingEntity t : targets) {
                 t.addPotionEffect(new PotionEffect(potionType, duration, tier), true);
             }
@@ -66,7 +69,7 @@ public class PotionMechanic implements IMechanic {
     public void applyDefaults(DynamicSkill skill, String prefix) {
         skill.checkDefault(prefix + DURATION, 5, 2);
         skill.checkDefault(prefix + TIER, 0, 0);
-        if (!skill.isSet(TYPE) || !POTION_TYPES.containsKey(skill.getValue(TYPE))) {
+        if (!skill.isSet(TYPE)) {
             skill.setValue(TYPE, 1);
         }
     }

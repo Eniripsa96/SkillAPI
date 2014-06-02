@@ -381,7 +381,7 @@ public class SkillListener implements Listener {
         plugin.unregisterPlayer(event.getPlayer());
         if (!event.getPlayer().isDead()) {
             PlayerSkills skills = plugin.getPlayer(event.getPlayer());
-            skills.stopPassiveAbilities();
+            skills.stopPassiveAbilities(event.getPlayer());
             skills.clearHealthBonuses();
             skills.applyMaxHealth(20);
         }

@@ -64,13 +64,13 @@ public class CmdInfo implements IFunction {
             // Get the messages
             List<String> messages;
             String base = CommandNodes.COMPLETE + CommandNodes.INFO;
-            if (player.getClassName() == null) messages = api.getMessages(base + CommandNodes.NO_CLASS, true);
+            if (!player.hasClass()) messages = api.getMessages(base + CommandNodes.NO_CLASS, true);
             else messages = api.getMessages(base + CommandNodes.HAS_CLASS, true);
 
             // Filter and send the messages
             for (String string : messages) {
                 string = string.replace("{player}", player.getPlayer().getName());
-                if (player.getClassName() != null)
+                if (player.hasClass())
                     string = string.replace("{class}", player.getClassName())
                                    .replace("{level}", player.getLevel() + "")
                                    .replace("{exp}", player.getExp() + "")

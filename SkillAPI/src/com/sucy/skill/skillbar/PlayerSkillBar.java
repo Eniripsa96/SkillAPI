@@ -366,6 +366,18 @@ public class PlayerSkillBar {
     }
 
     /**
+     * <p>Retrieves the data for the skill bar.</p>
+     * <p>The key is the slot of the hotbar.</p>
+     * <p>The value is the skill assigned to the slot.</p>
+     * <p>Modifying this map will change the player's skill bar data.</p>
+     *
+     * @return skill bar data
+     */
+    public HashMap<Integer, String> getData() {
+        return slots;
+    }
+
+    /**
      * Saves the bar data to a config
      *
      * @param config config to save to

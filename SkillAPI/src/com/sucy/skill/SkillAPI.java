@@ -22,6 +22,7 @@ import com.sucy.skill.command.console.CmdResetConsole;
 import com.sucy.skill.config.ConfigConverter;
 import com.sucy.skill.config.PlayerValues;
 import com.sucy.skill.config.SettingValues;
+import com.sucy.skill.example.ExampleClasses;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.StatNodes;
 import com.sucy.skill.mccore.PrefixManager;
@@ -83,6 +84,7 @@ public class SkillAPI extends JavaPlugin {
     private Config languageConfig;
 
     // Settings
+    private ExampleClasses examples;
     private String treeType;
     private String defaultClass;
     private boolean[] bar;
@@ -96,6 +98,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean blockEggExp;
     private boolean blockCreativeExp;
     private boolean showExpMessage;
+    private boolean showLvlMessage;
     private double expLost;
     private int startingPoints;
     private int pointsPerLevel;
@@ -144,6 +147,9 @@ public class SkillAPI extends JavaPlugin {
         startingPoints = getConfig().getInt(SettingValues.CLASS_STARTING_POINTS, 1);
         pointsPerLevel = getConfig().getInt(SettingValues.CLASS_POINTS_PER_LEVEL, 1);
         baseHp = getConfig().getInt(SettingValues.CLASS_HP, 20);
+        if (getConfig().getBoolean(SettingValues.CLASS_EXAMPLES, false)) {
+            examples = new ExampleClasses(this);
+        }
 
         // Skill options
         treeType = getConfig().getString(SettingValues.SKILL_TREE_TYPE, "requirement");
@@ -179,6 +185,7 @@ public class SkillAPI extends JavaPlugin {
         expOrbs = getConfig().getBoolean(SettingValues.EXP_USE_ORBS, false);
         expLost = getConfig().getDouble(SettingValues.EXP_LOST_ON_DEATH, 0);
         showExpMessage = getConfig().getBoolean(SettingValues.EXP_MESSAGE_ENABLED, true);
+        showLvlMessage = getConfig().getBoolean(SettingValues.EXP_LVL_MESSAGE_ENABLED, true);
         ConfigurationSection formula = getConfig().getConfigurationSection(SettingValues.EXP_FORMULA);
         x = formula.getInt("x");
         y = formula.getInt("y");
@@ -206,6 +213,7 @@ public class SkillAPI extends JavaPlugin {
         // Logging options
         logging = getConfig().getInt(SettingValues.LOG_LOAD, 0);
 
+
         // Register classes and skills
         registration = new RegistrationManager(this);
         registration.initialize();
@@ -213,8 +221,7 @@ public class SkillAPI extends JavaPlugin {
         // Load player data
         if (playerConfig.getConfig().contains(PlayerValues.ROOT) && playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false) != null) {
             for (String player : playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT).getKeys(false)) {
-                Object id = player;
-                VersionPlayer vp = new VersionPlayer(id);
+                VersionPlayer vp = new VersionPlayer(player);
                 PlayerSkills data = new PlayerSkills(this, vp, playerConfig.getConfig().getConfigurationSection(PlayerValues.ROOT + "." + player));
                 players.put(vp.getIdString(), data);
                 data.updateHealth();
@@ -257,10 +264,9 @@ public class SkillAPI extends JavaPlugin {
         root.addSubCommands(
             new ConfigurableCommand(this, "forceprofess", SenderType.CONSOLE_ONLY, new CmdProfessConsole(), "Professes a player", "<class> <player>"),
             new ConfigurableCommand(this, "forcereset", SenderType.CONSOLE_ONLY, new CmdResetConsole(), "Resets a player", "<player>"),
-            new ConfigurableCommand(this, "bar", SenderType.PLAYER_ONLY, new CmdToggleBar(), "Toggles the skill bar", "", PermissionNodes.BASIC),
             new ConfigurableCommand(this, "bind", SenderType.PLAYER_ONLY, new CmdBind(), "Binds skill to held item", "<skill>", PermissionNodes.BASIC),
             new ConfigurableCommand(this, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "Casts a skill", "<skill>", PermissionNodes.BASIC),
-            new ConfigurableCommand(this, "exp", SenderType.ANYONE, new CmdExp(), "Gives a player exp", "<amount> [player]", PermissionNodes.EXP),
+            new ConfigurableCommand(this, "exp", SenderType.ANYONE, new CmdExp(), "Gives a player exp", "<amount> [player]", PermissionNodes.LEVEL),
             new ConfigurableCommand(this, "info", SenderType.ANYONE, new CmdInfo(), "Views details of player", "[player]", PermissionNodes.BASIC),
             new ConfigurableCommand(this, "level", SenderType.ANYONE, new CmdLevel(), "Levels a player up", "<amount> [player]", PermissionNodes.LEVEL),
             new ConfigurableCommand(this, "mana", SenderType.ANYONE, new CmdMana(), "Gives a player mana", "<amount> [player]", PermissionNodes.MANA),
@@ -272,6 +278,9 @@ public class SkillAPI extends JavaPlugin {
             new ConfigurableCommand(this, "skills", SenderType.PLAYER_ONLY, new CmdSkills(), "Opens skill tree", "", PermissionNodes.BASIC),
             new ConfigurableCommand(this, "unbind", SenderType.PLAYER_ONLY, new CmdUnbind(), "Unbinds held item", "", PermissionNodes.BASIC)
         );
+        if (isUsingSkillBars()) {
+            root.addSubCommand(new ConfigurableCommand(this, "bar", SenderType.PLAYER_ONLY, new CmdToggleBar(), "Toggles the skill bar", "", PermissionNodes.BASIC));
+        }
         CommandManager.registerCommand(root);
     }
 
@@ -325,6 +334,9 @@ public class SkillAPI extends JavaPlugin {
         exp.clear();
         players.clear();
         getServer().getScheduler().cancelTasks(this);
+        if (examples != null) {
+            examples.disable();
+        }
     }
 
     // ----------------------------- Data Management Methods -------------------------------------- //
@@ -554,6 +566,45 @@ public class SkillAPI extends JavaPlugin {
      */
     public boolean isExpMessageEnabled() {
         return showExpMessage;
+    }
+
+    /**
+     * @param enabled whether or not to show experience messages
+     */
+    public void setExpMessageEnabled(boolean enabled) {
+        showExpMessage = enabled;
+    }
+
+    /**
+     * @return whether or not messages for leveling up are shown
+     */
+    public boolean isLvlMessageEnabled() {
+        return showLvlMessage;
+    }
+
+    /**
+     * @param enabled whether or not to show level messages
+     */
+    public void setLvlMessageEnabled(boolean enabled) {
+        this.showLvlMessage = enabled;
+    }
+
+    /**
+     * <p>Checks whether or not SkillAPI is using the example classes.</p>
+     *
+     * @return true if using example classes, false otherwise
+     */
+    public boolean isUsingExampleClasses() {
+        return examples != null;
+    }
+
+    /**
+     * <p>Retrieves the handler for the example classes.</p>
+     *
+     * @return the handler for the example classes
+     */
+    public ExampleClasses getExampleClasses() {
+        return examples;
     }
 
     // ----------------------------- Registration methods -------------------------------------- //

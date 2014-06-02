@@ -13,6 +13,7 @@ Classes:
   starting-points: 1
   points-per-level: 1
   profess-reset: false
+  use-examples: false
 Mana:
   enabled: true
   gain-freq: 1
@@ -41,6 +42,7 @@ Experience:
   block-mob-egg: true
   block-creative: true
   messages-enabled: true
+  level-message-enabled: true
   formula:
     x: 1
     y: 4

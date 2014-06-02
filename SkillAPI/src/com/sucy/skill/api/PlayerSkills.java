@@ -206,6 +206,18 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
+     * <p>Retrieves the details of the player's bindings</p>
+     * <p>The key is the material the skill is bound to</p>
+     * <p>The value is the skill bound to the item</p>
+     * <p>Modifying this map will change the player's skill bindings</p>
+     *
+     * @return map of the player's skill bindings
+     */
+    public HashMap<Material, String> getBinds() {
+        return binds;
+    }
+
+    /**
      * <p>Retrieves the Bukkit player reference</p>
      *
      * @return player reference
@@ -620,12 +632,20 @@ public final class PlayerSkills extends Valued {
     }
 
     /**
-     * <p>Stops the effects of all passive abilities for the player</p>
+     * <p>Stops the effects of all passive abilities for the player.</p>
      */
     public void stopPassiveAbilities() {
+        stopPassiveAbilities(getPlayer());
+    }
+
+    /**
+     * <p>Stops the effects of all passive abilities for the player.</p>
+     *
+     * @param p player reference
+     */
+    public void stopPassiveAbilities(Player p) {
+        if (p == null) return;
         for (Map.Entry<String, Integer> entry : getSkills().entrySet()) {
-            Player p = getPlayer();
-            if (p == null) return;
             if (entry.getValue() >= 1) {
                 ClassSkill s = plugin.getSkill(entry.getKey());
                 if (s != null && s instanceof PassiveSkill)
@@ -859,31 +879,33 @@ public final class PlayerSkills extends Valued {
         PrefixManager.updateLevel(this);
 
         // Display a message
-        Player p = getPlayer();
-        List<String> messages = plugin.getMessages(OtherNodes.LEVEL_UP, true);
-        double healthScale = (int)skillTree.getScale(ClassAttribute.HEALTH);
-        double manaScale = (int)skillTree.getScale(ClassAttribute.MANA);
-        for (String message : messages) {
-            message = message.replace("{level}", level + "")
-                    .replace("{class}", tree)
-                    .replace("{points}", points + "")
-                    .replace("{health}", (int)p.getMaxHealth() + "")
-                    .replace("{mana}", getMaxMana() + "")
-                    .replace("{pointsgain}", plugin.getPointsPerLevel() * amount + "")
-                    .replace("{healthgain}", (int)(level * healthScale) - (int)((level - amount) * healthScale) + "")
-                    .replace("{managain}", (int)(level * manaScale) - (int)((level - amount) * manaScale) + "");
-
-            p.sendMessage(message);
-        }
-
-        // Display max level message if applicable
-        if (level >= skillTree.getMaxLevel()) {
-            messages = plugin.getMessages(OtherNodes.MAX_LEVEL, true);
+        if (plugin.isLvlMessageEnabled()) {
+            Player p = getPlayer();
+            List<String> messages = plugin.getMessages(OtherNodes.LEVEL_UP, true);
+            double healthScale = (int)skillTree.getScale(ClassAttribute.HEALTH);
+            double manaScale = (int)skillTree.getScale(ClassAttribute.MANA);
             for (String message : messages) {
                 message = message.replace("{level}", level + "")
-                                 .replace("{class}", skillTree.getName());
-
+                        .replace("{class}", tree)
+                        .replace("{points}", points + "")
+                        .replace("{health}", (int) p.getMaxHealth() + "")
+                        .replace("{mana}", getMaxMana() + "")
+                        .replace("{pointsgain}", plugin.getPointsPerLevel() * amount + "")
+                        .replace("{healthgain}", (int) (level * healthScale) - (int) ((level - amount) * healthScale) + "")
+                        .replace("{managain}", (int) (level * manaScale) - (int) ((level - amount) * manaScale) + "");
+    
                 p.sendMessage(message);
+            }
+
+            // Display max level message if applicable
+            if (level >= skillTree.getMaxLevel()) {
+                messages = plugin.getMessages(OtherNodes.MAX_LEVEL, true);
+                for (String message : messages) {
+                    message = message.replace("{level}", level + "")
+                                     .replace("{class}", skillTree.getName());
+
+                    p.sendMessage(message);
+                }
             }
         }
 
@@ -903,10 +925,20 @@ public final class PlayerSkills extends Valued {
      */
     public boolean canProfess(String target) {
         CustomClass skillTree = plugin.getClass(target);
+
+        // Cannot profess as an invalid class
         if (skillTree == null) return false;
-        else if (plugin.getClass(tree) == null) return skillTree.getParent() == null;
-        else if (getProfessionLevel() < 1) return false;
+
+        // The player must have permission for the class
         else if (!plugin.hasPermission(player.getPlayer(), skillTree)) return false;
+                
+        // If it's a starting class, the player must not have a class
+        else if (plugin.getClass(tree) == null) return skillTree.getParent() == null;
+
+        // The player's class must allow for professing (profession levels of 0 or below indicate there's no profession)
+        else if (getProfessionLevel() < 1) return false;
+
+        // The class must be a profession of the player's current class and the player must be a high enough level
         return skillTree.getParent() != null && skillTree.getParent().equalsIgnoreCase(tree) && plugin.getClass(tree).getProfessLevel() <= level;
     }
 

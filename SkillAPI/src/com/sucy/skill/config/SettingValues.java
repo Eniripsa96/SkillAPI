@@ -15,6 +15,7 @@ public class SettingValues {
     CLASS_STARTING_POINTS = CLASS_ROOT + "starting-points",
     CLASS_POINTS_PER_LEVEL = CLASS_ROOT + "points-per-level",
     CLASS_RESET = CLASS_DEFAULT + "profess-reset",
+    CLASS_EXAMPLES = CLASS_ROOT + "use-examples",
 
     // -------------------------- Mana Nodes -------------------------- //
 
@@ -63,6 +64,7 @@ public class SettingValues {
     EXP_MESSAGE_ENABLED = EXP_ROOT + "messages-enabled",
     EXP_FORMULA = EXP_ROOT + "formula",
     EXP_YIELDS = EXP_ROOT + "yields",
+    EXP_LVL_MESSAGE_ENABLED = EXP_ROOT + "level-message-enabled",
 
     // -------------------------- Skill Bar Nodes -------------------------- //
 

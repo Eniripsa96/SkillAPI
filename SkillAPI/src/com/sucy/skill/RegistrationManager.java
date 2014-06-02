@@ -124,6 +124,12 @@ public class RegistrationManager {
             }
         }
 
+        // Load example skills
+        if (api.isUsingExampleClasses()) {
+            log("Loading example skills...", 1);
+            api.getExampleClasses().registerSkills(api);
+        }
+
         // Register classes after
         mode = RegisterMode.CLASS;
         for (Plugin plugin : api.getServer().getPluginManager().getPlugins()) {
@@ -178,6 +184,12 @@ public class RegistrationManager {
                     }
                 }
             }
+        }
+
+        // Load example classes
+        if (api.isUsingExampleClasses()) {
+            log("Loading example classes...", 1);
+            api.getExampleClasses().registerClasses(api);
         }
 
         skillConfig.saveConfig();

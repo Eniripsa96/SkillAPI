@@ -66,7 +66,7 @@ public class CmdLevel implements IFunction {
             }
 
             // Target doesn't have a class
-            else if (player.getClassName() == null) {
+            else if (!player.hasClass()) {
                 String error = api.getMessage(CommandNodes.CANNOT_LEVEL, true);
                 error = error.replace("{player}", player.getName());
                 sender.sendMessage(error);

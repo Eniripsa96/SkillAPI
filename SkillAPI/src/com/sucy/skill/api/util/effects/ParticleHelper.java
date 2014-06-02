@@ -208,26 +208,19 @@ public class ParticleHelper {
      * @param radius radius of the effect
      */
     public static void send(String particle, Location loc, int radius) {
+        if (packet == null) {
+            Bukkit.getLogger().severe("Tried to play a particle before the helper was initialized!");
+            return;
+        }
+        setValue(packet, "a", particle);
+        setValue(packet, "b", (float) loc.getX());
+        setValue(packet, "c", (float) loc.getY());
+        setValue(packet, "d", (float) loc.getZ());
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             if (player.getWorld() == loc.getWorld() && player.getLocation().distanceSquared(loc) < radius * radius) {
-                sendToPlayer(particle, player, loc);
+                sendPacket(player, packet);
             }
         }
-    }
-
-    /**
-     * Sends the particle to the player at the given location
-     *
-     * @param player   player to send to
-     * @param location location of the particle
-     */
-    private static void sendToPlayer(String particle, Player player, Location location) {
-        if (packet == null) return;
-        setValue(packet, "a", particle);
-        setValue(packet, "b", (float) location.getX());
-        setValue(packet, "c", (float) location.getY());
-        setValue(packet, "d", (float) location.getZ());
-        sendPacket(player, packet);
     }
 
     /**

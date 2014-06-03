@@ -121,6 +121,16 @@ public class CommandNodes {
     LEVEL = "level-player",
 
     /**
+     * Info console command key
+     */
+    INFO_CONSOLE = "info-console",
+
+    /**
+     * Level console command key
+     */
+    LEVEL_CONSOLE = "level-console",
+
+    /**
      * Mana command key
      */
     MANA = "mana",
@@ -134,6 +144,11 @@ public class CommandNodes {
      * Points command by the player
      */
     POINTS_PLAYER = "points-player",
+
+    /**
+     * Points command by the console
+     */
+    POINTS_CONSOLE = "points-console",
 
     /**
      * Profess command key

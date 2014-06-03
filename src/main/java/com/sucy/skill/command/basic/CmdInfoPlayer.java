@@ -63,7 +63,7 @@ public class CmdInfoPlayer implements IFunction {
 
             // Get the messages
             List<String> messages;
-            String base = CommandNodes.COMPLETE + CommandNodes.INFO_PLAYER;
+            String base = CommandNodes.COMPLETE + CommandNodes.INFO;
             if (player.getClassName() == null) messages = api.getMessages(base + CommandNodes.NO_CLASS, true);
             else messages = api.getMessages(base + CommandNodes.HAS_CLASS, true);
 

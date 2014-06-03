@@ -86,7 +86,7 @@ public class CmdLevelPlayer implements IFunction {
                 player.levelUp(amount);
 
                 // Confirmation message
-                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.LEVEL_PLAYER, true);
+                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.LEVEL, true);
                 for (String message : messages) {
                     message = message.replace("{player}", player.getName())
                                      .replace("{amount}", amount + "")

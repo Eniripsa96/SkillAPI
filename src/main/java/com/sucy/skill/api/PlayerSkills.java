@@ -812,7 +812,6 @@ public final class PlayerSkills extends Valued {
     public void giveExp(int amount) {
         if (plugin.getClass(tree) == null) return;
         if (getPlayer() == null) return;
-        if (!getPlayer().hasPermission(PermissionNodes.EXP)) return;
 
         // Call an event
         PlayerExperienceGainEvent event = new PlayerExperienceGainEvent(this, amount);

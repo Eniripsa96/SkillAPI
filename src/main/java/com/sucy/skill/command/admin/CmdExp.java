@@ -3,6 +3,7 @@ package com.sucy.skill.command.admin;
 import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
+import com.sucy.skill.PermissionNodes;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.PlayerSkills;
 import com.sucy.skill.language.CommandNodes;
@@ -85,6 +86,7 @@ public class CmdExp implements IFunction {
 
             // Give them the experience
             else {
+                if (!sender.hasPermission(PermissionNodes.EXP)) return;
                 player.giveExp(amount);
 
                 // Confirmation message

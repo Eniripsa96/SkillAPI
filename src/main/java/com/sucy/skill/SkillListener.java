@@ -26,6 +26,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * <p>Main listener for the API</p>
@@ -332,27 +333,33 @@ public class SkillListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
-
         plugin.registerPlayer(event.getPlayer());
-        PlayerSkills skills = plugin.getPlayer(event.getPlayer());
-
-        // Update the player health
-        skills.updateHealth(event.getPlayer());
-
-        // Level bar
-        skills.updateLevelBar();
-
-        // Effects when a player has a class
-        if (skills.hasClass() && !event.getPlayer().isDead()) {
-
-            // Apply passive skills
-            skills.startPassiveAbilities();
-
-            // Apply class prefixes
-            PrefixManager.setPrefix(skills, skills.getPrefix(), plugin.getClass(skills.getClassName()).getBraceColor());
-        }
+        final Player player = event.getPlayer();
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new BukkitRunnable() {
+            @Override
+            public void run() {
+                final PlayerSkills skills = plugin.getPlayer(player);
+                // Inner runnable to run in main thread
+                plugin.getServer().getScheduler().runTask(plugin, new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        // Update the player health
+                        skills.updateHealth(player);
+                        // Level bar
+                        skills.updateLevelBar();
+                        // Effects when a player has a class
+                        if (skills.hasClass() && !player.isDead()) {
+                            // Apply passive skills
+                            skills.startPassiveAbilities();
+                            // Apply class prefixes
+                            PrefixManager.setPrefix(skills, skills.getPrefix(), plugin.getClass(skills.getClassName()).getBraceColor());
+                        }
+                    }
+                });
+            }
+        });
     }
 
     /**

@@ -16,12 +16,12 @@ import java.util.UUID;
 /**
  * Command to give a player experience
  */
-public class CmdExp implements IFunction {
+public class CmdPointsPlayer implements IFunction {
 
     /**
      * Executes the command
      *
-     * @param command handler for the command
+     * @param command owning command
      * @param plugin  plugin reference
      * @param sender  sender of the command
      * @param args    arguments
@@ -32,13 +32,11 @@ public class CmdExp implements IFunction {
         SkillAPI api = (SkillAPI)plugin;
 
         // Requires at least 1 argument
-        if (args.length >= 2 || (args.length == 1 && sender instanceof Player)) {
+        if (args.length >= 1) {
             PlayerSkills player;
 
             // Get the target
-            if (args.length == 1) {
-                player = api.getPlayer((Player)sender);
-            }
+            if (args.length == 1) player = api.getPlayer((Player)sender);
             else {
                 UUID id = api.getPlayerUUID(args[1]);
                 player = id == null ? null : api.getPlayer(id);
@@ -69,30 +67,21 @@ public class CmdExp implements IFunction {
 
             // Target doesn't have a class
             else if (player.getClassName() == null) {
-                String error = api.getMessage(CommandNodes.CANNOT_LEVEL, true);
+                String error = api.getMessage(CommandNodes.CANNOT_GET_POINTS, true);
                 error = error.replace("{player}", player.getName());
                 sender.sendMessage(error);
             }
 
-            // Target is max level
-            else if (player.getLevel() >= api.getClass(player.getClassName()).getMaxLevel()) {
-                String error = api.getMessage(CommandNodes.MAX_LEVEL, true);
-                error = error.replace("{player}", player.getName())
-                        .replace("{level}", player.getLevel() + "");
-
-                sender.sendMessage(error);
-            }
-
-            // Give them the experience
+            // Give them the levels
             else {
-                player.giveExp(amount);
+                player.givePoints(amount);
 
                 // Confirmation message
-                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.EXP, true);
+                List<String> messages = api.getMessages(CommandNodes.COMPLETE + CommandNodes.POINTS_PLAYER, true);
                 for (String message : messages) {
                     message = message.replace("{player}", player.getName())
                             .replace("{amount}", amount + "")
-                            .replace("{level}", player.getLevel() + "");
+                            .replace("{points}", player.getPoints() + "");
 
                     sender.sendMessage(message);
                 }

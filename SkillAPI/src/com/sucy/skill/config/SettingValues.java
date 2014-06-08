@@ -16,6 +16,7 @@ public class SettingValues {
     CLASS_POINTS_PER_LEVEL = CLASS_ROOT + "points-per-level",
     CLASS_RESET = CLASS_DEFAULT + "profess-reset",
     CLASS_EXAMPLES = CLASS_ROOT + "use-examples",
+    CLASS_SKILL_EXAMPLES = CLASS_ROOT + "use-example-skills",
 
     // -------------------------- Mana Nodes -------------------------- //
 

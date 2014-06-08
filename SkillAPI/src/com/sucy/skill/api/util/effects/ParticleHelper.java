@@ -17,7 +17,7 @@ import java.util.Random;
  */
 public class ParticleHelper {
 
-    private static final String VERSION = "net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
+    private static String VERSION;
     private static final Random random = new Random();
 
     /**
@@ -183,6 +183,12 @@ public class ParticleHelper {
      * Initializes the reflection data for sending particles via packets
      */
     public static void initialize() {
+        try {
+            VERSION = "net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
+        }
+        catch (Exception ex) {
+            VERSION = "net.minecraft.server.";
+        }
         packetClass = getClass("Packet");
 
         // Try to get the packet instance for 1.6.4 and earlier

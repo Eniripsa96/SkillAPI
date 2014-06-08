@@ -405,7 +405,6 @@ public class DynamicSkill extends ClassSkill implements SkillShot, PassiveSkill 
         prefix = "";
         PlayerSkills data = api.getPlayer(player);
         boolean successful = false;
-        data.getAPI().getLogger().info("Mechanic Amount: " + activeMechanics.size());
         for (Mechanic mechanic : activeMechanics) {
             successful = mechanic.resolve(player, data, this) || successful;
         }

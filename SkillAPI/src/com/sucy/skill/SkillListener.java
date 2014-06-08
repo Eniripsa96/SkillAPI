@@ -328,6 +328,16 @@ public class SkillListener implements Listener {
     }
 
     /**
+     * <p>Loads player data asynchronously as they log in.</p>
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onLogin(AsyncPlayerPreLoginEvent event) {
+        plugin.getPlayer(event.getUniqueId());
+    }
+
+    /**
      * Initializes class effects when a player joins the game
      *
      * @param event event details

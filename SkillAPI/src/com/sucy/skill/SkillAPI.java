@@ -99,6 +99,7 @@ public class SkillAPI extends JavaPlugin {
     private boolean blockCreativeExp;
     private boolean showExpMessage;
     private boolean showLvlMessage;
+    private boolean exampleClasses;
     private double expLost;
     private int startingPoints;
     private int pointsPerLevel;
@@ -147,7 +148,8 @@ public class SkillAPI extends JavaPlugin {
         startingPoints = getConfig().getInt(SettingValues.CLASS_STARTING_POINTS, 1);
         pointsPerLevel = getConfig().getInt(SettingValues.CLASS_POINTS_PER_LEVEL, 1);
         baseHp = getConfig().getInt(SettingValues.CLASS_HP, 20);
-        if (getConfig().getBoolean(SettingValues.CLASS_EXAMPLES, false)) {
+        exampleClasses = getConfig().getBoolean(SettingValues.CLASS_EXAMPLES, false);
+        if (exampleClasses || getConfig().getBoolean(SettingValues.CLASS_SKILL_EXAMPLES, false)) {
             examples = new ExampleClasses(this);
         }
 
@@ -595,6 +597,15 @@ public class SkillAPI extends JavaPlugin {
      * @return true if using example classes, false otherwise
      */
     public boolean isUsingExampleClasses() {
+        return exampleClasses;
+    }
+
+    /**
+     * <p>Checks whether or not SkillAPI is using the example skills.</p>
+     *
+     * @return true if using example skills, false otherwise
+     */
+    public boolean isUsingExampleSkills() {
         return examples != null;
     }
 

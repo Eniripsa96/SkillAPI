@@ -125,7 +125,7 @@ public class RegistrationManager {
         }
 
         // Load example skills
-        if (api.isUsingExampleClasses()) {
+        if (api.isUsingExampleSkills()) {
             log("Loading example skills...", 1);
             api.getExampleClasses().registerSkills(api);
         }

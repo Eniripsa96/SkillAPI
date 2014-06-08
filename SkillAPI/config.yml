@@ -14,6 +14,7 @@ Classes:
   points-per-level: 1
   profess-reset: false
   use-examples: false
+  use-example-skills: false
 Mana:
   enabled: true
   gain-freq: 1

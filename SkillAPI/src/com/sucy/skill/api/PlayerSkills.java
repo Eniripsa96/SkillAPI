@@ -886,7 +886,7 @@ public final class PlayerSkills extends Valued {
             double manaScale = (int)skillTree.getScale(ClassAttribute.MANA);
             for (String message : messages) {
                 message = message.replace("{level}", level + "")
-                        .replace("{class}", tree)
+                        .replace("{class}", skillTree.getName())
                         .replace("{points}", points + "")
                         .replace("{health}", (int) p.getMaxHealth() + "")
                         .replace("{mana}", getMaxMana() + "")
@@ -931,7 +931,7 @@ public final class PlayerSkills extends Valued {
 
         // The player must have permission for the class
         else if (!plugin.hasPermission(player.getPlayer(), skillTree)) return false;
-                
+
         // If it's a starting class, the player must not have a class
         else if (plugin.getClass(tree) == null) return skillTree.getParent() == null;
 

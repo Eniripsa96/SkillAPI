@@ -106,7 +106,7 @@ public class DamageLoreRemover {
             SET.invoke(nbtTag, "AttributeModifiers", nbtTagList);
             SET_TAG.invoke(nmsStack, nbtTag);
             ItemStack result = (ItemStack)AS_CRAFT.invoke(null, nmsStack);
-            Bukkit.getLogger().info("Woo! " + result.toString());
+            //Bukkit.getLogger().info("Woo! " + result.toString());
             return result;
         }
         catch (Exception ex) {

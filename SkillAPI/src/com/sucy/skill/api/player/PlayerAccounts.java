@@ -4,6 +4,7 @@ import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.data.AccountSettingsData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -12,21 +13,37 @@ import java.util.HashMap;
 public class PlayerAccounts
 {
 
-    private final HashMap<Integer, PlayerData> classData = new HashMap<Integer, PlayerData>();
+    private final HashMap<String, PlayerData> classData = new HashMap<String, PlayerData>();
 
     private SkillAPI      api;
-    private int           active;
+    private String        active;
     private VersionPlayer player;
     private int           accounts;
 
     public PlayerAccounts(VersionPlayer player)
     {
         api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
-        active = api.getSettings().getDefaultAccounts();
         this.player = player;
+
+        for (AccountSettingsData data : api.getSettings().getAccountSettings())
+        {
+            RPGClass rpgClass = api.getClass(data.getDefaultClass());
+            PlayerData playerData = new PlayerData(api, player);
+            classData.put(data.getKey().toLowerCase(), playerData);
+
+            if (rpgClass != null)
+            {
+                playerData.setClass(rpgClass);
+            }
+
+            if (data.getPermission() == null && active == null)
+            {
+                active = data.getKey().toLowerCase();
+            }
+        }
     }
 
-    public int getActiveId()
+    public String getActiveId()
     {
         return active;
     }
@@ -46,36 +63,26 @@ public class PlayerAccounts
         return player.getPlayer();
     }
 
-    public boolean isLimitedAccounts()
-    {
-        return accounts <= 0;
-    }
-
     public int getAccountLimit()
     {
         return accounts;
     }
 
-    public PlayerData getData(int id)
+    public PlayerData getData(String key)
     {
-        return classData.get(id);
+        return classData.get(key);
     }
 
-    public HashMap<Integer, PlayerData> getAllData()
+    public HashMap<String, PlayerData> getAllData()
     {
         return classData;
     }
 
-    public void setAccountLimit(int limit)
+    public void setAccount(String key)
     {
-        this.accounts = limit;
-    }
-
-    public void changeAccount(int id)
-    {
-        if (classData.containsKey(id))
+        if (classData.containsKey(key))
         {
-            active = id;
+            active = key;
         }
         else if (classData.size() >= accounts && accounts > 0)
         {

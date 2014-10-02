@@ -8,7 +8,6 @@
 # and look at the default configuration section  #
 # ---------------------------------------------- #
 Classes:
-  default: none
   classless-hp: 20
   use-examples: false
   use-example-skills: false

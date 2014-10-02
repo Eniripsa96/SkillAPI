@@ -3,8 +3,6 @@ package com.sucy.skill.data.io;
 import com.rit.sucy.config.Config;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.enums.ExpSource;
-import com.sucy.skill.api.enums.PointSource;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerAccounts;
@@ -44,14 +42,12 @@ public class ConfigIO extends IOManager
         if (config.getConfig().contains(player.getIdString()))
         {
             ConfigurationSection file = config.getConfig().getConfigurationSection(player.getIdString());
-            data.setAccountLimit(file.getInt(LIMIT, data.getAccountLimit()));
 
             ConfigurationSection accounts = file.getConfigurationSection(ACCOUNTS);
             for (String accountKey : accounts.getKeys(false))
             {
                 ConfigurationSection account = accounts.getConfigurationSection(accountKey);
-                PlayerData acc = new PlayerData(api, player);
-                int id = Integer.parseInt(accountKey.substring(3));
+                PlayerData acc = data.getData(accountKey);
 
                 // Load classes
                 ConfigurationSection classes = account.getConfigurationSection(CLASSES);
@@ -80,11 +76,9 @@ public class ConfigIO extends IOManager
                 {
                     acc.bind(Material.valueOf(bindKey), acc.getSkill(binds.getString(bindKey)));
                 }
-
-                data.getAllData().put(id, acc);
             }
 
-            data.changeAccount(file.getInt(ACTIVE, data.getActiveId()));
+            data.setAccount(file.getString(ACTIVE, data.getActiveId()));
         }
         return data;
     }
@@ -96,9 +90,9 @@ public class ConfigIO extends IOManager
         file.set(LIMIT, data.getAccountLimit());
         file.set(ACTIVE, data.getActiveId());
         ConfigurationSection accounts = file.createSection(ACCOUNTS);
-        for (Map.Entry<Integer, PlayerData> entry : data.getAllData().entrySet())
+        for (Map.Entry<String, PlayerData> entry : data.getAllData().entrySet())
         {
-            ConfigurationSection account = accounts.createSection(ACCOUNT_PREFIX + entry.getKey());
+            ConfigurationSection account = accounts.createSection(entry.getKey());
             PlayerData acc = entry.getValue();
 
             // Save classes

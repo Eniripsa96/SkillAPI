@@ -16,6 +16,7 @@ public class Settings
 {
 
     private HashMap<String, GroupSettings> groups = new HashMap<String, GroupSettings>();
+    private AccountSettings accountSettings;
 
     private SkillAPI plugin;
 
@@ -46,6 +47,8 @@ public class Settings
         Config.setDefaults(config);
         plugin.saveConfig();
 
+        loadGroupSettings();
+        loadAccountSettings();
         loadClassSettings(config);
         loadManaSettings(config);
         loadSkillSettings(config);
@@ -66,10 +69,8 @@ public class Settings
     private void loadGroupSettings()
     {
         Config file = new Config(plugin, "groups");
-        file.trim();
-        file.checkDefaults();
-        file.save();
         ConfigurationSection config = file.getConfig();
+        groups.clear();
 
         for (String key : config.getKeys(false))
         {
@@ -84,26 +85,31 @@ public class Settings
 
     ///////////////////////////////////////////////////////
     //                                                   //
+    //                 Account Settings                  //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    private void loadAccountSettings()
+    {
+        Config file = new Config(plugin, "accounts");
+        ConfigurationSection config = file.getConfig();
+        accountSettings = new AccountSettings(config);
+    }
+
+    public AccountSettings getAccountSettings()
+    {
+        return accountSettings;
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
     //                  Class Settings                   //
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private RPGClass defaultClass;
     private int     defaultHealth     = 20;
-    private int     defaultAccounts   = 0;
     private boolean useExampleClasses = false;
     private boolean useExampleSkills  = false;
-
-    /**
-     * <p>Retrieves the default class that players start off the game as.</p>
-     * <p>If players don't start with a class, this will return null instead.</p>
-     *
-     * @return the default class for players
-     */
-    public RPGClass getDefaultClass()
-    {
-        return defaultClass;
-    }
 
     /**
      * <p>Retrieves the default health for players that do not have a class.</p>
@@ -113,17 +119,6 @@ public class Settings
     public int getDefaultHealth()
     {
         return defaultHealth;
-    }
-
-    /**
-     * <p>Retrieves the default amount of accounts a player is allowed to have.</p>
-     * <p>A non-positive value means there is no limit.</p>
-     *
-     * @return default amount of accounts players are allowed to have
-     */
-    public int getDefaultAccounts()
-    {
-        return defaultAccounts;
     }
 
     /**
@@ -147,16 +142,6 @@ public class Settings
     }
 
     /**
-     * <p>Sets the default class for players.</p>
-     *
-     * @param defaultClass the new default class for players
-     */
-    public void setDefaultClass(RPGClass defaultClass)
-    {
-        this.defaultClass = defaultClass;
-    }
-
-    /**
      * <p>Sets the default health for classless players.</p>
      *
      * @param health the new default health for classless players
@@ -168,9 +153,7 @@ public class Settings
 
     private void loadClassSettings(ConfigurationSection config)
     {
-        defaultClass = plugin.getClass(config.getString(SettingValues.CLASS_DEFAULT));
         defaultHealth = config.getInt(SettingValues.CLASS_DEFAULT_HP, defaultHealth);
-        defaultAccounts = config.getInt(SettingValues.CLASS_LIMITED, defaultAccounts);
         useExampleClasses = config.getBoolean(SettingValues.CLASS_EXAMPLES, useExampleClasses);
         useExampleSkills = config.getBoolean(SettingValues.CLASS_SKILL_EXAMPLES, useExampleSkills);
     }

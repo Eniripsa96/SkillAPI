@@ -25,6 +25,23 @@ public class SkillAPI extends JavaPlugin
     private ComboManager   comboManager;
     private Settings       settings;
 
+    @Override
+    public void onEnable()
+    {
+        // Load settings
+        settings = new Settings(this);
+        if (!settings.getAccountSettings().isValid())
+        {
+            getServer().getPluginManager().disablePlugin(this);
+        }
+    }
+
+    @Override
+    public void onDisable()
+    {
+
+    }
+
     public Settings getSettings()
     {
         return settings;

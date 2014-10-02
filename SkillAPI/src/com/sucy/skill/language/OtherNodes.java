@@ -5,14 +5,15 @@ package com.sucy.skill.language;
  * <p>This is primarily for the API retrieving config messages.
  * You shouldn't need to use these values at all.</p>
  */
-public class OtherNodes {
+public class OtherNodes
+{
 
     public static final String
 
-    /**
-     * Base node for all skills
-     */
-    BASE = "Other.",
+            /**
+             * Base node for all skills
+             */
+            BASE = "Other.",
 
     /**
      * A player leveled up
@@ -54,9 +55,9 @@ public class OtherNodes {
      */
     EXP_GAINED = BASE + "exp-gained",
 
-    ITEM_FORMAT = BASE + "item-format.",
-    ONLY_ITEM = ITEM_FORMAT + "only-item",
-    LAST_ITEM = ITEM_FORMAT + "last-item",
-    NOT_LAST_ITEM = ITEM_FORMAT + "not-last-item",
-    ITEM_REQUIRED = BASE + "item-required";
+    ITEM_FORMAT           = BASE + "item-format.",
+            ONLY_ITEM     = ITEM_FORMAT + "only-item",
+            LAST_ITEM     = ITEM_FORMAT + "last-item",
+            NOT_LAST_ITEM = ITEM_FORMAT + "not-last-item",
+            ITEM_REQUIRED = BASE + "item-required";
 }

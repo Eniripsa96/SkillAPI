@@ -10,9 +10,6 @@
 Classes:
   default: none
   classless-hp: 20
-  starting-points: 1
-  points-per-level: 1
-  profess-reset: false
   use-examples: false
   use-example-skills: false
 Mana:
@@ -34,11 +31,10 @@ GUI:
   show-class-name: true
   show-class-level: true
 Casting:
-  use-skill-bars: false
+  use-skill-bars: true
   use-click-combos: false
 Experience:
   use-exp-orbs: false
-  lost-on-death: 0.0
   block-mob-spawner: true
   block-mob-egg: true
   block-creative: true
@@ -70,14 +66,32 @@ Experience:
     witherskeleton: 5
     zombie: 2
 Skill Bar:
-  1: skill
-  2: skill
-  3: skill
-  4: skill
-  5: skill
-  6: skill
-  7: skill
-  8: weapon
-  9: weapon
+  1:
+    skill: true
+    locked: false
+  2:
+    skill: true
+    locked: false
+  3:
+    skill: true
+    locked: false
+  4:
+    skill: true
+    locked: false
+  5:
+    skill: true
+    locked: false
+  6:
+    skill: false
+    locked: false
+  7:
+    skill: false
+    locked: false
+  8:
+    skill: false
+    locked: false
+  9:
+    skill: false
+    locked: false
 Logging:
   load: 0

@@ -1,5 +1,7 @@
 package com.sucy.skill.api.event;
 
+import com.sucy.skill.api.enums.ManaCost;
+import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.enums.ExpSource;
@@ -8,29 +10,29 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * Event called when a player gains class experience
+ * Event called when a player regenerates mana via natural regeneration
  */
-public class PlayerExperienceGainEvent extends Event implements Cancellable
+public class PlayerManaLossEvent extends Event implements Cancellable
 {
 
     private static final HandlerList handlers = new HandlerList();
-    private PlayerClass playerClass;
-    private boolean     cancelled;
-    private ExpSource   source;
-    private double      amount;
+    private PlayerData player;
+    private ManaCost   source;
+    private boolean    cancelled;
+    private double     amount;
 
     /**
      * Constructor
      *
-     * @param playerClass class of the player gaining experience
-     * @param amount      amount of experience being gained
-     * @param source      source of the experience
+     * @param player class of the player gaining experience
+     * @param amount amount of mana regenerated
+     * @param source the cause of the mana loss
      */
-    public PlayerExperienceGainEvent(PlayerClass playerClass, double amount, ExpSource source)
+    public PlayerManaLossEvent(PlayerData player, double amount, ManaCost source)
     {
-        this.playerClass = playerClass;
-        this.amount = amount;
+        this.player = player;
         this.source = source;
+        this.amount = amount;
         cancelled = false;
     }
 
@@ -39,29 +41,21 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable
      */
     public PlayerData getPlayerData()
     {
-        return playerClass.getPlayerData();
-    }
-
-    /**
-     * @return player's class that is receiving the experience
-     */
-    public PlayerClass getPlayerClass()
-    {
-        return playerClass;
+        return player;
     }
 
     /**
      * @return amount of experience being gained
      */
-    public double getExp()
+    public double getAmount()
     {
         return amount;
     }
 
     /**
-     * @return where the experience came from
+     * @return source of the gained mana
      */
-    public ExpSource getSource()
+    public ManaCost getSource()
     {
         return source;
     }
@@ -72,11 +66,11 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable
      * @param amount new amount of experience
      * @throws IllegalArgumentException if experience is less than 0
      */
-    public void setExp(int amount)
+    public void setAmount(double amount)
     {
         if (amount < 0)
         {
-            throw new IllegalArgumentException("Experience cannot be negative");
+            throw new IllegalArgumentException("Regenerated mana cannot be negative");
         }
 
         this.amount = amount;

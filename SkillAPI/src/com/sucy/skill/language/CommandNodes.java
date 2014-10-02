@@ -5,19 +5,15 @@ package com.sucy.skill.language;
  * <p>This is primarily for the API retrieving config messages.
  * You shouldn't need to use these values at all.</p>
  */
-public class CommandNodes {
+public class CommandNodes
+{
 
     public static final String
 
-    /**
-     * Base node for all command messages
-     */
-    BASE = "Commands.",
-
-    /**
-     * Root command for the sub commands
-     */
-    ROOT = BASE + "root",
+            /**
+             * Base node for all command messages
+             */
+            BASE = "Commands.",
 
     // --------------------- Sections ---------------------------- //
 

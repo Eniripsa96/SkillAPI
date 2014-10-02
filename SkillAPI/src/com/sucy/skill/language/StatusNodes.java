@@ -1,13 +1,14 @@
 package com.sucy.skill.language;
 
-public class StatusNodes {
+public class StatusNodes
+{
 
     public static final String
 
-    /**
-     * Base node for status messages
-     */
-    BASE = "Status.",
+            /**
+             * Base node for status messages
+             */
+            BASE = "Status.",
 
     /**
      * When a player is stunned and tries to move/attack/cast a skill

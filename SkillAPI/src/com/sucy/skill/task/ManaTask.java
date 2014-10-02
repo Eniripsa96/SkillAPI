@@ -1,8 +1,7 @@
 package com.sucy.skill.task;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.CustomClass;
-import com.sucy.skill.api.PlayerSkills;
+import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -11,38 +10,26 @@ import org.bukkit.scheduler.BukkitRunnable;
  * <p>This task is run by the API and you should not
  * use this task yourself</p>
  */
-public class ManaTask extends BukkitRunnable {
+public class ManaTask extends BukkitRunnable
+{
 
     final SkillAPI plugin;
-    final int amount;
 
-    /**
-     * Constructor
-     *
-     * @param plugin      plugin reference
-     * @param freqSeconds interval in seconds between restoring mana
-     * @param amount      amount of mana to restore
-     */
-    public ManaTask (SkillAPI plugin, int freqSeconds, int amount) {
+    public ManaTask(SkillAPI plugin)
+    {
         this.plugin = plugin;
-        this.amount = amount;
-        runTaskTimer(plugin, freqSeconds * 20, freqSeconds * 20);
+        runTaskTimer(plugin, plugin.getSettings().getGainFreq(), plugin.getSettings().getGainFreq());
     }
 
     /**
-     * Gives mana to all players
+     * <p>Checks all players for mana regeneration</p>
      */
-    public void run() {
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            PlayerSkills data = plugin.getPlayer(player);
-            if (data != null) {
-                if (data.hasClass()) {
-                    CustomClass c = plugin.getClass(data.getClassName());
-                    if (c.gainsMana()) {
-                        plugin.getPlayer(player).gainMana(amount);
-                    }
-                }
-            }
+    public void run()
+    {
+        for (Player player : plugin.getServer().getOnlinePlayers())
+        {
+            PlayerData data = plugin.getPlayerData(player);
+            data.regenMana();
         }
     }
 }

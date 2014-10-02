@@ -5,42 +5,43 @@ package com.sucy.skill.language;
  * <p>This is primarily for the API retrieving config messages.
  * You shouldn't need to use these values at all.</p>
  */
-public class StatNodes {
+public class StatNodes
+{
 
     public static final String
 
-    /**
-     * Base node for all stats
-     */
-    BASE = "Stats.",
+            /**
+             * Base node for all stats
+             */
+            BASE = "Stats.",
 
     /**
      * Experience title
      */
-    EXP = BASE + "exp",
-    EXP_KEY = "exp",
+    EXP             = BASE + "exp",
+            EXP_KEY = "exp",
 
     /**
      * Health title
      */
-    HEALTH = BASE + "health",
-    HEALTH_KEY = "health",
+    HEALTH             = BASE + "health",
+            HEALTH_KEY = "health",
 
     /**
      * Level title
      */
-    LEVEL = BASE + "level",
-    LEVEL_KEY = "level",
+    LEVEL             = BASE + "level",
+            LEVEL_KEY = "level",
 
     /**
      * Mana title
      */
-    MANA = BASE + "mana",
-    MANA_KEY = "mana",
+    MANA             = BASE + "mana",
+            MANA_KEY = "mana",
 
     /**
      * Skill points title
      */
-    POINTS = BASE + "points",
-    POINTS_KEY = "points";
+    POINTS             = BASE + "points",
+            POINTS_KEY = "points";
 }

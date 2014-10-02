@@ -1,5 +1,6 @@
 package com.sucy.skill.api.event;
 
+import com.sucy.skill.api.enums.PointSource;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.enums.ExpSource;
@@ -10,23 +11,23 @@ import org.bukkit.event.HandlerList;
 /**
  * Event called when a player gains class experience
  */
-public class PlayerExperienceGainEvent extends Event implements Cancellable
+public class PlayerGainSkillPointsEvent extends Event implements Cancellable
 {
 
     private static final HandlerList handlers = new HandlerList();
     private PlayerClass playerClass;
     private boolean     cancelled;
-    private ExpSource   source;
+    private PointSource source;
     private double      amount;
 
     /**
      * Constructor
      *
-     * @param playerClass class of the player gaining experience
-     * @param amount      amount of experience being gained
-     * @param source      source of the experience
+     * @param playerClass class of the player gaining skill points
+     * @param amount      amount of skill points being gained
+     * @param source      source of the points
      */
-    public PlayerExperienceGainEvent(PlayerClass playerClass, double amount, ExpSource source)
+    public PlayerGainSkillPointsEvent(PlayerClass playerClass, double amount, PointSource source)
     {
         this.playerClass = playerClass;
         this.amount = amount;
@@ -53,7 +54,7 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable
     /**
      * @return amount of experience being gained
      */
-    public double getExp()
+    public double getAmount()
     {
         return amount;
     }
@@ -61,7 +62,7 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable
     /**
      * @return where the experience came from
      */
-    public ExpSource getSource()
+    public PointSource getSource()
     {
         return source;
     }
@@ -72,11 +73,11 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable
      * @param amount new amount of experience
      * @throws IllegalArgumentException if experience is less than 0
      */
-    public void setExp(int amount)
+    public void setAmount(int amount)
     {
         if (amount < 0)
         {
-            throw new IllegalArgumentException("Experience cannot be negative");
+            throw new IllegalArgumentException("Points cannot be negative");
         }
 
         this.amount = amount;

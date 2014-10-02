@@ -39,7 +39,8 @@ public class AccountSettings implements Iterable<AccountSettingsData>, Iterator<
     }
 
     @Override
-    public Iterator<AccountSettingsData> iterator() {
+    public Iterator<AccountSettingsData> iterator()
+    {
         keys = new ArrayList<String>(settings.keySet());
         iterationIndex = -1;
         return this;

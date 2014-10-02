@@ -243,7 +243,8 @@ public final class PlayerClass
      *
      * @param total total amount of experience the player has earned
      */
-    public void setTotalExp(double total) {
+    public void setTotalExp(double total)
+    {
         totalExp = total;
         exp = (classData.getRequiredExp(level) + classData.getRequiredExp(1)) * level / 2;
         checkLevelUp();

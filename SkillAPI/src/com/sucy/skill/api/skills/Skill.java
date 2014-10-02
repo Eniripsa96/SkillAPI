@@ -127,7 +127,10 @@ public abstract class Skill
         return description;
     }
 
-    public int getLevelReq(int level) { return (int)attributes.get(SkillAttribute.LEVEL, level + 1); }
+    public int getLevelReq(int level)
+    {
+        return (int) attributes.get(SkillAttribute.LEVEL, level + 1);
+    }
 
     public double getManaCost(int level)
     {
@@ -144,7 +147,10 @@ public abstract class Skill
         return attributes.get(SkillAttribute.RANGE, level);
     }
 
-    public int getCost(int level) { return (int)attributes.get(SkillAttribute.COST, level + 1); }
+    public int getCost(int level)
+    {
+        return (int) attributes.get(SkillAttribute.COST, level + 1);
+    }
 
     public boolean canCast()
     {
@@ -435,7 +441,7 @@ public abstract class Skill
         }
         else
         {
-            pieces = new String[]{string};
+            pieces = new String[] { string };
         }
         Material icon = Material.valueOf(pieces[0]);
         if (icon == null)

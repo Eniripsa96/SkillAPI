@@ -13,15 +13,18 @@ public class AccountSettingsData
         this.permission = permission;
     }
 
-    public String getKey() {
+    public String getKey()
+    {
         return key;
     }
 
-    public String getDefaultClass() {
+    public String getDefaultClass()
+    {
         return defaultClass;
     }
 
-    public String getPermission() {
+    public String getPermission()
+    {
         return permission;
     }
 }

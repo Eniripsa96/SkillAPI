@@ -13,7 +13,7 @@ public enum Click
     public static final int BIT_MASK       = (1 << BITS) - 1;
     public static final int MAX_COMBO_SIZE = 32 / BITS;
 
-    private static final Click[] CLICKS = new Click[]{LEFT, RIGHT, SHIFT};
+    private static final Click[] CLICKS = new Click[] { LEFT, RIGHT, SHIFT };
 
     private String name;
     private int    id;

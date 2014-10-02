@@ -43,8 +43,16 @@ public enum Status
      */
     INVINCIBLE(null),;
 
+    /**
+     * The language configuration key for the message displayed when the status is applied
+     */
     private final String messageNode;
 
+    /**
+     * Enum constructor
+     *
+     * @param messageNode the language configuration key
+     */
     private Status(String messageNode)
     {
         this.messageNode = messageNode;

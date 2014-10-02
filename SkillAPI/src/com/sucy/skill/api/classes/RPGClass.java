@@ -29,7 +29,7 @@ public class RPGClass
     private int       maxLevel;
     private int       professLevel;
     private int       expSources;
-    private double manaRegen = -1;
+    private double    manaRegen;
 
     protected final AttributeSet attributes = new AttributeSet();
 
@@ -145,7 +145,7 @@ public class RPGClass
 
     public boolean hasManaRegen()
     {
-        return manaRegen != -1;
+        return manaRegen > 0;
     }
 
     public double getManaRegen()

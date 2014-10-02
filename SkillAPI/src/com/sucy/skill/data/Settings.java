@@ -518,8 +518,8 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private boolean[] defaultBarLayout = new boolean[]{true, true, true, true, true, true, true, false, false};
-    private boolean[] lockedSlots      = new boolean[]{false, false, false, false, false, false, false, false, false};
+    private boolean[] defaultBarLayout = new boolean[] { true, true, true, true, true, true, true, false, false };
+    private boolean[] lockedSlots      = new boolean[] { false, false, false, false, false, false, false, false, false };
 
     public boolean[] getDefaultBarLayout()
     {

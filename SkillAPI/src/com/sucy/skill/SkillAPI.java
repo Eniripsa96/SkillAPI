@@ -1,98 +1,353 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Steven Sucy
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package com.sucy.skill;
 
 import com.rit.sucy.config.LanguageConfig;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.player.PlayerAccounts;
+import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.ComboManager;
 import com.sucy.skill.data.Settings;
+import com.sucy.skill.data.io.IOManager;
+import com.sucy.skill.listener.CastListener;
+import com.sucy.skill.listener.StatusListener;
+import com.sucy.skill.manager.RegistrationManager;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.UUID;
 
+/**
+ * <p>The main class of the plugin which has the accessor methods into most of the API.</p>
+ * <p>You can retrieve a reference to this through Bukkit the same way as any other plugin.</p>
+ */
 public class SkillAPI extends JavaPlugin
 {
-
-    private final HashMap<String, Skill>      skills  = new HashMap<String, Skill>();
-    private final HashMap<String, RPGClass>   classes = new HashMap<String, RPGClass>();
-    private final HashMap<String, PlayerData> players = new HashMap<String, PlayerData>();
+    private final HashMap<String, Skill>        skills  = new HashMap<String, Skill>();
+    private final HashMap<String, RPGClass>     classes = new HashMap<String, RPGClass>();
+    private final HashMap<UUID, PlayerAccounts> players = new HashMap<UUID, PlayerAccounts>();
 
     private LanguageConfig language;
-    private ComboManager   comboManager;
     private Settings       settings;
 
+    private IOManager io;
+    private ComboManager   comboManager;
+    private RegistrationManager registrationManager;
+
+    private boolean enabled = false;
+
+    /**
+     * <p>Enables SkillAPI, setting up listeners, managers, and loading data. This
+     * should not be called by other plugins.</p>
+     */
     @Override
     public void onEnable()
     {
+        // Ensure only one enable at a time
+        if (enabled) throw new IllegalStateException("Cannot enable SkillAPI when already enabled!");
+        enabled = true;
+
         // Load settings
+        language = new LanguageConfig(this, "language.yml");
         settings = new Settings(this);
         if (!settings.getAccountSettings().isValid())
         {
+            getLogger().severe("Invalid account settings, SkillAPI being disabled...");
             getServer().getPluginManager().disablePlugin(this);
+            return;
         }
+
+        // Set up managers
+        comboManager = new ComboManager();
+        registrationManager = new RegistrationManager(this);
+
+        // Set up listeners
+        new StatusListener(this);
+        new CastListener(this);
     }
 
+    /**
+     * <p>Disables SkillAPI, saving data before unloading everything and disconnecting
+     * listeners. This should not be called by other plugins.</p>
+     */
     @Override
     public void onDisable()
     {
+        io.saveAll();
 
+        skills.clear();
+        classes.clear();
+        players.clear();
+
+        HandlerList.unregisterAll(this);
+
+        enabled = false;
     }
 
+    /**
+     * Retrieves the settings data controlling SkillAPI
+     *
+     * @return SkillAPI settings data
+     */
     public Settings getSettings()
     {
         return settings;
     }
 
+    /**
+     * Retrieves the language file data for SkillAPI
+     *
+     * @return SkillAPI language file data
+     */
     public LanguageConfig getLanguage()
     {
         return language;
     }
 
+    /**
+     * Retrieves the manager for click cast combos
+     *
+     * @return click combo manager
+     */
     public ComboManager getComboManager()
     {
         return comboManager;
     }
 
+    /**
+     * Retrieves a skill by name. If no skill is found with the name, null is
+     * returned instead.
+     *
+     * @param name name of the skill
+     * @return     skill with the name or null if not found
+     */
     public Skill getSkill(String name)
     {
+        if (name == null) return null;
         return skills.get(name.toLowerCase());
     }
 
+    /**
+     * Retrieves the registered skill data for SkillAPI. It is recommended that you
+     * don't edit this map. Instead, use "addSkill" and "addSkills" instead.
+     *
+     * @return the map of registered skills
+     */
+    public HashMap<String, Skill> getSkills() {
+        return skills;
+    }
+
+    /**
+     * Checks whether or not a skill is registered.
+     *
+     * @param name name of the skill
+     * @return     true if registered, false otherwise
+     */
+    public boolean isSkillRegistered(String name)
+    {
+        return getSkill(name) != null;
+    }
+
+    /**
+     * Checks whether or not a skill is registered
+     *
+     * @param skill the skill to check
+     * @return      true if registered, false otherwise
+     */
+    public boolean isSkillRegistered(PlayerSkill skill)
+    {
+        return isSkillRegistered(skill.getData().getName());
+    }
+
+    /**
+     * Checks whether or not a skill is registered
+     *
+     * @param skill the skill to check
+     * @return      true if registered, false otherwise
+     */
+    public boolean isSkillRegistered(Skill skill)
+    {
+        return isSkillRegistered(skill.getName());
+    }
+
+    /**
+     * Retrieves a class by name. If no skill is found with the name, null is
+     * returned instead.
+     *
+     * @param name name of the class
+     * @return     class with the name or null if not found
+     */
     public RPGClass getClass(String name)
     {
+        if (name == null) return null;
         return classes.get(name.toLowerCase());
     }
 
-    public PlayerData getPlayerData(HumanEntity player)
-    {
-        return getPlayerData(new VersionPlayer(player));
+    /**
+     * Retrieves the registered class data for SkillAPI. It is recommended that you
+     * don't edit this map. Instead, use "addClass" and "addClasses" instead.
+     *
+     * @return the map of registered skills
+     */
+    public HashMap<String, RPGClass> getClasses() {
+        return classes;
     }
 
+    /**
+     * Checks whether or not a class is registered.
+     *
+     * @param name name of the class
+     * @return     true if registered, false otherwise
+     */
+    public boolean isClassRegistered(String name)
+    {
+        return getClass(name) != null;
+    }
+
+    /**
+     * Checks whether or not a class is registered.
+     *
+     * @param playerClass the class to check
+     * @return            true if registered, false otherwise
+     */
+    public boolean isClassRegistered(PlayerClass playerClass)
+    {
+        return isClassRegistered(playerClass.getData().getName());
+    }
+
+    /**
+     * Checks whether or not a class is registered.
+     *
+     * @param rpgClass the class to check
+     * @return         true if registered, false otherwise
+     */
+    public boolean isClassRegistered(RPGClass rpgClass)
+    {
+        return isClassRegistered(rpgClass.getName());
+    }
+
+    /**
+     * Retrieves the active class data for the player. If no data is found for the
+     * player, a new set of data will be created and returned.
+     *
+     * @param player player to get the data for
+     * @return       the class data of the player
+     */
     public PlayerData getPlayerData(OfflinePlayer player)
     {
-        return getPlayerData(new VersionPlayer(player));
+        return getPlayerAccountData(player).getActiveData();
     }
 
-    public PlayerData getPlayerData(Player player)
+    /**
+     * Retrieves all class data for the player. This includes the active and
+     * all inactive accounts the player has. If no data is found, a new set
+     * of data will be created and returned.
+     *
+     * @param player player to get the data for
+     * @return       the class data of the player
+     */
+    public PlayerAccounts getPlayerAccountData(OfflinePlayer player)
     {
-        return getPlayerData(new VersionPlayer(player));
-    }
-
-    public PlayerData getPlayerData(VersionPlayer player)
-    {
-        if (!players.containsKey(player.getIdString()))
+        if (!players.containsKey(player.getUniqueId()))
         {
-            PlayerData data = new PlayerData(this, player);
-            players.put(player.getIdString(), data);
+            PlayerAccounts data = new PlayerAccounts(player);
+            players.put(player.getUniqueId(), data);
             return data;
         }
         else
         {
-            return players.get(player.getIdString());
+            return players.get(player.getUniqueId());
+        }
+    }
+
+    /**
+     * Retrieves all the player data of SkillAPI. It is recommended not to
+     * modify this map. Instead, use helper methods within individual player data.
+     *
+     * @return all SkillAPI player data
+     */
+    public HashMap<UUID, PlayerAccounts> getPlayerAccountData() {
+        return players;
+    }
+
+    /**
+     * Registers a new skill with SkillAPI. If this is called outside of the method
+     * provided in SkillPlugin, this will throw an error. You should implement SkillPlugin
+     * in your main class and call this from the provided "registerSkills" method.
+     *
+     * @param skill skill to register
+     */
+    public void addSkill(Skill skill) {
+        skill = registrationManager.validate(skill);
+        if (skill != null) {
+            skills.put(skill.getName(), skill);
+        }
+    }
+
+    /**
+     * Registers multiple new skills with SkillAPI. If this is called outside of the method
+     * provided in SkillPlugin, this will throw an error. You should implement SkillPlugin
+     * in your main class and call this from the provided "registerSkills" method.
+     *
+     * @param skills skills to register
+     */
+    public void addSkills(Skill ... skills) {
+        for (Skill skill : skills) {
+            addSkill(skill);
+        }
+    }
+
+    /**
+     * Registers a new class with SkillAPI. If this is called outside of the method
+     * provided in SkillPlugin, this will throw an error. You should implement SkillPlugin
+     * in your main class and call this from the provided "registerClasses" method.
+     *
+     * @param rpgClass class to register
+     */
+    public void addClass(RPGClass rpgClass) {
+        rpgClass = registrationManager.validate(rpgClass);
+        if (rpgClass != null) {
+            classes.put(rpgClass.getName(), rpgClass);
+        }
+    }
+
+    /**
+     * Registers a new class with SkillAPI. If this is called outside of the method
+     * provided in SkillPlugin, this will throw an error. You should implement SkillPlugin
+     * in your main class and call this from the provided "registerClasses" method.
+     *
+     * @param classes classes to register
+     */
+    public void addClasses(RPGClass ... classes) {
+        for (RPGClass rpgClass : classes) {
+            addClass(rpgClass);
         }
     }
 }

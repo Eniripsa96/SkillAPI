@@ -115,7 +115,7 @@ public class PlayerBar
 
     public String getPlayerName()
     {
-        return player.getVersionPlayer().getName();
+        return player.getPlayerName();
     }
 
     public Player getPlayer()

@@ -2,7 +2,6 @@ package com.sucy.skill.data;
 
 import com.rit.sucy.config.Config;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.TreeType;
 import com.sucy.skill.data.io.keys.SettingValues;
 import org.bukkit.configuration.ConfigurationSection;

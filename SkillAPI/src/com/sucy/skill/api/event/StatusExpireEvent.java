@@ -1,8 +1,6 @@
 package com.sucy.skill.api.event;
 
 import com.sucy.skill.api.enums.Status;
-import com.sucy.skill.api.player.PlayerClass;
-import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

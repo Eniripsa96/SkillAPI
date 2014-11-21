@@ -3,7 +3,6 @@ package com.sucy.skill.api.event;
 import com.sucy.skill.api.enums.PointSource;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.enums.ExpSource;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

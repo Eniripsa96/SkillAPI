@@ -2,8 +2,8 @@ package com.sucy.skill.api.player;
 
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
-import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.enums.PointSource;
 import com.sucy.skill.api.event.PlayerExperienceGainEvent;
 import com.sucy.skill.api.event.PlayerGainSkillPointsEvent;
@@ -11,8 +11,6 @@ import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.RPGFilter;
-
-import java.util.HashMap;
 
 /**
  * <p>Represents a player's class progress.</p>

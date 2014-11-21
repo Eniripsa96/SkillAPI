@@ -1,14 +1,14 @@
 package com.sucy.skill.api.player;
 
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.data.AccountSettingsData;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerAccounts
 {
@@ -17,10 +17,10 @@ public class PlayerAccounts
 
     private SkillAPI      api;
     private String        active;
-    private VersionPlayer player;
+    private OfflinePlayer player;
     private int           accounts;
 
-    public PlayerAccounts(VersionPlayer player)
+    public PlayerAccounts(OfflinePlayer player)
     {
         api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
         this.player = player;
@@ -53,14 +53,19 @@ public class PlayerAccounts
         return classData.get(active);
     }
 
-    public VersionPlayer getVersionPlayer()
-    {
-        return player;
-    }
-
     public Player getPlayer()
     {
         return player.getPlayer();
+    }
+
+    public String getPlayerName()
+    {
+        return player.getName();
+    }
+
+    public UUID getUUID()
+    {
+        return player.getUniqueId();
     }
 
     public int getAccountLimit()

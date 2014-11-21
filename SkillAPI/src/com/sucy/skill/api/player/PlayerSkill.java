@@ -1,8 +1,8 @@
 package com.sucy.skill.api.player;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.enums.SkillStatus;
+import com.sucy.skill.api.skills.Skill;
 import org.bukkit.Material;
 
 public final class PlayerSkill

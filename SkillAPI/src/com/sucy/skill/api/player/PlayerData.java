@@ -3,7 +3,6 @@ package com.sucy.skill.api.player;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ManaCost;
@@ -18,11 +17,13 @@ import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.RPGFilter;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.UUID;
 
 public final class PlayerData
 {
@@ -31,12 +32,12 @@ public final class PlayerData
     private final HashMap<String, PlayerSkill>   skills  = new HashMap<String, PlayerSkill>();
     private final HashMap<Material, PlayerSkill> binds   = new HashMap<Material, PlayerSkill>();
 
-    private VersionPlayer player;
+    private OfflinePlayer player;
     private SkillAPI      api;
     private double        mana;
     private double        maxMana;
 
-    public PlayerData(SkillAPI api, VersionPlayer player)
+    public PlayerData(SkillAPI api, OfflinePlayer player)
     {
         if (api.getPlayerData(player) != null)
         {
@@ -56,9 +57,14 @@ public final class PlayerData
         return player.getPlayer();
     }
 
-    public VersionPlayer getVersionPlayer()
+    public String getPlayerName()
     {
-        return player;
+        return player.getName();
+    }
+
+    public UUID getUUID()
+    {
+        return player.getUniqueId();
     }
 
     ///////////////////////////////////////////////////////
@@ -319,12 +325,15 @@ public final class PlayerData
 
     public boolean cast(String skillName)
     {
-        PlayerSkill skill = skills.get(skillName.toLowerCase());
+        return cast(skills.get(skillName.toLowerCase()));
+    }
 
+    public boolean cast(PlayerSkill skill)
+    {
         // Invalid skill
         if (skill == null)
         {
-            throw new IllegalArgumentException("Player does not have the skill: " + skillName);
+            throw new IllegalArgumentException("Player does not have the skill: " + skill.getData().getName());
         }
 
         SkillStatus stats = skill.getStatus();

@@ -83,9 +83,24 @@ public class AttributeSet
      */
     public double get(String attribute, int level)
     {
+        return get(attribute, level, 0);
+    }
+
+    /**
+     * <p>Calculates a value for an attribute at a given level.</p>
+     * <p>If the attribute does not exist, this will instead return
+     * the provided default value.</p>
+     *
+     * @param attribute    attribute name
+     * @param level        level of the skill
+     * @param defaultValue the default value in case not set
+     * @return attribute value
+     */
+    public double get(String attribute, int level, double defaultValue)
+    {
         if (!has(attribute))
         {
-            return 0;
+            return defaultValue;
         }
         return getBase(attribute) + getScale(attribute) * (level - 1);
     }

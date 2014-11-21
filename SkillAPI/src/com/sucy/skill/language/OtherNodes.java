@@ -10,10 +10,10 @@ public class OtherNodes
 
     public static final String
 
-            /**
-             * Base node for all skills
-             */
-            BASE = "Other.",
+    /**
+     * Base node for all skills
+     */
+    BASE = "Other.",
 
     /**
      * A player leveled up

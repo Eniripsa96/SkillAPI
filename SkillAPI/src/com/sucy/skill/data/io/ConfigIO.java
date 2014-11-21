@@ -1,13 +1,13 @@
 package com.sucy.skill.data.io;
 
 import com.rit.sucy.config.Config;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerSkill;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Map;
@@ -36,12 +36,12 @@ public class ConfigIO extends IOManager
     }
 
     @Override
-    public PlayerAccounts loadData(VersionPlayer player)
+    public PlayerAccounts loadData(OfflinePlayer player)
     {
         PlayerAccounts data = new PlayerAccounts(player);
-        if (config.getConfig().contains(player.getIdString()))
+        if (config.getConfig().contains(player.getUniqueId().toString()))
         {
-            ConfigurationSection file = config.getConfig().getConfigurationSection(player.getIdString());
+            ConfigurationSection file = config.getConfig().getConfigurationSection(player.getUniqueId().toString());
 
             ConfigurationSection accounts = file.getConfigurationSection(ACCOUNTS);
             for (String accountKey : accounts.getKeys(false))
@@ -86,7 +86,7 @@ public class ConfigIO extends IOManager
     @Override
     public void saveData(PlayerAccounts data)
     {
-        ConfigurationSection file = config.getConfig().createSection(data.getVersionPlayer().getIdString());
+        ConfigurationSection file = config.getConfig().createSection(data.getUUID().toString());
         file.set(LIMIT, data.getAccountLimit());
         file.set(ACTIVE, data.getActiveId());
         ConfigurationSection accounts = file.createSection(ACCOUNTS);

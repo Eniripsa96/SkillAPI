@@ -7,7 +7,6 @@ import com.sucy.skill.api.enums.Status;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.api.util.StatusManager;
 import com.sucy.skill.language.RPGFilter;
-import com.sucy.skill.language.StatusNodes;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;

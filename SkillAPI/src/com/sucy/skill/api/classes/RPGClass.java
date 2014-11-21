@@ -4,21 +4,24 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.AttributeSet;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
-public class RPGClass
+public abstract class RPGClass
 {
-
     private final HashMap<Material, Double> weaponDamage     = new HashMap<Material, Double>();
     private final HashMap<Material, Double> projectileDamage = new HashMap<Material, Double>();
     private final ArrayList<Skill>          skills           = new ArrayList<Skill>();
-    private final ArrayList<String>         permissions      = new ArrayList<String>();
 
     private SkillAPI  api;
     private RPGClass  parent;
@@ -27,9 +30,9 @@ public class RPGClass
     private String    group;
     private String    mana;
     private int       maxLevel;
-    private int       professLevel;
     private int       expSources;
     private double    manaRegen;
+    private boolean   needsPermission;
 
     protected final AttributeSet attributes = new AttributeSet();
 
@@ -41,20 +44,15 @@ public class RPGClass
 
     protected RPGClass(String name, ItemStack icon, int maxLevel)
     {
-        this(name, icon, maxLevel, null, null, 0);
+        this(name, icon, maxLevel, null, null);
     }
 
-    protected RPGClass(String name, ItemStack icon, int maxLevel, String group)
+    protected RPGClass(String name, ItemStack icon, int maxLevel, String parent)
     {
-        this(name, icon, maxLevel, group, null, 0);
+        this(name, icon, maxLevel, null, parent);
     }
 
-    protected RPGClass(String name, ItemStack icon, int maxLevel, String parent, int professLevel)
-    {
-        this(name, icon, maxLevel, null, parent, professLevel);
-    }
-
-    protected RPGClass(String name, ItemStack icon, int maxLevel, String group, String parent, int professLevel)
+    protected RPGClass(String name, ItemStack icon, int maxLevel, String group, String parent)
     {
         this.api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
         this.parent = api.getClass(parent);
@@ -63,8 +61,12 @@ public class RPGClass
         this.group = group == null ? "default" : group.toLowerCase();
         this.mana = "Mana";
         this.maxLevel = maxLevel;
-        this.professLevel = professLevel;
         this.expSources = ExpSource.MOB.getId();
+
+        if (this instanceof Listener)
+        {
+            api.getServer().getPluginManager().registerEvents((Listener) this, api);
+        }
     }
 
     ///////////////////////////////////////////////////////
@@ -103,6 +105,14 @@ public class RPGClass
         return parent;
     }
 
+    public ItemStack getIcon() {
+        return icon;
+    }
+
+    public String getSerializedIcon() {
+        return icon.getType().name() + "," + icon.getData().getData();
+    }
+
     public boolean receivesExp(ExpSource source)
     {
         return (expSources & source.getId()) != 0;
@@ -111,11 +121,6 @@ public class RPGClass
     public int getMaxLevel()
     {
         return maxLevel;
-    }
-
-    public int getProfessLevel()
-    {
-        return professLevel;
     }
 
     public int getRequiredExp(int level)
@@ -188,7 +193,15 @@ public class RPGClass
         }
         else
         {
-            api.getLogger().severe("class \"" + this.name + "\" tried to add an invalid skill - \"" + name + "\"");
+            api.getLogger().severe("Class \"" + this.name + "\" tried to add an invalid skill - \"" + name + "\"");
+        }
+    }
+
+    public void addSkills(String... names)
+    {
+        for (String name : names)
+        {
+            addSkill(name);
         }
     }
 
@@ -236,4 +249,139 @@ public class RPGClass
     //                    IO Methods                     //
     //                                                   //
     ///////////////////////////////////////////////////////
+
+    private static final String WEAPON = "weapons";
+    private static final String PROJECTS = "projectiles";
+    private static final String SKILLS = "skills";
+    private static final String PARENT = "parent";
+    private static final String ITEM = "item";
+    private static final String NAME = "name";
+    private static final String GROUP = "group";
+    private static final String MANA = "mana";
+    private static final String MAX = "max";
+    private static final String EXP = "exp-source";
+    private static final String REGEN = "mana-regen";
+    private static final String PERM = "perm";
+    private static final String ATTR = "attributes";
+
+    public void save(ConfigurationSection config) {
+
+        ConfigurationSection weapons = config.createSection(WEAPON);
+        for (Map.Entry<Material, Double> entry : weaponDamage.entrySet()) {
+            weapons.set(entry.getKey().name(), entry.getValue());
+        }
+
+        ConfigurationSection projects = config.createSection(PROJECTS);
+        for (Map.Entry<Material, Double> entry : projectileDamage.entrySet()) {
+            projects.set(entry.getKey().name(), entry.getValue());
+        }
+
+        ArrayList<String> skillNames = new ArrayList<String>();
+        for (Skill skill : skills) {
+            skillNames.add(skill.getName());
+        }
+        config.set(SKILLS, skillNames);
+
+        config.set(PARENT, parent.getName());
+        config.set(ITEM, getSerializedIcon());
+        config.set(NAME, name);
+        config.set(GROUP, group);
+        config.set(MANA, mana);
+        config.set(MAX, maxLevel);
+        config.set(EXP, expSources);
+        config.set(REGEN, manaRegen);
+        config.set(PERM, needsPermission);
+
+        attributes.save(config.createSection(ATTR));
+    }
+
+    public void softSave(ConfigurationSection config) {
+
+        boolean neededOnly = config.getKeys(false).size() > 0;
+
+        if (weaponDamage.size() > 0 && !neededOnly) {
+            ConfigurationSection weapons = config.createSection(WEAPON);
+            for (Map.Entry<Material, Double> entry : weaponDamage.entrySet()) {
+                weapons.set(entry.getKey().name(), entry.getValue());
+            }
+        }
+
+        if (projectileDamage.size() > 0 && !neededOnly) {
+            ConfigurationSection projects = config.createSection(PROJECTS);
+            for (Map.Entry<Material, Double> entry : projectileDamage.entrySet()) {
+                projects.set(entry.getKey().name(), entry.getValue());
+            }
+        }
+
+        if (skills.size() > 0 && !neededOnly) {
+            ArrayList<String> skillNames = new ArrayList<String>();
+            for (Skill skill : skills) {
+                skillNames.add(skill.getName());
+            }
+            config.set(SKILLS, skillNames);
+        }
+
+        if (parent != null && !neededOnly)
+            config.set(PARENT, parent.getName());
+        if (!config.isSet(ITEM))
+            config.set(ITEM, getSerializedIcon());
+        if (!config.isSet(NAME))
+            config.set(NAME, name);
+        if (!config.isSet(group))
+            config.set(GROUP, group);
+        if (!config.isSet(MANA))
+            config.set(MANA, mana);
+        if (!config.isSet(MAX))
+            config.set(MAX, maxLevel);
+        if (!config.isSet(EXP))
+            config.set(EXP, expSources);
+        if (!config.isSet(REGEN))
+            config.set(REGEN, manaRegen);
+        if (!config.isSet(PERM))
+            config.set(PERM, needsPermission);
+    }
+
+    public void load(ConfigurationSection config) {
+
+        if (config.isConfigurationSection(WEAPON))
+        {
+            ConfigurationSection weapons = config.getConfigurationSection(WEAPON);
+            for (String key : weapons.getKeys(false))
+            {
+                weaponDamage.put(Data.parseMat(key), weapons.getDouble(key));
+            }
+        }
+
+        if (config.isConfigurationSection(PROJECTS))
+        {
+            ConfigurationSection projects = config.getConfigurationSection(PROJECTS);
+            for (String key : projects.getKeys(false))
+            {
+                projectileDamage.put(Data.parseMat(key), projects.getDouble(key));
+            }
+        }
+
+        if (config.isList(SKILLS)) {
+            skills.clear();
+            for (String name : config.getStringList(SKILLS)) {
+                Skill skill = api.getSkill(name);
+                if (skill != null)
+                {
+                    skills.add(skill);
+                }
+            }
+        }
+
+        parent = api.getClass(config.getString(PARENT));
+        icon = Data.parseIcon(config.getString(ITEM, getSerializedIcon()));
+        name = config.getString(NAME, name);
+        group = config.getString(GROUP, "default");
+        mana = config.getString(MANA, mana);
+        maxLevel = config.getInt(MAX, maxLevel);
+        expSources = config.getInt(EXP, expSources);
+        manaRegen = config.getDouble(REGEN, manaRegen);
+        needsPermission = config.getBoolean(PERM);
+
+        attributes.load(config.getConfigurationSection(ATTR));
+    }
 }

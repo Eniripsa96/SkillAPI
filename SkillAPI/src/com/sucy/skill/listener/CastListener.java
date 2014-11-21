@@ -1,6 +1,5 @@
 package com.sucy.skill.listener;
 
-import com.rit.sucy.chat.ChatListener;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.Material;
@@ -44,12 +43,12 @@ public class CastListener implements Listener
         }
 
         // Must have a valid item
-        if (heldItem == null || data.getBound(heldItem) == null || !plugin.isSkillRegistered(data.getBound(heldItem)))
+        if (heldItem == null || data.getBoundSkill(heldItem) == null || !plugin.isSkillRegistered(data.getBoundSkill(heldItem).getData().getName()))
         {
             return;
         }
 
         // Cast the skill
-        data.castSkill(data.getBound(heldItem));
+        data.cast(data.getBoundSkill(heldItem));
     }
 }

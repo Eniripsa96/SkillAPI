@@ -2,7 +2,6 @@ package com.sucy.skill.api.util;
 
 import com.sucy.skill.api.enums.Status;
 import com.sucy.skill.api.event.StatusExpireEvent;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,7 +11,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StatusData

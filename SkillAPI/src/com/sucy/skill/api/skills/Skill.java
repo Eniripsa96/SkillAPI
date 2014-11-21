@@ -6,7 +6,7 @@ import com.rit.sucy.config.LanguageConfig;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.api.AttributeSet;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.data.io.keys.SkillValues;
+import com.sucy.skill.api.util.Data;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.language.SkillNodes;
@@ -27,7 +27,6 @@ public abstract class Skill
 
     private static final DecimalFormat FORMAT = new DecimalFormat("#########0.0#");
 
-    private final ArrayList<String> permissions = new ArrayList<String>();
     private final ArrayList<String> description = new ArrayList<String>();
 
     private String    name;
@@ -58,6 +57,13 @@ public abstract class Skill
 
     public Skill(String name, String type, ItemStack indicator, int maxLevel, String skillReq, int skillReqLevel)
     {
+        if (name == null) throw new IllegalArgumentException("Skill name cannot be null");
+
+        // Default values
+        if (type == null) type = "Unknown type";
+        if (indicator == null) indicator = new ItemStack(Material.APPLE);
+        if (maxLevel < 1) maxLevel = 1;
+
         this.type = type;
         this.name = name;
         this.indicator = indicator;
@@ -92,19 +98,13 @@ public abstract class Skill
         return needsPermission;
     }
 
-    public boolean hasPermissions()
-    {
-        return permissions.size() > 0;
-    }
-
-    public List<String> getPermissions()
-    {
-        return permissions;
-    }
-
     public ItemStack getIndicator()
     {
         return indicator;
+    }
+
+    public String getSerializedInidcator() {
+        return indicator.getType().name() + "," + indicator.getData().getData();
     }
 
     public String getType()
@@ -373,88 +373,71 @@ public abstract class Skill
                 RPGFilter.SKILL.setReplacement(getName()));
     }
 
-    public void validateDefaults()
-    {
-        attributes.checkDefault(SkillAttribute.LEVEL, 1, 0);
-        attributes.checkDefault(SkillAttribute.COST, 1, 0);
-        if (this instanceof SkillShot || this instanceof TargetSkill)
-        {
-            attributes.checkDefault(SkillAttribute.MANA, 0, 0);
-            attributes.checkDefault(SkillAttribute.COOLDOWN, 0, 0);
-            if (this instanceof TargetSkill)
-            {
-                attributes.checkDefault(SkillAttribute.RANGE, 6, 0);
-            }
-        }
+    private static final String NAME = "name";
+    private static final String TYPE = "type";
+    private static final String ITEM = "item";
+    private static final String MAX = "max";
+    private static final String REQ = "req";
+    private static final String REQLVL = "req-lvl";
+    private static final String MSG = "msg";
+    private static final String PERM = "reqperm";
+    private static final String DESC = "desc";
+    private static final String ATTR = "attributes";
+
+    public void save(ConfigurationSection config) {
+        config.set(NAME, name);
+        config.set(TYPE, type.replace(ChatColor.COLOR_CHAR, '&'));
+        config.set(ITEM, getSerializedInidcator());
+        config.set(MAX, maxLevel);
+        config.set(REQ, skillReq);
+        config.set(REQLVL, skillReqLevel);
+        config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
+        config.set(PERM, needsPermission);
+        config.set(DESC, description);
+        attributes.save(config.createSection(ATTR));
     }
 
-    public void update(ConfigurationSection config)
-    {
+    public void softSave(ConfigurationSection config) {
 
-        // Attributes
-        attributes.load(config.getConfigurationSection("attributes"));
+        boolean neededOnly = config.getKeys(false).size() > 0;
 
-        // Max level
-        maxLevel = config.getInt(SkillValues.MAX_LEVEL);
-
-        // Description
-        List<String> description = config.getStringList(SkillValues.DESCRIPTION);
-        if (description != null)
+        if (!config.contains(NAME))
+            config.set(NAME, name);
+        if (!config.isSet(TYPE))
+            config.set(TYPE, type.replace(ChatColor.COLOR_CHAR, '&'));
+        if (!config.isSet(ITEM))
+            config.set(ITEM, getSerializedInidcator());
+        if (!config.isSet(MAX))
+            config.set(MAX, maxLevel);
+        if (skillReq != null && !neededOnly)
         {
-            this.description.clear();
-            this.description.addAll(description);
+            config.set(REQ, skillReq);
+            config.set(REQLVL, skillReqLevel);
         }
-
-        // Skill Requirement
-        if (config.contains(SkillValues.SKILL_REQ))
-        {
-            skillReq = config.getString(SkillValues.SKILL_REQ);
-            skillReqLevel = config.getInt(SkillValues.SKILL_REQ_LEVEL, 1);
-        }
-
-        // Icon
-        parseIndicator(config.getString(SkillValues.INDICATOR));
-
-        // Message
-        message = config.getString(SkillValues.MESSAGE);
-
-        // Needed permission
-        if (config.contains(SkillValues.NEEDS_PERMISSION))
-        {
-            needsPermission = config.getBoolean(SkillValues.NEEDS_PERMISSION);
-        }
-
-        // Permissions
-        if (config.contains(SkillValues.PERMISSIONS))
-        {
-            permissions.clear();
-            permissions.addAll(config.getStringList(SkillValues.PERMISSIONS));
-        }
+        if (message != null && !neededOnly)
+            config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
+        if (!neededOnly)
+            config.set(PERM, needsPermission);
+        if (!config.isSet(DESC))
+            config.set(DESC, description);
     }
 
-    protected void parseIndicator(String string)
-    {
-        String[] pieces;
-        if (string.contains(","))
-        {
-            pieces = string.split(",");
-        }
-        else
-        {
-            pieces = new String[] { string };
-        }
-        Material icon = Material.valueOf(pieces[0]);
-        if (icon == null)
-        {
-            return;
-        }
-        byte data = 0;
-        if (pieces.length > 1)
-        {
-            data = Byte.parseByte(pieces[1]);
-        }
-        ItemStack item = new ItemStack(icon, 1, (short) 0, data);
+    public void load(ConfigurationSection config) {
+        name = config.getString(NAME, name);
+        type = TextFormatter.colorString(config.getString(TYPE, name));
+        Data.parseIcon(config.getString(ITEM, getSerializedInidcator()));
+        maxLevel = config.getInt(MAX, maxLevel);
+        skillReq = config.getString(REQ);
+        skillReqLevel = config.getInt(REQLVL, skillReqLevel);
+        message = TextFormatter.colorString(config.getString(MSG));
+        needsPermission = config.getBoolean(PERM, needsPermission);
 
-        indicator = item;
+        if (config.isList(DESC))
+        {
+            description.clear();
+            description.addAll(config.getStringList(DESC));
+        }
+
+        attributes.load(config.getConfigurationSection(ATTR));
     }
 }

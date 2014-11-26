@@ -12,12 +12,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class CastListener implements Listener
 {
-
-    private SkillAPI plugin;
-
     public CastListener(SkillAPI plugin)
     {
-        this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -27,7 +23,7 @@ public class CastListener implements Listener
 
         Player player = event.getPlayer();
 
-        PlayerData data = plugin.getPlayerData(player);
+        PlayerData data = SkillAPI.getPlayerData(player);
         Material heldItem = player.getItemInHand().getType();
 
         // Must be on right click
@@ -43,7 +39,7 @@ public class CastListener implements Listener
         }
 
         // Must have a valid item
-        if (heldItem == null || data.getBoundSkill(heldItem) == null || !plugin.isSkillRegistered(data.getBoundSkill(heldItem).getData().getName()))
+        if (heldItem == null || data.getBoundSkill(heldItem) == null || !SkillAPI.isSkillRegistered(data.getBoundSkill(heldItem).getData().getName()))
         {
             return;
         }

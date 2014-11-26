@@ -50,6 +50,8 @@ import java.util.UUID;
  */
 public class SkillAPI extends JavaPlugin
 {
+    private static SkillAPI singleton;
+
     private final HashMap<String, Skill>        skills  = new HashMap<String, Skill>();
     private final HashMap<String, RPGClass>     classes = new HashMap<String, RPGClass>();
     private final HashMap<UUID, PlayerAccounts> players = new HashMap<UUID, PlayerAccounts>();
@@ -57,8 +59,8 @@ public class SkillAPI extends JavaPlugin
     private LanguageConfig language;
     private Settings       settings;
 
-    private IOManager io;
-    private ComboManager   comboManager;
+    private IOManager           io;
+    private ComboManager        comboManager;
     private RegistrationManager registrationManager;
 
     private boolean enabled = false;
@@ -70,8 +72,17 @@ public class SkillAPI extends JavaPlugin
     @Override
     public void onEnable()
     {
+        if (singleton != null)
+        {
+            throw new IllegalStateException("Cannot enable SkillAPI twice!");
+        }
+        singleton = this;
+
         // Ensure only one enable at a time
-        if (enabled) throw new IllegalStateException("Cannot enable SkillAPI when already enabled!");
+        if (enabled)
+        {
+            throw new IllegalStateException("Cannot enable SkillAPI when already enabled!");
+        }
         enabled = true;
 
         // Load settings
@@ -91,6 +102,9 @@ public class SkillAPI extends JavaPlugin
         // Set up listeners
         new StatusListener(this);
         new CastListener(this);
+
+        // Load classes and skills
+        registrationManager.initialize();
     }
 
     /**
@@ -100,6 +114,12 @@ public class SkillAPI extends JavaPlugin
     @Override
     public void onDisable()
     {
+        if (singleton != this)
+        {
+            throw new IllegalStateException("This is not a valid SkillAPI copy!");
+        }
+        singleton = null;
+
         io.saveAll();
 
         skills.clear();
@@ -146,12 +166,16 @@ public class SkillAPI extends JavaPlugin
      * returned instead.
      *
      * @param name name of the skill
-     * @return     skill with the name or null if not found
+     *
+     * @return skill with the name or null if not found
      */
-    public Skill getSkill(String name)
+    public static Skill getSkill(String name)
     {
-        if (name == null) return null;
-        return skills.get(name.toLowerCase());
+        if (name == null || singleton == null)
+        {
+            return null;
+        }
+        return singleton.skills.get(name.toLowerCase());
     }
 
     /**
@@ -160,17 +184,23 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the map of registered skills
      */
-    public HashMap<String, Skill> getSkills() {
-        return skills;
+    public static HashMap<String, Skill> getSkills()
+    {
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.skills;
     }
 
     /**
      * Checks whether or not a skill is registered.
      *
      * @param name name of the skill
-     * @return     true if registered, false otherwise
+     *
+     * @return true if registered, false otherwise
      */
-    public boolean isSkillRegistered(String name)
+    public static boolean isSkillRegistered(String name)
     {
         return getSkill(name) != null;
     }
@@ -179,9 +209,10 @@ public class SkillAPI extends JavaPlugin
      * Checks whether or not a skill is registered
      *
      * @param skill the skill to check
-     * @return      true if registered, false otherwise
+     *
+     * @return true if registered, false otherwise
      */
-    public boolean isSkillRegistered(PlayerSkill skill)
+    public static boolean isSkillRegistered(PlayerSkill skill)
     {
         return isSkillRegistered(skill.getData().getName());
     }
@@ -190,9 +221,10 @@ public class SkillAPI extends JavaPlugin
      * Checks whether or not a skill is registered
      *
      * @param skill the skill to check
-     * @return      true if registered, false otherwise
+     *
+     * @return true if registered, false otherwise
      */
-    public boolean isSkillRegistered(Skill skill)
+    public static boolean isSkillRegistered(Skill skill)
     {
         return isSkillRegistered(skill.getName());
     }
@@ -202,12 +234,16 @@ public class SkillAPI extends JavaPlugin
      * returned instead.
      *
      * @param name name of the class
-     * @return     class with the name or null if not found
+     *
+     * @return class with the name or null if not found
      */
-    public RPGClass getClass(String name)
+    public static RPGClass getClass(String name)
     {
-        if (name == null) return null;
-        return classes.get(name.toLowerCase());
+        if (name == null || singleton == null)
+        {
+            return null;
+        }
+        return singleton.classes.get(name.toLowerCase());
     }
 
     /**
@@ -216,17 +252,23 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the map of registered skills
      */
-    public HashMap<String, RPGClass> getClasses() {
-        return classes;
+    public static HashMap<String, RPGClass> getClasses()
+    {
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.classes;
     }
 
     /**
      * Checks whether or not a class is registered.
      *
      * @param name name of the class
-     * @return     true if registered, false otherwise
+     *
+     * @return true if registered, false otherwise
      */
-    public boolean isClassRegistered(String name)
+    public static boolean isClassRegistered(String name)
     {
         return getClass(name) != null;
     }
@@ -235,9 +277,10 @@ public class SkillAPI extends JavaPlugin
      * Checks whether or not a class is registered.
      *
      * @param playerClass the class to check
-     * @return            true if registered, false otherwise
+     *
+     * @return true if registered, false otherwise
      */
-    public boolean isClassRegistered(PlayerClass playerClass)
+    public static boolean isClassRegistered(PlayerClass playerClass)
     {
         return isClassRegistered(playerClass.getData().getName());
     }
@@ -246,9 +289,10 @@ public class SkillAPI extends JavaPlugin
      * Checks whether or not a class is registered.
      *
      * @param rpgClass the class to check
-     * @return         true if registered, false otherwise
+     *
+     * @return true if registered, false otherwise
      */
-    public boolean isClassRegistered(RPGClass rpgClass)
+    public static boolean isClassRegistered(RPGClass rpgClass)
     {
         return isClassRegistered(rpgClass.getName());
     }
@@ -258,9 +302,10 @@ public class SkillAPI extends JavaPlugin
      * player, a new set of data will be created and returned.
      *
      * @param player player to get the data for
-     * @return       the class data of the player
+     *
+     * @return the class data of the player
      */
-    public PlayerData getPlayerData(OfflinePlayer player)
+    public static PlayerData getPlayerData(OfflinePlayer player)
     {
         return getPlayerAccountData(player).getActiveData();
     }
@@ -271,19 +316,24 @@ public class SkillAPI extends JavaPlugin
      * of data will be created and returned.
      *
      * @param player player to get the data for
-     * @return       the class data of the player
+     *
+     * @return the class data of the player
      */
-    public PlayerAccounts getPlayerAccountData(OfflinePlayer player)
+    public static PlayerAccounts getPlayerAccountData(OfflinePlayer player)
     {
-        if (!players.containsKey(player.getUniqueId()))
+        if (singleton == null)
+        {
+            return null;
+        }
+        if (!singleton.players.containsKey(player.getUniqueId()))
         {
             PlayerAccounts data = new PlayerAccounts(player);
-            players.put(player.getUniqueId(), data);
+            singleton.players.put(player.getUniqueId(), data);
             return data;
         }
         else
         {
-            return players.get(player.getUniqueId());
+            return singleton.players.get(player.getUniqueId());
         }
     }
 
@@ -293,8 +343,13 @@ public class SkillAPI extends JavaPlugin
      *
      * @return all SkillAPI player data
      */
-    public HashMap<UUID, PlayerAccounts> getPlayerAccountData() {
-        return players;
+    public static HashMap<UUID, PlayerAccounts> getPlayerAccountData()
+    {
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.players;
     }
 
     /**
@@ -304,9 +359,11 @@ public class SkillAPI extends JavaPlugin
      *
      * @param skill skill to register
      */
-    public void addSkill(Skill skill) {
+    public void addSkill(Skill skill)
+    {
         skill = registrationManager.validate(skill);
-        if (skill != null) {
+        if (skill != null)
+        {
             skills.put(skill.getName(), skill);
         }
     }
@@ -318,8 +375,10 @@ public class SkillAPI extends JavaPlugin
      *
      * @param skills skills to register
      */
-    public void addSkills(Skill ... skills) {
-        for (Skill skill : skills) {
+    public void addSkills(Skill... skills)
+    {
+        for (Skill skill : skills)
+        {
             addSkill(skill);
         }
     }
@@ -331,9 +390,11 @@ public class SkillAPI extends JavaPlugin
      *
      * @param rpgClass class to register
      */
-    public void addClass(RPGClass rpgClass) {
+    public void addClass(RPGClass rpgClass)
+    {
         rpgClass = registrationManager.validate(rpgClass);
-        if (rpgClass != null) {
+        if (rpgClass != null)
+        {
             classes.put(rpgClass.getName(), rpgClass);
         }
     }
@@ -345,8 +406,10 @@ public class SkillAPI extends JavaPlugin
      *
      * @param classes classes to register
      */
-    public void addClasses(RPGClass ... classes) {
-        for (RPGClass rpgClass : classes) {
+    public void addClasses(RPGClass... classes)
+    {
+        for (RPGClass rpgClass : classes)
+        {
             addClass(rpgClass);
         }
     }

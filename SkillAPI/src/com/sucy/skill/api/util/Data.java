@@ -5,21 +5,29 @@ import org.bukkit.inventory.ItemStack;
 
 public class Data
 {
-    public static Material parseMat(String name) {
-        try {
+    public static Material parseMat(String name)
+    {
+        try
+        {
             return Material.valueOf(name.toUpperCase().replace(' ', '_'));
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             return null;
         }
     }
 
-    public static String serializeIcon(ItemStack item) {
+    public static String serializeIcon(ItemStack item)
+    {
         return item.getType().name() + "," + item.getData().getData();
     }
 
-    public static ItemStack parseIcon(String data) {
-        if (data == null) return new ItemStack(Material.APPLE);
+    public static ItemStack parseIcon(String data)
+    {
+        if (data == null)
+        {
+            return new ItemStack(Material.APPLE);
+        }
 
         String[] pieces;
         if (data.contains(","))
@@ -42,7 +50,8 @@ public class Data
             {
                 matData = Byte.parseByte(pieces[1]);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 // Do nothing
             }
         }

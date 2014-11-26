@@ -18,6 +18,7 @@ public class ValueSet
      * <p>If the value is not set, this returns 0.</p>
      *
      * @param key value key
+     *
      * @return value
      */
     public int getValue(String key)
@@ -41,6 +42,7 @@ public class ValueSet
      * <p>Checks if a value has been set.</p>
      *
      * @param key value key
+     *
      * @return true if set, false otherwise
      */
     public boolean isValueSet(String key)
@@ -78,6 +80,7 @@ public class ValueSet
      *
      * @param key    value key
      * @param amount amount required
+     *
      * @return true if has at least that much, false otherwise
      */
     public boolean hasValue(String key, int amount)

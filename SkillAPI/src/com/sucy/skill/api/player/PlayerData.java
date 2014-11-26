@@ -16,6 +16,7 @@ import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.RPGFilter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
@@ -39,17 +40,12 @@ public final class PlayerData
 
     public PlayerData(SkillAPI api, OfflinePlayer player)
     {
-        if (api.getPlayerData(player) != null)
+        this.api = api;
+        if (SkillAPI.getPlayerData(player) != null)
         {
             throw new IllegalArgumentException("Tried to create duplicate data for a player");
         }
-        this.api = api;
         this.player = player;
-    }
-
-    public SkillAPI getAPI()
-    {
-        return api;
     }
 
     public Player getPlayer()
@@ -163,7 +159,7 @@ public final class PlayerData
         if (classes.containsKey(rpgClass.getGroup()))
         {
             PlayerClass current = classes.get(rpgClass.getGroup());
-            return rpgClass.getParent() == current.getData() && current.getData().getProfessLevel() <= current.getLevel();
+            return rpgClass.getParent() == current.getData() && current.getData().getMaxLevel() <= current.getLevel();
         }
         else
         {
@@ -216,7 +212,7 @@ public final class PlayerData
     public void giveMana(double amount, ManaSource source)
     {
         PlayerManaGainEvent event = new PlayerManaGainEvent(this, amount, source);
-        getAPI().getServer().getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(event);
 
         if (!event.isCancelled())
         {
@@ -236,7 +232,7 @@ public final class PlayerData
     public void useMana(double amount, ManaCost cost)
     {
         PlayerManaLossEvent event = new PlayerManaLossEvent(this, amount, cost);
-        getAPI().getServer().getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(event);
 
         if (!event.isCancelled())
         {
@@ -333,7 +329,7 @@ public final class PlayerData
         // Invalid skill
         if (skill == null)
         {
-            throw new IllegalArgumentException("Player does not have the skill: " + skill.getData().getName());
+            throw new IllegalArgumentException("Skill cannot be null");
         }
 
         SkillStatus stats = skill.getStatus();
@@ -349,7 +345,7 @@ public final class PlayerData
         // On Cooldown
         if (stats == SkillStatus.ON_COOLDOWN)
         {
-            getAPI().getLanguage().sendMessage(
+            api.getLanguage().sendMessage(
                     OtherNodes.ON_COOLDOWN,
                     getPlayer(),
                     FilterType.COLOR,
@@ -361,7 +357,7 @@ public final class PlayerData
         // Not enough mana
         else if (stats == SkillStatus.MISSING_MANA)
         {
-            getAPI().getLanguage().sendMessage(
+            api.getLanguage().sendMessage(
                     OtherNodes.NO_MANA,
                     getPlayer(),
                     FilterType.COLOR,
@@ -378,7 +374,7 @@ public final class PlayerData
 
             Player p = getPlayer();
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
-            getAPI().getServer().getPluginManager().callEvent(event);
+            Bukkit.getPluginManager().callEvent(event);
 
             // Make sure it isn't cancelled
             if (!event.isCancelled())
@@ -387,9 +383,9 @@ public final class PlayerData
                 {
                     if (((SkillShot) skill.getData()).cast(p, level))
                     {
-                        skill.getData().sendMessage(getAPI().getLanguage(), p, getAPI().getSettings().getMessageRadius());
+                        skill.getData().sendMessage(api.getLanguage(), p, api.getSettings().getMessageRadius());
                         skill.startCooldown();
-                        if (getAPI().getSettings().isManaEnabled())
+                        if (api.getSettings().isManaEnabled())
                         {
                             useMana(cost, ManaCost.SKILL_CAST);
                         }
@@ -398,7 +394,7 @@ public final class PlayerData
                 }
                 catch (Exception ex)
                 {
-                    getAPI().getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
+                    api.getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
                     ex.printStackTrace();
                 }
             }
@@ -418,7 +414,7 @@ public final class PlayerData
             }
 
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
-            getAPI().getServer().getPluginManager().callEvent(event);
+            api.getServer().getPluginManager().callEvent(event);
 
             // Make sure it isn't cancelled
             if (!event.isCancelled())
@@ -427,9 +423,9 @@ public final class PlayerData
                 {
                     if (((TargetSkill) skill.getData()).cast(p, target, level, Protection.isAlly(p, target)))
                     {
-                        skill.getData().sendMessage(getAPI().getLanguage(), p, getAPI().getSettings().getMessageRadius());
+                        skill.getData().sendMessage(api.getLanguage(), p, api.getSettings().getMessageRadius());
                         skill.startCooldown();
-                        if (getAPI().getSettings().isManaEnabled())
+                        if (api.getSettings().isManaEnabled())
                         {
                             useMana(cost, ManaCost.SKILL_CAST);
                         }
@@ -438,7 +434,7 @@ public final class PlayerData
                 }
                 catch (Exception ex)
                 {
-                    getAPI().getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
+                    api.getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
                     ex.printStackTrace();
                 }
             }

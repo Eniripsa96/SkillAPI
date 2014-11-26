@@ -15,6 +15,7 @@ public interface SkillShot
      *
      * @param player player casting the skill
      * @param level  current level of the skill
+     *
      * @return true if could cast, false otherwise
      */
     public boolean cast(Player player, int level);

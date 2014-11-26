@@ -146,6 +146,7 @@ public final class PlayerClass
      * <p>This treats the points as coming from the source "SPECIAL".</p>
      *
      * @param amount amount of points to give
+     *
      * @throws java.lang.IllegalArgumentException if the points are less than 1
      */
     public void givePoints(int amount)
@@ -161,6 +162,7 @@ public final class PlayerClass
      *
      * @param amount amount of points to give
      * @param source source of the points
+     *
      * @throws java.lang.IllegalArgumentException if the points are less than 1
      */
     public void givePoints(int amount, PointSource source)
@@ -276,6 +278,7 @@ public final class PlayerClass
      * <p>This will launch a level event for the gained levels.</p>
      *
      * @param amount amount of levels to give
+     *
      * @throws java.lang.IllegalArgumentException when the level amount is less than 1
      */
     public void giveLevels(int amount)

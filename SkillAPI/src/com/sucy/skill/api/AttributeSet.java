@@ -79,6 +79,7 @@ public class AttributeSet
      *
      * @param attribute attribute name
      * @param level     level of the skill
+     *
      * @return attribute value
      */
     public double get(String attribute, int level)
@@ -94,6 +95,7 @@ public class AttributeSet
      * @param attribute    attribute name
      * @param level        level of the skill
      * @param defaultValue the default value in case not set
+     *
      * @return attribute value
      */
     public double get(String attribute, int level, double defaultValue)
@@ -110,6 +112,7 @@ public class AttributeSet
      * <p>If the attribute is not set, this will return 0.</p>
      *
      * @param attribute attribute name
+     *
      * @return base value
      */
     public double getBase(String attribute)
@@ -129,6 +132,7 @@ public class AttributeSet
      * <p>If the attribute is not set, this will return 0.</p>
      *
      * @param attribute attribute name
+     *
      * @return change in value per level
      */
     public double getScale(String attribute)
@@ -163,6 +167,7 @@ public class AttributeSet
      * any of the setter methods or while loading from the configuration.</p>
      *
      * @param name name of the attribute
+     *
      * @return true if defined, false otherwise
      */
     public boolean has(String name)

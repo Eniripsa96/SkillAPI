@@ -70,6 +70,7 @@ public class PlayerGainSkillPointsEvent extends Event implements Cancellable
      * Sets the amount of experience being gained
      *
      * @param amount new amount of experience
+     *
      * @throws IllegalArgumentException if experience is less than 0
      */
     public void setAmount(int amount)

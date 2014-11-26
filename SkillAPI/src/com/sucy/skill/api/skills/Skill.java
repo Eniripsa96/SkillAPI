@@ -24,7 +24,6 @@ import java.util.List;
 
 public abstract class Skill
 {
-
     private static final DecimalFormat FORMAT = new DecimalFormat("#########0.0#");
 
     private final ArrayList<String> description = new ArrayList<String>();
@@ -57,12 +56,24 @@ public abstract class Skill
 
     public Skill(String name, String type, ItemStack indicator, int maxLevel, String skillReq, int skillReqLevel)
     {
-        if (name == null) throw new IllegalArgumentException("Skill name cannot be null");
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Skill name cannot be null");
+        }
 
         // Default values
-        if (type == null) type = "Unknown type";
-        if (indicator == null) indicator = new ItemStack(Material.APPLE);
-        if (maxLevel < 1) maxLevel = 1;
+        if (type == null)
+        {
+            type = "Unknown type";
+        }
+        if (indicator == null)
+        {
+            indicator = new ItemStack(Material.APPLE);
+        }
+        if (maxLevel < 1)
+        {
+            maxLevel = 1;
+        }
 
         this.type = type;
         this.name = name;
@@ -103,7 +114,8 @@ public abstract class Skill
         return indicator;
     }
 
-    public String getSerializedInidcator() {
+    public String getSerializedInidcator()
+    {
         return indicator.getType().name() + "," + indicator.getData().getData();
     }
 
@@ -373,18 +385,19 @@ public abstract class Skill
                 RPGFilter.SKILL.setReplacement(getName()));
     }
 
-    private static final String NAME = "name";
-    private static final String TYPE = "type";
-    private static final String ITEM = "item";
-    private static final String MAX = "max";
-    private static final String REQ = "req";
+    private static final String NAME   = "name";
+    private static final String TYPE   = "type";
+    private static final String ITEM   = "item";
+    private static final String MAX    = "max";
+    private static final String REQ    = "req";
     private static final String REQLVL = "req-lvl";
-    private static final String MSG = "msg";
-    private static final String PERM = "reqperm";
-    private static final String DESC = "desc";
-    private static final String ATTR = "attributes";
+    private static final String MSG    = "msg";
+    private static final String PERM   = "reqperm";
+    private static final String DESC   = "desc";
+    private static final String ATTR   = "attributes";
 
-    public void save(ConfigurationSection config) {
+    public void save(ConfigurationSection config)
+    {
         config.set(NAME, name);
         config.set(TYPE, type.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(ITEM, getSerializedInidcator());
@@ -397,32 +410,48 @@ public abstract class Skill
         attributes.save(config.createSection(ATTR));
     }
 
-    public void softSave(ConfigurationSection config) {
+    public void softSave(ConfigurationSection config)
+    {
 
         boolean neededOnly = config.getKeys(false).size() > 0;
 
         if (!config.contains(NAME))
+        {
             config.set(NAME, name);
+        }
         if (!config.isSet(TYPE))
+        {
             config.set(TYPE, type.replace(ChatColor.COLOR_CHAR, '&'));
+        }
         if (!config.isSet(ITEM))
+        {
             config.set(ITEM, getSerializedInidcator());
+        }
         if (!config.isSet(MAX))
+        {
             config.set(MAX, maxLevel);
+        }
         if (skillReq != null && !neededOnly)
         {
             config.set(REQ, skillReq);
             config.set(REQLVL, skillReqLevel);
         }
         if (message != null && !neededOnly)
+        {
             config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
+        }
         if (!neededOnly)
+        {
             config.set(PERM, needsPermission);
+        }
         if (!config.isSet(DESC))
+        {
             config.set(DESC, description);
+        }
     }
 
-    public void load(ConfigurationSection config) {
+    public void load(ConfigurationSection config)
+    {
         name = config.getString(NAME, name);
         type = TextFormatter.colorString(config.getString(TYPE, name));
         Data.parseIcon(config.getString(ITEM, getSerializedInidcator()));

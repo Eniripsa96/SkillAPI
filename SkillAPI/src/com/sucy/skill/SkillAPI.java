@@ -36,12 +36,15 @@ import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.listener.CastListener;
 import com.sucy.skill.listener.StatusListener;
+import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -55,11 +58,13 @@ public class SkillAPI extends JavaPlugin
     private final HashMap<String, Skill>        skills  = new HashMap<String, Skill>();
     private final HashMap<String, RPGClass>     classes = new HashMap<String, RPGClass>();
     private final HashMap<UUID, PlayerAccounts> players = new HashMap<UUID, PlayerAccounts>();
+    private final ArrayList<String>             groups  = new ArrayList<String>();
 
     private LanguageConfig language;
     private Settings       settings;
 
     private IOManager           io;
+    private CmdManager          cmd;
     private ComboManager        comboManager;
     private RegistrationManager registrationManager;
 
@@ -72,6 +77,7 @@ public class SkillAPI extends JavaPlugin
     @Override
     public void onEnable()
     {
+        // Set up the singleton
         if (singleton != null)
         {
             throw new IllegalStateException("Cannot enable SkillAPI twice!");
@@ -86,18 +92,13 @@ public class SkillAPI extends JavaPlugin
         enabled = true;
 
         // Load settings
-        language = new LanguageConfig(this, "language.yml");
+        language = new LanguageConfig(this, "language");
         settings = new Settings(this);
-        if (!settings.getAccountSettings().isValid())
-        {
-            getLogger().severe("Invalid account settings, SkillAPI being disabled...");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
 
         // Set up managers
         comboManager = new ComboManager();
         registrationManager = new RegistrationManager(this);
+        cmd = new CmdManager(this);
 
         // Set up listeners
         new StatusListener(this);
@@ -114,9 +115,10 @@ public class SkillAPI extends JavaPlugin
     @Override
     public void onDisable()
     {
+        // Clear the singleton
         if (singleton != this)
         {
-            throw new IllegalStateException("This is not a valid SkillAPI copy!");
+            throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
         }
         singleton = null;
 
@@ -127,6 +129,7 @@ public class SkillAPI extends JavaPlugin
         players.clear();
 
         HandlerList.unregisterAll(this);
+        cmd.clear();
 
         enabled = false;
     }
@@ -136,9 +139,13 @@ public class SkillAPI extends JavaPlugin
      *
      * @return SkillAPI settings data
      */
-    public Settings getSettings()
+    public static Settings getSettings()
     {
-        return settings;
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.settings;
     }
 
     /**
@@ -146,9 +153,13 @@ public class SkillAPI extends JavaPlugin
      *
      * @return SkillAPI language file data
      */
-    public LanguageConfig getLanguage()
+    public static LanguageConfig getLanguage()
     {
-        return language;
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.language;
     }
 
     /**
@@ -156,9 +167,13 @@ public class SkillAPI extends JavaPlugin
      *
      * @return click combo manager
      */
-    public ComboManager getComboManager()
+    public static ComboManager getComboManager()
     {
-        return comboManager;
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.comboManager;
     }
 
     /**
@@ -262,6 +277,24 @@ public class SkillAPI extends JavaPlugin
     }
 
     /**
+     * Retrieves a list of base classes that don't profess from another class
+     *
+     * @return the list of base classes
+     */
+    public static ArrayList<RPGClass> getBaseClasses()
+    {
+        ArrayList<RPGClass> list = new ArrayList<RPGClass>();
+        for (RPGClass c : singleton.classes.values())
+        {
+            if (!c.hasParent())
+            {
+                list.add(c);
+            }
+        }
+        return list;
+    }
+
+    /**
      * Checks whether or not a class is registered.
      *
      * @param name name of the class
@@ -353,6 +386,21 @@ public class SkillAPI extends JavaPlugin
     }
 
     /**
+     * Retrieves the list of active class groups used by
+     * registered classes
+     *
+     * @return list of active class groups
+     */
+    public static List<String> getGroups()
+    {
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.groups;
+    }
+
+    /**
      * Registers a new skill with SkillAPI. If this is called outside of the method
      * provided in SkillPlugin, this will throw an error. You should implement SkillPlugin
      * in your main class and call this from the provided "registerSkills" method.
@@ -396,6 +444,10 @@ public class SkillAPI extends JavaPlugin
         if (rpgClass != null)
         {
             classes.put(rpgClass.getName(), rpgClass);
+            if (!groups.contains(rpgClass.getGroup()))
+            {
+                groups.add(rpgClass.getGroup());
+            }
         }
     }
 

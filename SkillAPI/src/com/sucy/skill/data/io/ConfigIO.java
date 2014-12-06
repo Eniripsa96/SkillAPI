@@ -53,7 +53,7 @@ public class ConfigIO extends IOManager
                 ConfigurationSection classes = account.getConfigurationSection(CLASSES);
                 for (String classKey : classes.getKeys(false))
                 {
-                    PlayerClass c = new PlayerClass(acc, api.getClass(classKey));
+                    PlayerClass c = new PlayerClass(acc, SkillAPI.getClass(classKey));
                     ConfigurationSection classData = classes.getConfigurationSection(classKey);
                     c.giveLevels(classData.getInt(LEVEL));
                     c.setPoints(classData.getInt(POINTS));

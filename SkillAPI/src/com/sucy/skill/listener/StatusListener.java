@@ -1,12 +1,11 @@
 package com.sucy.skill.listener;
 
-import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.enums.Status;
+import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
-import com.sucy.skill.api.util.StatusManager;
-import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.api.util.FlagManager;
+import com.sucy.skill.api.util.StatusFlag;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -18,10 +17,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class StatusListener implements Listener
 {
-
     SkillAPI plugin;
 
     public StatusListener(SkillAPI plugin)
@@ -33,13 +33,25 @@ public class StatusListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event)
     {
-        StatusManager.clearStatuses(event.getPlayer());
+        FlagManager.clearFlags(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMove(PlayerMoveEvent event)
     {
-        check(event, event.getPlayer(), Status.STUN, Status.ROOT);
+        check(event, event.getPlayer(), StatusFlag.STUN, StatusFlag.ROOT);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onFlag(FlagApplyEvent event)
+    {
+        if (event.getFlag().equals(StatusFlag.STUN) || event.getFlag().equals(StatusFlag.ROOT))
+        {
+            if (!(event.getEntity() instanceof Player))
+            {
+                event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, event.getTicks(), 100));
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -51,7 +63,7 @@ public class StatusListener implements Listener
         }
 
         LivingEntity damager = ListenerUtil.getDamager(event);
-        check(event, damager, Status.STUN, Status.DISARM);
+        check(event, damager, StatusFlag.STUN, StatusFlag.DISARM);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -65,13 +77,13 @@ public class StatusListener implements Listener
         if (event.getEntity() instanceof LivingEntity)
         {
             LivingEntity entity = (LivingEntity) event.getEntity();
-            if (check(event, entity, Status.ABSORB))
+            if (check(event, entity, StatusFlag.ABSORB))
             {
                 VersionManager.heal(entity, event.getDamage());
             }
             else
             {
-                check(event, entity, Status.INVINCIBLE);
+                check(event, entity, StatusFlag.INVINCIBLE);
             }
         }
     }
@@ -82,27 +94,24 @@ public class StatusListener implements Listener
         if (event.getEntity().getShooter() instanceof LivingEntity)
         {
             LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
-            check(event, shooter, Status.STUN, Status.DISARM);
+            check(event, shooter, StatusFlag.STUN, StatusFlag.DISARM);
         }
     }
 
     @EventHandler
     public void onCast(PlayerCastSkillEvent event)
     {
-        check(event, event.getPlayer(), Status.SILENCE, Status.STUN);
+        check(event, event.getPlayer(), StatusFlag.SILENCE, StatusFlag.STUN);
     }
 
-    private boolean check(Cancellable event, LivingEntity entity, Status... statuses)
+    private boolean check(Cancellable event, LivingEntity entity, String... flags)
     {
-        for (Status status : statuses)
+        for (String flag : flags)
         {
-            if (StatusManager.hasStatus(entity, status))
+            if (FlagManager.hasFlag(entity, flag))
             {
-                if (status.hasMessageNode() && entity instanceof Player)
-                {
-                    plugin.getLanguage().sendMessage(status.getMessageNode(), (Player) entity, FilterType.COLOR,
-                            RPGFilter.DURATION.setReplacement(StatusManager.getTimeLeft(entity, status) + ""));
-                }
+                // TODO status message
+
                 event.setCancelled(true);
                 return true;
             }

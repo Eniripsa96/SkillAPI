@@ -1,32 +1,35 @@
 package com.sucy.skill.api.event;
 
-import com.sucy.skill.api.enums.Status;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * Event called when a player leveled up
+ * Event called when a flag expired on an entity
  */
-public class StatusExpireEvent extends Event
+public class FlagExpireEvent extends Event
 {
 
     private static final HandlerList handlers = new HandlerList();
     private LivingEntity entity;
-    private Status       status;
+    private String       flag;
 
     /**
      * Constructor
      *
-     * @param entity the entity the status was on
-     * @param status the status that expired
+     * @param entity the entity the flag was on
+     * @param flag   the flag that expired
      */
-    public StatusExpireEvent(LivingEntity entity, Status status)
+    public FlagExpireEvent(LivingEntity entity, String flag)
     {
+        this.entity = entity;
+        this.flag = flag;
     }
 
     /**
-     * @return the entity that the status was on
+     * Retrieves the entity that the flag was on
+     *
+     * @return the entity that the flag was on
      */
     public LivingEntity getEntity()
     {
@@ -34,11 +37,13 @@ public class StatusExpireEvent extends Event
     }
 
     /**
-     * @return the status that expired
+     * Retrieves the expired flag
+     *
+     * @return the flag that expired
      */
-    public Status getStatus()
+    public String getFlag()
     {
-        return status;
+        return flag;
     }
 
     /**

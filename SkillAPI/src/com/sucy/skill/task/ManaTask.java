@@ -26,7 +26,7 @@ public class ManaTask extends BukkitRunnable
     public ManaTask(SkillAPI plugin)
     {
         this.plugin = plugin;
-        runTaskTimer(plugin, plugin.getSettings().getGainFreq(), plugin.getSettings().getGainFreq());
+        runTaskTimer(plugin, SkillAPI.getSettings().getGainFreq(), SkillAPI.getSettings().getGainFreq());
     }
 
     /**
@@ -36,7 +36,7 @@ public class ManaTask extends BukkitRunnable
     {
         for (Player player : plugin.getServer().getOnlinePlayers())
         {
-            PlayerData data = plugin.getPlayerData((OfflinePlayer) player);
+            PlayerData data = SkillAPI.getPlayerData((OfflinePlayer) player);
             data.regenMana();
         }
     }

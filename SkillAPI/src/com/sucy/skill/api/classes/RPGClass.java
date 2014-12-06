@@ -1,7 +1,7 @@
 package com.sucy.skill.api.classes;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.AttributeSet;
+import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.Data;
@@ -22,7 +22,6 @@ public abstract class RPGClass
     private final HashMap<Material, Double> projectileDamage = new HashMap<Material, Double>();
     private final ArrayList<Skill>          skills           = new ArrayList<Skill>();
 
-    private SkillAPI  api;
     private RPGClass  parent;
     private ItemStack icon;
     private String    name;
@@ -33,7 +32,7 @@ public abstract class RPGClass
     private double    manaRegen;
     private boolean   needsPermission;
 
-    protected final AttributeSet attributes = new AttributeSet();
+    protected final Settings settings = new Settings();
 
     ///////////////////////////////////////////////////////
     //                                                   //
@@ -53,8 +52,7 @@ public abstract class RPGClass
 
     protected RPGClass(String name, ItemStack icon, int maxLevel, String group, String parent)
     {
-        this.api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
-        this.parent = api.getClass(parent);
+        this.parent = SkillAPI.getClass(parent);
         this.icon = icon;
         this.name = name;
         this.group = group == null ? "default" : group.toLowerCase();
@@ -64,7 +62,7 @@ public abstract class RPGClass
 
         if (this instanceof Listener)
         {
-            api.getServer().getPluginManager().registerEvents((Listener) this, api);
+            Bukkit.getPluginManager().registerEvents((Listener) this, Bukkit.getPluginManager().getPlugin("SkillAPI"));
         }
     }
 
@@ -73,11 +71,6 @@ public abstract class RPGClass
     //                 Accessor Methods                  //
     //                                                   //
     ///////////////////////////////////////////////////////
-
-    public SkillAPI getAPI()
-    {
-        return api;
-    }
 
     public String getName()
     {
@@ -91,7 +84,7 @@ public abstract class RPGClass
 
     public GroupSettings getGroupSettings()
     {
-        return api.getSettings().getGroupSettings(group);
+        return SkillAPI.getSettings().getGroupSettings(group);
     }
 
     public boolean hasParent()
@@ -126,17 +119,17 @@ public abstract class RPGClass
 
     public int getRequiredExp(int level)
     {
-        return api.getSettings().getRequiredExp(level);
+        return SkillAPI.getSettings().getRequiredExp(level);
     }
 
     public double getHealth(int level)
     {
-        return attributes.get(ClassAttribute.HEALTH, level);
+        return settings.get(ClassAttribute.HEALTH, level);
     }
 
     public double getMana(int level)
     {
-        return attributes.get(ClassAttribute.MANA, level);
+        return settings.get(ClassAttribute.MANA, level);
     }
 
     public String getManaName()
@@ -200,14 +193,14 @@ public abstract class RPGClass
 
     public void addSkill(String name)
     {
-        Skill skill = api.getSkill(name);
+        Skill skill = SkillAPI.getSkill(name);
         if (skill != null)
         {
             skills.add(skill);
         }
         else
         {
-            api.getLogger().severe("Class \"" + this.name + "\" tried to add an invalid skill - \"" + name + "\"");
+            Bukkit.getLogger().severe("Class \"" + this.name + "\" tried to add an invalid skill - \"" + name + "\"");
         }
     }
 
@@ -300,7 +293,11 @@ public abstract class RPGClass
         }
         config.set(SKILLS, skillNames);
 
-        config.set(PARENT, parent.getName());
+        if (parent != null)
+        {
+            config.set(PARENT, parent.getName());
+        }
+
         config.set(ITEM, getSerializedIcon());
         config.set(NAME, name);
         config.set(GROUP, group);
@@ -310,7 +307,7 @@ public abstract class RPGClass
         config.set(REGEN, manaRegen);
         config.set(PERM, needsPermission);
 
-        attributes.save(config.createSection(ATTR));
+        settings.save(config.createSection(ATTR));
     }
 
     public void softSave(ConfigurationSection config)
@@ -410,7 +407,7 @@ public abstract class RPGClass
             skills.clear();
             for (String name : config.getStringList(SKILLS))
             {
-                Skill skill = api.getSkill(name);
+                Skill skill = SkillAPI.getSkill(name);
                 if (skill != null)
                 {
                     skills.add(skill);
@@ -418,7 +415,7 @@ public abstract class RPGClass
             }
         }
 
-        parent = api.getClass(config.getString(PARENT));
+        parent = SkillAPI.getClass(config.getString(PARENT));
         icon = Data.parseIcon(config.getString(ITEM, getSerializedIcon()));
         name = config.getString(NAME, name);
         group = config.getString(GROUP, "default");
@@ -428,6 +425,6 @@ public abstract class RPGClass
         manaRegen = config.getDouble(REGEN, manaRegen);
         needsPermission = config.getBoolean(PERM);
 
-        attributes.load(config.getConfigurationSection(ATTR));
+        settings.load(config.getConfigurationSection(ATTR));
     }
 }

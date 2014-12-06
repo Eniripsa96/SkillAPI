@@ -18,6 +18,7 @@ Mana:
 Skills:
   allow-downgrade: true
   tree-type: Requirement
+  show-messages: true
   message-radius: 20
 Items:
   lore-requirements: true
@@ -31,13 +32,17 @@ GUI:
   show-class-level: true
 Casting:
   use-skill-bars: true
+  show-skill-bar-cooldowns: false
   use-click-combos: false
+  use-click-left: true
+  use-click-right: true
+  use-click-shift: false
 Experience:
   use-exp-orbs: false
   block-mob-spawner: true
   block-mob-egg: true
   block-creative: true
-  messages-enabled: true
+  exp-message-enabled: true
   level-message-enabled: true
   formula:
     x: 1
@@ -92,5 +97,4 @@ Skill Bar:
   9:
     skill: false
     locked: false
-Logging:
-  load: 0
+Logging: 0

@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
  */
 public interface PassiveSkill
 {
-
     /**
      * <p>Applies the skill effects when a player upgrades the skill
      * in their skill tree</p>

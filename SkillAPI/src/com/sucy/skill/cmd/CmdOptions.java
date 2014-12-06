@@ -2,6 +2,7 @@ package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
+import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
@@ -10,6 +11,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.util.List;
 
 /**
  * A command that displays the list of available profess options
@@ -22,6 +25,7 @@ public class CmdOptions implements IFunction
     private static final String SEPARATOR  = "separator";
     private static final String END        = "end";
     private static final String CANNOT_USE = "cannot-use";
+    private static final String NO_OPTIONS = "no-options";
 
     /**
      * Runs the command
@@ -34,44 +38,74 @@ public class CmdOptions implements IFunction
     @Override
     public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
     {
+        // Only players have profession options
         if (sender instanceof Player)
         {
-            cmd.sendMessage(sender, TITLE, ChatColor.DARK_GREEN + "-- Profess Options -----------");
+            cmd.sendMessage(sender, TITLE, ChatColor.DARK_GRAY + "--" + ChatColor.DARK_GREEN + " Profess Options " + ChatColor.DARK_GRAY + "-----------");
             PlayerData data = SkillAPI.getPlayerData((Player) sender);
             String categoryTemplate = cmd.getMessage(CATEGORY, ChatColor.GOLD + "{category}" + ChatColor.GRAY + ": ");
             String optionTemplate = cmd.getMessage(OPTION, ChatColor.LIGHT_PURPLE + "{option}" + ChatColor.GRAY);
             String separator = cmd.getMessage(SEPARATOR, ChatColor.DARK_GRAY + "----------------------------");
+            String none = cmd.getMessage(NO_OPTIONS, ChatColor.GRAY + "None");
             boolean first = true;
-            for (PlayerClass c : data.getClasses())
+            if (data != null)
             {
-                if (first)
+                for (String group : SkillAPI.getGroups())
                 {
-                    first = false;
-                }
-                else
-                {
-                    sender.sendMessage(separator);
-                }
-                String list = categoryTemplate.replace("{category}", c.getData().getGroup());
-                boolean firstOption = true;
-                for (RPGClass option : c.getData().getOptions())
-                {
-                    if (firstOption)
+                    PlayerClass c = data.getClass(group);
+
+                    // Separator message if not the first group
+                    if (first)
                     {
-                        firstOption = false;
+                        first = false;
                     }
                     else
                     {
-                        list += ", ";
+                        sender.sendMessage(separator);
                     }
-                    list += optionTemplate.replace("{option}", option.getName());
+
+                    // Get the options list
+                    List<RPGClass> options;
+                    if (c != null)
+                    {
+                        options = c.getData().getOptions();
+                    }
+                    else
+                    {
+                        options = SkillAPI.getBaseClasses();
+                    }
+
+                    // Compose the message
+                    String list = categoryTemplate.replace("{category}", TextFormatter.format(group));
+                    boolean firstOption = true;
+                    for (RPGClass option : options)
+                    {
+                        if (firstOption)
+                        {
+                            firstOption = false;
+                        }
+                        else
+                        {
+                            list += ", ";
+                        }
+                        list += optionTemplate.replace("{option}", option.getName());
+                    }
+                    if (options.size() == 0)
+                    {
+                        list += none;
+                    }
+
+                    // Send the result
+                    sender.sendMessage(list);
                 }
-                sender.sendMessage(list);
             }
+            cmd.sendMessage(sender, END, ChatColor.DARK_GRAY + "----------------------------");
         }
+
+        // Console doesn't have profession options
         else
         {
-            sender.sendMessage(cmd.getMessage(CANNOT_USE, ChatColor.RED + "This cannot be used by the console"));
+            cmd.sendMessage(sender, CANNOT_USE, ChatColor.RED + "This cannot be used by the console");
         }
     }
 }

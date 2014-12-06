@@ -3,7 +3,6 @@ package com.sucy.skill.data;
 import com.rit.sucy.config.Config;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.TreeType;
-import com.sucy.skill.data.io.keys.SettingValues;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
@@ -15,9 +14,9 @@ public class Settings
 {
 
     private HashMap<String, GroupSettings> groups = new HashMap<String, GroupSettings>();
-    private AccountSettings accountSettings;
 
-    private SkillAPI plugin;
+    private SkillAPI             plugin;
+    private ConfigurationSection config;
 
     /**
      * <p>Initializes a new settings manager.</p>
@@ -30,6 +29,7 @@ public class Settings
     public Settings(SkillAPI plugin)
     {
         this.plugin = plugin;
+        config = plugin.getConfig();
         reload();
     }
 
@@ -41,22 +41,22 @@ public class Settings
     public void reload()
     {
         plugin.reloadConfig();
-        ConfigurationSection config = plugin.getConfig();
+
+        plugin.reloadConfig();
         Config.trim(config);
         Config.setDefaults(config);
         plugin.saveConfig();
 
         loadGroupSettings();
-        loadAccountSettings();
-        loadClassSettings(config);
-        loadManaSettings(config);
-        loadSkillSettings(config);
-        loadItemSettings(config);
-        loadGUISettings(config);
-        loadCastSettings(config);
-        loadExpSettings(config);
-        loadSkillBarSettings(config);
-        loadLoggingSettings(config);
+        loadClassSettings();
+        loadManaSettings();
+        loadSkillSettings();
+        loadItemSettings();
+        loadGUISettings();
+        loadCastSettings();
+        loadExpSettings();
+        loadSkillBarSettings();
+        loadLoggingSettings();
     }
 
     ///////////////////////////////////////////////////////
@@ -77,27 +77,20 @@ public class Settings
         }
     }
 
+    /**
+     * Retrieves the settings for a class group
+     *
+     * @param group name of the group to retrieve the settings for
+     *
+     * @return settings for the class group
+     */
     public GroupSettings getGroupSettings(String group)
     {
+        if (!groups.containsKey(group.toLowerCase()))
+        {
+            return new GroupSettings();
+        }
         return groups.get(group.toLowerCase());
-    }
-
-    ///////////////////////////////////////////////////////
-    //                                                   //
-    //                 Account Settings                  //
-    //                                                   //
-    ///////////////////////////////////////////////////////
-
-    private void loadAccountSettings()
-    {
-        Config file = new Config(plugin, "accounts");
-        ConfigurationSection config = file.getConfig();
-        accountSettings = new AccountSettings(config);
-    }
-
-    public AccountSettings getAccountSettings()
-    {
-        return accountSettings;
     }
 
     ///////////////////////////////////////////////////////
@@ -106,9 +99,14 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private int     defaultHealth     = 20;
-    private boolean useExampleClasses = false;
-    private boolean useExampleSkills  = false;
+    private static final String CLASS_BASE     = "Classes.";
+    private static final String CLASS_HP       = CLASS_BASE + "classless-hp";
+    private static final String CLASS_EXAMPLES = CLASS_BASE + "use-examples";
+    private static final String CLASS_SKILLS   = CLASS_BASE + "use-example-skills";
+
+    private int     defaultHealth;
+    private boolean useExampleClasses;
+    private boolean useExampleSkills;
 
     /**
      * <p>Retrieves the default health for players that do not have a class.</p>
@@ -148,13 +146,15 @@ public class Settings
     public void setDefaultHealth(int health)
     {
         this.defaultHealth = health;
+        config.set(CLASS_HP, health);
+        plugin.saveConfig();
     }
 
-    private void loadClassSettings(ConfigurationSection config)
+    private void loadClassSettings()
     {
-        defaultHealth = config.getInt(SettingValues.CLASS_DEFAULT_HP, defaultHealth);
-        useExampleClasses = config.getBoolean(SettingValues.CLASS_EXAMPLES, useExampleClasses);
-        useExampleSkills = config.getBoolean(SettingValues.CLASS_SKILL_EXAMPLES, useExampleSkills);
+        defaultHealth = config.getInt(CLASS_HP);
+        useExampleClasses = config.getBoolean(CLASS_EXAMPLES);
+        useExampleSkills = config.getBoolean(CLASS_SKILLS);
     }
 
     ///////////////////////////////////////////////////////
@@ -163,45 +163,86 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private boolean manaEnabled = true;
-    private int     gainFreq    = 20;
-    private int     gainAmount  = 2;
+    private static final String MANA_BASE    = "Mana.";
+    private static final String MANA_ENABLED = MANA_BASE + "enabled";
+    private static final String MANA_FREQ    = MANA_BASE + "freq";
+    private static final String MANA_AMOUNT  = MANA_BASE + "amount";
 
+    private boolean manaEnabled;
+    private int     gainFreq;
+    private int     gainAmount;
+
+    /**
+     * Checks whether or not mana is enabled
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isManaEnabled()
     {
         return manaEnabled;
     }
 
+    /**
+     * Retrieves the frequency of mana gain
+     *
+     * @return the frequency of mana gain
+     */
     public int getGainFreq()
     {
         return gainFreq;
     }
 
+    /**
+     * Sets the amount of mana gained per update
+     *
+     * @return the amount of mana gained per update
+     */
     public int getGainAmount()
     {
         return gainAmount;
     }
 
+    /**
+     * Sets whether or not mana is enabled
+     *
+     * @param enabled whether or not mana is enabled
+     */
     public void setManaEnabled(boolean enabled)
     {
         this.manaEnabled = enabled;
+        config.set(MANA_ENABLED, enabled);
+        plugin.saveConfig();
     }
 
+    /**
+     * Sets the frequency of mana gain
+     *
+     * @param ticks ticks between gains
+     */
     public void setGainFreq(int ticks)
     {
         this.gainFreq = ticks;
+        config.set(MANA_FREQ, ticks);
+        plugin.saveConfig();
     }
 
+    /**
+     * Sets the amount of mana gained each time
+     *
+     * @param mana amount gained
+     */
     public void setGainAmount(int mana)
     {
         this.gainAmount = mana;
+        config.set(MANA_AMOUNT, mana);
+        plugin.saveConfig();
     }
 
-    private void loadManaSettings(ConfigurationSection config)
+    private void loadManaSettings()
     {
-        manaEnabled = config.getBoolean(SettingValues.MANA_ENABLED, manaEnabled);
-        gainFreq = config.getInt(SettingValues.MANA_GAIN_FREQ, gainFreq);
-        gainAmount = config.getInt(SettingValues.MANA_GAIN_AMOUNT, gainAmount);
+        manaEnabled = config.getBoolean(MANA_ENABLED);
+        gainFreq = config.getInt(MANA_FREQ);
+        gainAmount = config.getInt(MANA_AMOUNT);
     }
 
     ///////////////////////////////////////////////////////
@@ -210,57 +251,111 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private String  treeType          = TreeType.REQUIREMENT.getKey();
-    private boolean allowDowngrade    = true;
-    private boolean showSkillMessages = true;
-    private int     messageRadius     = 20;
+    private static final String SKILL_BASE      = "Skills.";
+    private static final String SKILL_TYPE      = SKILL_BASE + "tree-type";
+    private static final String SKILL_DOWNGRADE = SKILL_BASE + "allow-downgrade";
+    private static final String SKILL_MESSAGE   = SKILL_BASE + "show-messages";
+    private static final String SKILL_RADIUS    = SKILL_BASE + "message-radius";
 
+    private String  treeType;
+    private boolean allowDowngrade;
+    private boolean showSkillMessages;
+    private int     messageRadius;
+
+    /**
+     * Retrieves the type of skill tree used
+     *
+     * @return skill tree used
+     */
     public String getTreeType()
     {
         return treeType;
     }
 
+    /**
+     * Checks whether or not downgrades are allowed
+     *
+     * @return true if allowed, false otherwise
+     */
     public boolean isAllowDowngrade()
     {
         return allowDowngrade;
     }
 
+    /**
+     * Checks whether or not skill messages are enabled
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isShowSkillMessages()
     {
         return showSkillMessages;
     }
 
+    /**
+     * Gets the radius in which skill messages are sent out
+     *
+     * @return skill message radius
+     */
     public int getMessageRadius()
     {
         return messageRadius;
     }
 
+    /**
+     * Sets the tree type used by the plugin
+     *
+     * @param type type of skill tree used
+     */
     public void setTreeType(TreeType type)
     {
         this.treeType = type.getKey();
+        config.set(SKILL_TYPE, type);
+        plugin.saveConfig();
     }
 
+    /**
+     * Sets whether or not skills can be downgraded
+     *
+     * @param allow whether or not skills can be downgraded
+     */
     public void setAllowDowngrade(boolean allow)
     {
         this.allowDowngrade = allow;
+        config.set(SKILL_DOWNGRADE, allow);
+        plugin.saveConfig();
     }
 
+    /**
+     * Sets whether or not to show skill messages
+     *
+     * @param enabled whether or not to show skill messages
+     */
     public void setShowSkillMessages(boolean enabled)
     {
         this.showSkillMessages = enabled;
+        config.set(SKILL_MESSAGE, enabled);
+        plugin.saveConfig();
     }
 
+    /**
+     * Sets the radius for messages to be displayed
+     *
+     * @param radius radius of the messages
+     */
     public void setMessageRadius(int radius)
     {
         this.messageRadius = radius;
+        config.set(SKILL_RADIUS, radius);
+        plugin.saveConfig();
     }
 
-    private void loadSkillSettings(ConfigurationSection config)
+    private void loadSkillSettings()
     {
-        treeType = config.getString(SettingValues.SKILL_TREE_TYPE, treeType);
-        allowDowngrade = config.getBoolean(SettingValues.SKILL_ALLOW_DOWNGRADE, allowDowngrade);
-        showSkillMessages = config.getBoolean(SettingValues.SKILL_SHOW_MESSAGE, showSkillMessages);
-        messageRadius = config.getInt(SettingValues.SKILL_MESSAGE_RADIUS, messageRadius);
+        treeType = config.getString(SKILL_TYPE);
+        allowDowngrade = config.getBoolean(SKILL_DOWNGRADE);
+        showSkillMessages = config.getBoolean(SKILL_MESSAGE);
+        messageRadius = config.getInt(SKILL_RADIUS);
     }
 
     ///////////////////////////////////////////////////////
@@ -269,40 +364,74 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private boolean checkLore        = true;
-    private boolean defaultOneDamage = false;
-    private int     playersPerCheck  = 1;
+    private static final String ITEM_BASE   = "Items.";
+    private static final String ITEM_LORE   = ITEM_BASE + "lore-requirements";
+    private static final String ITEM_DAMAGE = ITEM_BASE + "default-one-damage";
+    private static final String ITEM_CHECK  = ITEM_BASE + "players-per-check";
 
+    private boolean checkLore;
+    private boolean defaultOneDamage;
+    private int     playersPerCheck;
+
+    /**
+     * Checks whether or not lore requirements are enabled
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isCheckLore()
     {
         return checkLore;
     }
 
+    /**
+     * Checks whether or not items are defaulted to one damage when unknown
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isDefaultOneDamage()
     {
         return defaultOneDamage;
     }
 
+    /**
+     * Retrieves the number of players checked each update
+     *
+     * @return number of players checked each update
+     */
     public int getPlayersPerCheck()
     {
         return playersPerCheck;
     }
 
+    /**
+     * Sets whether or not to default unknown items to one damage
+     *
+     * @param oneDamage whether or not to default unknown items to one damage
+     */
     public void setDefaultOneDamage(boolean oneDamage)
     {
         defaultOneDamage = oneDamage;
+        config.set(ITEM_DAMAGE, oneDamage);
+        plugin.saveConfig();
     }
 
+    /**
+     * Sets the number of players to check each update
+     *
+     * @param players players to check each update
+     */
     public void setPlayersPerCheck(int players)
     {
         playersPerCheck = players;
+        config.set(ITEM_CHECK, players);
+        plugin.saveConfig();
     }
 
-    private void loadItemSettings(ConfigurationSection config)
+    private void loadItemSettings()
     {
-        checkLore = config.getBoolean(SettingValues.ITEM_LORE_REQUIREMENTS, checkLore);
-        defaultOneDamage = config.getBoolean(SettingValues.ITEM_DEFAULT_ONE_DAMAGE, defaultOneDamage);
-        playersPerCheck = config.getInt(SettingValues.ITEM_PLAYERS_PER_CHECK, playersPerCheck);
+        checkLore = config.getBoolean(ITEM_LORE);
+        defaultOneDamage = config.getBoolean(ITEM_DAMAGE);
+        playersPerCheck = config.getInt(ITEM_CHECK);
     }
 
     ///////////////////////////////////////////////////////
@@ -311,11 +440,18 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private boolean oldHealth      = false;
-    private boolean useLevelBar    = false;
-    private boolean showScoreboard = true;
-    private boolean showClassName  = true;
-    private boolean showClassLevel = true;
+    private static final String GUI_BASE  = "GUI.";
+    private static final String GUI_OLD   = GUI_BASE + "old-health-bar";
+    private static final String GUI_BAR   = GUI_BASE + "use-level-bar";
+    private static final String GUI_BOARD = GUI_BASE + "scoreboard-enabled";
+    private static final String GUI_NAME  = GUI_BASE + "show-class-name";
+    private static final String GUI_LEVEL = GUI_BASE + "show-class-level";
+
+    private boolean oldHealth;
+    private boolean useLevelBar;
+    private boolean showScoreboard;
+    private boolean showClassName;
+    private boolean showClassLevel;
 
     public boolean isOldHealth()
     {
@@ -342,13 +478,13 @@ public class Settings
         return showClassLevel;
     }
 
-    private void loadGUISettings(ConfigurationSection config)
+    private void loadGUISettings()
     {
-        oldHealth = config.getBoolean(SettingValues.GUI_OLD_HEALTH, oldHealth);
-        useLevelBar = config.getBoolean(SettingValues.GUI_LEVEL_BAR, useLevelBar);
-        showScoreboard = config.getBoolean(SettingValues.GUI_SCOREBOARD, showScoreboard);
-        showClassName = config.getBoolean(SettingValues.GUI_CLASS_NAME, showClassName);
-        showClassLevel = config.getBoolean(SettingValues.GUI_CLASS_LEVEL, showClassLevel);
+        oldHealth = config.getBoolean(GUI_OLD);
+        useLevelBar = config.getBoolean(GUI_BAR);
+        showScoreboard = config.getBoolean(GUI_BOARD);
+        showClassName = config.getBoolean(GUI_NAME);
+        showClassLevel = config.getBoolean(GUI_LEVEL);
     }
 
     ///////////////////////////////////////////////////////
@@ -359,9 +495,9 @@ public class Settings
 
     private final HashMap<Click, Boolean> enabledClicks = new HashMap<Click, Boolean>();
 
-    private boolean useSkillBars         = true;
-    private boolean useSkillBarCooldowns = true;
-    private boolean useClickCombos       = false;
+    private boolean useSkillBars;
+    private boolean useSkillBarCooldowns;
+    private boolean useClickCombos;
 
     public boolean isUseSkillBars()
     {
@@ -383,15 +519,17 @@ public class Settings
         return useClickCombos && enabledClicks.get(click);
     }
 
-    private void loadCastSettings(ConfigurationSection config)
-    {
-        useSkillBars = config.getBoolean(SettingValues.CAST_SKILL_BARS, useSkillBars);
-        useSkillBarCooldowns = config.getBoolean(SettingValues.CAST_SKILL_BAR_COOLDOWNS, useSkillBarCooldowns);
-        useClickCombos = config.getBoolean(SettingValues.CAST_CLICK_COMBOS, useClickCombos);
+    private static final String CAST_BASE = "Casting.";
 
-        enabledClicks.put(Click.LEFT, config.getBoolean(SettingValues.CAST_CLICK_LEFT, true));
-        enabledClicks.put(Click.RIGHT, config.getBoolean(SettingValues.CAST_CLICK_RIGHT, true));
-        enabledClicks.put(Click.SHIFT, config.getBoolean(SettingValues.CAST_CLICK_SHIFT, false));
+    private void loadCastSettings()
+    {
+        useSkillBars = config.getBoolean(CAST_BASE + "use-skill-bars");
+        useSkillBarCooldowns = config.getBoolean(CAST_BASE + "show-skill-bar-cooldowns");
+        useClickCombos = config.getBoolean(CAST_BASE + "use-click-combos");
+
+        enabledClicks.put(Click.LEFT, config.getBoolean(CAST_BASE + "use-click-left"));
+        enabledClicks.put(Click.RIGHT, config.getBoolean(CAST_BASE + "use-click-right"));
+        enabledClicks.put(Click.SHIFT, config.getBoolean(CAST_BASE + "use-click-shift"));
     }
 
     ///////////////////////////////////////////////////////
@@ -403,12 +541,12 @@ public class Settings
     private final HashMap<String, Double> yields = new HashMap<String, Double>();
 
     private ExpFormula expFormula;
-    private boolean useOrbs           = false;
-    private boolean blockSpawner      = true;
-    private boolean blockEgg          = true;
-    private boolean blockCreative     = true;
-    private boolean showExpMessages   = true;
-    private boolean showLevelMessages = true;
+    private boolean    useOrbs;
+    private boolean    blockSpawner;
+    private boolean    blockEgg;
+    private boolean    blockCreative;
+    private boolean    showExpMessages;
+    private boolean    showLevelMessages;
 
     public int getRequiredExp(int level)
     {
@@ -488,23 +626,26 @@ public class Settings
         showLevelMessages = show;
     }
 
-    private void loadExpSettings(ConfigurationSection config)
-    {
-        this.useOrbs = config.getBoolean(SettingValues.EXP_USE_ORBS, useOrbs);
-        this.blockSpawner = config.getBoolean(SettingValues.EXP_BLOCK_SPAWNER, blockSpawner);
-        this.blockEgg = config.getBoolean(SettingValues.EXP_BLOCK_EGG, blockEgg);
-        this.blockCreative = config.getBoolean(SettingValues.EXP_BLOCK_CREATIVE, blockCreative);
-        this.showExpMessages = config.getBoolean(SettingValues.EXP_MESSAGE_ENABLED, showExpMessages);
-        this.showLevelMessages = config.getBoolean(SettingValues.EXP_LVL_MESSAGE_ENABLED, showLevelMessages);
+    private static final String EXP_BASE = "Experience.";
 
-        ConfigurationSection formula = config.getConfigurationSection(SettingValues.EXP_FORMULA);
-        int x = formula.getInt("x", 1);
-        int y = formula.getInt("y", 4);
-        int z = formula.getInt("z", 0);
-        int w = formula.getInt("w", 0);
+    private void loadExpSettings()
+    {
+        this.useOrbs = config.getBoolean(EXP_BASE + "use-exp-orbs");
+        this.blockSpawner = config.getBoolean(EXP_BASE + "block-mob-spawner");
+        this.blockEgg = config.getBoolean(EXP_BASE + "block-mob-egg");
+        this.blockCreative = config.getBoolean(EXP_BASE + "block-creative");
+        this.showExpMessages = config.getBoolean(EXP_BASE + "exp-message-enabled");
+        this.showLevelMessages = config.getBoolean(EXP_BASE + "level-message-enabled");
+
+        ConfigurationSection formula = config.getConfigurationSection(EXP_BASE + "formula");
+        int x = formula.getInt("x");
+        int y = formula.getInt("y");
+        int z = formula.getInt("z");
+        int w = formula.getInt("w");
         expFormula = new ExpFormula(x, y, z, w);
 
-        ConfigurationSection yields = config.getConfigurationSection(SettingValues.EXP_YIELDS);
+        ConfigurationSection yields = config.getConfigurationSection(EXP_BASE + "yields");
+        this.yields.clear();
         for (String key : yields.getKeys(false))
         {
             this.yields.put(key, yields.getDouble(key));
@@ -517,8 +658,8 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private boolean[] defaultBarLayout = new boolean[] { true, true, true, true, true, true, true, false, false };
-    private boolean[] lockedSlots      = new boolean[] { false, false, false, false, false, false, false, false, false };
+    private boolean[] defaultBarLayout = new boolean[9];
+    private boolean[] lockedSlots      = new boolean[9];
 
     public boolean[] getDefaultBarLayout()
     {
@@ -530,9 +671,9 @@ public class Settings
         return lockedSlots;
     }
 
-    private void loadSkillBarSettings(ConfigurationSection config)
+    private void loadSkillBarSettings()
     {
-        ConfigurationSection bar = config.getConfigurationSection(SettingValues.SKILL_BAR);
+        ConfigurationSection bar = config.getConfigurationSection("Skill Bar");
         for (int i = 0; i < 9; i++)
         {
             ConfigurationSection slot = bar.getConfigurationSection((i + 1) + "");
@@ -559,8 +700,8 @@ public class Settings
         loadLogLevel = level;
     }
 
-    private void loadLoggingSettings(ConfigurationSection config)
+    private void loadLoggingSettings()
     {
-        loadLogLevel = config.getInt(SettingValues.LOG_LOAD, loadLogLevel);
+        loadLogLevel = config.getInt("Logging");
     }
 }

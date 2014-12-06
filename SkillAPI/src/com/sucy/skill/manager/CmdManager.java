@@ -11,7 +11,7 @@ public class CmdManager
 {
     private SkillAPI api;
 
-    public void CmdManager(SkillAPI api)
+    public CmdManager(SkillAPI api)
     {
         this.api = api;
         this.initialize();
@@ -24,5 +24,10 @@ public class CmdManager
                 new ConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profess options", "", Permissions.BASIC)
         );
         CommandManager.registerCommand(root);
+    }
+
+    public void clear()
+    {
+        CommandManager.unregisterCommands(api);
     }
 }

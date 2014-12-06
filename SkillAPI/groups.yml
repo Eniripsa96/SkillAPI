@@ -1,4 +1,6 @@
 default:
+  permission: none
+  default: none
   can-reset: true
   starting-points: 1
   points-per-level: 1

@@ -14,6 +14,7 @@ import com.sucy.skill.api.event.PlayerManaLossEvent;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
+import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.RPGFilter;
 import org.bukkit.Bukkit;
@@ -34,18 +35,22 @@ public final class PlayerData
     private final HashMap<Material, PlayerSkill> binds   = new HashMap<Material, PlayerSkill>();
 
     private OfflinePlayer player;
-    private SkillAPI      api;
     private double        mana;
     private double        maxMana;
 
-    public PlayerData(SkillAPI api, OfflinePlayer player)
+    public PlayerData(OfflinePlayer player)
     {
-        this.api = api;
-        if (SkillAPI.getPlayerData(player) != null)
-        {
-            throw new IllegalArgumentException("Tried to create duplicate data for a player");
-        }
         this.player = player;
+        for (String group : SkillAPI.getGroups())
+        {
+            GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
+            RPGClass rpgClass = settings.getDefault();
+
+            if (rpgClass != null && settings.getPermission() == null)
+            {
+                setClass(rpgClass);
+            }
+        }
     }
 
     public Player getPlayer()
@@ -112,6 +117,11 @@ public final class PlayerData
     public Collection<PlayerClass> getClasses()
     {
         return classes.values();
+    }
+
+    public PlayerClass getClass(String group)
+    {
+        return classes.get(group);
     }
 
     public void setClass(RPGClass rpgClass)
@@ -345,7 +355,7 @@ public final class PlayerData
         // On Cooldown
         if (stats == SkillStatus.ON_COOLDOWN)
         {
-            api.getLanguage().sendMessage(
+            SkillAPI.getLanguage().sendMessage(
                     OtherNodes.ON_COOLDOWN,
                     getPlayer(),
                     FilterType.COLOR,
@@ -357,7 +367,7 @@ public final class PlayerData
         // Not enough mana
         else if (stats == SkillStatus.MISSING_MANA)
         {
-            api.getLanguage().sendMessage(
+            SkillAPI.getLanguage().sendMessage(
                     OtherNodes.NO_MANA,
                     getPlayer(),
                     FilterType.COLOR,
@@ -383,9 +393,9 @@ public final class PlayerData
                 {
                     if (((SkillShot) skill.getData()).cast(p, level))
                     {
-                        skill.getData().sendMessage(api.getLanguage(), p, api.getSettings().getMessageRadius());
+                        skill.getData().sendMessage(SkillAPI.getLanguage(), p, SkillAPI.getSettings().getMessageRadius());
                         skill.startCooldown();
-                        if (api.getSettings().isManaEnabled())
+                        if (SkillAPI.getSettings().isManaEnabled())
                         {
                             useMana(cost, ManaCost.SKILL_CAST);
                         }
@@ -394,7 +404,7 @@ public final class PlayerData
                 }
                 catch (Exception ex)
                 {
-                    api.getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
+                    Bukkit.getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
                     ex.printStackTrace();
                 }
             }
@@ -414,7 +424,7 @@ public final class PlayerData
             }
 
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
-            api.getServer().getPluginManager().callEvent(event);
+            Bukkit.getPluginManager().callEvent(event);
 
             // Make sure it isn't cancelled
             if (!event.isCancelled())
@@ -423,9 +433,9 @@ public final class PlayerData
                 {
                     if (((TargetSkill) skill.getData()).cast(p, target, level, Protection.isAlly(p, target)))
                     {
-                        skill.getData().sendMessage(api.getLanguage(), p, api.getSettings().getMessageRadius());
+                        skill.getData().sendMessage(SkillAPI.getLanguage(), p, SkillAPI.getSettings().getMessageRadius());
                         skill.startCooldown();
-                        if (api.getSettings().isManaEnabled())
+                        if (SkillAPI.getSettings().isManaEnabled())
                         {
                             useMana(cost, ManaCost.SKILL_CAST);
                         }
@@ -434,7 +444,7 @@ public final class PlayerData
                 }
                 catch (Exception ex)
                 {
-                    api.getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
+                    Bukkit.getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
                     ex.printStackTrace();
                 }
             }

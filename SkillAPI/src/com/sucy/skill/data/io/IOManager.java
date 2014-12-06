@@ -20,7 +20,7 @@ public abstract class IOManager
 
     public void saveAll()
     {
-        for (PlayerAccounts data : api.getPlayerAccountData().values())
+        for (PlayerAccounts data : SkillAPI.getPlayerAccountData().values())
         {
             saveData(data);
         }

@@ -23,11 +23,6 @@ public final class PlayerSkill
         this.parent = parent;
     }
 
-    public SkillAPI getAPI()
-    {
-        return player.getAPI();
-    }
-
     public boolean isUnlocked()
     {
         return level > 0;
@@ -90,7 +85,7 @@ public final class PlayerSkill
         }
 
         // If mana is enabled, check to see if the player has enough
-        if (getAPI().getSettings().isManaEnabled()
+        if (SkillAPI.getSettings().isManaEnabled()
                 && player.getMana() < skill.getManaCost(level))
         {
 

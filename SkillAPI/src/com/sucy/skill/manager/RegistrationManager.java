@@ -5,6 +5,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.SkillPlugin;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.example.Wizard;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
@@ -78,7 +79,7 @@ public class RegistrationManager
         }
 
         // Load example skills if enabled
-        if (api.getSettings().isUseExampleSkills())
+        if (SkillAPI.getSettings().isUseExampleSkills())
         {
             log(" - SkillAPI Examples", 1);
             //api.getExampleClasses().registerSkills(api);
@@ -98,9 +99,10 @@ public class RegistrationManager
         }
 
         // Load example classes if enabled
-        if (api.getSettings().isUseExampleClasses())
+        if (SkillAPI.getSettings().isUseExampleClasses())
         {
             log(" - SkillAPI Examples", 1);
+            api.addClass(new Wizard());
             //api.getExampleClasses().registerClasses(api);
         }
 
@@ -113,8 +115,8 @@ public class RegistrationManager
         // Arrange trees
 
         log("Registration complete", 0);
-        log(" - " + api.getSkills().size() + " skills", 0);
-        log(" - " + api.getClasses().size() + " classes", 0);
+        log(" - " + SkillAPI.getSkills().size() + " skills", 0);
+        log(" - " + SkillAPI.getClasses().size() + " classes", 0);
     }
 
     /**
@@ -142,7 +144,7 @@ public class RegistrationManager
         }
 
         // Cannot have multiple skills with the same name
-        else if (api.isSkillRegistered(skill.getName()))
+        else if (SkillAPI.isSkillRegistered(skill.getName()))
         {
             api.getLogger().warning("Duplicate skill name: \"" + skill.getName() + "\" - skipping the duplicate");
         }
@@ -156,7 +158,6 @@ public class RegistrationManager
 
             try
             {
-
                 // Soft save to ensure optional data starts off in the config
                 skill.softSave(config);
 
@@ -204,7 +205,7 @@ public class RegistrationManager
         }
 
         // Cannot have multiple skills with the same name
-        else if (api.isClassRegistered(rpgClass.getName()))
+        else if (SkillAPI.isClassRegistered(rpgClass.getName()))
         {
             api.getLogger().warning("Duplicate class name: \"" + rpgClass.getName() + "\" - skipping the duplicate");
         }
@@ -235,6 +236,7 @@ public class RegistrationManager
             catch (Exception ex)
             {
                 api.getLogger().severe("Failed to save class data to config for \"" + rpgClass.getName() + "\" - skipping registration");
+                ex.printStackTrace();
             }
         }
 
@@ -249,7 +251,7 @@ public class RegistrationManager
      */
     private void log(String message, int level)
     {
-        if (api.getSettings().getLoadLogLevel() >= level)
+        if (SkillAPI.getSettings().getLoadLogLevel() >= level)
         {
             api.getLogger().info(message);
         }

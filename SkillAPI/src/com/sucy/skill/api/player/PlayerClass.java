@@ -2,6 +2,7 @@ package com.sucy.skill.api.player;
 
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.enums.PointSource;
@@ -11,6 +12,7 @@ import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.OtherNodes;
 import com.sucy.skill.language.RPGFilter;
+import org.bukkit.Bukkit;
 
 /**
  * <p>Represents a player's class progress.</p>
@@ -42,7 +44,7 @@ public final class PlayerClass
         this.player = player;
         this.classData = classData;
         this.level = 1;
-        this.points = player.getAPI().getSettings().getGroupSettings(classData.getGroup()).getStartingPoints();
+        this.points = SkillAPI.getSettings().getGroupSettings(classData.getGroup()).getStartingPoints();
         this.exp = 0;
         this.totalExp = 0;
 
@@ -175,7 +177,7 @@ public final class PlayerClass
 
         // Call the event
         PlayerGainSkillPointsEvent event = new PlayerGainSkillPointsEvent(this, amount, source);
-        player.getAPI().getServer().getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(event);
 
         // Add the points if not cancelled
         if (!event.isCancelled())
@@ -226,7 +228,7 @@ public final class PlayerClass
         // Call an event for the experience gained
         PlayerExperienceGainEvent event = new PlayerExperienceGainEvent(this, amount, source);
         event.setCancelled(classData.receivesExp(source));
-        player.getAPI().getServer().getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(event);
 
         // Add experience if not cancelled
         if (!event.isCancelled() && event.getExp() > 0)
@@ -293,7 +295,7 @@ public final class PlayerClass
         amount = Math.max(amount, classData.getMaxLevel() - level);
         level += amount;
         points += classData.getGroupSettings().getPointsPerLevel() * amount;
-        player.getAPI().getLanguage().sendMessage(
+        SkillAPI.getLanguage().sendMessage(
                 OtherNodes.LEVEL_UP,
                 player.getPlayer(),
                 FilterType.COLOR,
@@ -306,7 +308,7 @@ public final class PlayerClass
         // Max Level
         if (isLevelMaxed())
         {
-            player.getAPI().getLanguage().sendMessage(
+            SkillAPI.getLanguage().sendMessage(
                     OtherNodes.MAX_LEVEL,
                     player.getPlayer(),
                     FilterType.COLOR,
@@ -317,7 +319,7 @@ public final class PlayerClass
 
         // Call the event
         PlayerLevelUpEvent event = new PlayerLevelUpEvent(this, amount);
-        player.getAPI().getServer().getPluginManager().callEvent(event);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     ///////////////////////////////////////////////////////

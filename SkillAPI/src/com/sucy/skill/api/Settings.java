@@ -94,13 +94,28 @@ public class Settings
      */
     public double get(String key)
     {
+        return get(key, 0);
+    }
+
+    /**
+     * Retrieves a double value from the settings. If the setting is
+     * not set, this will instead return 0.
+     *
+     * @param key          setting key
+     * @param defaultValue the default value in case not set
+     *
+     * @return double setting value
+     */
+    public double get(String key, double defaultValue)
+    {
         if (settings.containsKey(key))
         {
             return Double.parseDouble(settings.get(key).toString());
         }
         else
         {
-            return 0;
+            set(key, defaultValue);
+            return defaultValue;
         }
     }
 
@@ -114,13 +129,28 @@ public class Settings
      */
     public int getInt(String key)
     {
+        return getInt(key, 0);
+    }
+
+    /**
+     * Retrieves an integer value from the settings. If the setting is
+     * not set, this will instead return the default value.
+     *
+     * @param key          setting key
+     * @param defaultValue the default value in case not set
+     *
+     * @return integer setting value
+     */
+    public int getInt(String key, int defaultValue)
+    {
         if (settings.containsKey(key))
         {
             return Integer.parseInt(settings.get(key).toString());
         }
         else
         {
-            return 0;
+            set(key, defaultValue);
+            return defaultValue;
         }
     }
 
@@ -138,6 +168,28 @@ public class Settings
     }
 
     /**
+     * Retrieves a boolean value from the settings. If the setting is
+     * not set, this will instead return false.
+     *
+     * @param key          setting key
+     * @param defaultValue the default value in case not set
+     *
+     * @return boolean setting value
+     */
+    public boolean getBool(String key, boolean defaultValue)
+    {
+        if (settings.containsKey(key))
+        {
+            return Boolean.parseBoolean(settings.get(key).toString());
+        }
+        else
+        {
+            set(key, defaultValue);
+            return defaultValue;
+        }
+    }
+
+    /**
      * Retrieves a string value from the settings. If the setting is
      * not set, this will instead return null.
      *
@@ -147,13 +199,28 @@ public class Settings
      */
     public String getString(String key)
     {
+        return getString(key, null);
+    }
+
+    /**
+     * Retrieves a string value from the settings. If the setting is
+     * not set, this will instead return the default value.
+     *
+     * @param key          setting key
+     * @param defaultValue the default value in case not set
+     *
+     * @return String setting value
+     */
+    public String getString(String key, String defaultValue)
+    {
         if (settings.containsKey(key))
         {
             return settings.get(key).toString();
         }
         else
         {
-            return null;
+            set(key, defaultValue);
+            return defaultValue;
         }
     }
 
@@ -186,6 +253,7 @@ public class Settings
     {
         if (!has(key))
         {
+            set(key, defaultValue, 0);
             return defaultValue;
         }
         return getBase(key) + getScale(key) * (level - 1);

@@ -9,7 +9,6 @@ import org.bukkit.event.HandlerList;
 
 public class PlayerCastSkillEvent extends Event implements Cancellable
 {
-
     private static final HandlerList handlers = new HandlerList();
     private PlayerData  playerData;
     private PlayerSkill skill;

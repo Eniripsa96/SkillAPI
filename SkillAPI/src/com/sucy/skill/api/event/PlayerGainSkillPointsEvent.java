@@ -12,7 +12,6 @@ import org.bukkit.event.HandlerList;
  */
 public class PlayerGainSkillPointsEvent extends Event implements Cancellable
 {
-
     private static final HandlerList handlers = new HandlerList();
     private PlayerClass playerClass;
     private boolean     cancelled;

@@ -10,7 +10,6 @@ import org.bukkit.event.HandlerList;
  */
 public class PlayerLevelUpEvent extends Event
 {
-
     private static final HandlerList handlers = new HandlerList();
     private PlayerClass playerClass;
     private int         level;

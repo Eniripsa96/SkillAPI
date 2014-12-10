@@ -8,8 +8,8 @@ import java.util.List;
 
 public abstract class EffectComponent
 {
-    private final   ArrayList<EffectComponent> children   = new ArrayList<EffectComponent>();
-    protected final Settings                   attributes = new Settings();
+    private final   ArrayList<EffectComponent> children = new ArrayList<EffectComponent>();
+    protected final Settings                   settings = new Settings();
 
     public void add(EffectComponent child)
     {

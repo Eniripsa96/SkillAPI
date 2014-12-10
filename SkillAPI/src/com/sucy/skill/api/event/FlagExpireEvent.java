@@ -9,7 +9,6 @@ import org.bukkit.event.HandlerList;
  */
 public class FlagExpireEvent extends Event
 {
-
     private static final HandlerList handlers = new HandlerList();
     private LivingEntity entity;
     private String       flag;

@@ -1,6 +1,6 @@
 package com.sucy.skill.api.skills;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 
 /**
  * <p>Interface for skills that can be cast without a direct target</p>
@@ -13,10 +13,10 @@ public interface SkillShot
     /**
      * Casts the skill
      *
-     * @param player player casting the skill
-     * @param level  current level of the skill
+     * @param user  user of the skill
+     * @param level skill level
      *
      * @return true if could cast, false otherwise
      */
-    public boolean cast(Player player, int level);
+    public boolean cast(LivingEntity user, int level);
 }

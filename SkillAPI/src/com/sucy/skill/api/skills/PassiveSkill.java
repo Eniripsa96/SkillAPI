@@ -1,6 +1,6 @@
 package com.sucy.skill.api.skills;
 
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 
 /**
  * <p>Interface for skills that cannot be cast
@@ -16,10 +16,11 @@ public interface PassiveSkill
      * proper checks if you are going to be removing previous
      * effects.</p>
      *
-     * @param player   player unlocking the skill
-     * @param newLevel the new level of the skill
+     * @param user      user to refresh the effect for
+     * @param prevLevel previous skill level
+     * @param newLevel  new skill level
      */
-    public void onUpgrade(Player player, int newLevel);
+    public void update(LivingEntity user, int prevLevel, int newLevel);
 
     /**
      * <p>Applies effects when the API starts up or when
@@ -28,10 +29,10 @@ public interface PassiveSkill
      * prematurely) so you can just apply them without
      * checking to remove previous effects.</p>
      *
-     * @param player player logging in
-     * @param level  skill level
+     * @param user  user to initialize the effects for
+     * @param level skill level
      */
-    public void onInitialize(Player player, int level);
+    public void initialize(LivingEntity user, int level);
 
     /**
      * <p>Stops the effects when the player goes offline
@@ -40,8 +41,8 @@ public interface PassiveSkill
      * the skill, resetting health or other stats, or
      * other lasting effects you use.</p>
      *
-     * @param player player to stop the effects for
-     * @param level  active level of the effect
+     * @param user  user to stop the effects for
+     * @param level skill level
      */
-    public void stopEffects(Player player, int level);
+    public void stopEffects(LivingEntity user, int level);
 }

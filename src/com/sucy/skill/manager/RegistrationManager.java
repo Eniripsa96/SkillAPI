@@ -5,7 +5,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.SkillPlugin;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.example.Wizard;
+import com.sucy.skill.dynamic.DynamicClass;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
@@ -102,7 +102,7 @@ public class RegistrationManager
         if (SkillAPI.getSettings().isUseExampleClasses())
         {
             log(" - SkillAPI Examples", 1);
-            api.addClass(new Wizard());
+            api.addClass(new DynamicClass(api, "Wizard"));
             //api.getExampleClasses().registerClasses(api);
         }
 

@@ -29,6 +29,7 @@ public abstract class Skill
 
     private final ArrayList<String> description = new ArrayList<String>();
 
+    private String    key;
     private String    name;
     private String    type;
     private ItemStack indicator;
@@ -77,6 +78,7 @@ public abstract class Skill
             maxLevel = 1;
         }
 
+        this.key = name;
         this.type = type;
         this.name = name;
         this.indicator = indicator;
@@ -85,6 +87,11 @@ public abstract class Skill
         this.skillReqLevel = skillReqLevel;
         this.attrInfo = "";
         this.needsPermission = false;
+    }
+
+    public String getKey()
+    {
+        return key;
     }
 
     public String getName()

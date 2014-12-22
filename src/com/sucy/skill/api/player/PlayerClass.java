@@ -92,6 +92,16 @@ public final class PlayerClass
     }
 
     /**
+     * <p>Retrieves the required experience to level up to the next level.</p>
+     *
+     * @return the current required experience
+     */
+    public double getRequiredExp()
+    {
+        return classData.getRequiredExp(level);
+    }
+
+    /**
      * <p>Retrieves the total amount of experience the player has accumulated
      * for this class since professing as it.</p>
      *
@@ -320,6 +330,24 @@ public final class PlayerClass
         // Call the event
         PlayerLevelUpEvent event = new PlayerLevelUpEvent(this, amount);
         Bukkit.getPluginManager().callEvent(event);
+    }
+
+    /**
+     * Sets the class data this player class is based off of, optionally
+     * resetting the class progress.
+     *
+     * @param classData class data to switch to
+     * @param reset     whether or not to reset class data
+     */
+    public void setClassData(RPGClass classData, boolean reset)
+    {
+        this.classData = classData;
+        if (reset)
+        {
+            this.level = 1;
+            this.points = SkillAPI.getSettings().getGroupSettings(classData.getGroup()).getStartingPoints();
+            this.exp = 0;
+        }
     }
 
     ///////////////////////////////////////////////////////

@@ -177,6 +177,43 @@ public final class PlayerData
         }
     }
 
+    public boolean profess(RPGClass rpgClass)
+    {
+        if (rpgClass != null && canProfess(rpgClass))
+        {
+            PlayerClass current = classes.get(rpgClass.getGroup());
+            if (current == null)
+            {
+                current = new PlayerClass(this, rpgClass);
+                classes.put(rpgClass.getGroup(), current);
+            }
+            else
+            {
+                boolean reset = SkillAPI.getSettings().getGroupSettings(rpgClass.getGroup()).isProfessReset();
+                if (reset)
+                {
+                    for (Skill skill : current.getData().getSkills())
+                    {
+                        skills.remove(skill.getName());
+                    }
+                }
+                current.setClassData(rpgClass, reset);
+            }
+            for (Skill skill : rpgClass.getSkills())
+            {
+                if (!skills.containsKey(skill.getKey()))
+                {
+                    skills.put(skill.getKey(), new PlayerSkill(this, skill, current));
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     ///////////////////////////////////////////////////////
     //                                                   //
     //                       Mana                        //

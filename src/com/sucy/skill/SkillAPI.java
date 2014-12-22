@@ -358,7 +358,7 @@ public class SkillAPI extends JavaPlugin
         {
             return null;
         }
-        if (!singleton.players.containsKey(player.getUniqueId()))
+        else if (!singleton.players.containsKey(player.getUniqueId()))
         {
             PlayerAccounts data = new PlayerAccounts(player);
             singleton.players.put(player.getUniqueId(), data);
@@ -412,7 +412,7 @@ public class SkillAPI extends JavaPlugin
         skill = registrationManager.validate(skill);
         if (skill != null)
         {
-            skills.put(skill.getName(), skill);
+            skills.put(skill.getName().toLowerCase(), skill);
         }
     }
 
@@ -443,7 +443,7 @@ public class SkillAPI extends JavaPlugin
         rpgClass = registrationManager.validate(rpgClass);
         if (rpgClass != null)
         {
-            classes.put(rpgClass.getName(), rpgClass);
+            classes.put(rpgClass.getName().toLowerCase(), rpgClass);
             if (!groups.contains(rpgClass.getGroup()))
             {
                 groups.add(rpgClass.getGroup());

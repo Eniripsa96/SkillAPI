@@ -55,7 +55,7 @@ public abstract class RPGClass
         this.parent = SkillAPI.getClass(parent);
         this.icon = icon;
         this.name = name;
-        this.group = group == null ? "default" : group.toLowerCase();
+        this.group = group == null ? "class" : group.toLowerCase();
         this.mana = "Mana";
         this.maxLevel = maxLevel;
         this.expSources = ExpSource.MOB.getId();
@@ -418,7 +418,7 @@ public abstract class RPGClass
         parent = SkillAPI.getClass(config.getString(PARENT));
         icon = Data.parseIcon(config.getString(ITEM, getSerializedIcon()));
         name = config.getString(NAME, name);
-        group = config.getString(GROUP, "default");
+        group = config.getString(GROUP, "class");
         mana = config.getString(MANA, mana);
         maxLevel = config.getInt(MAX, maxLevel);
         expSources = config.getInt(EXP, expSources);

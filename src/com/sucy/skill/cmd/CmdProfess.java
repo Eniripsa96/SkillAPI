@@ -3,10 +3,8 @@ package com.sucy.skill.cmd;
 import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
-import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.RPGFilter;
 import org.bukkit.ChatColor;
@@ -14,17 +12,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.List;
-
 /**
  * A command that allows a player to profess through classes
  */
 public class CmdProfess implements IFunction
 {
-    private static final String CANNOT_USE      = "cannot-use";
-    private static final String INVALID_CLASS   = "invalid-class";
-    private static final String PROFESSED       = "professed";
-    private static final String CANNOT_PROFESS  = "cannot-profess";
+    private static final String CANNOT_USE     = "cannot-use";
+    private static final String INVALID_CLASS  = "invalid-class";
+    private static final String PROFESSED      = "professed";
+    private static final String CANNOT_PROFESS = "cannot-profess";
 
     /**
      * Runs the command

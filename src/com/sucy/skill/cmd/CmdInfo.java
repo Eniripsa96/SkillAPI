@@ -6,8 +6,6 @@ import com.rit.sucy.config.Filter;
 import com.rit.sucy.player.PlayerUUIDs;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.RPGFilter;
@@ -16,8 +14,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
-import java.util.List;
 
 /**
  * A command that displays a player's current class information
@@ -48,7 +44,7 @@ public class CmdInfo implements IFunction
         // Only can show info of a player so console needs to provide a name
         if (sender instanceof Player || args.length > 1)
         {
-            OfflinePlayer target = args.length == 0 ? (OfflinePlayer)sender : PlayerUUIDs.getOfflinePlayer(args[0]);
+            OfflinePlayer target = args.length == 0 ? (OfflinePlayer) sender : PlayerUUIDs.getOfflinePlayer(args[0]);
             if (target == null)
             {
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");
@@ -78,11 +74,14 @@ public class CmdInfo implements IFunction
                     // Compose the message
                     cmd.sendMessage(sender, CATEGORY, ChatColor.GOLD + "{group}" + ChatColor.GRAY + ": ", RPGFilter.GROUP.setReplacement(TextFormatter.format(group)));
                     PlayerClass profession = data.getClass(group);
-                    if (profession == null) cmd.sendMessage(sender, NO_CLASS, ChatColor.GRAY + "Not Professed");
+                    if (profession == null)
+                    {
+                        cmd.sendMessage(sender, NO_CLASS, ChatColor.GRAY + "Not Professed");
+                    }
                     else
                     {
                         cmd.sendMessage(sender, PROFESSION, ChatColor.AQUA + "Lv{level} " + ChatColor.DARK_GREEN + "{profession}", RPGFilter.LEVEL.setReplacement(profession.getLevel() + ""), RPGFilter.PROFESSION.setReplacement(profession.getData().getName()));
-                        cmd.sendMessage(sender, EXP, ChatColor.AQUA + "Exp " + ChatColor.DARK_GREEN + "{exp}", RPGFilter.EXP.setReplacement((int)profession.getExp() + "/" + (int)profession.getRequiredExp()));
+                        cmd.sendMessage(sender, EXP, ChatColor.AQUA + "Exp " + ChatColor.DARK_GREEN + "{exp}", RPGFilter.EXP.setReplacement((int) profession.getExp() + "/" + (int) profession.getRequiredExp()));
                     }
                 }
             }

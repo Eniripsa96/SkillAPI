@@ -58,7 +58,7 @@ public abstract class RPGClass
         this.group = group == null ? "class" : group.toLowerCase();
         this.mana = "Mana";
         this.maxLevel = maxLevel;
-        this.expSources = ExpSource.MOB.getId();
+        this.expSources = ExpSource.MOB.getId() | ExpSource.COMMAND.getId();
 
         if (this instanceof Listener)
         {

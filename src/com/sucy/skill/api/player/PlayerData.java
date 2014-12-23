@@ -5,6 +5,7 @@ import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.enums.ManaCost;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.enums.SkillStatus;
@@ -211,6 +212,20 @@ public final class PlayerData
         else
         {
             return false;
+        }
+    }
+
+    /**
+     * Gives experience to the player from the given source
+     *
+     * @param amount amount of experience to give
+     * @param source source of the experience
+     */
+    public void giveExp(double amount, ExpSource source)
+    {
+        for (PlayerClass playerClass : classes.values())
+        {
+            playerClass.giveExp(amount, source);
         }
     }
 

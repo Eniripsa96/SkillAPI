@@ -42,7 +42,7 @@ public class CmdInfo implements IFunction
     public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
     {
         // Only can show info of a player so console needs to provide a name
-        if (sender instanceof Player || args.length > 1)
+        if (sender instanceof Player || args.length >= 1)
         {
             OfflinePlayer target = args.length == 0 ? (OfflinePlayer) sender : PlayerUUIDs.getOfflinePlayer(args[0]);
             if (target == null)

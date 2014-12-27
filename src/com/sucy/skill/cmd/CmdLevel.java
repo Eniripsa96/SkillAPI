@@ -18,15 +18,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
- * A command that gives a player class experience
+ * A command that gives a player class levels
  */
-public class CmdExp implements IFunction
+public class CmdLevel implements IFunction
 {
-    private static final String NOT_PLAYER = "not-player";
-    private static final String NOT_NUMBER = "not-number";
-    private static final String NOT_POSITIVE = "not-positive";
-    private static final String GAVE_EXP = "gave-exp";
-    private static final String RECEIVED_EXP = "received-exp";
+    private static final String NOT_PLAYER     = "not-player";
+    private static final String NOT_NUMBER     = "not-number";
+    private static final String NOT_POSITIVE   = "not-positive";
+    private static final String GAVE_LEVEL     = "gave-level";
+    private static final String RECEIVED_LEVEL = "received-level";
 
     /**
      * Runs the command
@@ -50,37 +50,37 @@ public class CmdExp implements IFunction
                 return;
             }
 
-            // Parse the experience
-            double amount = 0;
+            // Parse the level
+            int amount = 0;
             try
             {
-                amount = Double.parseDouble(args[args.length == 1 ? 0 : 1]);
+                amount = Integer.parseInt(args[args.length == 1 ? 0 : 1]);
             }
             catch (Exception ex)
             {
-                cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid experience amount");
+                cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid level amount");
                 return;
             }
 
-            // Invalid amount of experience
+            // Invalid amount of levels
             if (amount <= 0)
             {
-                cmd.sendMessage(sender, NOT_POSITIVE, ChatColor.RED + "You must give a positive amount of experience");
+                cmd.sendMessage(sender, NOT_POSITIVE, ChatColor.RED + "You must give a positive amount of levels");
                 return;
             }
 
-            // Give experience
+            // Give levels
             PlayerData data = SkillAPI.getPlayerData(target);
-            data.giveExp(amount, ExpSource.COMMAND);
+            data.giveLevels(amount, ExpSource.COMMAND);
 
             // Messages
             if (target != sender)
             {
-                cmd.sendMessage(sender, GAVE_EXP, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {exp} experience", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.EXP.setReplacement("" + amount));
+                cmd.sendMessage(sender, GAVE_LEVEL, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {level} levels", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.LEVEL.setReplacement("" + amount));
             }
             if (target.isOnline())
             {
-                cmd.sendMessage(target.getPlayer(), RECEIVED_EXP, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{exp} experience " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.EXP.setReplacement("" + amount));
+                cmd.sendMessage(target.getPlayer(), RECEIVED_LEVEL, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{level} levels " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.LEVEL.setReplacement("" + amount));
             }
         }
 

@@ -30,7 +30,6 @@ import java.util.UUID;
 
 public final class PlayerData
 {
-
     private final HashMap<String, PlayerClass>   classes = new HashMap<String, PlayerClass>();
     private final HashMap<String, PlayerSkill>   skills  = new HashMap<String, PlayerSkill>();
     private final HashMap<Material, PlayerSkill> binds   = new HashMap<Material, PlayerSkill>();
@@ -226,6 +225,23 @@ public final class PlayerData
         for (PlayerClass playerClass : classes.values())
         {
             playerClass.giveExp(amount, source);
+        }
+    }
+
+    /**
+     * Gives levels to the player for all classes matching the experience source
+     *
+     * @param amount amount of levels to give
+     * @param source source of the levels
+     */
+    public void giveLevels(int amount, ExpSource source)
+    {
+        for (PlayerClass playerClass : classes.values())
+        {
+            if (playerClass.getData().receivesExp(source))
+            {
+                playerClass.giveLevels(amount);
+            }
         }
     }
 

@@ -7,4 +7,5 @@ public class Permissions
     public static final String BASIC = ROOT + "basic";
     public static final String EXP   = ROOT + "exp";
     public static final String LVL   = ROOT + "level";
+    public static final String SKILL = ROOT + "skill";
 }

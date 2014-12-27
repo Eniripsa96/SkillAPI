@@ -13,7 +13,7 @@ public interface SkillPlugin
 
     /**
      * <p>Method to add new skills to the game</p>
-     * <p>Use api.addSkills(ClassSkill ... skills) to add them</p>
+     * <p>Use api.addSkills(Skill ... skills) to add them</p>
      * <p>This is called before registerClasses so if you want to keep
      * a reference of the API, you can store the api reference into one
      * of your own fields</p>
@@ -24,7 +24,7 @@ public interface SkillPlugin
 
     /**
      * <p>Method to add new classes to the game</p>
-     * <p>Use api.addClasses(CustomClass ... classes) to add them</p>
+     * <p>Use api.addClasses(RPGClass ... classes) to add them</p>
      * <p>This is called after registerSkills</p>
      */
     public void registerClasses(SkillAPI api);

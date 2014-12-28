@@ -29,16 +29,18 @@ public abstract class Skill
 
     private final ArrayList<String> description = new ArrayList<String>();
 
+    private List<String> iconLore;
+    private ItemStack indicator;
     private String    key;
     private String    name;
     private String    type;
-    private ItemStack indicator;
-    private int       maxLevel;
-    private String    skillReq;
-    private int       skillReqLevel;
     private String    message;
     private String    attrInfo;
+    private String    skillReq;
+    private int       maxLevel;
+    private int       skillReqLevel;
     private boolean   needsPermission;
+    private boolean   layoutChanged = false;
 
     protected final Settings settings = new Settings();
 
@@ -87,6 +89,8 @@ public abstract class Skill
         this.skillReqLevel = skillReqLevel;
         this.attrInfo = "";
         this.needsPermission = false;
+
+        iconLore = SkillAPI.getLanguage().getMessage(SkillNodes.LAYOUT);
     }
 
     public String getKey()
@@ -191,106 +195,79 @@ public abstract class Skill
         ItemMeta meta = item.hasItemMeta() ? item.getItemMeta() : Bukkit.getItemFactory().getItemMeta(item.getType());
         ArrayList<String> lore = new ArrayList<String>();
 
-        // Cycle through each line, parse it, and add it to the display
-        for (String line : layout)
+        String lvlReq = SkillAPI.getLanguage().getMessage(getLevelReq(skillData.getLevel()) <= skillData.getPlayerClass().getLevel() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
+        lvlReq = lvlReq.replace("{name}", "Level").replace("{value}", "" + getLevelReq(skillData.getLevel()));
+
+        String costReq = SkillAPI.getLanguage().getMessage(getCost(skillData.getLevel()) <= skillData.getPlayerClass().getPoints() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
+        costReq = costReq.replace("{name}", "Cost").replace("{value}", "" + getCost(skillData.getLevel()));
+
+        String attrChanging = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_CHANGING, true, FilterType.COLOR).get(0);
+        String attrStatic = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, true, FilterType.COLOR).get(0);
+
+        for (String line : iconLore)
         {
-            List<String> results = new ArrayList<String>();
-
-            // Title filter
-            if (line.contains("{title}"))
+            try
             {
-                String title = lang.getMessage(SkillNodes.TITLE).get(0);
+                // General data
+                line = line.replace("{level}", "" + skillData.getLevel())
+                        .replace("{req:lvl}", lvlReq)
+                        .replace("{req:cost}", costReq)
+                        .replace("{max}", "" + maxLevel)
+                        .replace("{name}", name)
+                        .replace("{type}", type);
 
-                title = title.replace("{name}", getName())
-                        .replace("{level}", skillData.getLevel() + "")
-                        .replace("{max}", getMaxLevel() + "");
-
-                line = line.replace("{title}", title);
-            }
-
-            // Type filter
-            if (line.contains("{type}"))
-            {
-                String type = lang.getMessage(SkillNodes.TYPE).get(0);
-                type = type.replace("{name}", this.type);
-                line = line.replace("{type}", type);
-            }
-
-            // Requirement Filter
-            if (line.contains("{requirements}"))
-            {
-
-                int requiredLevel = getLevelReq(skillData.getLevel());
-                line = line.replace("{requirements}",
-                        getRequirementString(SkillAPI.getLanguage(), SkillAttribute.LEVEL, requiredLevel,
-                                skillData.getPlayerClass().getLevel() >= requiredLevel));
-
-                int requiredPoints = getCost(skillData.getLevel());
-                results.add(getRequirementString(SkillAPI.getLanguage(), SkillAttribute.COST, requiredPoints,
-                        skillData.getPlayerClass().getPoints() >= requiredPoints));
-
-                String skillReq = getSkillReq();
-                if (skillReq != null)
+                // Attributes
+                if (line.contains("{attr:"))
                 {
-                    results.add(getRequirementString(SkillAPI.getLanguage(), skillReq, skillReqLevel,
-                            skillData.getPlayerData().getSkillLevel(skillReq) >= skillReqLevel));
-                }
-            }
+                    int start = line.indexOf("{attr:");
+                    int end = line.indexOf("}", start);
+                    String attr = line.substring(start + 6, end);
+                    Object currValue = getAttrValue(attr, Math.min(1, skillData.getLevel()));
+                    Object nextValue = getAttrValue(attr, Math.max(skillData.getLevel() + 1, maxLevel));
 
-            // Attributes filter
-            if (line.contains("{attributes}"))
-            {
-                line = line.replace("{attributes}", attrInfo);
-            }
-
-            // Description filter
-            if (line.contains("{description}"))
-            {
-
-                // No description
-                if (getDescription().size() == 0)
-                {
-                    line = line.replace("{description}", lang.getMessage(SkillNodes.DESCRIPTION_NONE).get(0));
-                }
-
-                // Go through each line
-                else
-                {
-
-                    // First line
-                    String descFirst = lang.getMessage(SkillNodes.DESCRIPTION_FIRST).get(0);
-                    descFirst = descFirst.replace("{line}", description.get(0));
-                    line = line.replace("{description}", descFirst);
-
-                    // Other lines
-                    String descLine = lang.getMessage(SkillNodes.DESCRIPTION_OTHER).get(0);
-                    for (int i = 1; i < description.size(); i++)
+                    if (currValue == nextValue)
                     {
-                        results.add(descLine.replace("{line}", description.get(i)));
+                        line = line.replace("{attr:" + attr + "}", attrStatic.replace("{name}", getAttrName(attr)).replace("{value}", currValue.toString()));
+                    }
+                    else
+                    {
+                        line = line.replace("{attr:" + attr + "}", attrChanging.replace("{name}", getAttrName(attr)).replace("{value}", currValue.toString()).replace("{value}", nextValue.toString()));
                     }
                 }
+
+                // Full description
+                else if (line.contains("{desc}"))
+                {
+                    for (String descLine : description)
+                    {
+                        lore.add(line.replace("{desc}", descLine));
+                    }
+                    continue;
+                }
+
+                // Description segments
+                else if (line.contains("{desc:"))
+                {
+                    int start = line.indexOf("{desc:");
+                    int end = line.indexOf("}", start);
+                    String lineInfo = line.substring(start + 6, end);
+                    String[] split = lineInfo.contains("-") ? lineInfo.split("-") : new String[] { lineInfo, lineInfo };
+                    start = Integer.parseInt(split[0]) - 1;
+                    end = (split[1].equals("x") ? description.size() : Integer.parseInt(split[1]));
+                    for (int i = start; i < end && i < description.size(); i++)
+                    {
+                        lore.add(line.replace("{desc:" + lineInfo + "}", description.get(i)));
+                    }
+                    continue;
+                }
+
+                lore.add(line);
             }
 
-            results.add(0, line);
-
-            // Add the resulting lines
-            for (String result : results)
+            // Lines with invalid filters are ignored
+            catch (Exception ex)
             {
-
-                result = TextFormatter.colorString(result);
-
-                // First line is assigned to the item's name
-                if (first)
-                {
-                    first = false;
-                    meta.setDisplayName(result);
-                }
-
-                // Anything else appends to the lore
-                else
-                {
-                    lore.add(result);
-                }
+                Bukkit.getLogger().warning("Skill icon filter for the skill \"" + name + "\" is invalid (Line = \"" + line + "\"");
             }
         }
 
@@ -304,6 +281,16 @@ public abstract class Skill
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    protected Object getAttrValue(String key, int level)
+    {
+        return settings.getObj(key, level);
+    }
+
+    protected String getAttrName(String key)
+    {
+        return TextFormatter.format(key);
     }
 
     private String format(double value)
@@ -336,6 +323,7 @@ public abstract class Skill
     private static final String NAME      = "name";
     private static final String TYPE      = "type";
     private static final String ITEM      = "item";
+    private static final String LAYOUT    = "layout";
     private static final String MAX       = "max";
     private static final String REQ       = "req";
     private static final String REQLVL    = "req-lvl";
@@ -356,6 +344,7 @@ public abstract class Skill
         config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(PERM, needsPermission);
         config.set(DESC, description);
+        config.set(LAYOUT, iconLore);
         settings.save(config.createSection(ATTR));
     }
 
@@ -379,6 +368,10 @@ public abstract class Skill
         if (!config.isSet(MAX))
         {
             config.set(MAX, maxLevel);
+        }
+        if (!config.isSet(LAYOUT))
+        {
+            config.set(LAYOUT, iconLore);
         }
         if (skillReq != null && !neededOnly)
         {
@@ -419,6 +412,10 @@ public abstract class Skill
         {
             description.clear();
             description.addAll(config.getStringList(DESC));
+        }
+        if (config.isList(LAYOUT))
+        {
+            iconLore = config.getStringList(LAYOUT);
         }
 
         settings.load(config.getConfigurationSection(ATTR));

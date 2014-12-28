@@ -56,31 +56,6 @@ public class SkillNodes
     ATTRIBUTE_NOT_CHANGING = ATTRIBUTE_BASE + "not-changing",
 
     /**
-     * No attributes present
-     */
-    ATTRIBUTE_NONE = ATTRIBUTE_BASE + "no-attributes",
-
-    /**
-     * Description of a skill
-     */
-    DESCRIPTION_BASE = BASE + "description.",
-
-    /**
-     * First line of a description
-     */
-    DESCRIPTION_FIRST = DESCRIPTION_BASE + "first",
-
-    /**
-     * Other lines of a description
-     */
-    DESCRIPTION_OTHER = DESCRIPTION_BASE + "other",
-
-    /**
-     * No description present
-     */
-    DESCRIPTION_NONE = DESCRIPTION_BASE + "no-description",
-
-    /**
      * Layout for the skill display
      */
     LAYOUT = BASE + "layout";

@@ -300,6 +300,27 @@ public class Settings
     }
 
     /**
+     * <p>Retrieves a generic attribute.</p>
+     * <p>If the attribute is not set, this will return 0 instead.</p>
+     *
+     * @param key   attribute name
+     * @param level level of scaling
+     * @return      attribute value or 0 if not found
+     */
+    public Object getObj(String key, int level)
+    {
+        if (settings.containsKey(key))
+        {
+            return settings.get(key);
+        }
+        else if (settings.containsKey(key + BASE))
+        {
+            return get(key, level);
+        }
+        else return 0;
+    }
+
+    /**
      * <p>Checks whether or not the setting is defined.</p>
      * <p>A setting is defined when it is set at any point using
      * any of the setter methods or while loading from the configuration.</p>

@@ -4,6 +4,9 @@ import com.rit.sucy.config.CustomFilter;
 
 public class RPGFilter
 {
+    public static final CustomFilter NAME       = new CustomFilter("{name}", "");
+    public static final CustomFilter MAX        = new CustomFilter("{max}", "");
+    public static final CustomFilter TYPE       = new CustomFilter("{type}", "");
     public static final CustomFilter LEVEL      = new CustomFilter("{level}", "");
     public static final CustomFilter GROUP      = new CustomFilter("{group}", "");
     public static final CustomFilter CLASS      = new CustomFilter("{class}", "");

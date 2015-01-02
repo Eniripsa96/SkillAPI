@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * A basic implementation of a horizontally ascending skill tree
  */
-public class BasicHorizontalTree extends SkillTree {
+public class BasicHorizontalTree extends SkillTree
+{
 
     /**
      * Constructor
@@ -19,7 +20,8 @@ public class BasicHorizontalTree extends SkillTree {
      * @param api  api reference
      * @param tree class reference
      */
-    public BasicHorizontalTree(SkillAPI api, RPGClass tree) {
+    public BasicHorizontalTree(SkillAPI api, RPGClass tree)
+    {
         super(api, tree);
     }
 
@@ -38,7 +40,8 @@ public class BasicHorizontalTree extends SkillTree {
 
         // Cycle through all skills that do not have children, put them
         // at the far left, and branch their children to the right
-        while (i < skills.size() && (skill = skills.get(i++)).getSkillReq() == null) {
+        while (i < skills.size() && (skill = skills.get(i++)).getSkillReq() == null)
+        {
             skillSlots.put(9 * height, skill);
             height += placeChildren(skills, skill, height * 9 + 1, 0);
         }
@@ -51,20 +54,29 @@ public class BasicHorizontalTree extends SkillTree {
      * @param skill  skill to add the children of
      * @param slot   slot ID for the first child
      * @param depth  current depth of recursion
-     * @return       rows needed to fit the skill and all of its children
+     *
+     * @return rows needed to fit the skill and all of its children
      * @throws SkillTreeException
      */
-    private int placeChildren(List<Skill> skills, Skill skill, int slot, int depth) throws SkillTreeException {
+    private int placeChildren(List<Skill> skills, Skill skill, int slot, int depth) throws SkillTreeException
+    {
 
         // Prevent going outside the bounds of the inventory
         if (depth == 9)
+        {
             throw new SkillTreeException("Error generating the skill tree: " + tree.getName() + " - too large of a tree!");
+        }
 
         // Add in all children
         int width = 0;
-        for (Skill s : skills) {
-            if (s.getSkillReq() == null) continue;
-            if (s.getSkillReq().equalsIgnoreCase(skill.getName())) {
+        for (Skill s : skills)
+        {
+            if (s.getSkillReq() == null)
+            {
+                continue;
+            }
+            if (s.getSkillReq().equalsIgnoreCase(skill.getName()))
+            {
                 skillSlots.put(slot + width * 9, s);
                 int w = placeChildren(skills, s, slot + width * 9 + 1, depth + 1);
                 width += w;

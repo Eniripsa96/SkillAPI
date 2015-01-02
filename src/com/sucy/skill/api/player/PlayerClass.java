@@ -197,6 +197,29 @@ public final class PlayerClass
     }
 
     /**
+     * Uses points from the player for skill upgrades.
+     *
+     * @param amount amount of points to use
+     */
+    public void usePoints(int amount)
+    {
+        // Cannot use too few points
+        if (amount < 0)
+        {
+            throw new IllegalArgumentException("Invalid points amount - cannot be less than 1");
+        }
+
+        // Cannot use more points than obtained
+        if (amount > points)
+        {
+            throw new IllegalArgumentException("Invalid points amount - more than current total");
+        }
+
+        // Use the points
+        points -= amount;
+    }
+
+    /**
      * <p>Sets the amount of points the player's class has without
      * launching an event.</p>
      * <p>This cannot be less than 0.</p>

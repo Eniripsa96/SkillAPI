@@ -6,7 +6,8 @@ import com.sucy.skill.api.classes.RPGClass;
 /**
  * A horizontal level tree implementation
  */
-public class LevelVerticalTree extends LevelTree {
+public class LevelVerticalTree extends LevelTree
+{
 
     /**
      * Constructor
@@ -14,7 +15,8 @@ public class LevelVerticalTree extends LevelTree {
      * @param api  api reference
      * @param tree tree reference
      */
-    public LevelVerticalTree(SkillAPI api, RPGClass tree) {
+    public LevelVerticalTree(SkillAPI api, RPGClass tree)
+    {
         super(api, tree);
     }
 
@@ -22,7 +24,8 @@ public class LevelVerticalTree extends LevelTree {
      * @return skills allowed per row
      */
     @Override
-    protected int getPerTierLimit() {
+    protected int getPerTierLimit()
+    {
         return 9;
     }
 }

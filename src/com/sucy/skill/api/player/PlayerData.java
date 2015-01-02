@@ -5,13 +5,9 @@ import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.enums.ExpSource;
-import com.sucy.skill.api.enums.ManaCost;
-import com.sucy.skill.api.enums.ManaSource;
-import com.sucy.skill.api.enums.SkillStatus;
-import com.sucy.skill.api.event.PlayerCastSkillEvent;
-import com.sucy.skill.api.event.PlayerManaGainEvent;
-import com.sucy.skill.api.event.PlayerManaLossEvent;
+import com.sucy.skill.api.enums.*;
+import com.sucy.skill.api.event.*;
+import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
@@ -105,6 +101,173 @@ public final class PlayerData
         if (!skills.containsKey(key))
         {
             skills.put(key, new PlayerSkill(this, skill, parent));
+        }
+    }
+
+    public boolean upgradeSkill(Skill skill)
+    {
+        // Cannot be null
+        if (skill == null)
+        {
+            return false;
+        }
+
+        // Must be a valid available skill
+        PlayerSkill data = skills.get(skill.getName().toLowerCase());
+        if (data == null)
+        {
+            return false;
+        }
+
+        // Must meet any skill requirements
+        if (skill.getSkillReq() != null)
+        {
+            PlayerSkill req = skills.get(skill.getSkillReq().toLowerCase());
+            if (req == null || req.getLevel() < skill.getSkillReqLevel())
+            {
+                return false;
+            }
+        }
+
+        int level = data.getPlayerClass().getLevel();
+        int cost = skill.getCost(data.getLevel());
+        if (!data.isMaxed() && level >= skill.getLevelReq(data.getLevel()) && data.getPlayerClass().getPoints() >= cost)
+        {
+            // Upgrade event
+            PlayerSkillUpgradeEvent event = new PlayerSkillUpgradeEvent(this, data, cost);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled())
+            {
+                return false;
+            }
+
+            // Apply upgrade
+            data.getPlayerClass().usePoints(cost);
+            data.addLevels(1);
+
+            // Passive calls
+            Player player = getPlayer();
+            if (player != null && skill instanceof PassiveSkill)
+            {
+                if (data.getLevel() == 1)
+                {
+                    ((PassiveSkill) skill).initialize(player, data.getLevel());
+                }
+                else
+                {
+                    ((PassiveSkill) skill).update(player, data.getLevel() - 1, data.getLevel());
+                }
+            }
+
+            // Unlock event
+            if (data.getLevel() == 1)
+            {
+                Bukkit.getPluginManager().callEvent(new PlayerSkillUnlockEvent(this, data));
+            }
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public boolean downgradeSkill(Skill skill)
+    {
+        // Cannot be null
+        if (skill == null)
+        {
+            return false;
+        }
+
+        // Must be a valid available skill
+        PlayerSkill data = skills.get(skill.getName().toLowerCase());
+        if (data == null)
+        {
+            return false;
+        }
+
+        // Must not be required by another skill
+        for (PlayerSkill s : skills.values())
+        {
+            if (s.getData().getSkillReq().equalsIgnoreCase(skill.getName()) && data.getLevel() <= s.getData().getSkillReqLevel())
+            {
+                return false;
+            }
+        }
+
+        int cost = skill.getCost(data.getLevel() - 1);
+        if (data.getLevel() > 0)
+        {
+            // Upgrade event
+            PlayerSkillDowngradeEvent event = new PlayerSkillDowngradeEvent(this, data, cost);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled())
+            {
+                return false;
+            }
+
+            // Apply upgrade
+            data.getPlayerClass().givePoints(cost, PointSource.REFUND);
+            data.addLevels(-1);
+
+            // Passive calls
+            Player player = getPlayer();
+            if (player != null && skill instanceof PassiveSkill)
+            {
+                if (data.getLevel() == 0)
+                {
+                    ((PassiveSkill) skill).stopEffects(player, 1);
+                }
+                else
+                {
+                    ((PassiveSkill) skill).update(player, data.getLevel() + 1, data.getLevel());
+                }
+            }
+
+            // Clear bindings
+            if (data.getLevel() == 0)
+            {
+                clearBinds(skill);
+            }
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void showSkills()
+    {
+        showSkills(getPlayer());
+    }
+
+    public void showSkills(Player player)
+    {
+        // Cannot show an invalid player, and cannot show no skills
+        if (player == null || classes.size() == 0 || skills.size() == 0)
+        {
+            return;
+        }
+
+        // Show skill tree of only class
+        if (classes.size() == 1)
+        {
+            PlayerClass playerClass = classes.get(classes.keySet().toArray(new String[1])[0]);
+            if (playerClass.getData().getSkills().size() == 0)
+            {
+                return;
+            }
+
+            player.openInventory(playerClass.getData().getSkillTree().getInventory(this));
+        }
+
+        // Show list of classes that have skill trees
+        else
+        {
         }
     }
 
@@ -389,6 +552,18 @@ public final class PlayerData
     public boolean clearBind(Material mat)
     {
         return binds.remove(mat) != null;
+    }
+
+    public void clearBinds(Skill skill)
+    {
+        for (Material key : binds.keySet())
+        {
+            PlayerSkill bound = binds.get(key);
+            if (bound.getData() == skill)
+            {
+                binds.remove(key);
+            }
+        }
     }
 
     ///////////////////////////////////////////////////////

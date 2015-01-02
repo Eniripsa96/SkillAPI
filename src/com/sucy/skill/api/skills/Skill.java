@@ -30,17 +30,16 @@ public abstract class Skill
     private final ArrayList<String> description = new ArrayList<String>();
 
     private List<String> iconLore;
-    private ItemStack indicator;
-    private String    key;
-    private String    name;
-    private String    type;
-    private String    message;
-    private String    attrInfo;
-    private String    skillReq;
-    private int       maxLevel;
-    private int       skillReqLevel;
-    private boolean   needsPermission;
-    private boolean   layoutChanged = false;
+    private ItemStack    indicator;
+    private String       key;
+    private String       name;
+    private String       type;
+    private String       message;
+    private String       attrInfo;
+    private String       skillReq;
+    private int          maxLevel;
+    private int          skillReqLevel;
+    private boolean      needsPermission;
 
     protected final Settings settings = new Settings();
 

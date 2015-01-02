@@ -305,7 +305,8 @@ public class Settings
      *
      * @param key   attribute name
      * @param level level of scaling
-     * @return      attribute value or 0 if not found
+     *
+     * @return attribute value or 0 if not found
      */
     public Object getObj(String key, int level)
     {
@@ -317,7 +318,10 @@ public class Settings
         {
             return get(key, level);
         }
-        else return 0;
+        else
+        {
+            return 0;
+        }
     }
 
     /**

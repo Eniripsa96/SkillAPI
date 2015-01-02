@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * A basic implementation of a horizontally ascending skill tree
  */
-public class BasicVerticalTree extends SkillTree {
+public class BasicVerticalTree extends SkillTree
+{
 
     // Width of the skill tree
     private int width;
@@ -22,7 +23,8 @@ public class BasicVerticalTree extends SkillTree {
      * @param api  api reference
      * @param tree class reference
      */
-    public BasicVerticalTree(SkillAPI api, RPGClass tree) {
+    public BasicVerticalTree(SkillAPI api, RPGClass tree)
+    {
         super(api, tree);
     }
 
@@ -32,7 +34,8 @@ public class BasicVerticalTree extends SkillTree {
      * @throws SkillTreeException
      */
     @Override
-    public void arrange(List<Skill> skills) throws SkillTreeException {
+    public void arrange(List<Skill> skills) throws SkillTreeException
+    {
 
         // Arrange the skill tree
         Collections.sort(skills, comparator);
@@ -42,13 +45,17 @@ public class BasicVerticalTree extends SkillTree {
 
         // Cycle through all skills that do not have children, put them
         // at the far left, and branch their children to the right
-        while (++i < skills.size() && (skill = skills.get(i)).getSkillReq() == null) {
+        while (++i < skills.size() && (skill = skills.get(i)).getSkillReq() == null)
+        {
             skillSlots.put(i, skill);
             width = placeChildren(skills, skill, i + 9, 0);
         }
 
         // Too large
-        if (width >= 9) throw new SkillTreeException("Error generating the skill tree: " + tree.getName() + " - too large of a tree!");
+        if (width >= 9)
+        {
+            throw new SkillTreeException("Error generating the skill tree: " + tree.getName() + " - too large of a tree!");
+        }
     }
 
     /**
@@ -58,18 +65,28 @@ public class BasicVerticalTree extends SkillTree {
      * @param skill  skill to add the children of
      * @param slot   slot ID for the first child
      * @param depth  current depth of recursion
+     *
      * @throws SkillTreeException
      */
-    private int placeChildren(List<Skill> skills, Skill skill, int slot, int depth) throws SkillTreeException {
+    private int placeChildren(List<Skill> skills, Skill skill, int slot, int depth) throws SkillTreeException
+    {
 
         // Update tree height
-        if (depth + 1 > height) height = depth + 1;
+        if (depth + 1 > height)
+        {
+            height = depth + 1;
+        }
 
         // Add in all children
         int width = 0;
-        for (Skill s : skills) {
-            if (s.getSkillReq() == null) continue;
-            if (s.getSkillReq().equalsIgnoreCase(skill.getName())) {
+        for (Skill s : skills)
+        {
+            if (s.getSkillReq() == null)
+            {
+                continue;
+            }
+            if (s.getSkillReq().equalsIgnoreCase(skill.getName()))
+            {
                 skillSlots.put(slot + width, s);
                 width += placeChildren(skills, s, slot + width + 9, depth + 1);
             }

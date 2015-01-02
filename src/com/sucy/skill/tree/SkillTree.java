@@ -1,23 +1,24 @@
 package com.sucy.skill.tree;
 
+import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.exception.SkillTreeException;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.api.skills.SkillAttribute;
 import com.sucy.skill.data.Permissions;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 
 import java.util.*;
 
 /**
  * A skill tree manager for classes
  */
-public abstract class SkillTree implements InventoryHolder {
+public abstract class SkillTree
+{
+    public static final String INVENTORY_KEY = "SAPI_ST";
 
     protected final HashMap<Integer, Skill> skillSlots = new HashMap<Integer, Skill>();
     protected final SkillAPI api;
@@ -38,16 +39,19 @@ public abstract class SkillTree implements InventoryHolder {
     /**
      * Generates a new skill tree inventory
      *
-     * @param skills skill level data
+     * @param player player data to show
+     *
      * @return skill tree inventory
      */
-    public Inventory getInventory(PlayerData player, HashMap<String, Integer> skills)
+    public Inventory getInventory(PlayerData player)
     {
-        Inventory inv = api.getServer().createInventory(this, height * 9, tree.getName());
+        Inventory inv = InventoryManager.createInventory(INVENTORY_KEY, height * 9, tree.getName());
         Player p = player.getPlayer();
 
-        for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet()) {
-            if (!entry.getValue().needsPermission() || p.hasPermission(Permissions.SKILL + "." + entry.getValue().getName().toLowerCase().replaceAll(" ", "-"))) {
+        for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())
+        {
+            if (!entry.getValue().needsPermission() || p.hasPermission(Permissions.SKILL + "." + entry.getValue().getName().toLowerCase().replaceAll(" ", "-")))
+            {
                 inv.setItem(entry.getKey(), entry.getValue().getIndicator(player.getSkill(entry.getValue().getName())));
             }
         }
@@ -65,8 +69,10 @@ public abstract class SkillTree implements InventoryHolder {
 
         // Get included skills
         ArrayList<Skill> skills = new ArrayList<Skill>();
-        for (Skill skill : tree.getSkills()) {
-            if (!SkillAPI.isSkillRegistered(skill)) {
+        for (Skill skill : tree.getSkills())
+        {
+            if (!SkillAPI.isSkillRegistered(skill))
+            {
                 api.getLogger().severe("Failed to add skill to tree - " + skill + ": Skill does not exist");
                 continue;
             }
@@ -77,7 +83,10 @@ public abstract class SkillTree implements InventoryHolder {
         arrange(skills);
 
         // Cannot be higher than 6
-        if (height > 6) throw new SkillTreeException("Error generating the skill tree: " + tree.getName() + " - too large of a tree!");
+        if (height > 6)
+        {
+            throw new SkillTreeException("Error generating the skill tree: " + tree.getName() + " - too large of a tree!");
+        }
     }
 
     /**
@@ -93,8 +102,10 @@ public abstract class SkillTree implements InventoryHolder {
      * @param view   inventory view
      * @param player player
      */
-    public void update(Inventory view, PlayerData player) {
-        for (Map.Entry<Integer, Skill> skills : skillSlots.entrySet()) {
+    public void update(Inventory view, PlayerData player)
+    {
+        for (Map.Entry<Integer, Skill> skills : skillSlots.entrySet())
+        {
             view.setItem(skills.getKey(), skills.getValue().getIndicator(player.getSkill(skills.getValue().getName())));
         }
     }
@@ -103,9 +114,11 @@ public abstract class SkillTree implements InventoryHolder {
      * Checks a click for actions
      *
      * @param slot slot that was clicked
-     * @return     whether or not the click should be cancelled (when it was a skill or link)
+     *
+     * @return whether or not the click should be cancelled (when it was a skill or link)
      */
-    public boolean checkClick(int slot) {
+    public boolean checkClick(int slot)
+    {
         return skillSlots.containsKey(slot);
     }
 
@@ -113,9 +126,11 @@ public abstract class SkillTree implements InventoryHolder {
      * Checks if the slot points to a skill
      *
      * @param slot slot to check
-     * @return     true if a skill, false otherwise
+     *
+     * @return true if a skill, false otherwise
      */
-    public boolean isSkill(HumanEntity player, int slot) {
+    public boolean isSkill(HumanEntity player, int slot)
+    {
         return skillSlots.containsKey(slot) &&
                 !skillSlots.get(slot).needsPermission() ||
                 player.hasPermission(Permissions.SKILL) ||
@@ -126,9 +141,11 @@ public abstract class SkillTree implements InventoryHolder {
      * Gets the skill attached to a slot
      *
      * @param slot slot to retrieve for
-     * @return     skill for the slot
+     *
+     * @return skill for the slot
      */
-    public Skill getSkill(int slot) {
+    public Skill getSkill(int slot)
+    {
         return skillSlots.get(slot);
     }
 
@@ -136,26 +153,19 @@ public abstract class SkillTree implements InventoryHolder {
      * Checks if the class has the skill registered
      *
      * @param skill skill to check
-     * @return      true if registered, false otherwise
-     */
-    public boolean hasSkill(Skill skill) {
-        return skillSlots.containsValue(skill);
-    }
-
-    /**
-     * Implemented method just to satisfy the interface
      *
-     * @return null
+     * @return true if registered, false otherwise
      */
-    @Override
-    public Inventory getInventory() {
-        return null;
+    public boolean hasSkill(Skill skill)
+    {
+        return skillSlots.containsValue(skill);
     }
 
     /**
      * Comparator for skills for most trees
      */
-    protected static final Comparator<Skill> comparator = new Comparator<Skill>() {
+    protected static final Comparator<Skill> comparator = new Comparator<Skill>()
+    {
 
         /**
          * Compares skills based on their stats for skill tree arrangement
@@ -169,7 +179,8 @@ public abstract class SkillTree implements InventoryHolder {
          * @return      -1, 0, or 1
          */
         @Override
-        public int compare(Skill skill1, Skill skill2) {
+        public int compare(Skill skill1, Skill skill2)
+        {
 
             return skill1.getSkillReq() != null && skill2.getSkillReq() == null ? 1
                     : skill1.getSkillReq() == null && skill2.getSkillReq() != null ? -1

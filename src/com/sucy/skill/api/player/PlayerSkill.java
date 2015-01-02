@@ -63,6 +63,11 @@ public final class PlayerSkill
         return cooldown > System.currentTimeMillis();
     }
 
+    public boolean isMaxed()
+    {
+        return level >= skill.getMaxLevel();
+    }
+
     public int getCooldown()
     {
         if (isOnCooldown())

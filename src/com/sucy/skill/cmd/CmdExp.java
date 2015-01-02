@@ -5,10 +5,8 @@ import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.player.PlayerUUIDs;
-import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
-import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.RPGFilter;
 import org.bukkit.ChatColor;
@@ -22,10 +20,10 @@ import org.bukkit.plugin.Plugin;
  */
 public class CmdExp implements IFunction
 {
-    private static final String NOT_PLAYER = "not-player";
-    private static final String NOT_NUMBER = "not-number";
+    private static final String NOT_PLAYER   = "not-player";
+    private static final String NOT_NUMBER   = "not-number";
     private static final String NOT_POSITIVE = "not-positive";
-    private static final String GAVE_EXP = "gave-exp";
+    private static final String GAVE_EXP     = "gave-exp";
     private static final String RECEIVED_EXP = "received-exp";
 
     /**

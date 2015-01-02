@@ -6,6 +6,7 @@ import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
+import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,8 +23,10 @@ public abstract class RPGClass
     private final HashMap<Material, Double> projectileDamage = new HashMap<Material, Double>();
     private final ArrayList<Skill>          skills           = new ArrayList<Skill>();
 
+    private SkillTree skillTree;
     private RPGClass  parent;
     private ItemStack icon;
+    private TreeType  tree;
     private String    name;
     private String    group;
     private String    mana;
@@ -59,6 +62,7 @@ public abstract class RPGClass
         this.mana = "Mana";
         this.maxLevel = maxLevel;
         this.expSources = ExpSource.MOB.getId() | ExpSource.COMMAND.getId();
+        this.tree = DefaultTreeType.REQUIREMENT;
 
         if (this instanceof Listener)
         {
@@ -75,6 +79,11 @@ public abstract class RPGClass
     public String getName()
     {
         return name;
+    }
+
+    public SkillTree getSkillTree()
+    {
+        return skillTree;
     }
 
     public String getGroup()
@@ -426,5 +435,7 @@ public abstract class RPGClass
         needsPermission = config.getBoolean(PERM);
 
         settings.load(config.getConfigurationSection(ATTR));
+
+        this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
     }
 }

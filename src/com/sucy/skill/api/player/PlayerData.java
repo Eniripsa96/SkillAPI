@@ -245,12 +245,12 @@ public final class PlayerData
         showSkills(getPlayer());
     }
 
-    public void showSkills(Player player)
+    public boolean showSkills(Player player)
     {
         // Cannot show an invalid player, and cannot show no skills
         if (player == null || classes.size() == 0 || skills.size() == 0)
         {
-            return;
+            return false;
         }
 
         // Show skill tree of only class
@@ -259,15 +259,17 @@ public final class PlayerData
             PlayerClass playerClass = classes.get(classes.keySet().toArray(new String[1])[0]);
             if (playerClass.getData().getSkills().size() == 0)
             {
-                return;
+                return false;
             }
 
             player.openInventory(playerClass.getData().getSkillTree().getInventory(this));
+            return true;
         }
 
         // Show list of classes that have skill trees
         else
         {
+            return true;
         }
     }
 

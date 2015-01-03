@@ -9,7 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import java.util.List;
 
 /**
- * Deals damage to each target
+ * Heals each target
  */
 public class HealMechanic extends EffectComponent
 {

@@ -25,7 +25,8 @@ public class CmdManager
                 new ConfigurableCommand(api, "info", SenderType.ANYONE, new CmdInfo(), "Shows class info", "[player]", Permissions.BASIC),
                 new ConfigurableCommand(api, "level", SenderType.ANYONE, new CmdLevel(), "Gives players levels", "[player] <amount>", Permissions.LVL),
                 new ConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profess options", "", Permissions.BASIC),
-                new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes", "<class>", Permissions.BASIC)
+                new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes", "<class>", Permissions.BASIC),
+                new ConfigurableCommand(api, "skill", SenderType.PLAYER_ONLY, new CmdSkill(), "Shows player skills", Permissions.BASIC)
         );
         CommandManager.registerCommand(root);
     }

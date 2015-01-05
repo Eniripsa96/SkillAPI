@@ -45,7 +45,7 @@ public abstract class SkillTree
      */
     public Inventory getInventory(PlayerData player)
     {
-        Inventory inv = InventoryManager.createInventory(INVENTORY_KEY, height * 9, tree.getName());
+        Inventory inv = InventoryManager.createInventory(INVENTORY_KEY, height, tree.getName());
         Player p = player.getPlayer();
 
         for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())

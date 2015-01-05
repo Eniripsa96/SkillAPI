@@ -1,5 +1,6 @@
 package com.sucy.skill.listener;
 
+import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.tree.SkillTree;
@@ -28,9 +29,9 @@ public class TreeListener implements Listener
     {
 
         // Make sure its a skill tree inventory
-        if (event.getInventory().getHolder() instanceof SkillTree)
+        if (InventoryManager.isMatching(event.getInventory(), SkillTree.INVENTORY_KEY))
         {
-            SkillTree tree = (SkillTree) event.getInventory().getHolder();
+            SkillTree tree = SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
 
             // Do nothing when clicking outside the inventory
             if (event.getSlot() == -999)

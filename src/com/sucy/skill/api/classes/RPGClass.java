@@ -437,5 +437,13 @@ public abstract class RPGClass
         settings.load(config.getConfigurationSection(ATTR));
 
         this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
+        try
+        {
+            this.skillTree.arrange();
+        }
+        catch (Exception ex)
+        {
+            Bukkit.getLogger().info("Failed to arrange skill tree for class \"" + name + "\" - " + ex.getMessage());
+        }
     }
 }

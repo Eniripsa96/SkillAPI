@@ -89,7 +89,7 @@ public abstract class Skill
         this.attrInfo = "";
         this.needsPermission = false;
 
-        iconLore = SkillAPI.getLanguage().getMessage(SkillNodes.LAYOUT);
+        iconLore = SkillAPI.getLanguage().getMessage(SkillNodes.LAYOUT, true, FilterType.COLOR);
     }
 
     public String getKey()
@@ -195,10 +195,10 @@ public abstract class Skill
         ArrayList<String> lore = new ArrayList<String>();
 
         String lvlReq = SkillAPI.getLanguage().getMessage(getLevelReq(skillData.getLevel()) <= skillData.getPlayerClass().getLevel() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
-        lvlReq = lvlReq.replace("{name}", "Level").replace("{value}", "" + getLevelReq(skillData.getLevel()));
+        lvlReq = lvlReq.replace("{value}", "" + getLevelReq(skillData.getLevel()));
 
         String costReq = SkillAPI.getLanguage().getMessage(getCost(skillData.getLevel()) <= skillData.getPlayerClass().getPoints() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
-        costReq = costReq.replace("{name}", "Cost").replace("{value}", "" + getCost(skillData.getLevel()));
+        costReq = costReq.replace("{value}", "" + getCost(skillData.getLevel()));
 
         String attrChanging = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_CHANGING, true, FilterType.COLOR).get(0);
         String attrStatic = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, true, FilterType.COLOR).get(0);
@@ -223,6 +223,10 @@ public abstract class Skill
                     String attr = line.substring(start + 6, end);
                     Object currValue = getAttrValue(attr, Math.min(1, skillData.getLevel()));
                     Object nextValue = getAttrValue(attr, Math.max(skillData.getLevel() + 1, maxLevel));
+                    if (attr.equals("level") || attr.equals("cost"))
+                    {
+                        currValue = nextValue;
+                    }
 
                     if (currValue == nextValue)
                     {
@@ -275,6 +279,11 @@ public abstract class Skill
         {
             lore.add("");
             lore.add(ChatColor.GOLD + SkillAPI.getComboManager().getComboString(name));
+        }
+
+        if (lore.size() > 0)
+        {
+            meta.setDisplayName(lore.remove(0));
         }
 
         meta.setLore(lore);
@@ -340,7 +349,7 @@ public abstract class Skill
         config.set(MAX, maxLevel);
         config.set(REQ, skillReq);
         config.set(REQLVL, skillReqLevel);
-        config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
+        if (message != null) config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(PERM, needsPermission);
         config.set(DESC, description);
         config.set(LAYOUT, iconLore);
@@ -403,7 +412,7 @@ public abstract class Skill
         maxLevel = config.getInt(MAX, maxLevel);
         skillReq = config.getString(REQ);
         skillReqLevel = config.getInt(REQLVL, skillReqLevel);
-        message = TextFormatter.colorString(config.getString(MSG));
+        message = TextFormatter.colorString(config.getString(MSG, message));
         needsPermission = config.getBoolean(PERM, needsPermission);
         attrInfo = config.getString(ATTR_INFO, attrInfo);
 

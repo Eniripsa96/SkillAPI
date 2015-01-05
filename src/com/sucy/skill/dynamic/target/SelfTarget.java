@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Applies child components to the closest linear entity of each of the
- * provided targets.
+ * Applies child components to the caster
  */
 public class SelfTarget extends EffectComponent
 {

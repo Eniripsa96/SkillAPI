@@ -6,6 +6,11 @@ import com.sucy.skill.api.SkillPlugin;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
+import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.Trigger;
+import com.sucy.skill.dynamic.mechanic.DamageMechanic;
+import com.sucy.skill.dynamic.mechanic.HealMechanic;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
@@ -82,6 +87,12 @@ public class RegistrationManager
         if (SkillAPI.getSettings().isUseExampleSkills())
         {
             log(" - SkillAPI Examples", 1);
+            DynamicSkill hurtSelf = new DynamicSkill("Hurt Self");
+            hurtSelf.addComponent(Trigger.CAST, new DamageMechanic());
+            api.addSkill(hurtSelf);
+            DynamicSkill healSelf = new DynamicSkill("Heal Self");
+            healSelf.addComponent(Trigger.CAST, new HealMechanic());
+            api.addSkill(healSelf);
             //api.getExampleClasses().registerSkills(api);
         }
 
@@ -102,7 +113,9 @@ public class RegistrationManager
         if (SkillAPI.getSettings().isUseExampleClasses())
         {
             log(" - SkillAPI Examples", 1);
-            api.addClass(new DynamicClass(api, "Wizard"));
+            DynamicClass wiz = new DynamicClass(api, "Wizard");
+            wiz.addSkills("Hurt Self", "Heal Self");
+            api.addClass(wiz);
             //api.getExampleClasses().registerClasses(api);
         }
 
@@ -174,6 +187,7 @@ public class RegistrationManager
             catch (Exception ex)
             {
                 api.getLogger().severe("Failed to save skill data to config for \"" + skill.getName() + "\" - skipping registration");
+                ex.printStackTrace();
             }
         }
 

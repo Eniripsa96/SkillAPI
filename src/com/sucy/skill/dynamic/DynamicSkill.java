@@ -31,6 +31,12 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         super(name, "Dynamic", Material.JACK_O_LANTERN, 1);
     }
 
+    // Testing method
+    public void addComponent(Trigger trigger, EffectComponent component)
+    {
+        components.put(trigger, component);
+    }
+
     /**
      * Updates the skill effects
      *

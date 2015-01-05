@@ -36,6 +36,7 @@ import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.listener.CastListener;
 import com.sucy.skill.listener.StatusListener;
+import com.sucy.skill.listener.TreeListener;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
 import org.bukkit.OfflinePlayer;
@@ -103,6 +104,7 @@ public class SkillAPI extends JavaPlugin
         // Set up listeners
         new StatusListener(this);
         new CastListener(this);
+        new TreeListener(this);
 
         // Load classes and skills
         registrationManager.initialize();

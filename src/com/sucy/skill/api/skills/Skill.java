@@ -8,11 +8,12 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.Data;
-import com.sucy.skill.language.OtherNodes;
+import com.sucy.skill.language.DefaultsNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.language.SkillNodes;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -89,7 +90,8 @@ public abstract class Skill
         this.attrInfo = "";
         this.needsPermission = false;
 
-        iconLore = SkillAPI.getLanguage().getMessage(SkillNodes.LAYOUT, true, FilterType.COLOR);
+        this.message = SkillAPI.getLanguage().getMessage(DefaultsNodes.CAST, true, FilterType.COLOR).get(0);
+        this.iconLore = SkillAPI.getLanguage().getMessage(SkillNodes.LAYOUT, true, FilterType.COLOR);
     }
 
     public String getKey()
@@ -109,7 +111,7 @@ public abstract class Skill
 
     public boolean hasMessage()
     {
-        return message != null;
+        return message != null && message.length() > 0;
     }
 
     public String getMessage()
@@ -320,12 +322,20 @@ public abstract class Skill
                 .replace("{value}", value + "");
     }
 
-    public void sendMessage(LanguageConfig lang, Player player, double radius)
+    public void sendMessage(Player player, double radius)
     {
-        lang.sendMessage(hasMessage() ? getMessage() : OtherNodes.SKILL_CAST,
-                player.getLocation(), radius, FilterType.COLOR,
-                Filter.PLAYER.setReplacement(player.getName()),
-                RPGFilter.SKILL.setReplacement(getName()));
+        if (hasMessage())
+        {
+            radius *= radius;
+            Location l = player.getLocation();
+            for (Player p : player.getWorld().getPlayers())
+            {
+                if (p.getLocation().distanceSquared(l) < radius)
+                {
+                    p.sendMessage(RPGFilter.SKILL.setReplacement(getName()).apply(Filter.PLAYER.setReplacement(player.getName()).apply(message)));
+                }
+            }
+        }
     }
 
     private static final String NAME      = "name";
@@ -423,7 +433,7 @@ public abstract class Skill
         }
         if (config.isList(LAYOUT))
         {
-            iconLore = config.getStringList(LAYOUT);
+            iconLore = TextFormatter.colorStringList(config.getStringList(LAYOUT));
         }
 
         settings.load(config.getConfigurationSection(ATTR));

@@ -8,6 +8,11 @@
 # and look at the tutorials section for the      #
 # configuration tutorials.                       #
 # ---------------------------------------------- #
+Defaults:
+  cast: '&6{player} &2has cast &6{skill}'
+Errors:
+  on-cooldown: '&6{skill} &4cooldown - &6{cooldown} &4seconds left'
+  no-mana: '&4You need &6{missing} &4more mana'
 Skill Tree:
   title: '{name} ({level}/{max})'
   type: '&2Skill Type: &6{name}'
@@ -36,18 +41,6 @@ Stats:
   points: '&2Points'
   level: '&2Level'
   exp: '&2Exp'
-Skill Types:
-  skill-shot: 'Skill Shot'
-  attack-imbuement: 'Attack Imbuement'
-  target: 'Target'
-  skill-shot-aoe: 'Skill Shot AOE'
-  target-aoe: 'Target AOE'
-  passive: 'Passive'
-  area: 'Area'
-  self: 'Self'
-  linear: 'Linear'
-  cone: 'Cone'
-  summon: 'Summon'
 Status:
   silenced: '&4You are silenced for another &6{duration} &4seconds'
   stunned: '&4You are stunned for another &6{duration} &4seconds'

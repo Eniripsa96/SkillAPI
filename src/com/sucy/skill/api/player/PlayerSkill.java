@@ -84,7 +84,7 @@ public final class PlayerSkill
     {
 
         // See if it is on cooldown
-        if (cooldown > 0)
+        if (isOnCooldown())
         {
             return SkillStatus.ON_COOLDOWN;
         }
@@ -151,13 +151,13 @@ public final class PlayerSkill
 
     public void addCooldown(double seconds)
     {
-        if (cooldown == 0)
+        if (isOnCooldown())
         {
-            cooldown = System.currentTimeMillis() + (int) (seconds * 1000);
+            cooldown += (int) (seconds * 1000);
         }
         else
         {
-            cooldown += (int) (seconds * 1000);
+            cooldown = System.currentTimeMillis() + (int) (seconds * 1000);
         }
     }
 }

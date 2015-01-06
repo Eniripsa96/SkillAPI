@@ -12,7 +12,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.data.GroupSettings;
-import com.sucy.skill.language.OtherNodes;
+import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.RPGFilter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -593,7 +593,7 @@ public final class PlayerData
             throw new IllegalArgumentException("Skill cannot be null");
         }
 
-        SkillStatus stats = skill.getStatus();
+        SkillStatus status = skill.getStatus();
         int level = skill.getLevel();
         double cost = skill.getData().getManaCost(level);
 
@@ -604,10 +604,10 @@ public final class PlayerData
         }
 
         // On Cooldown
-        if (stats == SkillStatus.ON_COOLDOWN)
+        if (status == SkillStatus.ON_COOLDOWN)
         {
             SkillAPI.getLanguage().sendMessage(
-                    OtherNodes.ON_COOLDOWN,
+                    ErrorNodes.COOLDOWN,
                     getPlayer(),
                     FilterType.COLOR,
                     RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
@@ -616,10 +616,10 @@ public final class PlayerData
         }
 
         // Not enough mana
-        else if (stats == SkillStatus.MISSING_MANA)
+        else if (status == SkillStatus.MISSING_MANA)
         {
             SkillAPI.getLanguage().sendMessage(
-                    OtherNodes.NO_MANA,
+                    ErrorNodes.MANA,
                     getPlayer(),
                     FilterType.COLOR,
                     RPGFilter.SKILL.setReplacement(skill.getData().getName()),
@@ -644,7 +644,7 @@ public final class PlayerData
                 {
                     if (((SkillShot) skill.getData()).cast(p, level))
                     {
-                        skill.getData().sendMessage(SkillAPI.getLanguage(), p, SkillAPI.getSettings().getMessageRadius());
+                        skill.getData().sendMessage(p, SkillAPI.getSettings().getMessageRadius());
                         skill.startCooldown();
                         if (SkillAPI.getSettings().isManaEnabled())
                         {
@@ -684,7 +684,7 @@ public final class PlayerData
                 {
                     if (((TargetSkill) skill.getData()).cast(p, target, level, Protection.isAlly(p, target)))
                     {
-                        skill.getData().sendMessage(SkillAPI.getLanguage(), p, SkillAPI.getSettings().getMessageRadius());
+                        skill.getData().sendMessage(p, SkillAPI.getSettings().getMessageRadius());
                         skill.startCooldown();
                         if (SkillAPI.getSettings().isManaEnabled())
                         {

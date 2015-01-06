@@ -1,12 +1,9 @@
 package com.sucy.skill.cmd;
 
-import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.language.RPGFilter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -34,8 +31,8 @@ public class CmdSkill implements IFunction
         // Only players have profession options
         if (sender instanceof Player)
         {
-            PlayerData data = SkillAPI.getPlayerData((Player)sender);
-            if (!data.showSkills((Player)sender))
+            PlayerData data = SkillAPI.getPlayerData((Player) sender);
+            if (!data.showSkills((Player) sender))
             {
                 cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");
             }

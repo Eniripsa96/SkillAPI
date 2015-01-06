@@ -359,7 +359,10 @@ public abstract class Skill
         config.set(MAX, maxLevel);
         config.set(REQ, skillReq);
         config.set(REQLVL, skillReqLevel);
-        if (message != null) config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
+        if (message != null)
+        {
+            config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
+        }
         config.set(PERM, needsPermission);
         config.set(DESC, description);
         config.set(LAYOUT, iconLore);

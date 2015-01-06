@@ -72,7 +72,10 @@ public final class PlayerData
 
     public boolean hasSkill(String name)
     {
-        if (name == null) return false;
+        if (name == null)
+        {
+            return false;
+        }
         return skills.containsKey(name.toLowerCase());
     }
 

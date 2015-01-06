@@ -16,7 +16,7 @@ public class TreeListener implements Listener
 {
     private SkillAPI plugin;
 
-    /***
+    /**
      * Initializes a new listener for skill trees. You should not
      * use this as it is handled by the API.
      *

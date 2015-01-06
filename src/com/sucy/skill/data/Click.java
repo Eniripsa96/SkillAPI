@@ -4,7 +4,6 @@ import com.rit.sucy.text.TextFormatter;
 
 public enum Click
 {
-
     LEFT(0),
     RIGHT(1),
     SHIFT(2),;

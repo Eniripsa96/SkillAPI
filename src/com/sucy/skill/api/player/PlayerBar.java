@@ -18,12 +18,12 @@ import java.util.Map;
 
 public class PlayerBar
 {
+    private static final ItemStack EMPTY = new ItemStack(Material.PUMPKIN_SEEDS);
 
-    private static final ItemStack EMPTY   = new ItemStack(Material.PUMPKIN_SEEDS);
     private static final String
-                                   ENABLED = "e",
-            SLOTS                          = "skill-slots",
-            UNASSIGNED                     = "e";
+            ENABLED    = "e",
+            SLOTS      = "skill-slots",
+            UNASSIGNED = "e";
 
     public static void setup()
     {
@@ -42,7 +42,7 @@ public class PlayerBar
     {
         this.plugin = plugin;
         this.player = player;
-        boolean[] layout = plugin.getSettings().getDefaultBarLayout();
+        boolean[] layout = SkillAPI.getSettings().getDefaultBarLayout();
         for (int i = 1; i <= 9; i++)
         {
             if (layout[i - 1])
@@ -70,14 +70,14 @@ public class PlayerBar
                     this.slots.put(i, UNASSIGNED);
                 }
             }
-            else if (plugin.getSkill(key) != null)
+            else if (SkillAPI.getSkill(key) != null)
             {
                 slots.put(config.getInt(key), key);
             }
         }
 
-        boolean[] layout = plugin.getSettings().getDefaultBarLayout();
-        boolean[] locked = plugin.getSettings().getLockedSlots();
+        boolean[] layout = SkillAPI.getSettings().getDefaultBarLayout();
+        boolean[] locked = SkillAPI.getSettings().getLockedSlots();
         for (int i = 1; i <= 9; i++)
         {
             if (locked[i - 1])
@@ -192,7 +192,7 @@ public class PlayerBar
         {
             return;
         }
-        if (plugin.getSettings().getLockedSlots()[slot])
+        if (SkillAPI.getSettings().getLockedSlots()[slot])
         {
             return;
         }

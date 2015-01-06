@@ -641,8 +641,7 @@ public class Settings
         int x = formula.getInt("x");
         int y = formula.getInt("y");
         int z = formula.getInt("z");
-        int w = formula.getInt("w");
-        expFormula = new ExpFormula(x, y, z, w);
+        expFormula = new ExpFormula(x, y, z);
 
         ConfigurationSection yields = config.getConfigurationSection(EXP_BASE + "yields");
         this.yields.clear();

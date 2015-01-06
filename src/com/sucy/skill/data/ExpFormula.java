@@ -1,21 +1,35 @@
 package com.sucy.skill.data;
 
+/**
+ * Represents an experience formula from the settings
+ */
 public class ExpFormula
 {
+    private int x, y, z;
 
-    private int x, y, z, w;
-
-    public ExpFormula(int x, int y, int z, int w)
+    /**
+     * Creates a new formula
+     *
+     * @param x quadratic coefficient
+     * @param y linear coefficient
+     * @param z intercept
+     */
+    public ExpFormula(int x, int y, int z)
     {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.w = w;
     }
 
+    /**
+     * Calculates the required experience at a given level
+     *
+     * @param level level to calculate for
+     *
+     * @return required experience at the level
+     */
     public int calculate(int level)
     {
-        int plusY = level + y;
-        return x * plusY * plusY + level * z + w;
+        return x * level * level + y * level + z;
     }
 }

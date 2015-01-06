@@ -7,7 +7,6 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.Trigger;
 import com.sucy.skill.dynamic.mechanic.DamageMechanic;
 import com.sucy.skill.dynamic.mechanic.HealMechanic;

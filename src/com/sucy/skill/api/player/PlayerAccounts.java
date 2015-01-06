@@ -8,7 +8,6 @@ import java.util.UUID;
 
 public class PlayerAccounts
 {
-
     private final HashMap<String, PlayerData> classData = new HashMap<String, PlayerData>();
 
     private String        active;

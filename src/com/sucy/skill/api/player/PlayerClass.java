@@ -1,7 +1,5 @@
 package com.sucy.skill.api.player;
 
-import com.rit.sucy.config.Filter;
-import com.rit.sucy.config.FilterType;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
@@ -10,8 +8,6 @@ import com.sucy.skill.api.event.PlayerExperienceGainEvent;
 import com.sucy.skill.api.event.PlayerGainSkillPointsEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.language.OtherNodes;
-import com.sucy.skill.language.RPGFilter;
 import org.bukkit.Bukkit;
 
 /**
@@ -25,7 +21,6 @@ import org.bukkit.Bukkit;
  */
 public final class PlayerClass
 {
-
     private PlayerData player;
     private RPGClass   classData;
     private int        level;
@@ -39,6 +34,14 @@ public final class PlayerClass
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Initializes a new PlayerClass. This should not be used
+     * by other plugins as the API provides the data. Get
+     * instances from the PlayerData object.
+     *
+     * @param player    owning player data
+     * @param classData class template
+     */
     public PlayerClass(PlayerData player, RPGClass classData)
     {
         this.player = player;
@@ -328,6 +331,7 @@ public final class PlayerClass
         amount = Math.max(amount, classData.getMaxLevel() - level);
         level += amount;
         points += classData.getGroupSettings().getPointsPerLevel() * amount;
+        /*
         SkillAPI.getLanguage().sendMessage(
                 OtherNodes.LEVEL_UP,
                 player.getPlayer(),
@@ -349,6 +353,7 @@ public final class PlayerClass
                     RPGFilter.CLASS.setReplacement(classData.getName())
             );
         }
+        */
 
         // Call the event
         PlayerLevelUpEvent event = new PlayerLevelUpEvent(this, amount);

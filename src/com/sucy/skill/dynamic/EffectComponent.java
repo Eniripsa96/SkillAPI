@@ -35,6 +35,7 @@ public abstract class EffectComponent
      * @param caster  caster of the skill
      * @param level   level of the skill
      * @param targets targets to execute on
+     *
      * @return true if executed, false if conditions not met
      */
     protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets)
@@ -53,6 +54,7 @@ public abstract class EffectComponent
      * @param caster  caster of the skill
      * @param level   level of the skill
      * @param targets targets to execute on
+     *
      * @return true if executed, false if conditions not met
      */
     public abstract boolean execute(LivingEntity caster, int level, List<LivingEntity> targets);

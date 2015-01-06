@@ -9,10 +9,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+/**
+ * Listener for Skill Tree click events
+ */
 public class TreeListener implements Listener
 {
-    SkillAPI plugin;
+    private SkillAPI plugin;
 
+    /***
+     * Initializes a new listener for skill trees. You should not
+     * use this as it is handled by the API.
+     *
+     * @param plugin API plugin reference
+     */
     public TreeListener(SkillAPI plugin)
     {
         this.plugin = plugin;

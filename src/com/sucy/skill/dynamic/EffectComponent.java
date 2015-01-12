@@ -1,6 +1,7 @@
 package com.sucy.skill.dynamic;
 
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.api.player.PlayerSkill;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
@@ -17,6 +18,11 @@ public abstract class EffectComponent
      * The settings for the component
      */
     protected final Settings settings = new Settings();
+
+    /**
+     * The skill containing this component
+     */
+    public PlayerSkill skill;
 
     /**
      * Adds a new component to the effect's children. Some effects

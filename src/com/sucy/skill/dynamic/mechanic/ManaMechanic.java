@@ -1,17 +1,22 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.version.VersionManager;
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.enums.ManaCost;
+import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.SkillHealEvent;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
 /**
  * Heals each target
  */
-public class HealMechanic extends EffectComponent
+public class ManaMechanic extends EffectComponent
 {
     private static final String TYPE = "type";
     private static final String VALUE = "value";
@@ -30,22 +35,31 @@ public class HealMechanic extends EffectComponent
     {
         String type = settings.getString(TYPE).toLowerCase();
         double value = settings.get(VALUE, level, 1.0);
+
+        boolean worked = false;
         for (LivingEntity target : targets)
         {
+            if (!(target instanceof Player)) continue;
+
+            worked = true;
+
+            PlayerData data = SkillAPI.getPlayerData((Player)target);
             double amount;
             if (type.equals("percent"))
             {
-                amount = target.getMaxHealth() * value / 100;
+                amount = data.getMaxMana() * value / 100;
             }
             else amount = value;
 
-            SkillHealEvent event = new SkillHealEvent(caster, target, amount);
-            Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled())
+            if (amount > 0)
             {
-                VersionManager.heal(target, event.getAmount());
+                data.giveMana(amount, ManaSource.SKILL);
+            }
+            else
+            {
+                data.useMana(amount, ManaCost.SKILL_EFFECT);
             }
         }
-        return targets.size() > 0;
+        return worked;
     }
 }

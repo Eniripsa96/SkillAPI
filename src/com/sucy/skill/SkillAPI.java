@@ -34,6 +34,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.ComboManager;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.IOManager;
+import com.sucy.skill.listener.BarListener;
 import com.sucy.skill.listener.CastListener;
 import com.sucy.skill.listener.StatusListener;
 import com.sucy.skill.listener.TreeListener;
@@ -105,6 +106,7 @@ public class SkillAPI extends JavaPlugin
         new StatusListener(this);
         new CastListener(this);
         new TreeListener(this);
+        if (settings.isSkillBarEnabled()) new BarListener(this);
 
         // Load classes and skills
         registrationManager.initialize();

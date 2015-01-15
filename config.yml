@@ -30,13 +30,46 @@ GUI:
   scoreboard-enabled: true
   show-class-name: true
   show-class-level: true
-Casting:
-  use-skill-bars: true
-  show-skill-bar-cooldowns: false
-  use-click-combos: false
+Click Combos:
+  enabled: false
   use-click-left: true
   use-click-right: true
   use-click-shift: false
+Skill Bar:
+  enabled: false
+  show-cooldown: true
+  empty-icon:
+    material: PUMPKIN_SEEDS
+    data: 0
+    text: '&7Unassigned'
+  layout:
+    1:
+      skill: true
+      locked: false
+    2:
+      skill: true
+      locked: false
+    3:
+      skill: true
+      locked: false
+    4:
+      skill: true
+      locked: false
+    5:
+      skill: true
+      locked: false
+    6:
+      skill: false
+      locked: false
+    7:
+      skill: false
+      locked: false
+    8:
+      skill: false
+      locked: false
+    9:
+      skill: false
+      locked: false
 Experience:
   use-exp-orbs: false
   block-mob-spawner: true
@@ -68,32 +101,4 @@ Experience:
     wither: 500
     witherskeleton: 5
     zombie: 2
-Skill Bar:
-  1:
-    skill: true
-    locked: false
-  2:
-    skill: true
-    locked: false
-  3:
-    skill: true
-    locked: false
-  4:
-    skill: true
-    locked: false
-  5:
-    skill: true
-    locked: false
-  6:
-    skill: false
-    locked: false
-  7:
-    skill: false
-    locked: false
-  8:
-    skill: false
-    locked: false
-  9:
-    skill: false
-    locked: false
 Logging: 0

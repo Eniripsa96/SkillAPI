@@ -19,7 +19,6 @@ public class ConfigIO extends IOManager
             LIMIT          = "limit",
             ACTIVE         = "active",
             ACCOUNTS       = "accounts",
-            ACCOUNT_PREFIX = "acc",
             CLASSES        = "classes",
             SKILLS         = "skills",
             BINDS          = "binds",

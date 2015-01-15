@@ -3,7 +3,10 @@ package com.sucy.skill.data;
 import com.rit.sucy.config.Config;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.TreeType;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import java.util.HashMap;
 
@@ -657,8 +660,26 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    private boolean skillBarEnabled;
+    private boolean skillBarCooldowns;
+    private ItemStack unassigned;
     private boolean[] defaultBarLayout = new boolean[9];
     private boolean[] lockedSlots      = new boolean[9];
+
+    public boolean isSkillBarEnabled()
+    {
+        return skillBarEnabled;
+    }
+
+    public boolean isSkillBarCooldowns()
+    {
+        return skillBarCooldowns;
+    }
+
+    public ItemStack getUnassigned()
+    {
+        return unassigned;
+    }
 
     public boolean[] getDefaultBarLayout()
     {
@@ -673,9 +694,26 @@ public class Settings
     private void loadSkillBarSettings()
     {
         ConfigurationSection bar = config.getConfigurationSection("Skill Bar");
+
+        skillBarEnabled = config.getBoolean("enabled", false);
+        skillBarCooldowns = config.getBoolean("show-cooldown", true);
+
+        ConfigurationSection icon = bar.getConfigurationSection("empty-icon");
+        Material mat;
+        try {
+            mat = Material.valueOf(icon.getString("material", "PUMPKIN_SEEDS").toUpperCase().replace(' ', '_'));
+        }
+        catch (Exception ex)
+        {
+            mat = Material.PUMPKIN_SEEDS;
+        }
+        unassigned = new ItemStack(mat);
+        unassigned.setData(new MaterialData(mat, (byte)config.getInt("data")));
+
+        ConfigurationSection layout = bar.getConfigurationSection("layout");
         for (int i = 0; i < 9; i++)
         {
-            ConfigurationSection slot = bar.getConfigurationSection((i + 1) + "");
+            ConfigurationSection slot = layout.getConfigurationSection((i + 1) + "");
             defaultBarLayout[i] = slot.getBoolean("skill", i <= 5);
             lockedSlots[i] = slot.getBoolean("locked", false);
         }

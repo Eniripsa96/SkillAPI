@@ -30,9 +30,10 @@ public final class PlayerData
     private final HashMap<String, PlayerSkill>   skills  = new HashMap<String, PlayerSkill>();
     private final HashMap<Material, PlayerSkill> binds   = new HashMap<Material, PlayerSkill>();
 
-    private OfflinePlayer player;
-    private double        mana;
-    private double        maxMana;
+    private OfflinePlayer  player;
+    private PlayerSkillBar skillBar;
+    private double         mana;
+    private double         maxMana;
 
     public PlayerData(OfflinePlayer player)
     {
@@ -62,6 +63,11 @@ public final class PlayerData
     public UUID getUUID()
     {
         return player.getUniqueId();
+    }
+
+    public PlayerSkillBar getSkillBar()
+    {
+        return skillBar;
     }
 
     ///////////////////////////////////////////////////////
@@ -288,6 +294,11 @@ public final class PlayerData
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    public boolean hasClass()
+    {
+        return classes.size() > 0;
+    }
+
     public Collection<PlayerClass> getClasses()
     {
         return classes.values();
@@ -351,27 +362,50 @@ public final class PlayerData
         }
     }
 
+    public void reset(String group)
+    {
+        PlayerClass playerClass = classes.remove(group);
+        if (playerClass != null)
+        {
+            RPGClass data = playerClass.getData();
+            for (Skill skill : data.getSkills())
+            {
+                skills.remove(skill.getName());
+            }
+
+            Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(playerClass, data, null));
+        }
+    }
+
+    public void resetAll()
+    {
+        for (String key : classes.keySet())
+        {
+            reset(key);
+        }
+    }
+
     public boolean profess(RPGClass rpgClass)
     {
         if (rpgClass != null && canProfess(rpgClass))
         {
+            if (SkillAPI.getSettings().getGroupSettings(rpgClass.getGroup()).isProfessReset())
+            {
+                reset(rpgClass.getGroup());
+            }
+
             PlayerClass current = classes.get(rpgClass.getGroup());
+            RPGClass previous;
             if (current == null)
             {
+                previous = null;
                 current = new PlayerClass(this, rpgClass);
                 classes.put(rpgClass.getGroup(), current);
             }
             else
             {
-                boolean reset = SkillAPI.getSettings().getGroupSettings(rpgClass.getGroup()).isProfessReset();
-                if (reset)
-                {
-                    for (Skill skill : current.getData().getSkills())
-                    {
-                        skills.remove(skill.getName());
-                    }
-                }
-                current.setClassData(rpgClass, reset);
+                previous = current.getData();
+                current.setClassData(rpgClass);
             }
             for (Skill skill : rpgClass.getSkills())
             {
@@ -380,6 +414,7 @@ public final class PlayerData
                     skills.put(skill.getKey(), new PlayerSkill(this, skill, current));
                 }
             }
+            Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(current, previous, current.getData()));
             return true;
         }
         else

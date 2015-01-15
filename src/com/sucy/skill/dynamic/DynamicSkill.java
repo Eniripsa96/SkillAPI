@@ -38,6 +38,16 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     /**
+     * Checks whether or not the dynamic skill can be cast
+     *
+     * @return true if can cast, false otherwise
+     */
+    public boolean canCast()
+    {
+        return components.containsKey(Trigger.CAST);
+    }
+
+    /**
      * Updates the skill effects
      *
      * @param user      user to refresh the effect for

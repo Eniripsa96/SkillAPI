@@ -256,7 +256,7 @@ public final class PlayerClass
     public void giveExp(double amount, ExpSource source)
     {
         // Cannot give a non-positive amount of exp
-        if (amount <= 0)
+        if (amount <= 0 || level >= classData.getMaxLevel() || !classData.receivesExp(source))
         {
             return;
         }
@@ -365,17 +365,10 @@ public final class PlayerClass
      * resetting the class progress.
      *
      * @param classData class data to switch to
-     * @param reset     whether or not to reset class data
      */
-    public void setClassData(RPGClass classData, boolean reset)
+    public void setClassData(RPGClass classData)
     {
         this.classData = classData;
-        if (reset)
-        {
-            this.level = 1;
-            this.points = SkillAPI.getSettings().getGroupSettings(classData.getGroup()).getStartingPoints();
-            this.exp = 0;
-        }
     }
 
     ///////////////////////////////////////////////////////

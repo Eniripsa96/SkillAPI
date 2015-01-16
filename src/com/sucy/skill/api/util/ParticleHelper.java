@@ -18,6 +18,31 @@ import java.util.Random;
 public class ParticleHelper
 {
     /**
+     * Settings key for the arrangement type of particles
+     */
+    public static final String ARRANGEMENT_KEY = "arrangement";
+
+    /**
+     * Settings key for the type of particle
+     */
+    public static final String PARTICLE_KEY = "particle";
+
+    /**
+     * Settings key for the radius of the particle arrangement
+     */
+    public static final String RADIUS_KEY = "radius";
+
+    /**
+     * Settings key for the amount of particles to play
+     */
+    public static final String AMOUNT_KEY = "amount";
+
+    /**
+     * Settings key for the particle arrangement direction (circles only)
+     */
+    public static final String DIRECTION_KEY = "direction";
+
+    /**
      * Settings key for the Bukkit effects' data (default 0)
      */
     public static final String DATA_KEY = "data";
@@ -25,7 +50,7 @@ public class ParticleHelper
     /**
      * Settings key for the reflection particles' visible radius (default 25)
      */
-    public static final String RADIUS_KEY = "radius";
+    public static final String VISIBLE_RADIUS_KEY = "visible-radius";
 
     /**
      * Settings key for the reflection particles' X-offset (default 0)
@@ -63,6 +88,55 @@ public class ParticleHelper
     }
 
     /**
+     * Plays particles about the given location using the given settings
+     *
+     * @param loc      location to center the effect around
+     * @param settings data to play the particles with
+     */
+    public static void play(Location loc, Settings settings)
+    {
+        String particle = settings.getString(PARTICLE_KEY, "invalid");
+        if (settings.has(ARRANGEMENT_KEY))
+        {
+            double radius =  settings.get(RADIUS_KEY, 3.0);
+            int amount = settings.getInt(AMOUNT_KEY, 10);
+
+            String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
+            if (arrangement.equals("circle"))
+            {
+                Direction dir = null;
+                if (settings.has(DIRECTION_KEY))
+                {
+                    try
+                    {
+                        dir = Direction.valueOf(settings.getString(DIRECTION_KEY));
+                    }
+                    catch (Exception ex)
+                    { /* Use default value */ }
+                }
+                if (dir == null)
+                {
+                    dir = Direction.XZ;
+                }
+
+                fillCircle(loc, particle, settings, radius, amount, dir);
+            }
+            else if (arrangement.equals("sphere"))
+            {
+                fillSphere(loc, particle, settings, radius, amount);
+            }
+            else if (arrangement.equals("hemisphere"))
+            {
+                fillHemisphere(loc, particle, settings, radius, amount);
+            }
+        }
+        else
+        {
+            play(loc, particle, settings);
+        }
+    }
+
+    /**
      * Plays a particle at the given location based on the string
      *
      * @param loc      location to play the effect
@@ -88,7 +162,7 @@ public class ParticleHelper
         // Reflection particles
         else if (REFLECT_PARTICLES.containsKey(particle))
         {
-            Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(RADIUS_KEY, 25), (float) settings.get(DX_KEY, 0.0), (float) settings.get(DY_KEY, 0.0), (float) settings.get(DZ_KEY, 0.0), (float) settings.get(SPEED_KEY, 1.0), 1);
+            Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.get(DX_KEY, 0.0), (float) settings.get(DY_KEY, 0.0), (float) settings.get(DZ_KEY, 0.0), (float) settings.get(SPEED_KEY, 1.0), 1);
         }
     }
 

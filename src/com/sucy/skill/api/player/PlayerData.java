@@ -48,6 +48,8 @@ public final class PlayerData
                 setClass(rpgClass);
             }
         }
+
+        this.skillBar = new PlayerSkillBar(this);
     }
 
     public Player getPlayer()

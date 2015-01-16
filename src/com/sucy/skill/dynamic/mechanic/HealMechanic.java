@@ -28,7 +28,7 @@ public class HealMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        String type = settings.getString(TYPE).toLowerCase();
+        String type = settings.getString(TYPE, "health").toLowerCase();
         double value = settings.get(VALUE, level, 1.0);
         for (LivingEntity target : targets)
         {

@@ -27,7 +27,7 @@ public class DelayMechanic extends EffectComponent
     {
         if (targets.size() == 0) return false;
 
-        double seconds = settings.get(SECONDS, level);
+        double seconds = settings.get(SECONDS, level, 3.0);
         Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
         {
             @Override

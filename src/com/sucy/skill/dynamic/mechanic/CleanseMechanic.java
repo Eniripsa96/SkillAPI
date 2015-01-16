@@ -35,7 +35,7 @@ public class CleanseMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        String status = settings.getString(STATUS).toLowerCase();
+        String status = settings.getString(STATUS, "None").toLowerCase();
         String potion = settings.getString(POTION).toUpperCase().replace(' ', '_');
         PotionEffectType type = null;
         try
@@ -63,7 +63,7 @@ public class CleanseMechanic extends EffectComponent
                 worked = true;
             }
 
-            if (type == null)
+            if (potion.equals("any"))
             {
                 for (PotionEffectType p : POTIONS)
                 {
@@ -74,7 +74,7 @@ public class CleanseMechanic extends EffectComponent
                     }
                 }
             }
-            else if (target.hasPotionEffect(type))
+            else if (type != null && target.hasPotionEffect(type))
             {
                 target.removePotionEffect(type);
                 worked = true;

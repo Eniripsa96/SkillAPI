@@ -27,7 +27,7 @@ public class FireMechanic extends EffectComponent
     {
         if (targets.size() == 0) return false;
 
-        double seconds = settings.get(SECONDS, level);
+        double seconds = settings.get(SECONDS, level, 3.0);
         int ticks = (int)(seconds * 20);
         for (LivingEntity target : targets)
         {

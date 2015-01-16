@@ -32,9 +32,9 @@ public class LaunchMechanic extends EffectComponent
     {
         if (targets.size() == 0) return false;
 
-        double forward = settings.get(FORWARD, level);
-        double upward = settings.get(UPWARD, level);
-        double right = settings.get(RIGHT, level);
+        double forward = settings.get(FORWARD, level, 0);
+        double upward = settings.get(UPWARD, level, 0);
+        double right = settings.get(RIGHT, level, 0);
         for (LivingEntity target : targets)
         {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();

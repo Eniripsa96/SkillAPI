@@ -3,6 +3,7 @@ package com.sucy.skill.data;
 import com.rit.sucy.config.Config;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.TreeType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -694,9 +695,8 @@ public class Settings
     private void loadSkillBarSettings()
     {
         ConfigurationSection bar = config.getConfigurationSection("Skill Bar");
-
-        skillBarEnabled = config.getBoolean("enabled", false);
-        skillBarCooldowns = config.getBoolean("show-cooldown", true);
+        skillBarEnabled = bar.getBoolean("enabled", false);
+        skillBarCooldowns = bar.getBoolean("show-cooldown", true);
 
         ConfigurationSection icon = bar.getConfigurationSection("empty-icon");
         Material mat;
@@ -708,7 +708,7 @@ public class Settings
             mat = Material.PUMPKIN_SEEDS;
         }
         unassigned = new ItemStack(mat);
-        unassigned.setData(new MaterialData(mat, (byte)config.getInt("data")));
+        unassigned.setData(new MaterialData(mat, (byte)icon.getInt("data", 0)));
 
         ConfigurationSection layout = bar.getConfigurationSection("layout");
         for (int i = 0; i < 9; i++)

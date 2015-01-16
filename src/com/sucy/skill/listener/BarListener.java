@@ -1,5 +1,6 @@
 package com.sucy.skill.listener;
 
+import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillDowngradeEvent;
@@ -177,7 +178,10 @@ public class BarListener implements Listener
 
         // Disabled skill bars aren't affected either
         final PlayerSkillBar skillBar = data.getSkillBar();
-        if (!skillBar.isEnabled()) return;
+        if (!skillBar.isEnabled())
+        {
+            return;
+        }
 
         // Prevent moving skill icons
         if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD) {
@@ -201,11 +205,14 @@ public class BarListener implements Listener
         }
 
         // Make sure it's the right type of click action
-        if (event.getAction() != InventoryAction.HOTBAR_MOVE_AND_READD && event.getAction() != InventoryAction.HOTBAR_SWAP) return;
+        if (event.getAction() != InventoryAction.HOTBAR_MOVE_AND_READD && event.getAction() != InventoryAction.HOTBAR_SWAP)
+        {
+            return;
+        }
 
         // Must be a skill tree
-        if (event.getInventory().getHolder() instanceof SkillTree) {
-            SkillTree tree = (SkillTree)event.getInventory().getHolder();
+        if (InventoryManager.isMatching(event.getInventory(), SkillTree.INVENTORY_KEY)) {
+            SkillTree tree = SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
 
             // Must be hovering over a skill
             if (tree.isSkill(event.getWhoClicked(), event.getRawSlot())) {

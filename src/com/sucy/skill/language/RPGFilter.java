@@ -19,4 +19,5 @@ public class RPGFilter
     public static final CustomFilter DURATION   = new CustomFilter("{duration}", "");
     public static final CustomFilter PROFESSION = new CustomFilter("{profession}", "");
     public static final CustomFilter EXP        = new CustomFilter("{exp}", "");
+    public static final CustomFilter ITEM       = new CustomFilter("{item}", "");
 }

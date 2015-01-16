@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
- * Command to bind a skill to an item
+ * Command to toggle on/off the skill bar
  */
 public class CmdBar implements IFunction
 {

@@ -456,6 +456,23 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Gives skill points to the player for all classes matching the experience source
+     *
+     * @param amount amount of levels to give
+     * @param source source of the levels
+     */
+    public void givePoints(int amount, ExpSource source)
+    {
+        for (PlayerClass playerClass : classes.values())
+        {
+            if (playerClass.getData().receivesExp(source))
+            {
+                playerClass.givePoints(amount);
+            }
+        }
+    }
+
     ///////////////////////////////////////////////////////
     //                                                   //
     //                       Mana                        //
@@ -612,6 +629,11 @@ public final class PlayerData
                 binds.remove(key);
             }
         }
+    }
+
+    public void clearAllBinds()
+    {
+        binds.clear();
     }
 
     ///////////////////////////////////////////////////////

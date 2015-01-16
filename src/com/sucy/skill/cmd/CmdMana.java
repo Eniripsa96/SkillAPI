@@ -16,15 +16,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
- * A command that gives a player class levels
+ * A command that gives a player class experience
  */
-public class CmdLevel implements IFunction
+public class CmdMana implements IFunction
 {
-    private static final String NOT_PLAYER     = "not-player";
-    private static final String NOT_NUMBER     = "not-number";
-    private static final String NOT_POSITIVE   = "not-positive";
-    private static final String GAVE_LEVEL     = "gave-level";
-    private static final String RECEIVED_LEVEL = "received-level";
+    private static final String NOT_PLAYER    = "not-player";
+    private static final String NOT_NUMBER    = "not-number";
+    private static final String NOT_POSITIVE  = "not-positive";
+    private static final String GAVE_MANA     = "gave-mana";
+    private static final String RECEIVED_MANA = "received-mana";
 
     /**
      * Runs the command
@@ -48,37 +48,37 @@ public class CmdLevel implements IFunction
                 return;
             }
 
-            // Parse the level
-            int amount;
+            // Parse the mana
+            double amount;
             try
             {
-                amount = Integer.parseInt(args[args.length == 1 ? 0 : 1]);
+                amount = Double.parseDouble(args[args.length == 1 ? 0 : 1]);
             }
             catch (Exception ex)
             {
-                cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid level amount");
+                cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid mana amount");
                 return;
             }
 
-            // Invalid amount of levels
+            // Invalid amount of mana
             if (amount <= 0)
             {
-                cmd.sendMessage(sender, NOT_POSITIVE, ChatColor.RED + "You must give a positive amount of levels");
+                cmd.sendMessage(sender, NOT_POSITIVE, ChatColor.RED + "You must give a positive amount of mana");
                 return;
             }
 
-            // Give levels
+            // Give mana
             PlayerData data = SkillAPI.getPlayerData(target);
-            data.giveLevels(amount, ExpSource.COMMAND);
+            data.giveExp(amount, ExpSource.COMMAND);
 
             // Messages
             if (target != sender)
             {
-                cmd.sendMessage(sender, GAVE_LEVEL, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {level} levels", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.LEVEL.setReplacement("" + amount));
+                cmd.sendMessage(sender, GAVE_MANA, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {mana} mana", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.MANA.setReplacement("" + amount));
             }
             if (target.isOnline())
             {
-                cmd.sendMessage(target.getPlayer(), RECEIVED_LEVEL, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{level} levels " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.LEVEL.setReplacement("" + amount));
+                cmd.sendMessage(target.getPlayer(), RECEIVED_MANA, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{mana} mana " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.MANA.setReplacement("" + amount));
             }
         }
 

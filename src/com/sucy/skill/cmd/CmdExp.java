@@ -49,7 +49,7 @@ public class CmdExp implements IFunction
             }
 
             // Parse the experience
-            double amount = 0;
+            double amount;
             try
             {
                 amount = Double.parseDouble(args[args.length == 1 ? 0 : 1]);

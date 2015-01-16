@@ -16,15 +16,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
- * A command that gives a player class levels
+ * A command that gives a player class experience
  */
-public class CmdLevel implements IFunction
+public class CmdPoints implements IFunction
 {
-    private static final String NOT_PLAYER     = "not-player";
-    private static final String NOT_NUMBER     = "not-number";
-    private static final String NOT_POSITIVE   = "not-positive";
-    private static final String GAVE_LEVEL     = "gave-level";
-    private static final String RECEIVED_LEVEL = "received-level";
+    private static final String NOT_PLAYER   = "not-player";
+    private static final String NOT_NUMBER   = "not-number";
+    private static final String NOT_POSITIVE = "not-positive";
+    private static final String GAVE_SP      = "gave-points";
+    private static final String RECEIVED_SP  = "received-points";
 
     /**
      * Runs the command
@@ -48,7 +48,7 @@ public class CmdLevel implements IFunction
                 return;
             }
 
-            // Parse the level
+            // Parse the skill points
             int amount;
             try
             {
@@ -56,29 +56,29 @@ public class CmdLevel implements IFunction
             }
             catch (Exception ex)
             {
-                cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid level amount");
+                cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid skill point amount");
                 return;
             }
 
-            // Invalid amount of levels
+            // Invalid amount of skill points
             if (amount <= 0)
             {
-                cmd.sendMessage(sender, NOT_POSITIVE, ChatColor.RED + "You must give a positive amount of levels");
+                cmd.sendMessage(sender, NOT_POSITIVE, ChatColor.RED + "You must give a positive amount of skill points");
                 return;
             }
 
-            // Give levels
+            // Give skill points
             PlayerData data = SkillAPI.getPlayerData(target);
-            data.giveLevels(amount, ExpSource.COMMAND);
+            data.givePoints(amount, ExpSource.COMMAND);
 
             // Messages
             if (target != sender)
             {
-                cmd.sendMessage(sender, GAVE_LEVEL, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {level} levels", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.LEVEL.setReplacement("" + amount));
+                cmd.sendMessage(sender, GAVE_SP, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {points} skill points", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.EXP.setReplacement("" + amount));
             }
             if (target.isOnline())
             {
-                cmd.sendMessage(target.getPlayer(), RECEIVED_LEVEL, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{level} levels " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.LEVEL.setReplacement("" + amount));
+                cmd.sendMessage(target.getPlayer(), RECEIVED_SP, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{points} skill points " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.EXP.setReplacement("" + amount));
             }
         }
 

@@ -45,8 +45,6 @@ public class Settings
     public void reload()
     {
         plugin.reloadConfig();
-
-        plugin.reloadConfig();
         Config.trim(config);
         Config.setDefaults(config);
         plugin.saveConfig();

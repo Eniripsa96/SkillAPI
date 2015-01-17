@@ -25,6 +25,7 @@
 package com.sucy.skill;
 
 import com.rit.sucy.config.LanguageConfig;
+import com.rit.sucy.player.PlayerUUIDs;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;
@@ -33,14 +34,13 @@ import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.ComboManager;
 import com.sucy.skill.data.Settings;
+import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
-import com.sucy.skill.listener.BarListener;
-import com.sucy.skill.listener.CastListener;
-import com.sucy.skill.listener.StatusListener;
-import com.sucy.skill.listener.TreeListener;
+import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -101,8 +101,10 @@ public class SkillAPI extends JavaPlugin
         comboManager = new ComboManager();
         registrationManager = new RegistrationManager(this);
         cmd = new CmdManager(this);
+        io = new ConfigIO(this);
 
         // Set up listeners
+        new MainListener(this);
         new StatusListener(this);
         new CastListener(this);
         new TreeListener(this);
@@ -110,6 +112,12 @@ public class SkillAPI extends JavaPlugin
 
         // Load classes and skills
         registrationManager.initialize();
+
+        // Load player data
+        for (Player player : getServer().getOnlinePlayers())
+        {
+            loadPlayerData(player.getName());
+        }
     }
 
     /**
@@ -119,12 +127,10 @@ public class SkillAPI extends JavaPlugin
     @Override
     public void onDisable()
     {
-        // Clear the singleton
         if (singleton != this)
         {
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
         }
-        singleton = null;
 
         io.saveAll();
 
@@ -136,6 +142,7 @@ public class SkillAPI extends JavaPlugin
         cmd.clear();
 
         enabled = false;
+        singleton = null;
     }
 
     /**
@@ -345,6 +352,22 @@ public class SkillAPI extends JavaPlugin
     public static PlayerData getPlayerData(OfflinePlayer player)
     {
         return getPlayerAccountData(player).getActiveData();
+    }
+
+    /**
+     * Loads the data for a player when they join the server. This is handled
+     * by the API and doesn't need to be used elsewhere unless you want to
+     * load a player's data without them logging on. This should be run
+     * asynchronously since it is loading configuration files.
+     *
+     * @param name name of the player to load
+     */
+    public static void loadPlayerData(String name)
+    {
+        if (singleton == null) return;
+        OfflinePlayer player = PlayerUUIDs.getOfflinePlayer(name);
+        PlayerAccounts data = singleton.io.loadData(player);
+        singleton.players.put(player.getUniqueId(), data);
     }
 
     /**

@@ -1,18 +1,14 @@
 package com.sucy.skill.api.player;
 
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,8 +17,6 @@ import java.util.Map;
 public class PlayerSkillBar {
 
     private static final String
-            ENABLED = "e",
-            SLOTS = "slots",
             UNASSIGNED = "e";
 
     private final HashMap<Integer, String> slots = new HashMap<Integer, String>();
@@ -40,28 +34,6 @@ public class PlayerSkillBar {
         for (int i = 1; i <= 9; i++) {
             if (SkillAPI.getSettings().getDefaultBarLayout()[i - 1]) {
                 slots.put(i, UNASSIGNED);
-            }
-        }
-    }
-
-    /**
-     * Constructor from config data
-     *
-     * @param player owning player data
-     * @param config config to load from
-     */
-    public PlayerSkillBar(PlayerData player, ConfigurationSection config) {
-        this.player = player;
-        for (String key : config.getKeys(false)) {
-            if (key.equals(ENABLED)) enabled = config.getBoolean(key);
-            else if (key.equals(SLOTS)) {
-                List<Integer> slots = config.getIntegerList(SLOTS);
-                for (int i : slots) {
-                    this.slots.put(i, UNASSIGNED);
-                }
-            }
-            else if (SkillAPI.getSkill(key) != null) {
-                slots.put(config.getInt(key), key);
             }
         }
     }
@@ -349,16 +321,29 @@ public class PlayerSkillBar {
     }
 
     /**
-     * Saves the bar data to a config
-     *
-     * @param config config to save to
+     * Applies setting data to the skill bar, applying locked slots
+     * if they aren't matching.
      */
-    public void save(ConfigurationSection config) {
-        config.set(ENABLED, enabled);
-        config.set(SLOTS, new ArrayList<Integer>(slots.keySet()));
-        for (Map.Entry<Integer, String> entry : slots.entrySet()) {
-            if (entry.getValue().equals(UNASSIGNED)) continue;
-            config.set(entry.getValue(), entry.getKey());
+    public void applySettings()
+    {
+        boolean[] layout = SkillAPI.getSettings().getDefaultBarLayout();
+        boolean[] locked = SkillAPI.getSettings().getLockedSlots();
+        for (int i = 1; i <= 9; i++)
+        {
+            if (locked[i - 1])
+            {
+                if (layout[i - 1])
+                {
+                    if (!slots.containsKey(i))
+                    {
+                        slots.put(i, UNASSIGNED);
+                    }
+                }
+                else if (slots.containsKey(i))
+                {
+                    slots.remove(i);
+                }
+            }
         }
     }
 }

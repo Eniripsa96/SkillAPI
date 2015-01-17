@@ -1,20 +1,17 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaCost;
 import com.sucy.skill.api.enums.ManaSource;
-import com.sucy.skill.api.event.SkillHealEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 /**
- * Heals each target
+ * Gives mana to each target
  */
 public class ManaMechanic extends EffectComponent
 {

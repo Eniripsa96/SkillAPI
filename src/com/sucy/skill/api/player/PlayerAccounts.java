@@ -1,5 +1,6 @@
 package com.sucy.skill.api.player;
 
+import com.sucy.skill.SkillAPI;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -8,9 +9,9 @@ import java.util.UUID;
 
 public class PlayerAccounts
 {
-    private final HashMap<String, PlayerData> classData = new HashMap<String, PlayerData>();
+    private final HashMap<Integer, PlayerData> classData = new HashMap<Integer, PlayerData>();
 
-    private String        active;
+    private int        active;
     private OfflinePlayer player;
     private int           accounts;
 
@@ -19,12 +20,12 @@ public class PlayerAccounts
         this.player = player;
 
         PlayerData data = new PlayerData(player);
-        classData.put("default", data);
-        active = "default";
+        classData.put(1, data);
+        active = 1;
         accounts = 1;
     }
 
-    public String getActiveId()
+    public int getActiveId()
     {
         return active;
     }
@@ -54,23 +55,23 @@ public class PlayerAccounts
         return accounts;
     }
 
-    public PlayerData getData(String key)
+    public PlayerData getData(int id)
     {
-        return classData.get(key);
+        return classData.get(id);
     }
 
-    public HashMap<String, PlayerData> getAllData()
+    public HashMap<Integer, PlayerData> getAllData()
     {
         return classData;
     }
 
-    public void setAccount(String key)
+    public void setAccount(int id)
     {
-        if (classData.containsKey(key))
+        if (classData.containsKey(id))
         {
-            active = key;
+            active = id;
         }
-        else if (classData.size() >= accounts && accounts > 0)
+        else if (id > 0)
         {
 
         }

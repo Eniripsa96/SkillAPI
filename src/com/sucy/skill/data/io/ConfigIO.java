@@ -2,15 +2,16 @@ package com.sucy.skill.data.io;
 
 import com.rit.sucy.config.Config;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.player.PlayerAccounts;
-import com.sucy.skill.api.player.PlayerClass;
-import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.player.PlayerSkill;
+import com.sucy.skill.api.player.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ConfigIO extends IOManager
 {
@@ -19,12 +20,17 @@ public class ConfigIO extends IOManager
             LIMIT          = "limit",
             ACTIVE         = "active",
             ACCOUNTS       = "accounts",
+            ACCOUNT_PREFIX = "acc",
             CLASSES        = "classes",
             SKILLS         = "skills",
             BINDS          = "binds",
             LEVEL          = "level",
             TOTAL_EXP      = "total-exp",
-            POINTS         = "points";
+            POINTS         = "points",
+            SKILL_BAR      = "bar",
+            ENABLED        = "enabled",
+            SLOTS          = "slots",
+            UNASSIGNED     = "e";
 
     private final Config config;
 
@@ -46,7 +52,7 @@ public class ConfigIO extends IOManager
             for (String accountKey : accounts.getKeys(false))
             {
                 ConfigurationSection account = accounts.getConfigurationSection(accountKey);
-                PlayerData acc = data.getData(accountKey);
+                PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")));
 
                 // Load classes
                 ConfigurationSection classes = account.getConfigurationSection(CLASSES);
@@ -75,9 +81,45 @@ public class ConfigIO extends IOManager
                 {
                     acc.bind(Material.valueOf(bindKey), acc.getSkill(binds.getString(bindKey)));
                 }
+
+                // Load skill bar
+                ConfigurationSection skillBar = account.getConfigurationSection(SKILL_BAR);
+                PlayerSkillBar bar = acc.getSkillBar();
+                if (skillBar != null && bar != null)
+                {
+                    for (String key : skillBar.getKeys(false))
+                    {
+                        if (key.equals(ENABLED))
+                        {
+                             if (bar.isEnabled() != skillBar.getBoolean(key))
+                             {
+                                 bar.toggleEnabled();
+                             }
+                        }
+                        else if (key.equals(SLOTS))
+                        {
+                            List<Integer> slots = skillBar.getIntegerList(SLOTS);
+                            for (int i : slots)
+                            {
+                                bar.getData().put(i, UNASSIGNED);
+                            }
+                        }
+                        else if (SkillAPI.getSkill(key) != null)
+                        {
+                            bar.getData().put(skillBar.getInt(key), key);
+                        }
+                    }
+                    bar.applySettings();
+                }
+
+                Bukkit.getLogger().info("Loaded player class successfully");
             }
 
-            data.setAccount(file.getString(ACTIVE, data.getActiveId()));
+            data.setAccount(file.getInt(ACTIVE, data.getActiveId()));
+        }
+        else
+        {
+            Bukkit.getLogger().info("Config doesn't have \"" + player.getUniqueId().toString() + "\"");
         }
         return data;
     }
@@ -89,9 +131,9 @@ public class ConfigIO extends IOManager
         file.set(LIMIT, data.getAccountLimit());
         file.set(ACTIVE, data.getActiveId());
         ConfigurationSection accounts = file.createSection(ACCOUNTS);
-        for (Map.Entry<String, PlayerData> entry : data.getAllData().entrySet())
+        for (Map.Entry<Integer, PlayerData> entry : data.getAllData().entrySet())
         {
-            ConfigurationSection account = accounts.createSection(entry.getKey());
+            ConfigurationSection account = accounts.createSection(ACCOUNT_PREFIX + entry.getKey());
             PlayerData acc = entry.getValue();
 
             // Save classes
@@ -101,7 +143,7 @@ public class ConfigIO extends IOManager
                 ConfigurationSection classSection = classes.createSection(c.getData().getName());
                 classSection.set(LEVEL, c.getLevel());
                 classSection.set(POINTS, c.getPoints());
-                classes.set(TOTAL_EXP, c.getTotalExp());
+                classSection.set(TOTAL_EXP, c.getTotalExp());
             }
 
             // Save skills
@@ -119,12 +161,33 @@ public class ConfigIO extends IOManager
             {
                 binds.set(bind.getKey().name(), bind.getValue().getData().getName());
             }
+
+            // Save skill bar
+            if (acc.getSkillBar() != null)
+            {
+                ConfigurationSection skillBar = account.createSection(SKILL_BAR);
+                PlayerSkillBar bar = acc.getSkillBar();
+                skillBar.set(ENABLED, bar.isEnabled());
+                skillBar.set(SLOTS, new ArrayList<Integer>(bar.getData().keySet()));
+                for (Map.Entry<Integer, String> slotEntry : bar.getData().entrySet())
+                {
+                    if (slotEntry.getValue().equals(UNASSIGNED))
+                    {
+                        continue;
+                    }
+                    skillBar.set(slotEntry.getValue(), slotEntry.getKey());
+                }
+            }
         }
     }
 
     @Override
     public void saveAll()
     {
-
+        for (Map.Entry<UUID, PlayerAccounts> entry : SkillAPI.getPlayerAccountData().entrySet())
+        {
+            saveData(entry.getValue());
+        }
+        config.saveConfig();
     }
 }

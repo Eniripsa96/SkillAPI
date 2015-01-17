@@ -7,6 +7,9 @@
 # http://dev.bukkit.org/bukkit-plugins/skillapi/ #
 # and look at the default configuration section  #
 # ---------------------------------------------- #
+Accounts:
+  main-class-group: class
+  one-per-class: false
 Classes:
   classless-hp: 20
   use-examples: false

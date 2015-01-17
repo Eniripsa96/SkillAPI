@@ -274,39 +274,38 @@ public class ParticleHelper
 
     private static final HashMap<String, String> REFLECT_PARTICLES = new HashMap<String, String>()
     {{
-            put("angryvillager", "angryVillager");
+            put("angry villager", "angryVillager");
             put("bubble", "bubble");
             put("cloud", "cloud");
             put("crit", "crit");
-            put("deathsuspend", "deathSuspend");
-            put("driplava", "dripLava");
-            put("dripwater", "dripWater");
-            put("enchantmenttable", "enchantmenttable");
+            put("death suspend", "deathSuspend");
+            put("drip lava", "dripLava");
+            put("drip water", "dripWater");
+            put("enchantment table", "enchantmenttable");
             put("explode", "explode");
-            put("fireworksspark", "fireworksSpark");
+            put("fireworks spark", "fireworksSpark");
             put("flame", "flame");
             put("footstep", "footstep");
-            put("happyvillager", "happyVillager");
+            put("happy villager", "happyVillager");
             put("heart", "heart");
-            put("hugeexplosion", "hugeexplosion");
-            put("instantspell", "instantSpell");
-            put("largeexplode", "largeexplode");
-            put("largesmoke", "largesmoke");
+            put("huge explosion", "hugeexplosion");
+            put("instant spell", "instantSpell");
+            put("large explode", "largeexplode");
+            put("large smoke", "largesmoke");
             put("lava", "lava");
-            put("magiccrit", "magicCrit");
-            put("mobspell", "mobSpell");
-            put("mobspellambient", "mobSpellAmbient");
+            put("magic crit", "magicCrit");
+            put("mob spell", "mobSpell");
+            put("mob spell ambient", "mobSpellAmbient");
             put("note", "note");
             put("portal", "portal");
-            put("reddust", "reddust");
+            put("red dust", "reddust");
             put("slime", "slime");
-            put("snowballpoof", "snowballpoof");
-            put("snowshovel", "snowshovel");
+            put("snowball poof", "snowballpoof");
+            put("snow shovel", "snowshovel");
             put("spell", "spell");
             put("splash", "splash");
             put("suspend", "suspend");
-            put("tilecrack", "tilecrack");
-            put("townaura", "townaura");
-            put("witchmagic", "witchMagic");
+            put("town aura", "townaura");
+            put("witch magic", "witchMagic");
         }};
 }

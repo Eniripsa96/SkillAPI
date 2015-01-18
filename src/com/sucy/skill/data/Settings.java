@@ -1,12 +1,14 @@
 package com.sucy.skill.data;
 
 import com.rit.sucy.config.Config;
+import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.TreeType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.HashMap;
@@ -707,6 +709,10 @@ public class Settings
         }
         unassigned = new ItemStack(mat);
         unassigned.setData(new MaterialData(mat, (byte)icon.getInt("data", 0)));
+
+        ItemMeta meta = unassigned.getItemMeta();
+        meta.setDisplayName(TextFormatter.colorString(icon.getString("text", "&7Unassigned")));
+        unassigned.setItemMeta(meta);
 
         ConfigurationSection layout = bar.getConfigurationSection("layout");
         for (int i = 0; i < 9; i++)

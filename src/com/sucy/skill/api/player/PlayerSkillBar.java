@@ -201,7 +201,6 @@ public class PlayerSkillBar {
             event.getDrops().remove(event.getEntity().getInventory().getItem(i));
             event.getEntity().getInventory().setItem(i, null);
         }
-        enabled = false;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.sucy.skill.data.io;
 
 import com.rit.sucy.config.Config;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -58,11 +59,16 @@ public class ConfigIO extends IOManager
                 ConfigurationSection classes = account.getConfigurationSection(CLASSES);
                 for (String classKey : classes.getKeys(false))
                 {
-                    PlayerClass c = new PlayerClass(acc, SkillAPI.getClass(classKey));
-                    ConfigurationSection classData = classes.getConfigurationSection(classKey);
-                    c.giveLevels(classData.getInt(LEVEL));
-                    c.setPoints(classData.getInt(POINTS));
-                    c.setTotalExp(classData.getInt(TOTAL_EXP));
+                    RPGClass rpgClass = SkillAPI.getClass(classKey);
+                    if (rpgClass != null)
+                    {
+                        PlayerClass c = acc.setClass(rpgClass);
+                        ConfigurationSection classData = classes.getConfigurationSection(classKey);
+                        int levels = classData.getInt(LEVEL) - 1;
+                        if (levels > 0) c.giveLevels(levels);
+                        c.setPoints(classData.getInt(POINTS));
+                        c.setTotalExp(classData.getDouble(TOTAL_EXP));
+                    }
                 }
 
                 // Load skills
@@ -71,8 +77,11 @@ public class ConfigIO extends IOManager
                 {
                     ConfigurationSection skill = skills.getConfigurationSection(skillKey);
                     PlayerSkill skillData = acc.getSkill(skillKey);
-                    skillData.addLevels(skill.getInt(LEVEL));
-                    skillData.addPoints(skill.getInt(POINTS));
+                    if (skillData != null)
+                    {
+                        skillData.addLevels(skill.getInt(LEVEL));
+                        skillData.addPoints(skill.getInt(POINTS));
+                    }
                 }
 
                 // Load binds
@@ -111,15 +120,9 @@ public class ConfigIO extends IOManager
                     }
                     bar.applySettings();
                 }
-
-                Bukkit.getLogger().info("Loaded player class successfully");
             }
 
             data.setAccount(file.getInt(ACTIVE, data.getActiveId()));
-        }
-        else
-        {
-            Bukkit.getLogger().info("Config doesn't have \"" + player.getUniqueId().toString() + "\"");
         }
         return data;
     }

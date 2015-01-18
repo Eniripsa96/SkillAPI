@@ -284,7 +284,11 @@ public final class PlayerClass
     public void setTotalExp(double total)
     {
         totalExp = total;
-        exp = (classData.getRequiredExp(level) + classData.getRequiredExp(1)) * level / 2;
+        exp = totalExp;
+        for (int i = 1; i < level; i++)
+        {
+            exp -= classData.getRequiredExp(i);
+        }
         checkLevelUp();
     }
 

@@ -39,6 +39,7 @@ import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -130,6 +131,15 @@ public class SkillAPI extends JavaPlugin
         if (singleton != this)
         {
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
+        }
+
+        // Clear skill bars before disabling
+        for (Player player : getServer().getOnlinePlayers())
+        {
+            if (player.getGameMode() != GameMode.CREATIVE && !player.isDead())
+            {
+                getPlayerData(player).getSkillBar().clear(player);
+            }
         }
 
         io.saveAll();

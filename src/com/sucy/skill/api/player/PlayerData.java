@@ -311,7 +311,7 @@ public final class PlayerData
         return classes.get(group);
     }
 
-    public void setClass(RPGClass rpgClass)
+    public PlayerClass setClass(RPGClass rpgClass)
     {
 
         PlayerClass c = classes.get(rpgClass.getGroup());
@@ -324,6 +324,7 @@ public final class PlayerData
         }
 
         classes.put(rpgClass.getGroup(), new PlayerClass(this, rpgClass));
+        return classes.get(rpgClass.getGroup());
     }
 
     public boolean isExactClass(RPGClass rpgClass)

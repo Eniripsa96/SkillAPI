@@ -1,6 +1,7 @@
 package com.sucy.skill.api.player;
 
 import com.sucy.skill.SkillAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -42,8 +43,7 @@ public class PlayerSkillBar {
      * @return whether or not the skill bar is enabled
      */
     public boolean isEnabled() {
-        Player p = player.getPlayer();
-        return enabled && p != null && p.getGameMode() != GameMode.CREATIVE;
+        return enabled;
     }
 
     /**
@@ -168,6 +168,7 @@ public class PlayerSkillBar {
      * @param slot slot to apply to
      */
     public void apply(int slot) {
+        if (getPlayer() == null || getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (!isEnabled()) return;
         if (isWeaponSlot(slot)) return;
         PlayerSkill skill = player.getSkill(slots.get(slot + 1));
@@ -200,6 +201,7 @@ public class PlayerSkillBar {
             event.getDrops().remove(event.getEntity().getInventory().getItem(i));
             event.getEntity().getInventory().setItem(i, null);
         }
+        enabled = false;
     }
 
     /**

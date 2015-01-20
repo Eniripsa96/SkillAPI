@@ -71,7 +71,7 @@ public class ClassBoardManager {
 
         // Apply new data
         if (showSidebar) {
-            StatBoard board = new StatBoard(player.getPrefix(), "SkillAPI");
+            StatBoard board = new StatBoard(player.getMainClass().getData().getPrefix(), "SkillAPI");
             board.addStats(new PlayerStats(player));
             BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
         }

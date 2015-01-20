@@ -329,6 +329,7 @@ public abstract class RPGClass
             config.set(PARENT, parent.getName());
         }
 
+        Data.serializeIcon(icon, config);
         config.set(ITEM, getSerializedIcon());
         config.set(NAME, name);
         config.set(PREFIX, prefix);
@@ -378,10 +379,6 @@ public abstract class RPGClass
         if (parent != null && !neededOnly)
         {
             config.set(PARENT, parent.getName());
-        }
-        if (!config.isSet(ITEM))
-        {
-            config.set(ITEM, getSerializedIcon());
         }
         if (!config.isSet(NAME))
         {
@@ -452,7 +449,7 @@ public abstract class RPGClass
         }
 
         parent = SkillAPI.getClass(config.getString(PARENT));
-        icon = Data.parseIcon(config.getString(ITEM, getSerializedIcon()));
+        icon = Data.parseIcon(config);
         name = config.getString(NAME, name);
         prefix = TextFormatter.colorString(config.getString(PREFIX, prefix));
         group = config.getString(GROUP, "class");

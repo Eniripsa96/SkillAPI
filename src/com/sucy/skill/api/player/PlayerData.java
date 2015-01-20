@@ -311,6 +311,20 @@ public final class PlayerData
         return classes.get(group);
     }
 
+    public PlayerClass getMainClass()
+    {
+        String main = SkillAPI.getSettings().getMainGroup();
+        if (classes.containsKey(main))
+        {
+            return classes.get(main);
+        }
+        else if (classes.size() > 0)
+        {
+            return classes.values().toArray(new PlayerClass[classes.size()])[0];
+        }
+        else return null;
+    }
+
     public PlayerClass setClass(RPGClass rpgClass)
     {
 

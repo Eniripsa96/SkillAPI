@@ -1,10 +1,16 @@
 package com.sucy.skill.api.util;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 public class Data
 {
+    private static final String MAT = "icon";
+    private static final String DATA = "icon-data";
+    private static final String LORE = "icon-lore";
+
     public static Material parseMat(String name)
     {
         try
@@ -17,44 +23,26 @@ public class Data
         }
     }
 
-    public static String serializeIcon(ItemStack item)
+    public static String serializeIcon(ConfigurationSection config)
     {
-        return item.getType().name() + "," + item.getData().getData();
+        config.set();
     }
 
-    public static ItemStack parseIcon(String data)
+    public static ItemStack parseIcon(ConfigurationSection config)
     {
-        if (data == null)
+        if (config == null)
         {
-            return new ItemStack(Material.APPLE);
+            return new ItemStack(Material.JACK_O_LANTERN);
         }
 
-        String[] pieces;
-        if (data.contains(","))
+        try
         {
-            pieces = data.split(",");
+            ItemStack item = new ItemStack(parseMat(config.getString("icon", "JACK_O_LANTERN")));
+            MaterialData data = new MaterialData(item.getType(), (byte))
         }
-        else
+        catch (Exception ex)
         {
-            pieces = new String[] { data };
+            return new ItemStack(Material.JACK_O_LANTERN);
         }
-        Material icon = parseMat(pieces[0]);
-        if (icon == null)
-        {
-            return new ItemStack(Material.APPLE);
-        }
-        byte matData = 0;
-        if (pieces.length > 1)
-        {
-            try
-            {
-                matData = Byte.parseByte(pieces[1]);
-            }
-            catch (Exception ex)
-            {
-                // Do nothing
-            }
-        }
-        return new ItemStack(icon, 1, (short) 0, matData);
     }
 }

@@ -99,6 +99,47 @@ public class Settings
 
     ///////////////////////////////////////////////////////
     //                                                   //
+    //                 Account Settings                  //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    private static final String ACCOUNT_BASE = "Accounts.";
+    private static final String ACCOUNT_MAIN = ACCOUNT_BASE + "main-class-group";
+    private static final String ACCOUNT_EACH = ACCOUNT_BASE + "one-per-class";
+
+    private String mainGroup;
+    private boolean onePerClass;
+
+    /**
+     * Retrieves the main class group for displaying prefixes
+     * or showing account information
+     *
+     * @return main class group
+     */
+    public String getMainGroup()
+    {
+        return mainGroup;
+    }
+
+    /**
+     * Retrieves whether or not accounts should be initialized with
+     * one file per class.
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isOnePerClass()
+    {
+        return onePerClass;
+    }
+
+    private void loadAccountSettings()
+    {
+        mainGroup = config.getString(ACCOUNT_MAIN);
+        onePerClass = config.getBoolean(ACCOUNT_EACH);
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
     //                  Class Settings                   //
     //                                                   //
     ///////////////////////////////////////////////////////

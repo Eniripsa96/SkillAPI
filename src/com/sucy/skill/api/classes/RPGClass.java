@@ -1,5 +1,6 @@
 package com.sucy.skill.api.classes;
 
+import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.ExpSource;
@@ -8,7 +9,9 @@ import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -23,11 +26,13 @@ public abstract class RPGClass
     private final HashMap<Material, Double> projectileDamage = new HashMap<Material, Double>();
     private final ArrayList<Skill>          skills           = new ArrayList<Skill>();
 
+    private OfflinePlayer manaPlayer;
     private SkillTree skillTree;
     private RPGClass  parent;
     private ItemStack icon;
     private TreeType  tree;
     private String    name;
+    private String    prefix;
     private String    group;
     private String    mana;
     private int       maxLevel;
@@ -58,6 +63,7 @@ public abstract class RPGClass
         this.parent = SkillAPI.getClass(parent);
         this.icon = icon;
         this.name = name;
+        this.prefix = name;
         this.group = group == null ? "class" : group.toLowerCase();
         this.mana = "Mana";
         this.maxLevel = maxLevel;
@@ -79,6 +85,11 @@ public abstract class RPGClass
     public String getName()
     {
         return name;
+    }
+
+    public String getPrefix()
+    {
+        return prefix;
     }
 
     public SkillTree getSkillTree()
@@ -144,6 +155,11 @@ public abstract class RPGClass
     public String getManaName()
     {
         return mana;
+    }
+
+    public OfflinePlayer getManaPlayer()
+    {
+        return manaPlayer;
     }
 
     public ArrayList<Skill> getSkills()
@@ -221,6 +237,11 @@ public abstract class RPGClass
         }
     }
 
+    public void setPrefix(String prefix)
+    {
+        this.prefix = prefix;
+    }
+
     public void setManaName(String name)
     {
         mana = name;
@@ -272,6 +293,7 @@ public abstract class RPGClass
     private static final String PARENT   = "parent";
     private static final String ITEM     = "item";
     private static final String NAME     = "name";
+    private static final String PREFIX   = "prefix";
     private static final String GROUP    = "group";
     private static final String MANA     = "mana";
     private static final String MAX      = "max";
@@ -309,6 +331,7 @@ public abstract class RPGClass
 
         config.set(ITEM, getSerializedIcon());
         config.set(NAME, name);
+        config.set(PREFIX, prefix);
         config.set(GROUP, group);
         config.set(MANA, mana);
         config.set(MAX, maxLevel);
@@ -363,6 +386,10 @@ public abstract class RPGClass
         if (!config.isSet(NAME))
         {
             config.set(NAME, name);
+        }
+        if (!config.isSet(PREFIX))
+        {
+            config.set(PREFIX, prefix.replace(ChatColor.COLOR_CHAR, '&'));
         }
         if (!config.isSet(group))
         {
@@ -427,18 +454,21 @@ public abstract class RPGClass
         parent = SkillAPI.getClass(config.getString(PARENT));
         icon = Data.parseIcon(config.getString(ITEM, getSerializedIcon()));
         name = config.getString(NAME, name);
+        prefix = TextFormatter.colorString(config.getString(PREFIX, prefix));
         group = config.getString(GROUP, "class");
         mana = config.getString(MANA, mana);
         maxLevel = config.getInt(MAX, maxLevel);
         expSources = config.getInt(EXP, expSources);
         manaRegen = config.getDouble(REGEN, manaRegen);
         needsPermission = config.getBoolean(PERM);
+        manaPlayer = Bukkit.getServer().getOfflinePlayer(TextFormatter.colorString(mana));
 
         settings.load(config.getConfigurationSection(ATTR));
 
         this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
         try
         {
+            Bukkit.getLogger().info("Arranging for \"" + name + "\" - " + skills.size() + " skills");
             this.skillTree.arrange();
         }
         catch (Exception ex)

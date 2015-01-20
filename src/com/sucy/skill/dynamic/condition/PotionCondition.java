@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class PotionCondition extends EffectComponent
 {
+    private static final String TYPE = "type";
     private static final String POTION = "potion";
 
     /**
@@ -26,6 +27,7 @@ public class PotionCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        boolean active = !settings.getString(TYPE, "active").toLowerCase().equals("not active");
         String potion = settings.getString(POTION).toUpperCase().replace(' ', '_');
         PotionEffectType type = null;
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
@@ -34,7 +36,7 @@ public class PotionCondition extends EffectComponent
             type = PotionEffectType.getByName(potion);
             for (LivingEntity target : targets)
             {
-                if (target.hasPotionEffect(type))
+                if (target.hasPotionEffect(type) == active)
                 {
                     list.add(target);
                 }
@@ -44,13 +46,18 @@ public class PotionCondition extends EffectComponent
         {
             for (LivingEntity target : targets)
             {
+                boolean has = false;
                 for (PotionEffectType check : PotionEffectType.values())
                 {
                     if (target.hasPotionEffect(check))
                     {
-                        list.add(target);
+                        has = true;
                         break;
                     }
+                }
+                if (has == active)
+                {
+                    list.add(target);
                 }
             }
         }

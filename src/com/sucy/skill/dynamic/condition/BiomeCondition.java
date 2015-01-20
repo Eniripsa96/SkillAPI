@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class BiomeCondition extends EffectComponent
 {
+    private static final String TYPE = "type";
     private static final String BIOME = "biome";
 
     /**
@@ -36,10 +37,11 @@ public class BiomeCondition extends EffectComponent
             return false;
         }
 
+        boolean inBiome = !settings.getString(TYPE, "in biome").toLowerCase().equals("not in biome");
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if (target.getLocation().getBlock().getBiome() == biome)
+            if ((target.getLocation().getBlock().getBiome() == biome) == inBiome)
             {
                 list.add(target);
             }

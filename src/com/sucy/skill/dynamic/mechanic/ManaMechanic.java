@@ -30,7 +30,7 @@ public class ManaMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        String type = settings.getString(TYPE, "mana").toLowerCase();
+        boolean percent = settings.getString(TYPE, "mana").toLowerCase().equals("percent");
         double value = settings.get(VALUE, level, 1.0);
 
         boolean worked = false;
@@ -42,7 +42,7 @@ public class ManaMechanic extends EffectComponent
 
             PlayerData data = SkillAPI.getPlayerData((Player)target);
             double amount;
-            if (type.equals("percent"))
+            if (percent)
             {
                 amount = data.getMaxMana() * value / 100;
             }

@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class StatusCondition extends EffectComponent
 {
+    private static final String TYPE = "type";
     private static final String STATUS = "status";
 
     /**
@@ -27,22 +28,28 @@ public class StatusCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        boolean active = !settings.getString(TYPE, "active").equals("not active");
         String status = settings.getString(STATUS).toLowerCase();
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
             if (status.equals("any"))
             {
+                boolean has = false;
                 for (String flag : StatusFlag.ALL)
                 {
                     if (FlagManager.hasFlag(target, flag))
                     {
-                        list.add(target);
+                        has = true;
                         break;
                     }
                 }
+                if (has == active)
+                {
+                    list.add(target);
+                }
             }
-            else if (FlagManager.hasFlag(target, status))
+            else if (FlagManager.hasFlag(target, status) == active)
             {
                 list.add(target);
             }

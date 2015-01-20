@@ -13,7 +13,7 @@ import java.util.List;
 public class FlagCondition extends EffectComponent
 {
     private static final String TYPE = "type";
-    private static final String DIRECTION = "direction";
+    private static final String KEY = "key";
 
     /**
      * Executes the component
@@ -27,12 +27,13 @@ public class FlagCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        String flag = settings.getString(TYPE);
+        String flag = settings.getString(KEY);
 
+        boolean set = !settings.getString(TYPE, "set").toLowerCase().equals("not set");
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if (FlagManager.hasFlag(target, flag))
+            if (FlagManager.hasFlag(target, flag) == set)
             {
                 list.add(target);
             }

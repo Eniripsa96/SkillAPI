@@ -28,16 +28,15 @@ public class HealMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        String type = settings.getString(TYPE, "health").toLowerCase();
+        boolean percent = settings.getString(TYPE, "health").toLowerCase().equals("percent");
         double value = settings.get(VALUE, level, 1.0);
         for (LivingEntity target : targets)
         {
-            double amount;
-            if (type.equals("percent"))
+            double amount = value;
+            if (percent)
             {
                 amount = target.getMaxHealth() * value / 100;
             }
-            else amount = value;
 
             SkillHealEvent event = new SkillHealEvent(caster, target, amount);
             Bukkit.getPluginManager().callEvent(event);

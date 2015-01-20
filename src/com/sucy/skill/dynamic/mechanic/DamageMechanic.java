@@ -13,7 +13,8 @@ import java.util.List;
  */
 public class DamageMechanic extends EffectComponent
 {
-    private static final String DAMAGE = "damage";
+    private static final String TYPE = "type";
+    private static final String DAMAGE = "value";
 
     /**
      * Executes the component
@@ -27,10 +28,16 @@ public class DamageMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        boolean percent = settings.getString(TYPE, "damage").toLowerCase().equals("percent");
         double damage = settings.get(DAMAGE, level, 1.0);
         for (LivingEntity target : targets)
         {
-            SkillDamageEvent event = new SkillDamageEvent(caster, target, damage);
+            double amount = damage;
+            if (percent)
+            {
+                amount = damage * target.getMaxHealth() / 100;
+            }
+            SkillDamageEvent event = new SkillDamageEvent(caster, target, amount);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled())
             {

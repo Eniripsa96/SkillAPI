@@ -1,5 +1,9 @@
 package com.sucy.skill.dynamic;
 
+import org.bukkit.entity.LivingEntity;
+
+import java.util.List;
+
 /**
  * Possible triggers for dynamic skill effects
  */
@@ -49,4 +53,28 @@ public enum Trigger
      * Trigger effects when taking skill damage
      */
     TOOK_SKILL_DAMAGE
+
+    ;
+
+    /**
+     * Retrieves a new component for the trigger
+     *
+     * @return the component for the trigger
+     */
+    public TriggerComponent getComponent()
+    {
+        return new TriggerComponent();
+    }
+
+    /**
+     * Component for triggers that can contain needed data and child components
+     */
+    public class TriggerComponent extends EffectComponent
+    {
+        @Override
+        public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
+        {
+            return executeChildren(caster, level, targets);
+        }
+    }
 }

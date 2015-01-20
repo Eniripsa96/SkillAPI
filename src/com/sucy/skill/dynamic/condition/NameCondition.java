@@ -2,17 +2,20 @@ package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * A condition for dynamic skills that requires the target to have a specified potion effect
  */
-public class ToolCondition extends EffectComponent
+public class NameCondition extends EffectComponent
 {
-    private static final String MATERIAL = "material";
-    private static final String TOOL = "tool";
+    private static final String CONTAINS = "contains";
+    private static final String REGEX = "regex";
+    private static final String STRING = "str";
 
     /**
      * Executes the component
@@ -26,14 +29,19 @@ public class ToolCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        String material = settings.getString(MATERIAL).toUpperCase();
-        String tool = settings.getString(TOOL).toUpperCase().replace("SHOVEL", "SPADE");
+        boolean contains = !settings.getString(CONTAINS, "true").toLowerCase().equals("false");
+        boolean regex = settings.getString(REGEX, "false").toLowerCase().equals("true");
+        String str = settings.getString(STRING, "");
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null) continue;
-            String hand = target.getEquipment().getItemInHand().getType().name();
-            if ((material.equals("ANY") || hand.contains(material)) && (tool.equals("ANY") || hand.contains(tool)))
+            String name = target.getCustomName();
+            if (name == null) continue;
+            if (regex && (Pattern.compile(str).matcher(name).find() == contains))
+            {
+                list.add(target);
+            }
+            else if (!regex && (name.contains(str) == contains))
             {
                 list.add(target);
             }

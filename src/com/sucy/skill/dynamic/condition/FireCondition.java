@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class FireCondition extends EffectComponent
 {
+    private static final String TYPE = "type";
+
     /**
      * Executes the component
      *
@@ -23,10 +25,11 @@ public class FireCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        boolean onFire = !settings.getString(TYPE, "on fire").toLowerCase().equals("not on fire");
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if (target.getFireTicks() > 0)
+            if ((target.getFireTicks() > 0) == onFire)
             {
                 list.add(target);
             }

@@ -3,7 +3,9 @@ package com.sucy.skill.dynamic;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -122,5 +124,32 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             return components.get(trigger).execute(user, level, self);
         }
         return false;
+    }
+
+    /**
+     * Loads dynamic components in addition to the normal values
+     *
+     * @param config config data to load from
+     */
+    @Override
+    public void load(ConfigurationSection config)
+    {
+        ConfigurationSection triggers = config.getConfigurationSection("components");
+        for (String key : triggers.getKeys(false))
+        {
+            try {
+                Trigger trigger = Trigger.valueOf(key.toUpperCase().replace(' ', '_'));
+                EffectComponent component = trigger.getComponent();
+                component.load(triggers.getConfigurationSection(key));
+                components.put(trigger, component);
+            }
+            catch (Exception ex)
+            {
+                // Invalid trigger
+                Bukkit.getLogger().warning("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
+            }
+        }
+
+        super.load(config);
     }
 }

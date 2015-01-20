@@ -82,18 +82,28 @@ public class RegistrationManager
             }
         }
 
-        // Load example skills if enabled
-        if (SkillAPI.getSettings().isUseExampleSkills())
-        {
-            log(" - SkillAPI Examples", 1);
-            DynamicSkill hurtSelf = new DynamicSkill("Hurt Self");
-            hurtSelf.addComponent(Trigger.CAST, new DamageMechanic());
-            api.addSkill(hurtSelf);
-            DynamicSkill healSelf = new DynamicSkill("Heal Self");
-            healSelf.addComponent(Trigger.CAST, new HealMechanic());
-            api.addSkill(healSelf);
-            //api.getExampleClasses().registerSkills(api);
+        // Load dynamic skills from skills.yml
+        if (!skillConfig.getConfig().getBoolean("loaded", false)) {
+            log("Loading dynamic skills from skills.yml...", 1);
+            //skillConfig.getConfig().set("loaded", true);
+            for (String key : skillConfig.getConfig().getKeys(false)) {
+                if (!skillConfig.getConfig().isConfigurationSection(key)) {
+                    log("Skipping \"" + key + "\" because it isn't a configuration section", 3);
+                    continue;
+                }
+                if (!SkillAPI.isSkillRegistered(key)) {
+                    DynamicSkill skill = new DynamicSkill(key);
+                    api.skills.put(key.toLowerCase(), skill);
+                    skill.load(skillConfig.getConfig().getConfigurationSection(key));
+                    Config sConfig = new Config(api, "dynamic" + File.separator + "skill" + File.separator + key);
+                    skill.save(sConfig.getConfig().createSection(key));
+                    sConfig.saveConfig();
+                    log("Loaded the dynamic skill: " + key, 2);
+                }
+                else api.getLogger().severe("Duplicate skill detected: " + key);
+            }
         }
+        else log("skills.yml doesn't have any changes, skipping it", 1);
 
         log("Loading classes...", 1);
 
@@ -113,7 +123,7 @@ public class RegistrationManager
         {
             log(" - SkillAPI Examples", 1);
             DynamicClass wiz = new DynamicClass(api, "Wizard");
-            wiz.addSkills("Hurt Self", "Heal Self");
+            wiz.addSkills("Testing", "Another Skill");
             api.addClass(wiz);
             //api.getExampleClasses().registerClasses(api);
         }

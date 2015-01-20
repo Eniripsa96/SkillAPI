@@ -5,6 +5,7 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.enums.PointSource;
 import com.sucy.skill.api.event.PlayerExperienceGainEvent;
+import com.sucy.skill.api.event.PlayerExperienceLostEvent;
 import com.sucy.skill.api.event.PlayerGainSkillPointsEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.skills.Skill;
@@ -147,6 +148,26 @@ public final class PlayerClass
         return level == classData.getMaxLevel();
     }
 
+    /**
+     * Retrieves the amount of health this class provides the player
+     *
+     * @return health provided for the player by this class
+     */
+    public double getHealth()
+    {
+        return classData.getHealth(level);
+    }
+
+    /**
+     * Retrieves the amount of mana this class provides the player
+     *
+     * @return mana provided for the player by this class
+     */
+    public double getMana()
+    {
+        return classData.getMana(level);
+    }
+
     ///////////////////////////////////////////////////////
     //                                                   //
     //                Functional Methods                 //
@@ -272,6 +293,28 @@ public final class PlayerClass
             exp += amount;
             totalExp += amount;
             checkLevelUp();
+        }
+    }
+
+    /**
+     * Causes the player to lose experience as a penalty (generally for dying).
+     * This does not lower experience below 0 and will launch an event before
+     * taking the experience.
+     *
+     * @param percent percent of experience to lose
+     */
+    public void loseExp(double percent)
+    {
+        double amount = percent * getRequiredExp();
+
+        // Launch the event
+        PlayerExperienceLostEvent event = new PlayerExperienceLostEvent(this, amount);
+        Bukkit.getPluginManager().callEvent(event);
+
+        // Subtract the experience
+        if (!event.isCancelled())
+        {
+            exp = Math.max(0, exp - event.getExp());
         }
     }
 

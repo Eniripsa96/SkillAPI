@@ -129,11 +129,6 @@ public abstract class Skill
         return indicator;
     }
 
-    public String getSerializedInidcator()
-    {
-        return indicator.getType().name() + "," + indicator.getData().getData();
-    }
-
     public String getType()
     {
         return type;
@@ -355,7 +350,7 @@ public abstract class Skill
     {
         config.set(NAME, name);
         config.set(TYPE, type.replace(ChatColor.COLOR_CHAR, '&'));
-        config.set(ITEM, getSerializedInidcator());
+        Data.serializeIcon(indicator, config);
         config.set(MAX, maxLevel);
         config.set(REQ, skillReq);
         config.set(REQLVL, skillReqLevel);
@@ -381,10 +376,6 @@ public abstract class Skill
         if (!config.isSet(TYPE))
         {
             config.set(TYPE, type.replace(ChatColor.COLOR_CHAR, '&'));
-        }
-        if (!config.isSet(ITEM))
-        {
-            config.set(ITEM, getSerializedInidcator());
         }
         if (!config.isSet(MAX))
         {
@@ -421,7 +412,7 @@ public abstract class Skill
     {
         name = config.getString(NAME, name);
         type = TextFormatter.colorString(config.getString(TYPE, name));
-        Data.parseIcon(config.getString(ITEM, getSerializedInidcator()));
+        indicator = Data.parseIcon(config);
         maxLevel = config.getInt(MAX, maxLevel);
         skillReq = config.getString(REQ);
         skillReqLevel = config.getInt(REQLVL, skillReqLevel);

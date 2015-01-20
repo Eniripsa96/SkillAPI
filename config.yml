@@ -12,7 +12,6 @@ Accounts:
   one-per-class: false
 Classes:
   classless-hp: 20
-  use-examples: false
   use-example-skills: false
 Mana:
   enabled: true
@@ -20,7 +19,6 @@ Mana:
   gain-amount: 2
 Skills:
   allow-downgrade: true
-  tree-type: Requirement
   show-messages: true
   message-radius: 20
 Items:
@@ -80,6 +78,7 @@ Experience:
   block-creative: true
   exp-message-enabled: true
   level-message-enabled: true
+  death-penalty: 0.0
   formula:
     x: 1
     y: 8

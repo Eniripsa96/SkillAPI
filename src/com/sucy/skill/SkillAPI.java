@@ -37,6 +37,7 @@ import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.listener.*;
+import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
 import org.bukkit.GameMode;
@@ -103,6 +104,7 @@ public class SkillAPI extends JavaPlugin
         registrationManager = new RegistrationManager(this);
         cmd = new CmdManager(this);
         io = new ConfigIO(this);
+        ClassBoardManager.registerText();
 
         // Set up listeners
         new MainListener(this);
@@ -120,7 +122,8 @@ public class SkillAPI extends JavaPlugin
         // Load player data
         for (Player player : getServer().getOnlinePlayers())
         {
-            loadPlayerData(player.getName());
+            PlayerData data = loadPlayerData(player.getName()).getActiveData();
+            data.updateHealthAndMana(player);
         }
     }
 
@@ -375,15 +378,16 @@ public class SkillAPI extends JavaPlugin
      *
      * @param name name of the player to load
      */
-    public static void loadPlayerData(String name)
+    public static PlayerAccounts loadPlayerData(String name)
     {
         if (singleton == null)
         {
-            return;
+            return null;
         }
         OfflinePlayer player = PlayerUUIDs.getOfflinePlayer(name);
         PlayerAccounts data = singleton.io.loadData(player);
         singleton.players.put(player.getUniqueId(), data);
+        return data;
     }
 
     /**
@@ -487,6 +491,7 @@ public class SkillAPI extends JavaPlugin
         if (rpgClass != null)
         {
             classes.put(rpgClass.getName().toLowerCase(), rpgClass);
+            ClassBoardManager.registerClass(rpgClass);
             if (!groups.contains(rpgClass.getGroup()))
             {
                 groups.add(rpgClass.getGroup());

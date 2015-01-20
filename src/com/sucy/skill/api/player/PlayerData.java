@@ -3,6 +3,7 @@ package com.sucy.skill.api.player;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.*;
@@ -34,6 +35,8 @@ public final class PlayerData
     private PlayerSkillBar skillBar;
     private double         mana;
     private double         maxMana;
+    private double         bonusHealth;
+    private double         bonusMana;
 
     public PlayerData(OfflinePlayer player)
     {
@@ -331,7 +334,7 @@ public final class PlayerData
     public PlayerClass setClass(RPGClass rpgClass)
     {
 
-        PlayerClass c = classes.get(rpgClass.getGroup());
+        PlayerClass c = classes.remove(rpgClass.getGroup());
         if (c != null)
         {
             for (Skill skill : c.getData().getSkills())
@@ -341,6 +344,7 @@ public final class PlayerData
         }
 
         classes.put(rpgClass.getGroup(), new PlayerClass(this, rpgClass));
+        updateLevelBar();
         return classes.get(rpgClass.getGroup());
     }
 
@@ -394,6 +398,7 @@ public final class PlayerData
             }
 
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(playerClass, data, null));
+            updateLevelBar();
         }
     }
 
@@ -455,6 +460,21 @@ public final class PlayerData
         {
             playerClass.giveExp(amount, source);
         }
+        updateLevelBar();
+    }
+
+    /**
+     * Causes the player to lose experience as a penalty (generally for dying)
+     *
+     * @param percent percent of experience to lose
+     */
+    public void loseExp(double percent)
+    {
+        for (PlayerClass playerClass : classes.values())
+        {
+            playerClass.loseExp(percent);
+        }
+        updateLevelBar();
     }
 
     /**
@@ -472,6 +492,7 @@ public final class PlayerData
                 playerClass.giveLevels(amount);
             }
         }
+        updateLevelBar();
     }
 
     /**
@@ -493,9 +514,52 @@ public final class PlayerData
 
     ///////////////////////////////////////////////////////
     //                                                   //
-    //                       Mana                        //
+    //                  Health and Mana                  //
     //                                                   //
     ///////////////////////////////////////////////////////
+
+    public void updateHealthAndMana(Player player)
+    {
+        // Update maxes
+        double health = bonusHealth;
+        maxMana = bonusMana;
+        if (!hasClass()) health += SkillAPI.getSettings().getDefaultHealth();
+        for (PlayerClass c : classes.values())
+        {
+            health += c.getHealth();
+            maxMana += c.getMana();
+        }
+        VersionManager.setMaxHealth(player, health);
+        mana = Math.min(mana, maxMana);
+
+        // Health scaling is available starting with 1.6.2
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_6_2))
+        {
+            if (SkillAPI.getSettings().isOldHealth())
+            {
+                player.setHealthScaled(true);
+                player.setHealthScale(20);
+            }
+            else player.setHealthScaled(false);
+        }
+    }
+
+    public void addMaxHealth(double amount)
+    {
+        bonusHealth += amount;
+        Player player = getPlayer();
+        if (player != null)
+        {
+            VersionManager.setMaxHealth(player, player.getMaxHealth() + amount);
+            VersionManager.heal(player, amount);
+        }
+    }
+
+    public void addMaxMana(double amount)
+    {
+        maxMana += amount;
+        mana += amount;
+    }
 
     public double getMana()
     {
@@ -660,6 +724,49 @@ public final class PlayerData
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    public void updateLevelBar()
+    {
+        Player player = getPlayer();
+        if (player != null)
+        {
+            if (hasClass())
+            {
+                PlayerClass c = getMainClass();
+                player.setLevel(c.getLevel());
+                player.setExp((float)(c.getExp() / c.getRequiredExp()));
+            }
+            else
+            {
+                player.setLevel(0);
+                player.setExp(0);
+            }
+        }
+    }
+
+    public void startPassives(Player player)
+    {
+        if (player == null) return;
+        for (PlayerSkill skill : skills.values())
+        {
+            if (skill.isUnlocked() && (skill.getData() instanceof PassiveSkill))
+            {
+                ((PassiveSkill) skill.getData()).initialize(player, skill.getLevel());
+            }
+        }
+    }
+
+    public void stopPassives(Player player)
+    {
+        if (player == null) return;
+        for (PlayerSkill skill : skills.values())
+        {
+            if (skill.isUnlocked() && (skill.getData() instanceof PassiveSkill))
+            {
+                ((PassiveSkill) skill.getData()).stopEffects(player, skill.getLevel());
+            }
+        }
+    }
+
     public boolean cast(String skillName)
     {
         return cast(skills.get(skillName.toLowerCase()));
@@ -724,8 +831,11 @@ public final class PlayerData
                 {
                     if (((SkillShot) skill.getData()).cast(p, level))
                     {
-                        skill.getData().sendMessage(p, SkillAPI.getSettings().getMessageRadius());
                         skill.startCooldown();
+                        if (SkillAPI.getSettings().isShowSkillMessages())
+                        {
+                            skill.getData().sendMessage(p, SkillAPI.getSettings().getMessageRadius());
+                        }
                         if (SkillAPI.getSettings().isManaEnabled())
                         {
                             useMana(cost, ManaCost.SKILL_CAST);
@@ -764,8 +874,11 @@ public final class PlayerData
                 {
                     if (((TargetSkill) skill.getData()).cast(p, target, level, Protection.isAlly(p, target)))
                     {
-                        skill.getData().sendMessage(p, SkillAPI.getSettings().getMessageRadius());
                         skill.startCooldown();
+                        if (SkillAPI.getSettings().isShowSkillMessages())
+                        {
+                            skill.getData().sendMessage(p, SkillAPI.getSettings().getMessageRadius());
+                        }
                         if (SkillAPI.getSettings().isManaEnabled())
                         {
                             useMana(cost, ManaCost.SKILL_CAST);

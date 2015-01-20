@@ -50,6 +50,7 @@ public class Settings
         Config.setDefaults(config);
         plugin.saveConfig();
 
+        loadAccountSettings();
         loadGroupSettings();
         loadClassSettings();
         loadManaSettings();
@@ -150,7 +151,6 @@ public class Settings
 
     private int     defaultHealth;
     private boolean useExampleClasses;
-    private boolean useExampleSkills;
 
     /**
      * <p>Retrieves the default health for players that do not have a class.</p>
@@ -173,16 +173,6 @@ public class Settings
     }
 
     /**
-     * <p>Retrieves whether or not example skills are to be loaded.</p>
-     *
-     * @return true if example skills are to be loaded ,false otherwise
-     */
-    public boolean isUseExampleSkills()
-    {
-        return useExampleSkills;
-    }
-
-    /**
      * <p>Sets the default health for classless players.</p>
      *
      * @param health the new default health for classless players
@@ -198,7 +188,6 @@ public class Settings
     {
         defaultHealth = config.getInt(CLASS_HP);
         useExampleClasses = config.getBoolean(CLASS_EXAMPLES);
-        useExampleSkills = config.getBoolean(CLASS_SKILLS);
     }
 
     ///////////////////////////////////////////////////////
@@ -234,16 +223,6 @@ public class Settings
     public int getGainFreq()
     {
         return gainFreq;
-    }
-
-    /**
-     * Sets the amount of mana gained per update
-     *
-     * @return the amount of mana gained per update
-     */
-    public int getGainAmount()
-    {
-        return gainAmount;
     }
 
     /**
@@ -301,20 +280,9 @@ public class Settings
     private static final String SKILL_MESSAGE   = SKILL_BASE + "show-messages";
     private static final String SKILL_RADIUS    = SKILL_BASE + "message-radius";
 
-    private String  treeType;
     private boolean allowDowngrade;
     private boolean showSkillMessages;
     private int     messageRadius;
-
-    /**
-     * Retrieves the type of skill tree used
-     *
-     * @return skill tree used
-     */
-    public String getTreeType()
-    {
-        return treeType;
-    }
 
     /**
      * Checks whether or not downgrades are allowed
@@ -344,18 +312,6 @@ public class Settings
     public int getMessageRadius()
     {
         return messageRadius;
-    }
-
-    /**
-     * Sets the tree type used by the plugin
-     *
-     * @param type type of skill tree used
-     */
-    public void setTreeType(TreeType type)
-    {
-        this.treeType = type.getKey();
-        config.set(SKILL_TYPE, type);
-        plugin.saveConfig();
     }
 
     /**
@@ -396,7 +352,6 @@ public class Settings
 
     private void loadSkillSettings()
     {
-        treeType = config.getString(SKILL_TYPE);
         allowDowngrade = config.getBoolean(SKILL_DOWNGRADE);
         showSkillMessages = config.getBoolean(SKILL_MESSAGE);
         messageRadius = config.getInt(SKILL_RADIUS);
@@ -591,6 +546,7 @@ public class Settings
     private boolean    blockCreative;
     private boolean    showExpMessages;
     private boolean    showLevelMessages;
+    private double     deathPenalty;
 
     public int getRequiredExp(int level)
     {
@@ -640,6 +596,11 @@ public class Settings
         return showLevelMessages;
     }
 
+    public double getDeathPenalty()
+    {
+        return deathPenalty;
+    }
+
     public void setExpFormula(ExpFormula formula)
     {
         expFormula = formula;
@@ -670,6 +631,11 @@ public class Settings
         showLevelMessages = show;
     }
 
+    public void setDeathPenalty(double percent)
+    {
+        deathPenalty = percent;
+    }
+
     private static final String EXP_BASE = "Experience.";
 
     private void loadExpSettings()
@@ -680,6 +646,7 @@ public class Settings
         this.blockCreative = config.getBoolean(EXP_BASE + "block-creative");
         this.showExpMessages = config.getBoolean(EXP_BASE + "exp-message-enabled");
         this.showLevelMessages = config.getBoolean(EXP_BASE + "level-message-enabled");
+        this.deathPenalty = config.getDouble(EXP_BASE + "death-penalty");
 
         ConfigurationSection formula = config.getConfigurationSection(EXP_BASE + "formula");
         int x = formula.getInt("x");

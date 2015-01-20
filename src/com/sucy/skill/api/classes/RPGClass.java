@@ -92,6 +92,13 @@ public abstract class RPGClass
         return prefix;
     }
 
+    public ChatColor getPrefixColor()
+    {
+        String colors = ChatColor.getLastColors(prefix);
+        if (colors.length() < 2) return ChatColor.WHITE;
+        return ChatColor.getByChar(colors.charAt(1));
+    }
+
     public SkillTree getSkillTree()
     {
         return skillTree;
@@ -301,6 +308,7 @@ public abstract class RPGClass
     private static final String REGEN    = "mana-regen";
     private static final String PERM     = "perm";
     private static final String ATTR     = "attributes";
+    private static final String TREE     = "tree";
 
     public void save(ConfigurationSection config)
     {
@@ -339,6 +347,7 @@ public abstract class RPGClass
         config.set(EXP, expSources);
         config.set(REGEN, manaRegen);
         config.set(PERM, needsPermission);
+        config.set(TREE, tree.toString());
 
         settings.save(config.createSection(ATTR));
     }
@@ -412,6 +421,10 @@ public abstract class RPGClass
         {
             config.set(PERM, needsPermission);
         }
+        if (!config.isSet(TREE))
+        {
+            config.set(TREE, tree.toString());
+        }
     }
 
     public void load(ConfigurationSection config)
@@ -458,6 +471,7 @@ public abstract class RPGClass
         expSources = config.getInt(EXP, expSources);
         manaRegen = config.getDouble(REGEN, manaRegen);
         needsPermission = config.getBoolean(PERM);
+        tree = DefaultTreeType.getByName(config.getString(TREE, "requirement"));
         manaPlayer = Bukkit.getServer().getOfflinePlayer(TextFormatter.colorString(mana));
 
         settings.load(config.getConfigurationSection(ATTR));

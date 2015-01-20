@@ -6,6 +6,7 @@ import com.rit.sucy.scoreboard.BoardManager;
 import com.rit.sucy.scoreboard.StatBoard;
 import com.rit.sucy.scoreboard.Team;
 import com.rit.sucy.version.VersionPlayer;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.data.PlayerStats;
@@ -17,11 +18,6 @@ import org.bukkit.ChatColor;
  */
 public class ClassBoardManager
 {
-
-    public static boolean showSidebar;
-    public static boolean showClasses;
-    public static boolean showLevels;
-
     /**
      * Clears a class prefix
      *
@@ -29,9 +25,9 @@ public class ClassBoardManager
      *
      * @deprecated use clearPrefix(VersionPlayer) instead
      */
-    public static void clearPrefix(String player)
+    public static void clear(String player)
     {
-        clearPrefix(new VersionPlayer(player));
+        clear(new VersionPlayer(player));
     }
 
     /**
@@ -39,7 +35,7 @@ public class ClassBoardManager
      *
      * @param player player reference
      */
-    public static void clearPrefix(VersionPlayer player)
+    public static void clear(VersionPlayer player)
     {
         Chat.getPlayerData(player.getName()).clearPluginPrefix("SkillAPI");
         BoardManager.getPlayerBoards(player.getName()).removeBoards("SkillAPI");
@@ -75,17 +71,17 @@ public class ClassBoardManager
         BoardManager.clearTeam(player.getPlayerName());
 
         // Apply new data
-        if (showSidebar)
+        if (SkillAPI.getSettings().isShowScoreboard())
         {
             StatBoard board = new StatBoard(player.getMainClass().getData().getPrefix(), "SkillAPI");
             board.addStats(new PlayerStats(player));
             BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
         }
-        if (showClasses)
+        if (SkillAPI.getSettings().isShowClassName())
         {
             BoardManager.setTeam(player.getPlayerName(), player.getMainClass().getData().getName());
         }
-        if (showLevels)
+        if (SkillAPI.getSettings().isShowClassLevel())
         {
             BoardManager.setBelowNameScore(player.getPlayerName(), player.getMainClass().getLevel());
         }
@@ -98,7 +94,7 @@ public class ClassBoardManager
      */
     public static void registerClass(RPGClass c)
     {
-        if (showClasses)
+        if (SkillAPI.getSettings().isShowClassName())
         {
             BoardManager.registerTeam(new Team(c.getName(), c.getPrefix() + ChatColor.RESET + " ", null));
         }
@@ -111,7 +107,7 @@ public class ClassBoardManager
      */
     public static void updateLevel(PlayerData data)
     {
-        if (showLevels)
+        if (SkillAPI.getSettings().isShowClassLevel() && data.hasClass())
         {
             BoardManager.setBelowNameScore(data.getPlayerName(), data.getMainClass().getLevel());
         }
@@ -120,9 +116,9 @@ public class ClassBoardManager
     /**
      * Registers the text below player names
      */
-    public static void registerText(String text)
+    public static void registerText()
     {
-        if (showLevels)
+        if (SkillAPI.getSettings().isShowClassLevel())
         {
             BoardManager.setTextBelowNames("Level");
         }

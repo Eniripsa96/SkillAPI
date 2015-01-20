@@ -36,7 +36,7 @@ public class ManaTask extends BukkitRunnable
     {
         for (Player player : plugin.getServer().getOnlinePlayers())
         {
-            PlayerData data = SkillAPI.getPlayerData((OfflinePlayer) player);
+            PlayerData data = SkillAPI.getPlayerData(player);
             data.regenMana();
         }
     }

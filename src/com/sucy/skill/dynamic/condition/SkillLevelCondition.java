@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class SkillLevelCondition extends EffectComponent
 {
-    private static final String SKILL = "skill";
+    private static final String SKILL     = "skill";
     private static final String MIN_LEVEL = "min-level";
     private static final String MAX_LEVEL = "max-level";
 

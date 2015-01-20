@@ -2,7 +2,6 @@ package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class LoreCondition extends EffectComponent
 {
-    private static final String REGEX = "regex";
+    private static final String REGEX  = "regex";
     private static final String STRING = "str";
 
     /**
@@ -33,7 +32,10 @@ public class LoreCondition extends EffectComponent
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null) continue;
+            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null)
+            {
+                continue;
+            }
             List<String> lore = target.getEquipment().getItemInHand().getItemMeta().getLore();
             for (String line : lore)
             {

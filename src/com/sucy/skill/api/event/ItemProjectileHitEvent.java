@@ -8,7 +8,8 @@ import org.bukkit.event.HandlerList;
 /**
  * <p>An event for when an item projectile hits something.</p>
  */
-public class ItemProjectileHitEvent extends Event {
+public class ItemProjectileHitEvent extends Event
+{
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -32,7 +33,8 @@ public class ItemProjectileHitEvent extends Event {
      *
      * @return the projectile that hit something
      */
-    public ItemProjectile getProjectile() {
+    public ItemProjectile getProjectile()
+    {
         return projectile;
     }
 
@@ -41,7 +43,8 @@ public class ItemProjectileHitEvent extends Event {
      *
      * @return the thing hit by the projectile
      */
-    public LivingEntity getTarget() {
+    public LivingEntity getTarget()
+    {
         return target;
     }
 
@@ -51,7 +54,8 @@ public class ItemProjectileHitEvent extends Event {
      * @return list of event handlers
      */
     @Override
-    public HandlerList getHandlers() {
+    public HandlerList getHandlers()
+    {
         return handlers;
     }
 
@@ -60,7 +64,8 @@ public class ItemProjectileHitEvent extends Event {
      *
      * @return list of event handlers
      */
-    public static HandlerList getHandlerList() {
+    public static HandlerList getHandlerList()
+    {
         return handlers;
     }
 }

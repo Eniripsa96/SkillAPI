@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class PotionCondition extends EffectComponent
 {
-    private static final String TYPE = "type";
+    private static final String TYPE   = "type";
     private static final String POTION = "potion";
 
     /**

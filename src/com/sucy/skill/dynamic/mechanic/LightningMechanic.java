@@ -1,7 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
@@ -29,7 +28,10 @@ public class LightningMechanic extends EffectComponent
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
-        if (targets.size() == 0) return false;
+        if (targets.size() == 0)
+        {
+            return false;
+        }
 
         double forward = settings.get(FORWARD, level, 0);
         double right = settings.get(RIGHT, level, 0);

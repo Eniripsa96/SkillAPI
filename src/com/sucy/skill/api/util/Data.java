@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Data
@@ -50,12 +49,15 @@ public class Data
         try
         {
             ItemStack item = new ItemStack(parseMat(config.getString(MAT, "JACK_O_LANTERN")));
-            MaterialData data = new MaterialData(item.getType(), (byte)config.getInt(DATA, 0));
+            MaterialData data = new MaterialData(item.getType(), (byte) config.getInt(DATA, 0));
             item.setData(data);
             if (config.contains(LORE))
             {
                 List<String> lore = TextFormatter.colorStringList(config.getStringList(LORE));
-                if (lore.size() == 0) return item;
+                if (lore.size() == 0)
+                {
+                    return item;
+                }
                 ItemMeta meta = item.getItemMeta();
                 meta.setDisplayName(lore.remove(0));
                 meta.setLore(lore);

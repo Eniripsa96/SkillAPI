@@ -9,7 +9,8 @@ import org.bukkit.event.HandlerList;
 /**
  * Event called when a player changes classes
  */
-public class PlayerClassChangeEvent extends Event {
+public class PlayerClassChangeEvent extends Event
+{
 
     private static final HandlerList handlers = new HandlerList();
     private PlayerClass playerClass;
@@ -41,35 +42,40 @@ public class PlayerClassChangeEvent extends Event {
     /**
      * @return Data of the player changing classes
      */
-    public PlayerData getPlayerData() {
+    public PlayerData getPlayerData()
+    {
         return playerClass.getPlayerData();
     }
 
     /**
      * @return previous class of the player
      */
-    public RPGClass getPreviousClass() {
+    public RPGClass getPreviousClass()
+    {
         return previousClass;
     }
 
     /**
      * @return new class of the player
      */
-    public RPGClass getNewClass() {
+    public RPGClass getNewClass()
+    {
         return newClass;
     }
 
     /**
      * @return gets the handlers for the event
      */
-    public HandlerList getHandlers() {
+    public HandlerList getHandlers()
+    {
         return handlers;
     }
 
     /**
      * @return gets the handlers for the event
      */
-    public static HandlerList getHandlerList() {
+    public static HandlerList getHandlerList()
+    {
         return handlers;
     }
 }

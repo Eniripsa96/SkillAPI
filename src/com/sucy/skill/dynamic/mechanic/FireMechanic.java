@@ -1,7 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -25,10 +24,13 @@ public class FireMechanic extends EffectComponent
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
-        if (targets.size() == 0) return false;
+        if (targets.size() == 0)
+        {
+            return false;
+        }
 
         double seconds = settings.get(SECONDS, level, 3.0);
-        int ticks = (int)(seconds * 20);
+        int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
             target.setFireTicks(Math.max(ticks, target.getFireTicks()));

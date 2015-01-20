@@ -7,10 +7,7 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.player.PlayerSkillBar;
 import com.sucy.skill.language.RPGFilter;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -46,7 +43,7 @@ public class CmdBind implements IFunction
 
         else if (args.length >= 1)
         {
-            ItemStack item = ((Player)sender).getItemInHand();
+            ItemStack item = ((Player) sender).getItemInHand();
             if (item == null || item.getType() == Material.AIR)
             {
                 command.sendMessage(sender, NO_ITEM, "&4You are not holding an item");

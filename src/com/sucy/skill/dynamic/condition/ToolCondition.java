@@ -12,7 +12,7 @@ import java.util.List;
 public class ToolCondition extends EffectComponent
 {
     private static final String MATERIAL = "material";
-    private static final String TOOL = "tool";
+    private static final String TOOL     = "tool";
 
     /**
      * Executes the component
@@ -31,7 +31,10 @@ public class ToolCondition extends EffectComponent
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null) continue;
+            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null)
+            {
+                continue;
+            }
             String hand = target.getEquipment().getItemInHand().getType().name();
             if ((material.equals("ANY") || hand.contains(material)) && (tool.equals("ANY") || hand.contains(tool)))
             {

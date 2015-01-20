@@ -1,16 +1,12 @@
 package com.sucy.skill.cmd;
 
-import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.player.PlayerSkillBar;
 import com.sucy.skill.language.RPGFilter;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,10 +18,10 @@ import org.bukkit.plugin.Plugin;
  */
 public class CmdUnbind implements IFunction
 {
-    private static final String NOT_PLAYER   = "not-player";
-    private static final String NOT_BOUND    = "not-bound";
-    private static final String NO_ITEM      = "no-item";
-    private static final String SKILL_BOUND  = "skill-unbound";
+    private static final String NOT_PLAYER  = "not-player";
+    private static final String NOT_BOUND   = "not-bound";
+    private static final String NO_ITEM     = "no-item";
+    private static final String SKILL_BOUND = "skill-unbound";
 
     /**
      * Executes the command
@@ -45,7 +41,7 @@ public class CmdUnbind implements IFunction
 
         else
         {
-            ItemStack item = ((Player)sender).getItemInHand();
+            ItemStack item = ((Player) sender).getItemInHand();
             if (item == null || item.getType() == Material.AIR)
             {
                 command.sendMessage(sender, NO_ITEM, "&4You are not holding an item");

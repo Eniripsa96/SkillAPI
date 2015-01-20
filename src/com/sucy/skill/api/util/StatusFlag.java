@@ -13,14 +13,14 @@ public class StatusFlag
     public static final String SILENCE    = "silence";
 
     public static final String[] ALL = new String[] {
-        STUN, ROOT, INVINCIBLE, ABSORB, DISARM, SILENCE
+            STUN, ROOT, INVINCIBLE, ABSORB, DISARM, SILENCE
     };
 
     public static final String[] NEGATIVE = new String[] {
-        STUN, ROOT, DISARM, SILENCE
+            STUN, ROOT, DISARM, SILENCE
     };
 
     public static final String[] POSITIVE = new String[] {
-        INVINCIBLE, ABSORB
+            INVINCIBLE, ABSORB
     };
 }

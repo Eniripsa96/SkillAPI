@@ -4,7 +4,6 @@ import com.rit.sucy.config.Config;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -65,7 +64,10 @@ public class ConfigIO extends IOManager
                         PlayerClass c = acc.setClass(rpgClass);
                         ConfigurationSection classData = classes.getConfigurationSection(classKey);
                         int levels = classData.getInt(LEVEL) - 1;
-                        if (levels > 0) c.giveLevels(levels);
+                        if (levels > 0)
+                        {
+                            c.giveLevels(levels);
+                        }
                         c.setPoints(classData.getInt(POINTS));
                         c.setTotalExp(classData.getDouble(TOTAL_EXP));
                     }
@@ -100,10 +102,10 @@ public class ConfigIO extends IOManager
                     {
                         if (key.equals(ENABLED))
                         {
-                             if (bar.isEnabled() != skillBar.getBoolean(key))
-                             {
-                                 bar.toggleEnabled();
-                             }
+                            if (bar.isEnabled() != skillBar.getBoolean(key))
+                            {
+                                bar.toggleEnabled();
+                            }
                         }
                         else if (key.equals(SLOTS))
                         {

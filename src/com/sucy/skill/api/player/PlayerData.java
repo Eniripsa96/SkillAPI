@@ -322,7 +322,10 @@ public final class PlayerData
         {
             return classes.values().toArray(new PlayerClass[classes.size()])[0];
         }
-        else return null;
+        else
+        {
+            return null;
+        }
     }
 
     public PlayerClass setClass(RPGClass rpgClass)

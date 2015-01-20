@@ -1,6 +1,5 @@
 package com.sucy.skill.api.player;
 
-import com.sucy.skill.SkillAPI;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -11,7 +10,7 @@ public class PlayerAccounts
 {
     private final HashMap<Integer, PlayerData> classData = new HashMap<Integer, PlayerData>();
 
-    private int        active;
+    private int           active;
     private OfflinePlayer player;
     private int           accounts;
 

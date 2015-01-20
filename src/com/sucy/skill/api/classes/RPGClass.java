@@ -27,18 +27,18 @@ public abstract class RPGClass
     private final ArrayList<Skill>          skills           = new ArrayList<Skill>();
 
     private OfflinePlayer manaPlayer;
-    private SkillTree skillTree;
-    private RPGClass  parent;
-    private ItemStack icon;
-    private TreeType  tree;
-    private String    name;
-    private String    prefix;
-    private String    group;
-    private String    mana;
-    private int       maxLevel;
-    private int       expSources;
-    private double    manaRegen;
-    private boolean   needsPermission;
+    private SkillTree     skillTree;
+    private RPGClass      parent;
+    private ItemStack     icon;
+    private TreeType      tree;
+    private String        name;
+    private String        prefix;
+    private String        group;
+    private String        mana;
+    private int           maxLevel;
+    private int           expSources;
+    private double        manaRegen;
+    private boolean       needsPermission;
 
     protected final Settings settings = new Settings();
 

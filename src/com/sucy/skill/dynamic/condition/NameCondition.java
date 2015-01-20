@@ -2,7 +2,6 @@ package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +13,8 @@ import java.util.regex.Pattern;
 public class NameCondition extends EffectComponent
 {
     private static final String CONTAINS = "contains";
-    private static final String REGEX = "regex";
-    private static final String STRING = "str";
+    private static final String REGEX    = "regex";
+    private static final String STRING   = "str";
 
     /**
      * Executes the component
@@ -36,7 +35,10 @@ public class NameCondition extends EffectComponent
         for (LivingEntity target : targets)
         {
             String name = target.getCustomName();
-            if (name == null) continue;
+            if (name == null)
+            {
+                continue;
+            }
             if (regex && (Pattern.compile(str).matcher(name).find() == contains))
             {
                 list.add(target);

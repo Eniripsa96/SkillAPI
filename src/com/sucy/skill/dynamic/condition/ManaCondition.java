@@ -15,8 +15,8 @@ import java.util.List;
 public class ManaCondition extends EffectComponent
 {
     private static final String TYPE = "type";
-    private static final String MIN = "min-value";
-    private static final String MAX = "max-value";
+    private static final String MIN  = "min-value";
+    private static final String MAX  = "max-value";
 
     /**
      * Executes the component
@@ -37,9 +37,12 @@ public class ManaCondition extends EffectComponent
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if (!(target instanceof Player)) continue;
+            if (!(target instanceof Player))
+            {
+                continue;
+            }
             double value;
-            PlayerData data = SkillAPI.getPlayerData((Player)target);
+            PlayerData data = SkillAPI.getPlayerData((Player) target);
             double mana = data.getMana();
             if (type.equals("difference percent"))
             {

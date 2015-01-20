@@ -13,7 +13,7 @@ import java.util.List;
 public class FlagCondition extends EffectComponent
 {
     private static final String TYPE = "type";
-    private static final String KEY = "key";
+    private static final String KEY  = "key";
 
     /**
      * Executes the component

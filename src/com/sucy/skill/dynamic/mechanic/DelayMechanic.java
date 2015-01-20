@@ -25,7 +25,10 @@ public class DelayMechanic extends EffectComponent
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
-        if (targets.size() == 0) return false;
+        if (targets.size() == 0)
+        {
+            return false;
+        }
 
         double seconds = settings.get(SECONDS, level, 2.0);
         Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
@@ -35,7 +38,7 @@ public class DelayMechanic extends EffectComponent
             {
                 executeChildren(caster, level, targets);
             }
-        }, (long)(seconds * 20));
+        }, (long) (seconds * 20));
         return true;
     }
 }

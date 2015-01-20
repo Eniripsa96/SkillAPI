@@ -72,7 +72,10 @@ public abstract class EffectComponent
      */
     public void load(ConfigurationSection config)
     {
-        if (config == null) return;
+        if (config == null)
+        {
+            return;
+        }
         settings.load(config.getConfigurationSection("data"));
 
         ConfigurationSection children = config.getConfigurationSection("children");

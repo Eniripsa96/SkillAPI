@@ -12,8 +12,8 @@ import java.util.List;
 public class ElevationCondition extends EffectComponent
 {
     private static final String TYPE = "type";
-    private static final String MIN = "min-value";
-    private static final String MAX = "max-value";
+    private static final String MIN  = "min-value";
+    private static final String MAX  = "max-value";
 
     /**
      * Executes the component

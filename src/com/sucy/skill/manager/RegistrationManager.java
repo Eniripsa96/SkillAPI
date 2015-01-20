@@ -7,9 +7,6 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.Trigger;
-import com.sucy.skill.dynamic.mechanic.DamageMechanic;
-import com.sucy.skill.dynamic.mechanic.HealMechanic;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
@@ -83,15 +80,19 @@ public class RegistrationManager
         }
 
         // Load dynamic skills from skills.yml
-        if (!skillConfig.getConfig().getBoolean("loaded", false)) {
+        if (!skillConfig.getConfig().getBoolean("loaded", false))
+        {
             log("Loading dynamic skills from skills.yml...", 1);
             //skillConfig.getConfig().set("loaded", true);
-            for (String key : skillConfig.getConfig().getKeys(false)) {
-                if (!skillConfig.getConfig().isConfigurationSection(key)) {
+            for (String key : skillConfig.getConfig().getKeys(false))
+            {
+                if (!skillConfig.getConfig().isConfigurationSection(key))
+                {
                     log("Skipping \"" + key + "\" because it isn't a configuration section", 3);
                     continue;
                 }
-                if (!SkillAPI.isSkillRegistered(key)) {
+                if (!SkillAPI.isSkillRegistered(key))
+                {
                     DynamicSkill skill = new DynamicSkill(key);
                     api.skills.put(key.toLowerCase(), skill);
                     skill.load(skillConfig.getConfig().getConfigurationSection(key));
@@ -100,10 +101,16 @@ public class RegistrationManager
                     sConfig.saveConfig();
                     log("Loaded the dynamic skill: " + key, 2);
                 }
-                else api.getLogger().severe("Duplicate skill detected: " + key);
+                else
+                {
+                    api.getLogger().severe("Duplicate skill detected: " + key);
+                }
             }
         }
-        else log("skills.yml doesn't have any changes, skipping it", 1);
+        else
+        {
+            log("skills.yml doesn't have any changes, skipping it", 1);
+        }
 
         log("Loading classes...", 1);
 

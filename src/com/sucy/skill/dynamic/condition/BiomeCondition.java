@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class BiomeCondition extends EffectComponent
 {
-    private static final String TYPE = "type";
+    private static final String TYPE  = "type";
     private static final String BIOME = "biome";
 
     /**

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class HealMechanic extends EffectComponent
 {
-    private static final String TYPE = "type";
+    private static final String TYPE  = "type";
     private static final String VALUE = "value";
 
     /**

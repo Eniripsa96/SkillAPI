@@ -52,9 +52,7 @@ public enum Trigger
     /**
      * Trigger effects when taking skill damage
      */
-    TOOK_SKILL_DAMAGE
-
-    ;
+    TOOK_SKILL_DAMAGE;
 
     /**
      * Retrieves a new component for the trigger

@@ -1,7 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -13,8 +12,8 @@ import java.util.List;
  */
 public class PotionMechanic extends EffectComponent
 {
-    private static final String POTION = "potion";
-    private static final String TIER = "tier";
+    private static final String POTION  = "potion";
+    private static final String TIER    = "tier";
     private static final String SECONDS = "seconds";
 
     /**
@@ -29,7 +28,10 @@ public class PotionMechanic extends EffectComponent
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
-        if (targets.size() == 0) return false;
+        if (targets.size() == 0)
+        {
+            return false;
+        }
 
         try
         {

@@ -23,7 +23,10 @@ public class ParticleMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        if (targets.size() == 0) return false;
+        if (targets.size() == 0)
+        {
+            return false;
+        }
 
         for (LivingEntity target : targets)
         {

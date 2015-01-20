@@ -12,7 +12,7 @@ import java.util.List;
 public class CooldownMechanic extends EffectComponent
 {
     private static final String SKILL = "skill";
-    private static final String TYPE = "type";
+    private static final String TYPE  = "type";
     private static final String VALUE = "value";
 
     /**
@@ -37,7 +37,10 @@ public class CooldownMechanic extends EffectComponent
         {
             for (PlayerSkill data : this.skill.getPlayerData().getSkills())
             {
-                if (data.isOnCooldown() == (value < 0)) continue;
+                if (data.isOnCooldown() == (value < 0))
+                {
+                    continue;
+                }
                 if (type.equals("percent"))
                 {
                     data.subtractCooldown(value * data.getData().getCooldown(data.getLevel()) / 100);

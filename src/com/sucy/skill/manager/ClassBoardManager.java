@@ -7,7 +7,6 @@ import com.rit.sucy.scoreboard.StatBoard;
 import com.rit.sucy.scoreboard.Team;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.data.PlayerStats;
 import org.bukkit.ChatColor;
@@ -16,19 +15,22 @@ import org.bukkit.ChatColor;
  * Manages prefixes for classes
  * - Only works if ChatAPI is installed -
  */
-public class ClassBoardManager {
+public class ClassBoardManager
+{
 
     public static boolean showSidebar;
-    public static  boolean showClasses;
+    public static boolean showClasses;
     public static boolean showLevels;
 
     /**
      * Clears a class prefix
      *
      * @param player player name
+     *
      * @deprecated use clearPrefix(VersionPlayer) instead
      */
-    public static void clearPrefix(String player) {
+    public static void clearPrefix(String player)
+    {
         clearPrefix(new VersionPlayer(player));
     }
 
@@ -37,7 +39,8 @@ public class ClassBoardManager {
      *
      * @param player player reference
      */
-    public static void clearPrefix(VersionPlayer player) {
+    public static void clearPrefix(VersionPlayer player)
+    {
         Chat.getPlayerData(player.getName()).clearPluginPrefix("SkillAPI");
         BoardManager.getPlayerBoards(player.getName()).removeBoards("SkillAPI");
         BoardManager.clearTeam(player.getName());
@@ -47,7 +50,8 @@ public class ClassBoardManager {
     /**
      * Clears all scoreboards for the plugin
      */
-    public static void clearAll() {
+    public static void clearAll()
+    {
         BoardManager.clearPluginBoards("SkillAPI");
     }
 
@@ -58,7 +62,8 @@ public class ClassBoardManager {
      * @param prefix     prefix text
      * @param braceColor color of braces
      */
-    public static void update(PlayerData player, String prefix, ChatColor braceColor) {
+    public static void update(PlayerData player, String prefix, ChatColor braceColor)
+    {
 
         // Give a chat prefix
         Chat.getPlayerData(player.getPlayerName()).setPluginPrefix(
@@ -70,13 +75,20 @@ public class ClassBoardManager {
         BoardManager.clearTeam(player.getPlayerName());
 
         // Apply new data
-        if (showSidebar) {
+        if (showSidebar)
+        {
             StatBoard board = new StatBoard(player.getMainClass().getData().getPrefix(), "SkillAPI");
             board.addStats(new PlayerStats(player));
             BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
         }
-        if (showClasses) BoardManager.setTeam(player.getPlayerName(), player.getMainClass().getData().getName());
-        if (showLevels) BoardManager.setBelowNameScore(player.getPlayerName(), player.getMainClass().getLevel());
+        if (showClasses)
+        {
+            BoardManager.setTeam(player.getPlayerName(), player.getMainClass().getData().getName());
+        }
+        if (showLevels)
+        {
+            BoardManager.setBelowNameScore(player.getPlayerName(), player.getMainClass().getLevel());
+        }
     }
 
     /**
@@ -84,8 +96,12 @@ public class ClassBoardManager {
      *
      * @param c class to register
      */
-    public static void registerClass(RPGClass c) {
-        if (showClasses) BoardManager.registerTeam(new Team(c.getName(), c.getPrefix() + ChatColor.RESET + " ", null));
+    public static void registerClass(RPGClass c)
+    {
+        if (showClasses)
+        {
+            BoardManager.registerTeam(new Team(c.getName(), c.getPrefix() + ChatColor.RESET + " ", null));
+        }
     }
 
     /**
@@ -93,14 +109,22 @@ public class ClassBoardManager {
      *
      * @param data player's data to use for the update
      */
-    public static void updateLevel(PlayerData data) {
-        if (showLevels) BoardManager.setBelowNameScore(data.getPlayerName(), data.getMainClass().getLevel());
+    public static void updateLevel(PlayerData data)
+    {
+        if (showLevels)
+        {
+            BoardManager.setBelowNameScore(data.getPlayerName(), data.getMainClass().getLevel());
+        }
     }
 
     /**
      * Registers the text below player names
      */
-    public static void registerText(String text) {
-        if (showLevels) BoardManager.setTextBelowNames("Level");
+    public static void registerText(String text)
+    {
+        if (showLevels)
+        {
+            BoardManager.setTextBelowNames("Level");
+        }
     }
 }

@@ -21,18 +21,18 @@ public class CmdManager
     {
         ConfigurableCommand root = new ConfigurableCommand(api, "class", SenderType.ANYONE);
         root.addSubCommands(
-                new ConfigurableCommand(api, "bind",    SenderType.PLAYER_ONLY, new CmdBind(),    "Binds a skill",         "<skill>",           Permissions.BASIC),
-                new ConfigurableCommand(api, "cast",    SenderType.PLAYER_ONLY, new CmdCast(),    "Casts a skill",         "<skill>",           Permissions.BASIC),
-                new ConfigurableCommand(api, "exp",     SenderType.ANYONE,      new CmdExp(),     "Gives players exp",     "[player] <amount>", Permissions.LVL),
-                new ConfigurableCommand(api, "info",    SenderType.ANYONE,      new CmdInfo(),    "Shows class info",      "[player]",          Permissions.BASIC),
-                new ConfigurableCommand(api, "level",   SenderType.ANYONE,      new CmdLevel(),   "Gives players levels",  "[player] <amount>", Permissions.LVL),
-                new ConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profess options", "",                  Permissions.BASIC),
-                new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes",     "<class>",           Permissions.BASIC),
-                new ConfigurableCommand(api, "skill",   SenderType.PLAYER_ONLY, new CmdSkill(),   "Shows player skills"  , "",                  Permissions.BASIC)
+                new ConfigurableCommand(api, "bind", SenderType.PLAYER_ONLY, new CmdBind(), "Binds a skill", "<skill>", Permissions.BASIC),
+                new ConfigurableCommand(api, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "Casts a skill", "<skill>", Permissions.BASIC),
+                new ConfigurableCommand(api, "exp", SenderType.ANYONE, new CmdExp(), "Gives players exp", "[player] <amount>", Permissions.LVL),
+                new ConfigurableCommand(api, "info", SenderType.ANYONE, new CmdInfo(), "Shows class info", "[player]", Permissions.BASIC),
+                new ConfigurableCommand(api, "level", SenderType.ANYONE, new CmdLevel(), "Gives players levels", "[player] <amount>", Permissions.LVL),
+                new ConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profess options", "", Permissions.BASIC),
+                new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes", "<class>", Permissions.BASIC),
+                new ConfigurableCommand(api, "skill", SenderType.PLAYER_ONLY, new CmdSkill(), "Shows player skills", "", Permissions.BASIC)
         );
         if (SkillAPI.getSettings().isSkillBarEnabled())
         {
-            root.addSubCommand(new ConfigurableCommand(api, "bar",     SenderType.PLAYER_ONLY, new CmdBar(),     "Toggles skill bar",     "",                  Permissions.BASIC));
+            root.addSubCommand(new ConfigurableCommand(api, "bar", SenderType.PLAYER_ONLY, new CmdBar(), "Toggles skill bar", "", Permissions.BASIC));
         }
         CommandManager.registerCommand(root);
     }

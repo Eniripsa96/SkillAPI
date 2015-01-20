@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class StatusCondition extends EffectComponent
 {
-    private static final String TYPE = "type";
+    private static final String TYPE   = "type";
     private static final String STATUS = "status";
 
     /**

@@ -1,12 +1,10 @@
 package com.sucy.skill.cmd;
 
-import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -44,28 +42,34 @@ public class CmdBar implements IFunction
         PlayerData player = SkillAPI.getPlayerData((Player) sender);
 
         // Player must have a class
-        if(!player.hasClass()){
+        if (!player.hasClass())
+        {
             command.sendMessage(sender, NO_CLASS, "&4You have not professed as any class yet");
         }
 
         // Cannot be in creative mode
-        else if (player.getPlayer().getGameMode() == GameMode.CREATIVE) {
+        else if (player.getPlayer().getGameMode() == GameMode.CREATIVE)
+        {
             command.sendMessage(sender, IN_CREATIVE, "&4You cannot be in creative mode");
         }
-        else {
+        else
+        {
             PlayerSkillBar bar = player.getSkillBar();
 
             // Not enough space
-            if (!bar.isEnabled() && bar.countOpenSlots() < bar.getItemsInSkillSlots()) {
+            if (!bar.isEnabled() && bar.countOpenSlots() < bar.getItemsInSkillSlots())
+            {
                 command.sendMessage(sender, NO_SPACE, "&4You don't have enough inventory space for the skill bar");
                 return;
             }
 
             bar.toggleEnabled();
-            if (bar.isEnabled()) {
+            if (bar.isEnabled())
+            {
                 command.sendMessage(sender, TOGGLE_ON, "&2Your skill bar has been &6enabled");
             }
-            else {
+            else
+            {
                 command.sendMessage(sender, TOGGLE_OFF, "&2Your skill bar has been &2disabled");
             }
         }

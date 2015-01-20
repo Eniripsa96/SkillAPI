@@ -4,7 +4,6 @@ import com.rit.sucy.config.Config;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.TreeType;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -107,7 +106,7 @@ public class Settings
     private static final String ACCOUNT_MAIN = ACCOUNT_BASE + "main-class-group";
     private static final String ACCOUNT_EACH = ACCOUNT_BASE + "one-per-class";
 
-    private String mainGroup;
+    private String  mainGroup;
     private boolean onePerClass;
 
     /**
@@ -702,8 +701,8 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private boolean skillBarEnabled;
-    private boolean skillBarCooldowns;
+    private boolean   skillBarEnabled;
+    private boolean   skillBarCooldowns;
     private ItemStack unassigned;
     private boolean[] defaultBarLayout = new boolean[9];
     private boolean[] lockedSlots      = new boolean[9];
@@ -741,7 +740,8 @@ public class Settings
 
         ConfigurationSection icon = bar.getConfigurationSection("empty-icon");
         Material mat;
-        try {
+        try
+        {
             mat = Material.valueOf(icon.getString("material", "PUMPKIN_SEEDS").toUpperCase().replace(' ', '_'));
         }
         catch (Exception ex)
@@ -749,7 +749,7 @@ public class Settings
             mat = Material.PUMPKIN_SEEDS;
         }
         unassigned = new ItemStack(mat);
-        unassigned.setData(new MaterialData(mat, (byte)icon.getInt("data", 0)));
+        unassigned.setData(new MaterialData(mat, (byte) icon.getInt("data", 0)));
 
         ItemMeta meta = unassigned.getItemMeta();
         meta.setDisplayName(TextFormatter.colorString(icon.getString("text", "&7Unassigned")));

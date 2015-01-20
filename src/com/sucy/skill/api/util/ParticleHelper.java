@@ -98,7 +98,7 @@ public class ParticleHelper
         String particle = settings.getString(PARTICLE_KEY, "invalid");
         if (settings.has(ARRANGEMENT_KEY))
         {
-            double radius =  settings.get(RADIUS_KEY, 3.0);
+            double radius = settings.get(RADIUS_KEY, 3.0);
             int amount = settings.getInt(AMOUNT_KEY, 10);
 
             String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
@@ -183,15 +183,25 @@ public class ParticleHelper
         int index = 0;
 
         // Play the particles
-        while (index < amount) {
+        while (index < amount)
+        {
             if (direction == Direction.XY || direction == Direction.XZ)
+            {
                 temp.setX(loc.getX() + random.nextDouble() * twoRadius - radius);
+            }
             if (direction == Direction.XY || direction == Direction.YZ)
+            {
                 temp.setY(loc.getY() + random.nextDouble() * twoRadius - radius);
+            }
             if (direction == Direction.XZ || direction == Direction.YZ)
+            {
                 temp.setZ(loc.getZ() + random.nextDouble() * twoRadius - radius);
+            }
 
-            if (temp.distanceSquared(loc) > rSquared) continue;
+            if (temp.distanceSquared(loc) > rSquared)
+            {
+                continue;
+            }
 
             play(temp, particle, settings);
             index++;
@@ -207,19 +217,24 @@ public class ParticleHelper
      * @param radius   radius of the sphere
      * @param amount   amount of particles to use
      */
-    public static void fillSphere(Location loc, String particle, Settings settings, double radius, int amount) {
+    public static void fillSphere(Location loc, String particle, Settings settings, double radius, int amount)
+    {
         Location temp = loc.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
         int index = 0;
 
         // Play the particles
-        while (index < amount) {
+        while (index < amount)
+        {
             temp.setX(loc.getX() + random.nextDouble() * twoRadius - radius);
             temp.setY(loc.getY() + random.nextDouble() * twoRadius - radius);
             temp.setZ(loc.getZ() + random.nextDouble() * twoRadius - radius);
 
-            if (temp.distanceSquared(loc) > rSquared) continue;
+            if (temp.distanceSquared(loc) > rSquared)
+            {
+                continue;
+            }
 
             play(temp, particle, settings);
             index++;
@@ -235,19 +250,24 @@ public class ParticleHelper
      * @param radius   radius of the sphere
      * @param amount   amount of particles to use
      */
-    public static void fillHemisphere(Location loc, String particle, Settings settings, double radius, int amount) {
+    public static void fillHemisphere(Location loc, String particle, Settings settings, double radius, int amount)
+    {
         Location temp = loc.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
         int index = 0;
 
         // Play the particles
-        while (index < amount) {
+        while (index < amount)
+        {
             temp.setX(loc.getX() + random.nextDouble() * twoRadius - radius);
             temp.setY(loc.getY() + random.nextDouble() * radius);
             temp.setZ(loc.getZ() + random.nextDouble() * twoRadius - radius);
 
-            if (temp.distanceSquared(loc) > rSquared) continue;
+            if (temp.distanceSquared(loc) > rSquared)
+            {
+                continue;
+            }
 
             play(temp, particle, settings);
             index++;

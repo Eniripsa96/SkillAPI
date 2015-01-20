@@ -1,7 +1,6 @@
 package com.sucy.skill.api.player;
 
 import com.sucy.skill.SkillAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -15,7 +14,8 @@ import java.util.Map;
 /**
  * A skill bar for a player
  */
-public class PlayerSkillBar {
+public class PlayerSkillBar
+{
 
     private static final String
             UNASSIGNED = "e";
@@ -23,17 +23,20 @@ public class PlayerSkillBar {
     private final HashMap<Integer, String> slots = new HashMap<Integer, String>();
     private final PlayerData player;
     private boolean enabled = true;
-    private boolean setup = false;
+    private boolean setup   = false;
 
     /**
      * Initial constructor
      *
      * @param player owning player data
      */
-    public PlayerSkillBar(PlayerData player) {
+    public PlayerSkillBar(PlayerData player)
+    {
         this.player = player;
-        for (int i = 1; i <= 9; i++) {
-            if (SkillAPI.getSettings().getDefaultBarLayout()[i - 1]) {
+        for (int i = 1; i <= 9; i++)
+        {
+            if (SkillAPI.getSettings().getDefaultBarLayout()[i - 1])
+            {
                 slots.put(i, UNASSIGNED);
             }
         }
@@ -42,7 +45,8 @@ public class PlayerSkillBar {
     /**
      * @return whether or not the skill bar is enabled
      */
-    public boolean isEnabled() {
+    public boolean isEnabled()
+    {
         return enabled;
     }
 
@@ -51,7 +55,8 @@ public class PlayerSkillBar {
      *
      * @return true if setup recently, false otherwise
      */
-    public boolean isSetup() {
+    public boolean isSetup()
+    {
         return setup;
     }
 
@@ -60,14 +65,16 @@ public class PlayerSkillBar {
      *
      * @return VersionPlayer of the owner
      */
-    public PlayerData getPlayerData() {
+    public PlayerData getPlayerData()
+    {
         return player;
     }
 
     /**
      * @return name of the player owning the skill bar
      */
-    public Player getPlayer() {
+    public Player getPlayer()
+    {
         return player.getPlayer();
     }
 
@@ -76,9 +83,14 @@ public class PlayerSkillBar {
      *
      * @return first weapon slot
      */
-    public int getFirstWeaponSlot() {
-        for (int i = 0; i < 9; i++) {
-            if (isWeaponSlot(i)) return i;
+    public int getFirstWeaponSlot()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (isWeaponSlot(i))
+            {
+                return i;
+            }
         }
         return -1;
     }
@@ -89,12 +101,18 @@ public class PlayerSkillBar {
      *
      * @return number of items in the skill slots
      */
-    public int getItemsInSkillSlots() {
+    public int getItemsInSkillSlots()
+    {
         int count = 0;
         Player p = player.getPlayer();
-        if (p == null) return -1;
-        for (int slot : slots.keySet()) {
-            if (slot > 0 && slot < 10 && p.getInventory().getItem(slot - 1) != null) {
+        if (p == null)
+        {
+            return -1;
+        }
+        for (int slot : slots.keySet())
+        {
+            if (slot > 0 && slot < 10 && p.getInventory().getItem(slot - 1) != null)
+            {
                 count++;
             }
         }
@@ -108,13 +126,19 @@ public class PlayerSkillBar {
      *
      * @return open slots in the players inventory
      */
-    public int countOpenSlots() {
+    public int countOpenSlots()
+    {
         int count = 0;
         Player p = player.getPlayer();
-        if (p == null) return -1;
+        if (p == null)
+        {
+            return -1;
+        }
         ItemStack[] items = p.getInventory().getContents();
-        for (int i = 0; i < items.length; i++) {
-            if (items[i] == null && !slots.containsKey(i + 1)) {
+        for (int i = 0; i < items.length; i++)
+        {
+            if (items[i] == null && !slots.containsKey(i + 1))
+            {
                 count++;
             }
         }
@@ -124,12 +148,15 @@ public class PlayerSkillBar {
     /**
      * Toggles the enabled state of the skill bar
      */
-    public void toggleEnabled() {
-        if (enabled) {
+    public void toggleEnabled()
+    {
+        if (enabled)
+        {
             clear(player.getPlayer());
             enabled = false;
         }
-        else {
+        else
+        {
             enabled = true;
             setup(player.getPlayer());
         }
@@ -140,25 +167,37 @@ public class PlayerSkillBar {
      *
      * @param slot slot to toggle
      */
-    public void toggleSlot(int slot) {
-        if (!isEnabled()) return;
+    public void toggleSlot(int slot)
+    {
+        if (!isEnabled())
+        {
+            return;
+        }
         slot++;
 
         // Make sure there is always at least one weapon slot
-        if (!slots.containsKey(slot) && (slots.size() == 8 || countOpenSlots() == 0)) {
+        if (!slots.containsKey(slot) && (slots.size() == 8 || countOpenSlots() == 0))
+        {
             return;
         }
 
         // Cannot have item in cursor
         Player p = player.getPlayer();
-        if (p == null || (p.getItemOnCursor() != null && p.getItemOnCursor().getType() != Material.AIR)) {
+        if (p == null || (p.getItemOnCursor() != null && p.getItemOnCursor().getType() != Material.AIR))
+        {
             return;
         }
 
         // Toggle the slot
         clear(p);
-        if (slots.containsKey(slot)) slots.remove(slot);
-        else slots.put(slot, UNASSIGNED);
+        if (slots.containsKey(slot))
+        {
+            slots.remove(slot);
+        }
+        else
+        {
+            slots.put(slot, UNASSIGNED);
+        }
         setup(p);
     }
 
@@ -167,12 +206,25 @@ public class PlayerSkillBar {
      *
      * @param slot slot to apply to
      */
-    public void apply(int slot) {
-        if (getPlayer() == null || getPlayer().getGameMode() == GameMode.CREATIVE) return;
-        if (!isEnabled()) return;
-        if (isWeaponSlot(slot)) return;
+    public void apply(int slot)
+    {
+        if (getPlayer() == null || getPlayer().getGameMode() == GameMode.CREATIVE)
+        {
+            return;
+        }
+        if (!isEnabled())
+        {
+            return;
+        }
+        if (isWeaponSlot(slot))
+        {
+            return;
+        }
         PlayerSkill skill = player.getSkill(slots.get(slot + 1));
-        if (skill == null) return;
+        if (skill == null)
+        {
+            return;
+        }
         player.cast(skill);
     }
 
@@ -181,10 +233,18 @@ public class PlayerSkillBar {
      *
      * @param player player to clear for
      */
-    public void clear(HumanEntity player) {
-        if (!isEnabled()) return;
-        for (int i = 0; i < 9; i++) {
-            if (isWeaponSlot(i)) continue;
+    public void clear(HumanEntity player)
+    {
+        if (!isEnabled())
+        {
+            return;
+        }
+        for (int i = 0; i < 9; i++)
+        {
+            if (isWeaponSlot(i))
+            {
+                continue;
+            }
             player.getInventory().setItem(i, null);
         }
     }
@@ -194,10 +254,18 @@ public class PlayerSkillBar {
      *
      * @param event death event of the player to clear for
      */
-    public void clear(PlayerDeathEvent event) {
-        if (!enabled || event.getEntity().getGameMode() == GameMode.CREATIVE) return;
-        for (int i = 0; i < 9; i++) {
-            if (isWeaponSlot(i)) continue;
+    public void clear(PlayerDeathEvent event)
+    {
+        if (!enabled || event.getEntity().getGameMode() == GameMode.CREATIVE)
+        {
+            return;
+        }
+        for (int i = 0; i < 9; i++)
+        {
+            if (isWeaponSlot(i))
+            {
+                continue;
+            }
             event.getDrops().remove(event.getEntity().getInventory().getItem(i));
             event.getEntity().getInventory().setItem(i, null);
         }
@@ -206,9 +274,14 @@ public class PlayerSkillBar {
     /**
      * Resets the skill bar
      */
-    public void reset() {
-        for (int i = 0; i < 9; i++) {
-            if (isWeaponSlot(i)) continue;
+    public void reset()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (isWeaponSlot(i))
+            {
+                continue;
+            }
             slots.put(i + 1, UNASSIGNED);
         }
     }
@@ -218,26 +291,39 @@ public class PlayerSkillBar {
      *
      * @param player player to set up for
      */
-    public void setup(HumanEntity player) {
-        if (!enabled || player.getGameMode() == GameMode.CREATIVE) return;
+    public void setup(HumanEntity player)
+    {
+        if (!enabled || player.getGameMode() == GameMode.CREATIVE)
+        {
+            return;
+        }
 
         // Disable the skill bar if there isn't enough space
-        if (countOpenSlots() < getItemsInSkillSlots()) {
+        if (countOpenSlots() < getItemsInSkillSlots())
+        {
             enabled = false;
             return;
         }
 
         // Set it to a weapon slot
-        if (!isWeaponSlot(player.getInventory().getHeldItemSlot())) {
+        if (!isWeaponSlot(player.getInventory().getHeldItemSlot()))
+        {
             player.getInventory().setHeldItemSlot(getFirstWeaponSlot());
         }
 
         // Add in the skill indicators
-        for (int i = 0; i < 9; i++) {
-            if (isWeaponSlot(i)) continue;
+        for (int i = 0; i < 9; i++)
+        {
+            if (isWeaponSlot(i))
+            {
+                continue;
+            }
             ItemStack item = player.getInventory().getItem(i);
             player.getInventory().setItem(i, SkillAPI.getSettings().getUnassigned());
-            if (item != null) player.getInventory().addItem(item);
+            if (item != null)
+            {
+                player.getInventory().addItem(item);
+            }
         }
 
         // Update the slots
@@ -250,9 +336,12 @@ public class PlayerSkillBar {
      *
      * @param skill unlocked skill
      */
-    public void unlock(PlayerSkill skill) {
-        for (int i = 1; i <= 9; i++) {
-            if (slots.containsKey(i) && slots.get(i).equals(UNASSIGNED)) {
+    public void unlock(PlayerSkill skill)
+    {
+        for (int i = 1; i <= 9; i++)
+        {
+            if (slots.containsKey(i) && slots.get(i).equals(UNASSIGNED))
+            {
                 slots.put(i, skill.getData().getName());
                 update(player.getPlayer());
                 return;
@@ -266,10 +355,16 @@ public class PlayerSkillBar {
      * @param skill skill to assign
      * @param slot  slot to assign to
      */
-    public void assign(PlayerSkill skill, int slot) {
-        if (isWeaponSlot(slot)) return;
-        for (Map.Entry<Integer, String> entry : slots.entrySet()) {
-            if (entry.getValue().equals(skill.getData().getName())) {
+    public void assign(PlayerSkill skill, int slot)
+    {
+        if (isWeaponSlot(slot))
+        {
+            return;
+        }
+        for (Map.Entry<Integer, String> entry : slots.entrySet())
+        {
+            if (entry.getValue().equals(skill.getData().getName()))
+            {
                 slots.put(entry.getKey(), UNASSIGNED);
                 break;
             }
@@ -281,19 +376,27 @@ public class PlayerSkillBar {
     /**
      * Updates the player's skill bar icons
      */
-    public void update(HumanEntity player) {
-        for (int i = 1; i <= 9; i++) {
+    public void update(HumanEntity player)
+    {
+        for (int i = 1; i <= 9; i++)
+        {
             int index = i - 1;
-            if (isWeaponSlot(index)) continue;
+            if (isWeaponSlot(index))
+            {
+                continue;
+            }
 
             PlayerSkill skill = this.player.getSkill(slots.get(i));
-            if (skill == null || !skill.isUnlocked()) {
+            if (skill == null || !skill.isUnlocked())
+            {
                 slots.put(i, UNASSIGNED);
-                if (enabled && player != null && player.getGameMode() != GameMode.CREATIVE) {
+                if (enabled && player != null && player.getGameMode() != GameMode.CREATIVE)
+                {
                     player.getInventory().setItem(index, SkillAPI.getSettings().getUnassigned());
                 }
             }
-            else if (isEnabled() && player != null) {
+            else if (isEnabled() && player != null)
+            {
                 player.getInventory().setItem(index, skill.getData().getIndicator(skill));
             }
         }
@@ -303,9 +406,11 @@ public class PlayerSkillBar {
      * Checks if the slot is the weapon slot for the player
      *
      * @param slot slot to check
-     * @return     true if weapon slot, false otherwise
+     *
+     * @return true if weapon slot, false otherwise
      */
-    public boolean isWeaponSlot(int slot) {
+    public boolean isWeaponSlot(int slot)
+    {
         return !slots.containsKey(slot + 1);
     }
 
@@ -317,7 +422,8 @@ public class PlayerSkillBar {
      *
      * @return skill bar data
      */
-    public HashMap<Integer, String> getData() {
+    public HashMap<Integer, String> getData()
+    {
         return slots;
     }
 

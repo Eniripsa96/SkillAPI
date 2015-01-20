@@ -58,10 +58,10 @@ public class SkillAPI extends JavaPlugin
 {
     private static SkillAPI singleton;
 
-    private final HashMap<String, Skill>        skills  = new HashMap<String, Skill>();
-    private final HashMap<String, RPGClass>     classes = new HashMap<String, RPGClass>();
-    private final HashMap<UUID, PlayerAccounts> players = new HashMap<UUID, PlayerAccounts>();
-    private final ArrayList<String>             groups  = new ArrayList<String>();
+    public final HashMap<String, Skill>        skills  = new HashMap<String, Skill>();
+    public final HashMap<String, RPGClass>     classes = new HashMap<String, RPGClass>();
+    public final HashMap<UUID, PlayerAccounts> players = new HashMap<UUID, PlayerAccounts>();
+    public final ArrayList<String>             groups  = new ArrayList<String>();
 
     private LanguageConfig language;
     private Settings       settings;
@@ -109,7 +109,10 @@ public class SkillAPI extends JavaPlugin
         new StatusListener(this);
         new CastListener(this);
         new TreeListener(this);
-        if (settings.isSkillBarEnabled()) new BarListener(this);
+        if (settings.isSkillBarEnabled())
+        {
+            new BarListener(this);
+        }
 
         // Load classes and skills
         registrationManager.initialize();
@@ -374,7 +377,10 @@ public class SkillAPI extends JavaPlugin
      */
     public static void loadPlayerData(String name)
     {
-        if (singleton == null) return;
+        if (singleton == null)
+        {
+            return;
+        }
         OfflinePlayer player = PlayerUUIDs.getOfflinePlayer(name);
         PlayerAccounts data = singleton.io.loadData(player);
         singleton.players.put(player.getUniqueId(), data);

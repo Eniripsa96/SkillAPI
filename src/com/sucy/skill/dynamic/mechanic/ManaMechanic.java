@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ManaMechanic extends EffectComponent
 {
-    private static final String TYPE = "type";
+    private static final String TYPE  = "type";
     private static final String VALUE = "value";
 
     /**
@@ -36,17 +36,23 @@ public class ManaMechanic extends EffectComponent
         boolean worked = false;
         for (LivingEntity target : targets)
         {
-            if (!(target instanceof Player)) continue;
+            if (!(target instanceof Player))
+            {
+                continue;
+            }
 
             worked = true;
 
-            PlayerData data = SkillAPI.getPlayerData((Player)target);
+            PlayerData data = SkillAPI.getPlayerData((Player) target);
             double amount;
             if (percent)
             {
                 amount = data.getMaxMana() * value / 100;
             }
-            else amount = value;
+            else
+            {
+                amount = value;
+            }
 
             if (amount > 0)
             {

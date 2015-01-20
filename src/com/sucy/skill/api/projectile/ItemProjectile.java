@@ -21,13 +21,14 @@ import java.util.List;
 /**
  * <p>Represents a projectile that uses an item as the actual projectile.</p>
  */
-public class ItemProjectile extends BukkitRunnable implements Metadatable {
+public class ItemProjectile extends BukkitRunnable implements Metadatable
+{
 
     private HashMap<String, List<MetadataValue>> metadata = new HashMap<String, List<MetadataValue>>();
-    private SkillAPI api;
+    private SkillAPI     api;
     private LivingEntity thrower;
-    private Item item;
-    private double damage;
+    private Item         item;
+    private double       damage;
 
     /**
      * <p>Constructs a new item projectile.</p>
@@ -37,14 +38,15 @@ public class ItemProjectile extends BukkitRunnable implements Metadatable {
      * @param vel     the velocity of the projectile
      * @param damage  the damage for the projectile to deal upon impact
      */
-    public ItemProjectile(LivingEntity thrower, ItemStack item, Vector vel, double damage) {
+    public ItemProjectile(LivingEntity thrower, ItemStack item, Vector vel, double damage)
+    {
         this.item = thrower.getWorld().dropItem(thrower.getLocation().add(0, 1, 0), item);
         this.item.setVelocity(vel);
         this.item.setPickupDelay(999999);
         this.thrower = thrower;
         this.damage = damage;
 
-        api = (SkillAPI)Bukkit.getPluginManager().getPlugin("SkillAPI");
+        api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
         runTaskTimer(api, 0, 1);
     }
 
@@ -54,17 +56,23 @@ public class ItemProjectile extends BukkitRunnable implements Metadatable {
      * will move faster than it should.</p>
      */
     @Override
-    public void run() {
-        if (item.getLocation().add(0, -0.2, 0).getBlock().getType().isSolid()) {
+    public void run()
+    {
+        if (item.getLocation().add(0, -0.2, 0).getBlock().getType().isSolid())
+        {
             cancel();
             item.remove();
         }
-        else {
+        else
+        {
             double halfSpeed = item.getVelocity().length() / 2;
-            for (Entity entity : item.getNearbyEntities(halfSpeed, halfSpeed, halfSpeed)) {
-                if (entity instanceof LivingEntity) {
-                    LivingEntity target = (LivingEntity)entity;
-                    if (Protection.canAttack(thrower, target)) {
+            for (Entity entity : item.getNearbyEntities(halfSpeed, halfSpeed, halfSpeed))
+            {
+                if (entity instanceof LivingEntity)
+                {
+                    LivingEntity target = (LivingEntity) entity;
+                    if (Protection.canAttack(thrower, target))
+                    {
                         item.remove();
                         cancel();
                         target.damage(damage, thrower);
@@ -84,11 +92,15 @@ public class ItemProjectile extends BukkitRunnable implements Metadatable {
      * @param meta the metadata to set
      */
     @Override
-    public void setMetadata(String key, MetadataValue meta) {
+    public void setMetadata(String key, MetadataValue meta)
+    {
         boolean hasMeta = hasMetadata(key);
         List<MetadataValue> list = hasMeta ? getMetadata(key) : new ArrayList<MetadataValue>();
         list.add(meta);
-        if (!hasMeta) metadata.put(key, list);
+        if (!hasMeta)
+        {
+            metadata.put(key, list);
+        }
     }
 
     /**
@@ -96,10 +108,12 @@ public class ItemProjectile extends BukkitRunnable implements Metadatable {
      * <p>If no metadata was set with the key, this will instead return null</p>
      *
      * @param key the key for the metadata
-     * @return    the metadata value
+     *
+     * @return the metadata value
      */
     @Override
-    public List<MetadataValue> getMetadata(String key) {
+    public List<MetadataValue> getMetadata(String key)
+    {
         return metadata.get(key);
     }
 
@@ -107,10 +121,12 @@ public class ItemProjectile extends BukkitRunnable implements Metadatable {
      * <p>Checks whether or not this has a metadata set for the key.</p>
      *
      * @param key the key for the metadata
-     * @return    whether or not there is metadata set for the key
+     *
+     * @return whether or not there is metadata set for the key
      */
     @Override
-    public boolean hasMetadata(String key) {
+    public boolean hasMetadata(String key)
+    {
         return metadata.containsKey(key);
     }
 
@@ -122,7 +138,8 @@ public class ItemProjectile extends BukkitRunnable implements Metadatable {
      * @param plugin plugin to remove the metadata for
      */
     @Override
-    public void removeMetadata(String key, Plugin plugin) {
+    public void removeMetadata(String key, Plugin plugin)
+    {
         metadata.remove(key);
     }
 }

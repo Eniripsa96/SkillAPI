@@ -219,8 +219,7 @@ public class BarListener implements Listener
                 Skill skill = tree.getSkill(event.getRawSlot());
 
                 // Must be an active skill
-                if ((skill instanceof DynamicSkill && ((DynamicSkill)skill).canCast())
-                        || (!(skill instanceof DynamicSkill) && (skill instanceof TargetSkill || skill instanceof SkillShot))) {
+                if (skill.canCast()) {
 
                     // Assign the skill if the player has it
                     if (data.hasSkill(skill.getName())) {

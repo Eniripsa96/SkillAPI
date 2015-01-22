@@ -2,6 +2,7 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.api.projectile.ItemProjectile;
+import com.sucy.skill.api.projectile.ParticleProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
@@ -20,11 +21,8 @@ import java.util.List;
 /**
  * Heals each target
  */
-public class ItemProjectileMechanic extends EffectComponent implements ProjectileCallback
+public class ParticleProjectileMechanic extends EffectComponent implements ProjectileCallback
 {
-    private static final String ITEM   = "item";
-    private static final String DATA   = "item-data";
-    private static final String SPEED  = "velocity";
     private static final String ANGLE  = "angle";
     private static final String AMOUNT = "amount";
     private static final String LEVEL  = "skill_level";
@@ -44,20 +42,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        Material mat = Material.JACK_O_LANTERN;
-        try
-        {
-            mat = Material.valueOf(settings.getString(ITEM));
-        }
-        catch (Exception ex)
-        {
-            // Invalid or missing item material
-        }
-        ItemStack item = new ItemStack(mat);
-        item.setData(new MaterialData(mat, (byte) settings.getInt(DATA, 0)));
-
-        // Get other common values
-        double speed = settings.get(SPEED, level, 3.0);
+        // Get common values
         int amount = (int) settings.get(AMOUNT, level, 1.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
 
@@ -65,12 +50,12 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         for (LivingEntity target : targets)
         {
             // Apply the spread type
-            ArrayList<ItemProjectile> list;
+            ArrayList<ParticleProjectile> list;
             if (spread.equals("rain"))
             {
                 double radius = settings.get(RADIUS, level, 2.0);
                 double height = settings.get(HEIGHT, level, 8.0);
-                list = ItemProjectile.rain(caster, target.getLocation(), item, radius, height, speed, amount, this);
+                list = ParticleProjectile.rain(caster, target.getLocation(), settings, radius, height, amount, this);
             }
             else
             {
@@ -81,11 +66,11 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                     dir.normalize();
                 }
                 double angle = settings.get(ANGLE, level, 30.0);
-                list = ItemProjectile.spread(caster, dir, target.getLocation(), item, angle, amount, this);
+                list = ParticleProjectile.spread(caster, dir, target.getLocation(), settings, angle, amount, this);
             }
 
             // Set metadata for when the callback happens
-            for (ItemProjectile p : list)
+            for (ParticleProjectile p : list)
             {
                 p.setMetadata(LEVEL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), level));
             }

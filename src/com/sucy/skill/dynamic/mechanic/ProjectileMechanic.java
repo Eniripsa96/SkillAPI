@@ -2,12 +2,13 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.api.projectile.ItemProjectile;
+import com.sucy.skill.api.projectile.ParticleProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Bat;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -20,11 +21,10 @@ import java.util.List;
 /**
  * Heals each target
  */
-public class ItemProjectileMechanic extends EffectComponent implements ProjectileCallback
+public class ProjectileMechanic extends EffectComponent
 {
-    private static final String ITEM   = "item";
-    private static final String DATA   = "item-data";
-    private static final String SPEED  = "velocity";
+    private static final String PROJECTILE = "projectile";
+    private static final String SPEED = "speed";
     private static final String ANGLE  = "angle";
     private static final String AMOUNT = "amount";
     private static final String LEVEL  = "skill_level";
@@ -44,33 +44,31 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        Material mat = Material.JACK_O_LANTERN;
-        try
-        {
-            mat = Material.valueOf(settings.getString(ITEM));
-        }
-        catch (Exception ex)
-        {
-            // Invalid or missing item material
-        }
-        ItemStack item = new ItemStack(mat);
-        item.setData(new MaterialData(mat, (byte) settings.getInt(DATA, 0)));
-
-        // Get other common values
-        double speed = settings.get(SPEED, level, 3.0);
+        // Get common values
         int amount = (int) settings.get(AMOUNT, level, 1.0);
+        double speed = settings.get(SPEED, level, 2.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
+        String projectile = settings.getString(PROJECTILE, "arrow");
+        Class<? extends Projectile> type = PROJECTILES.get(projectile);
+        if (type == null) type = Arrow.class;
 
         // Fire from each target
         for (LivingEntity target : targets)
         {
             // Apply the spread type
-            ArrayList<ItemProjectile> list;
             if (spread.equals("rain"))
             {
                 double radius = settings.get(RADIUS, level, 2.0);
                 double height = settings.get(HEIGHT, level, 8.0);
-                list = ItemProjectile.rain(caster, target.getLocation(), item, radius, height, speed, amount, this);
+
+                ArrayList<Location> locs = CustomProjectile.calcRain(target.getLocation(), radius, height, amount);
+                for (Location loc : locs)
+                {
+                    Projectile p = caster.launchProjectile(type);
+                    p.teleport(loc);
+                    p.setVelocity(new Vector(0, speed, 0));
+                    p.setMetadata(LEVEL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), level));
+                }
             }
             else
             {
@@ -81,13 +79,13 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                     dir.normalize();
                 }
                 double angle = settings.get(ANGLE, level, 30.0);
-                list = ItemProjectile.spread(caster, dir, target.getLocation(), item, angle, amount, this);
-            }
-
-            // Set metadata for when the callback happens
-            for (ItemProjectile p : list)
-            {
-                p.setMetadata(LEVEL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), level));
+                ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
+                for (Vector d : dirs)
+                {
+                    Projectile p = caster.launchProjectile(type);
+                    p.teleport(target.getLocation());
+                    p.setVelocity(d.multiply(speed));
+                }
             }
         }
 
@@ -100,8 +98,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
      * @param projectile projectile calling back for
      * @param hit        the entity hit by the projectile, if any
      */
-    @Override
-    public void callback(CustomProjectile projectile, LivingEntity hit)
+    public void callback(Projectile projectile, LivingEntity hit)
     {
         boolean remove = false;
         if (hit == null)
@@ -113,10 +110,18 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
-        executeChildren(projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
+        executeChildren((LivingEntity)projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
         if (remove)
         {
             hit.remove();
         }
     }
+
+    private static final HashMap<String, Class<? extends Projectile>> PROJECTILES = new HashMap<String, Class<? extends Projectile>>()
+    {{
+            put("arrow", Arrow.class);
+            put("egg", Egg.class);
+            put("ghast fireball", LargeFireball.class);
+            put("snowball", Snowball.class);
+    }};
 }

@@ -5,17 +5,17 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.GameMode;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.ExpBottleEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
@@ -30,6 +30,8 @@ import org.bukkit.metadata.FixedMetadataValue;
  */
 public class MainListener implements Listener
 {
+    public static final String P_CALL = "pmCallback";
+
     private static final String S_TYPE  = "sType";
     private static final int    SPAWNER = 0, EGG = 1;
 
@@ -263,6 +265,38 @@ public class MainListener implements Listener
         else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
         {
             event.getEntity().setMetadata(S_TYPE, new FixedMetadataValue(plugin, EGG));
+        }
+    }
+
+    /**
+     * Applies projectile callbacks when landing on the ground
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onLand(ProjectileHitEvent event)
+    {
+        if (event.getEntity().hasMetadata(P_CALL))
+        {
+            ((ProjectileMechanic)event.getEntity().getMetadata(P_CALL).get(0).value()).callback(event.getEntity(), null);
+        }
+    }
+
+    /**
+     * Applies projectile callbacks when striking an enemy
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onHit(EntityDamageByEntityEvent event)
+    {
+        if (event.getDamager() instanceof Projectile)
+        {
+            Projectile p = (Projectile)event.getDamager();
+            if (p.hasMetadata(P_CALL) && event.getEntity() instanceof LivingEntity)
+            {
+                ((ProjectileMechanic)p.getMetadata(P_CALL).get(0).value()).callback(p, (LivingEntity)event.getEntity());
+            }
         }
     }
 }

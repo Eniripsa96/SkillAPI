@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,17 +34,17 @@ public class ParticleProjectile extends CustomProjectile
     /**
      * Constructor
      *
-     * @param thrower  entity that shot the projectile
+     * @param shooter  entity that shot the projectile
      * @param loc      initial location of the projectile
      * @param settings settings for the projectile
      */
-    public ParticleProjectile(LivingEntity thrower, Location loc, Settings settings)
+    public ParticleProjectile(LivingEntity shooter, Location loc, Settings settings)
     {
-        super(thrower);
+        super(shooter);
 
         this.loc = loc;
         this.settings = settings;
-        this.vel = loc.getDirection().multiply(settings.get(SPEED, 3.0));
+        this.vel = loc.getDirection().multiply(settings.get(SPEED, 1.0));
         this.freq = (int) (20 * settings.get(FREQUENCY, 0.5) * 20);
         this.life = (int) (settings.get(LIFESPAN, 10.0) * 20);
 
@@ -168,5 +169,58 @@ public class ParticleProjectile extends CustomProjectile
     public void setCallback(ProjectileCallback callback)
     {
         this.callback = callback;
+    }
+
+    /**
+     * Fires a spread of projectiles from the location.
+     *
+     * @param shooter  entity shooting the projectiles
+     * @param center   the center direction of the spread
+     * @param loc      location to shoot from
+     * @param settings settings to use when firing
+     * @param angle    angle of the spread
+     * @param amount   number of projectiles to fire
+     * @param callback optional callback for when projectiles hit
+     * @return list of fired projectiles
+     */
+    public static ArrayList<ParticleProjectile> spread(LivingEntity shooter, Vector center, Location loc, Settings settings, double angle, int amount, ProjectileCallback callback)
+    {
+        ArrayList<Vector> dirs = calcSpread(center, angle, amount);
+        ArrayList<ParticleProjectile> list = new ArrayList<ParticleProjectile>();
+        for (Vector dir : dirs)
+        {
+            ParticleProjectile p = new ParticleProjectile(shooter, loc, settings);
+            p.setCallback(callback);
+            list.add(p);
+        }
+        return list;
+    }
+
+    /**
+     * Fires a spread of projectiles from the location.
+     *
+     * @param shooter  entity shooting the projectiles
+     * @param center   the center location to rain on
+     * @param settings settings to use when firing
+     * @param radius   radius of the circle
+     * @param height   height above the center location
+     * @param amount   number of projectiles to fire
+     * @param callback optional callback for when projectiles hit
+     * @return list of fired projectiles
+     */
+    public static ArrayList<ParticleProjectile> rain(LivingEntity shooter, Location center, Settings settings, double radius, double height, int amount, ProjectileCallback callback)
+    {
+        Vector vel = new Vector(0, 1, 0);
+        if (vel.getY() == 0) vel.setY(1);
+        ArrayList<Location> locs = calcRain(center, radius, height, amount);
+        ArrayList<ParticleProjectile> list = new ArrayList<ParticleProjectile>();
+        for (Location l : locs)
+        {
+            l.setDirection(vel);
+            ParticleProjectile p = new ParticleProjectile(shooter, l, settings);
+            p.setCallback(callback);
+            list.add(p);
+        }
+        return list;
     }
 }

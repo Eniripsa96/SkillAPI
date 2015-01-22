@@ -2,11 +2,14 @@ package com.sucy.skill.api.projectile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,5 +119,114 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     public void setCallback(ProjectileCallback callback)
     {
         this.callback = callback;
+    }
+
+    private static final Vector X_VEC         = new Vector(1, 0, 0);
+    private static final double DEGREE_TO_RAD = Math.PI / 180;
+    private static final Vector vel           = new Vector();
+
+    /**
+     * Calculates the directions for projectiles spread from
+     * the centered direction using the given angle and
+     * number of projectiles to be fired.
+     *
+     * @param dir    center direction of the spread
+     * @param angle  angle which to spread at
+     * @param amount amount of directions to calculate
+     * @return the list of calculated directions
+     */
+    public static ArrayList<Vector> calcSpread(Vector dir, double angle, int amount)
+    {
+        // Special cases
+        if (amount <= 0) return new ArrayList<Vector>();
+
+        ArrayList<Vector> list = new ArrayList<Vector>();
+
+        // One goes straight if odd amount
+        if (amount % 2 == 1)
+        {
+            list.add(dir);
+            amount--;
+        }
+
+        if (amount <= 0) return list;
+
+        // Get the base velocity
+        Vector base = dir.clone();
+        base.setY(0);
+        vel.setX(1);
+        vel.setY(0);
+        vel.setZ(0);
+
+        // Get the vertical angle
+        double vBaseAngle = base.angle(dir);
+        if (dir.getY() < 0) vBaseAngle = -vBaseAngle;
+        double hAngle = base.angle(X_VEC) / DEGREE_TO_RAD;
+        if (base.getZ() < 0) hAngle = -hAngle;
+
+        // Calculate directions
+        double angleIncrement = angle / (amount - 1);
+        for (int i = 0; i < amount / 2; i++)
+        {
+            for (int direction = -1; direction <= 1; direction += 2)
+            {
+                // Initial calculations
+                double bonusAngle = angle / 2 * direction - angleIncrement * i * direction;
+                double totalAngle = hAngle + bonusAngle;
+                double vAngle = vBaseAngle * Math.cos(bonusAngle * DEGREE_TO_RAD);
+                double x = Math.cos(vAngle);
+
+                // Get the velocity
+                vel.setX(x * Math.cos(totalAngle * DEGREE_TO_RAD));
+                vel.setY(Math.sin(vAngle));
+                vel.setZ(x * Math.sin(totalAngle * DEGREE_TO_RAD));
+
+                // Launch the projectile
+                list.add(vel.clone());
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * Calculates the locations to spawn projectiles to rain them down
+     * over a given location.
+     *
+     * @param loc    the center location to rain on
+     * @param radius radius of the circle
+     * @param height height above the target to use
+     * @param amount amount of locations to calculate
+     * @return list of locations to spawn projectiles
+     */
+    public static ArrayList<Location> calcRain(Location loc, double radius, double height, int amount)
+    {
+        ArrayList<Location> list = new ArrayList<Location>();
+        if (amount <= 0) return list;
+        loc.add(0, height, 0);
+
+        // One would be in the center
+        list.add(loc);
+        amount--;
+
+        // Calculate locations
+        int tiers = (amount + 7) / 8;
+        for (int i = 0; i < tiers; i++) {
+            double rad = radius * (tiers - i) / tiers;
+            int tierNum = Math.min(amount, 8);
+            double increment = 360 / tierNum;
+            double angle = (i % 2) * 22.5;
+            for (int j = 0; j < tierNum; j++) {
+                double dx = Math.cos(angle) * rad;
+                double dz = Math.sin(angle) * rad;
+                Location l = loc.clone();
+                l.add(dx, 0, dz);
+                list.add(l);
+                angle += increment;
+            }
+            amount -= tierNum;
+        }
+
+        return list;
     }
 }

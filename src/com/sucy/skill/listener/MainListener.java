@@ -6,7 +6,6 @@ import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.manager.ClassBoardManager;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,8 +30,8 @@ import org.bukkit.metadata.FixedMetadataValue;
  */
 public class MainListener implements Listener
 {
-    private static final String S_TYPE = "sType";
-    private static final int SPAWNER = 0, EGG = 1;
+    private static final String S_TYPE  = "sType";
+    private static final int    SPAWNER = 0, EGG = 1;
 
     private SkillAPI plugin;
 
@@ -105,32 +104,47 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR)
-    public void onKill(EntityDeathEvent event) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onKill(EntityDeathEvent event)
+    {
 
         // Cancel experience when applicable
-        if (event.getEntity().hasMetadata(S_TYPE)) {
+        if (event.getEntity().hasMetadata(S_TYPE))
+        {
             int value = event.getEntity().getMetadata(S_TYPE).get(0).asInt();
 
             // Block spawner mob experience
-            if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner()) {
-                if (SkillAPI.getSettings().isUseOrbs()) event.setDroppedExp(0);
+            if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner())
+            {
+                if (SkillAPI.getSettings().isUseOrbs())
+                {
+                    event.setDroppedExp(0);
+                }
                 return;
             }
 
             // Block egg mob experience
-            else if (value == EGG && SkillAPI.getSettings().isBlockEgg()) {
-                if (SkillAPI.getSettings().isUseOrbs()) event.setDroppedExp(0);
+            else if (value == EGG && SkillAPI.getSettings().isBlockEgg())
+            {
+                if (SkillAPI.getSettings().isUseOrbs())
+                {
+                    event.setDroppedExp(0);
+                }
                 return;
             }
         }
 
         Player k = event.getEntity().getKiller();
-        if (event.getEntity().getKiller() != null && event.getEntity().getKiller().hasPermission(Permissions.EXP)) {
+        if (event.getEntity().getKiller() != null && event.getEntity().getKiller().hasPermission(Permissions.EXP))
+        {
 
             // Block creative experience
-            if (event.getEntity().getKiller().getGameMode() == GameMode.CREATIVE && SkillAPI.getSettings().isBlockCreative()) {
-                if (SkillAPI.getSettings().isUseOrbs()) event.setDroppedExp(0);
+            if (event.getEntity().getKiller().getGameMode() == GameMode.CREATIVE && SkillAPI.getSettings().isBlockCreative())
+            {
+                if (SkillAPI.getSettings().isUseOrbs())
+                {
+                    event.setDroppedExp(0);
+                }
                 return;
             }
 
@@ -158,7 +172,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event)
     {
         Player player = event.getPlayer();
@@ -173,7 +187,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSmelt(FurnaceExtractEvent event)
     {
         Player player = event.getPlayer();
@@ -191,8 +205,11 @@ public class MainListener implements Listener
     @EventHandler
     public void onExpBottleBreak(ExpBottleEvent event)
     {
-        if (!(event.getEntity().getShooter() instanceof Player)) return;
-        Player player = (Player)event.getEntity().getShooter();
+        if (!(event.getEntity().getShooter() instanceof Player))
+        {
+            return;
+        }
+        Player player = (Player) event.getEntity().getShooter();
         if (SkillAPI.getSettings().isUseOrbs())
         {
             SkillAPI.getPlayerData(player).giveExp(event.getExperience(), ExpSource.EXP_BOTTLE);
@@ -205,11 +222,13 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.HIGHEST)
-    public void onExpChange(PlayerExpChangeEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onExpChange(PlayerExpChangeEvent event)
+    {
 
         // Prevent it from changing the level bar when that is being used to display class level
-        if (SkillAPI.getSettings().isUseLevelBar() && event.getPlayer().hasPermission(Permissions.EXP)) {
+        if (SkillAPI.getSettings().isUseLevelBar() && event.getPlayer().hasPermission(Permissions.EXP))
+        {
             event.setAmount(0);
         }
     }
@@ -235,11 +254,14 @@ public class MainListener implements Listener
      * @param event event details
      */
     @EventHandler
-    public void onSpawn(CreatureSpawnEvent event) {
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER) {
+    public void onSpawn(CreatureSpawnEvent event)
+    {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER)
+        {
             event.getEntity().setMetadata(S_TYPE, new FixedMetadataValue(plugin, SPAWNER));
         }
-        else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG) {
+        else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
+        {
             event.getEntity().setMetadata(S_TYPE, new FixedMetadataValue(plugin, EGG));
         }
     }

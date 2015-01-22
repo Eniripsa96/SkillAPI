@@ -2,7 +2,6 @@ package com.sucy.skill.task;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 

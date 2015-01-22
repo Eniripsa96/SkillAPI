@@ -528,8 +528,14 @@ public final class PlayerData
             health += c.getHealth();
             maxMana += c.getMana();
         }
-        if (health == bonusHealth) health += SkillAPI.getSettings().getDefaultHealth();
-        if (health == 0) health = 20;
+        if (health == bonusHealth)
+        {
+            health += SkillAPI.getSettings().getDefaultHealth();
+        }
+        if (health == 0)
+        {
+            health = 20;
+        }
         VersionManager.setMaxHealth(player, health);
         mana = Math.min(mana, maxMana);
 
@@ -541,7 +547,10 @@ public final class PlayerData
                 player.setHealthScaled(true);
                 player.setHealthScale(20);
             }
-            else player.setHealthScaled(false);
+            else
+            {
+                player.setHealthScaled(false);
+            }
         }
     }
 
@@ -734,7 +743,7 @@ public final class PlayerData
             {
                 PlayerClass c = getMainClass();
                 player.setLevel(c.getLevel());
-                player.setExp((float)(c.getExp() / c.getRequiredExp()));
+                player.setExp((float) (c.getExp() / c.getRequiredExp()));
             }
             else
             {
@@ -746,7 +755,10 @@ public final class PlayerData
 
     public void startPassives(Player player)
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            return;
+        }
         for (PlayerSkill skill : skills.values())
         {
             if (skill.isUnlocked() && (skill.getData() instanceof PassiveSkill))
@@ -758,7 +770,10 @@ public final class PlayerData
 
     public void stopPassives(Player player)
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            return;
+        }
         for (PlayerSkill skill : skills.values())
         {
             if (skill.isUnlocked() && (skill.getData() instanceof PassiveSkill))

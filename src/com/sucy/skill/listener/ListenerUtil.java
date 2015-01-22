@@ -25,10 +25,13 @@ public class ListenerUtil
         return null;
     }
 
-    public static String getName(Entity entity) {
+    public static String getName(Entity entity)
+    {
         String name = entity.getClass().getSimpleName().toLowerCase().replace("craft", "");
-        if (entity instanceof Skeleton) {
-            if (((Skeleton)entity).getSkeletonType() == Skeleton.SkeletonType.WITHER) {
+        if (entity instanceof Skeleton)
+        {
+            if (((Skeleton) entity).getSkeletonType() == Skeleton.SkeletonType.WITHER)
+            {
                 name = "wither" + name;
             }
         }

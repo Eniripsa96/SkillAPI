@@ -3,7 +3,6 @@ package com.sucy.skill.data;
 import com.rit.sucy.config.Config;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.enums.TreeType;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;

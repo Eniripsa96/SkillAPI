@@ -95,7 +95,10 @@ public abstract class RPGClass
     public ChatColor getPrefixColor()
     {
         String colors = ChatColor.getLastColors(prefix);
-        if (colors.length() < 2) return ChatColor.WHITE;
+        if (colors.length() < 2)
+        {
+            return ChatColor.WHITE;
+        }
         return ChatColor.getByChar(colors.charAt(1));
     }
 

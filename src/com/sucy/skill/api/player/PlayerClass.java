@@ -277,14 +277,14 @@ public final class PlayerClass
     public void giveExp(double amount, ExpSource source)
     {
         // Cannot give a non-positive amount of exp
-        if (amount <= 0 || level >= classData.getMaxLevel() || !classData.receivesExp(source))
+        if (amount <= 0 || level >= classData.getMaxLevel())
         {
             return;
         }
 
         // Call an event for the experience gained
         PlayerExperienceGainEvent event = new PlayerExperienceGainEvent(this, amount, source);
-        event.setCancelled(classData.receivesExp(source));
+        event.setCancelled(!classData.receivesExp(source));
         Bukkit.getPluginManager().callEvent(event);
 
         // Add experience if not cancelled

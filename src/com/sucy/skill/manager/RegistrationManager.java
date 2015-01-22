@@ -126,14 +126,9 @@ public class RegistrationManager
         }
 
         // Load example classes if enabled
-        if (SkillAPI.getSettings().isUseExampleClasses())
-        {
-            log(" - SkillAPI Examples", 1);
-            DynamicClass wiz = new DynamicClass(api, "Wizard");
-            wiz.addSkills("Testing", "Another Skill");
-            api.addClass(wiz);
-            //api.getExampleClasses().registerClasses(api);
-        }
+        DynamicClass wiz = new DynamicClass(api, "Wizard");
+        wiz.addSkills("Testing", "Another Skill");
+        api.addClass(wiz);
 
         skillConfig.saveConfig();
         classConfig.saveConfig();

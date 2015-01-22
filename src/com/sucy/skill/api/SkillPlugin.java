@@ -10,7 +10,6 @@ import com.sucy.skill.SkillAPI;
  */
 public interface SkillPlugin
 {
-
     /**
      * <p>Method to add new skills to the game</p>
      * <p>Use api.addSkills(Skill ... skills) to add them</p>

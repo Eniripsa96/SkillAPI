@@ -523,12 +523,13 @@ public final class PlayerData
         // Update maxes
         double health = bonusHealth;
         maxMana = bonusMana;
-        if (!hasClass()) health += SkillAPI.getSettings().getDefaultHealth();
         for (PlayerClass c : classes.values())
         {
             health += c.getHealth();
             maxMana += c.getMana();
         }
+        if (health == bonusHealth) health += SkillAPI.getSettings().getDefaultHealth();
+        if (health == 0) health = 20;
         VersionManager.setMaxHealth(player, health);
         mana = Math.min(mana, maxMana);
 

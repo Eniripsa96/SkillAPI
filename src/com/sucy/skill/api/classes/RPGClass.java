@@ -280,7 +280,7 @@ public abstract class RPGClass
 
     public void disallowExpSource(ExpSource source)
     {
-        expSources |= source.getId();
+        expSources &= (~source.getId());
     }
 
     public void setManaRegen(double amount)

@@ -1,19 +1,19 @@
 package com.sucy.skill.api.event;
 
-import com.sucy.skill.api.projectile.ItemProjectile;
+import com.sucy.skill.api.projectile.ParticleProjectile;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * <p>An event for when an item projectile hits something.</p>
+ * <p>An event for when a particle projectile hits something.</p>
  */
-public class ItemProjectileHitEvent extends Event
+public class ParticleProjectileHitEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
 
-    private final ItemProjectile projectile;
-    private final LivingEntity   target;
+    private final ParticleProjectile projectile;
+    private final LivingEntity       target;
 
     /**
      * <p>Initializes a new event.</p>
@@ -21,7 +21,7 @@ public class ItemProjectileHitEvent extends Event
      * @param projectile the projectile that hit something
      * @param target     the thing that the projectile hit
      */
-    public ItemProjectileHitEvent(ItemProjectile projectile, LivingEntity target)
+    public ParticleProjectileHitEvent(ParticleProjectile projectile, LivingEntity target)
     {
         this.projectile = projectile;
         this.target = target;
@@ -32,7 +32,7 @@ public class ItemProjectileHitEvent extends Event
      *
      * @return the projectile that hit something
      */
-    public ItemProjectile getProjectile()
+    public ParticleProjectile getProjectile()
     {
         return projectile;
     }

@@ -14,12 +14,13 @@ import java.util.List;
  * Applies child components to the closest all nearby entities around
  * each of the current targets.
  */
-public class AreaTarget extends EffectComponent
+public class ConeTarget extends EffectComponent
 {
-    private static final String RADIUS = "radius";
-    private static final String ALLY   = "group";
-    private static final String MAX    = "max";
-    private static final String WALL   = "wall";
+    private static final String ANGLE = "angle";
+    private static final String RANGE = "range";
+    private static final String ALLY  = "group";
+    private static final String MAX   = "max";
+    private static final String WALL  = "wall";
 
     /**
      * Executes the component
@@ -34,7 +35,8 @@ public class AreaTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double radius = settings.get(RADIUS, level, 3.0);
+        double range = settings.get(RANGE, level, 3.0);
+        double angle = settings.get(ANGLE, level, 90.0);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
@@ -42,25 +44,16 @@ public class AreaTarget extends EffectComponent
         Location wallCheckLoc = caster.getLocation().add(0, 1.5, 0);
         for (LivingEntity t : targets)
         {
-            ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-            List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            for (int i = 0; i < entities.size() && list.size() < max; i++)
+            List<LivingEntity> list = TargetHelper.getConeTargets(caster, angle, range);
+            for (int i = 0; i < list.size(); i++)
             {
-                if (entities.get(i) instanceof LivingEntity)
+                LivingEntity target = list.get(i);
+                if (i >= max
+                        || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
+                        || (!both && ally != Protection.isAlly(caster, target)))
                 {
-                    LivingEntity target = (LivingEntity) entities.get(i);
-                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
-                    {
-                        continue;
-                    }
-                    if (both || ally == Protection.isAlly(caster, target))
-                    {
-                        list.add((LivingEntity) entities.get(i));
-                        if (list.size() >= max)
-                        {
-                            break;
-                        }
-                    }
+                    list.remove(i);
+                    i--;
                 }
             }
             worked = executeChildren(caster, level, list) || worked;

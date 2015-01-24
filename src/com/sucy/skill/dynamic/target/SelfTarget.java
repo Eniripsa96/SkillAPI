@@ -30,7 +30,7 @@ public class SelfTarget extends EffectComponent
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             list.add(caster);
-            worked = worked || executeChildren(caster, level, list);
+            worked = executeChildren(caster, level, list) || worked;
 
             if (!settings.getBool(REPEATED))
             {

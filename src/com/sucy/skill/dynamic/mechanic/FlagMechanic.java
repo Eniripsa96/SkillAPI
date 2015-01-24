@@ -38,6 +38,6 @@ public class FlagMechanic extends EffectComponent
         {
             FlagManager.addFlag(target, key, ticks);
         }
-        return true;
+        return targets.size() > 0;
     }
 }

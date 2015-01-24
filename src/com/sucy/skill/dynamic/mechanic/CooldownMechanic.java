@@ -30,12 +30,13 @@ public class CooldownMechanic extends EffectComponent
         String skill = settings.getString(SKILL);
         String type = settings.getString(TYPE).toLowerCase();
         double value = settings.get(VALUE, level);
-        PlayerSkill playerSkill = this.skill.getPlayerData().getSkill(skill);
+        PlayerSkill skillData = getSkillData(caster);
+        if (skill == null) return false;
 
         boolean worked = false;
         if (skill.equals("all"))
         {
-            for (PlayerSkill data : this.skill.getPlayerData().getSkills())
+            for (PlayerSkill data : skillData.getPlayerData().getSkills())
             {
                 if (data.isOnCooldown() == (value < 0))
                 {
@@ -43,7 +44,7 @@ public class CooldownMechanic extends EffectComponent
                 }
                 if (type.equals("percent"))
                 {
-                    data.subtractCooldown(value * data.getData().getCooldown(data.getLevel()) / 100);
+                    data.subtractCooldown(value * data.getCooldown() / 100);
                 }
                 else
                 {
@@ -52,15 +53,15 @@ public class CooldownMechanic extends EffectComponent
                 worked = true;
             }
         }
-        else if (playerSkill != null && playerSkill.isOnCooldown() == (value > 0))
+        else if (skillData != null && skillData.isOnCooldown() == (value > 0))
         {
             if (type.equals("percent"))
             {
-                playerSkill.subtractCooldown(value * playerSkill.getData().getCooldown(playerSkill.getLevel()) / 100);
+                skillData.subtractCooldown(value * skillData.getCooldown() / 100);
             }
             else
             {
-                playerSkill.subtractCooldown(value);
+                skillData.subtractCooldown(value);
             }
             worked = true;
         }

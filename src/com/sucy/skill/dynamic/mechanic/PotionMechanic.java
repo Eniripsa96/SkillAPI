@@ -43,7 +43,7 @@ public class PotionMechanic extends EffectComponent
             {
                 target.addPotionEffect(new PotionEffect(potion, ticks, tier), true);
             }
-            return true;
+            return targets.size() > 0;
         }
         catch (Exception ex)
         {

@@ -45,6 +45,6 @@ public class WarpTargetMechanic extends EffectComponent
                 caster.teleport(target);
             }
         }
-        return true;
+        return targets.size() > 0;
     }
 }

@@ -61,7 +61,12 @@ public class FlagData
      */
     public void removeFlag(String flag)
     {
-        flags.remove(flag);
+        if (flags.containsKey(flag))
+        {
+            flags.remove(flag);
+            FlagExpireEvent event = new FlagExpireEvent(entity, flag);
+            Bukkit.getPluginManager().callEvent(event);
+        }
     }
 
     /**
@@ -69,6 +74,11 @@ public class FlagData
      */
     public void clear()
     {
+        for (String flag : flags.keySet())
+        {
+            FlagExpireEvent event = new FlagExpireEvent(entity, flag);
+            Bukkit.getPluginManager().callEvent(event);
+        }
         flags.clear();
         for (BukkitTask task : tasks.values())
         {

@@ -1,16 +1,18 @@
 package com.sucy.skill.dynamic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerSkill;
+import com.sucy.skill.api.projectile.ItemProjectile;
+import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
-import com.sucy.skill.dynamic.target.AreaTarget;
-import com.sucy.skill.dynamic.target.LinearTarget;
-import com.sucy.skill.dynamic.target.SelfTarget;
-import com.sucy.skill.dynamic.target.SingleTarget;
+import com.sucy.skill.dynamic.target.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,9 +31,9 @@ public abstract class EffectComponent
     protected final Settings settings = new Settings();
 
     /**
-     * The skill containing this component
+     * Parent class of the component
      */
-    public PlayerSkill skill;
+    protected Skill skill;
 
     /**
      * Executes the children of the component using the given targets
@@ -53,6 +55,21 @@ public abstract class EffectComponent
     }
 
     /**
+     * Gets the skill data for the caster
+     *
+     * @param caster caster of the skill
+     * @return skill data for the caster or null if not found
+     */
+    protected PlayerSkill getSkillData(LivingEntity caster)
+    {
+        if (caster instanceof Player)
+        {
+            return SkillAPI.getPlayerData((Player)caster).getSkill(skill.getName());
+        }
+        else return null;
+    }
+
+    /**
      * Executes the component (to be implemented)
      *
      * @param caster  caster of the skill
@@ -68,10 +85,12 @@ public abstract class EffectComponent
     /**
      * Loads component data from the configuration
      *
+     * @param skill  owning skill of the component
      * @param config config data to load from
      */
-    public void load(ConfigurationSection config)
+    public void load(Skill skill, ConfigurationSection config)
     {
+        this.skill = skill;
         if (config == null)
         {
             return;
@@ -99,7 +118,7 @@ public abstract class EffectComponent
                 }
                 else
                 {
-                    Bukkit.getLogger().warning("Invalid component type for skill \"" + skill.getData().getName() + "\" - " + type);
+                    Bukkit.getLogger().warning("Invalid component type - " + type);
                     continue;
                 }
                 if (map.containsKey(key.toLowerCase()))
@@ -107,7 +126,7 @@ public abstract class EffectComponent
                     try
                     {
                         EffectComponent child = map.get(key.toLowerCase()).newInstance();
-                        child.load(children.getConfigurationSection(key));
+                        child.load(skill, children.getConfigurationSection(key));
                         this.children.add(child);
                         Bukkit.getLogger().info("Loaded component: " + key);
                     }
@@ -123,7 +142,9 @@ public abstract class EffectComponent
     private static final HashMap<String, Class<? extends EffectComponent>> targets = new HashMap<String, Class<? extends EffectComponent>>()
     {{
             put("area", AreaTarget.class);
+            put("cone", ConeTarget.class);
             put("linear", LinearTarget.class);
+            put("location", LocationTarget.class);
             put("self", SelfTarget.class);
             put("single", SingleTarget.class);
         }};
@@ -160,19 +181,22 @@ public abstract class EffectComponent
             put("fire", FireMechanic.class);
             put("flag", FlagMechanic.class);
             put("heal", HealMechanic.class);
+            put("item projectile", ItemProjectileMechanic.class);
             put("launch", LaunchMechanic.class);
             put("lightning", LightningMechanic.class);
             put("mana", ManaMechanic.class);
             put("particle", ParticleMechanic.class);
-            //put("particle projectile", ParticleProjectileMechanic.class);
-            //put("potion", PotionMechanic.class);
-            //put("projectile", ProjectileMechanic.class);
-            //put("push", PushMechanic.class);
-            //put("sound", SoundMechanic.class);
-            //put("status", StatusMechanic.class);
-            //put("warp", WarpMechanic.class);
-            //put("warp location", WarpLocationMechanic.class);
-            //put("warp random", WarpRandomMechanic.class);
-            //put("warp target", WarpTargetMechanic.class);
+            put("particle projectile", ParticleProjectileMechanic.class);
+            put("passive", PassiveMechanic.class);
+            put("potion", PotionMechanic.class);
+            put("projectile", ProjectileMechanic.class);
+            put("push", PushMechanic.class);
+            put("repeat", RepeatMechanic.class);
+            put("sound", SoundMechanic.class);
+            put("status", StatusMechanic.class);
+            put("warp", WarpMechanic.class);
+            put("warp location", WarpLocMechanic.class);
+            put("warp random", WarpRandomMechanic.class);
+            put("warp target", WarpTargetMechanic.class);
         }};
 }

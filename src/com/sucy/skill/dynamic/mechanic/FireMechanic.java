@@ -35,6 +35,6 @@ public class FireMechanic extends EffectComponent
         {
             target.setFireTicks(Math.max(ticks, target.getFireTicks()));
         }
-        return true;
+        return targets.size() > 0;
     }
 }

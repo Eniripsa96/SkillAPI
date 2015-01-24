@@ -43,6 +43,6 @@ public class LaunchMechanic extends EffectComponent
             Vector nor = dir.crossProduct(up);
             target.setVelocity(dir.multiply(forward).add(nor.multiply(right)).setY(upward));
         }
-        return true;
+        return targets.size() > 0;
     }
 }

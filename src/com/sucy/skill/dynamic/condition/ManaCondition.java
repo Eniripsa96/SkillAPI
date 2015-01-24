@@ -2,6 +2,7 @@ package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -43,6 +44,7 @@ public class ManaCondition extends EffectComponent
             }
             double value;
             PlayerData data = SkillAPI.getPlayerData((Player) target);
+            PlayerSkill skill = getSkillData(caster);
             double mana = data.getMana();
             if (type.equals("difference percent"))
             {

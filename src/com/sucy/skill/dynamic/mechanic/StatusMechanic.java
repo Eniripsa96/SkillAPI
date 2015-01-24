@@ -1,20 +1,18 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 
 /**
- * Strikes lightning about each target with an offset
+ * Applies a flag to each target
  */
-public class LightningMechanic extends EffectComponent
+public class StatusMechanic extends EffectComponent
 {
-    private Vector up = new Vector(0, 1, 0);
-
-    private static final String FORWARD = "forward";
-    private static final String RIGHT   = "right";
+    private static final String KEY     = "status";
+    private static final String SECONDS = "seconds";
 
     /**
      * Executes the component
@@ -28,18 +26,17 @@ public class LightningMechanic extends EffectComponent
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
-        if (targets.size() == 0)
+        if (targets.size() == 0 || !settings.has(KEY))
         {
             return false;
         }
 
-        double forward = settings.get(FORWARD, level, 0);
-        double right = settings.get(RIGHT, level, 0);
+        String key = settings.getString(KEY, "stun").toLowerCase();
+        double seconds = settings.get(SECONDS, level, 3.0);
+        int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
-            Vector dir = target.getLocation().getDirection().setY(0).normalize();
-            Vector nor = dir.crossProduct(up);
-            target.getWorld().strikeLightning(target.getLocation().add(dir.multiply(forward).add(nor.multiply(right))));
+            FlagManager.addFlag(target, key, ticks);
         }
         return targets.size() > 0;
     }

@@ -33,6 +33,6 @@ public class ParticleMechanic extends EffectComponent
             ParticleHelper.play(target.getLocation(), settings);
         }
 
-        return true;
+        return targets.size() > 0;
     }
 }

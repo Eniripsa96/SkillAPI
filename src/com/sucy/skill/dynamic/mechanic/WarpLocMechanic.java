@@ -63,6 +63,6 @@ public class WarpLocMechanic extends EffectComponent
         {
             target.teleport(loc);
         }
-        return true;
+        return targets.size() > 0;
     }
 }

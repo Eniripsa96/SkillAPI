@@ -13,7 +13,7 @@ public class FlagManager
     private static final HashMap<UUID, FlagData> data = new HashMap<UUID, FlagData>();
 
     /**
-     * Retrieves the flag data for an entity. This returns null if
+     * Retrieves the flag data for an entity. This creates new data if
      * no existing data is found.
      *
      * @param entity entity to retrieve the data for
@@ -22,7 +22,7 @@ public class FlagManager
      */
     public static FlagData getFlagData(LivingEntity entity)
     {
-        return getFlagData(entity, false);
+        return getFlagData(entity, true);
     }
 
     /**
@@ -41,7 +41,7 @@ public class FlagManager
         {
             return null;
         }
-        if (!data.containsKey(entity.getUniqueId()))
+        if (!data.containsKey(entity.getUniqueId()) && create)
         {
             data.put(entity.getUniqueId(), new FlagData(entity));
         }

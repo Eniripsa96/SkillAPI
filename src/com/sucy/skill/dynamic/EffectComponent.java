@@ -2,9 +2,7 @@ package com.sucy.skill.dynamic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
-import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.projectile.ItemProjectile;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
@@ -128,7 +126,6 @@ public abstract class EffectComponent
                         EffectComponent child = map.get(key.toLowerCase()).newInstance();
                         child.load(skill, children.getConfigurationSection(key));
                         this.children.add(child);
-                        Bukkit.getLogger().info("Loaded component: " + key);
                     }
                     catch (Exception ex)
                     {
@@ -177,9 +174,13 @@ public abstract class EffectComponent
             put("command", CommandMechanic.class);
             put("cooldown", CooldownMechanic.class);
             put("damage", DamageMechanic.class);
+            put("damage buff", DamageBuffMechanic.class);
+            put("defense buff", DefenseBuffMechanic.class);
             put("delay", DelayMechanic.class);
             put("fire", FireMechanic.class);
             put("flag", FlagMechanic.class);
+            put("flag clear", FlagClearMechanic.class);
+            put("flag toggle", FlagToggleMechanic.class);
             put("heal", HealMechanic.class);
             put("item projectile", ItemProjectileMechanic.class);
             put("launch", LaunchMechanic.class);
@@ -188,6 +189,7 @@ public abstract class EffectComponent
             put("particle", ParticleMechanic.class);
             put("particle projectile", ParticleProjectileMechanic.class);
             put("passive", PassiveMechanic.class);
+            put("permission", PermissionMechanic.class);
             put("potion", PotionMechanic.class);
             put("projectile", ProjectileMechanic.class);
             put("push", PushMechanic.class);

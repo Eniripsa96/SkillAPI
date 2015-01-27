@@ -4,6 +4,8 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.util.BuffManager;
+import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
 import com.sucy.skill.manager.ClassBoardManager;
@@ -89,6 +91,9 @@ public class MainListener implements Listener
     @EventHandler
     public void onDeath(PlayerDeathEvent event)
     {
+        FlagManager.clearFlags(event.getEntity());
+        BuffManager.clearData(event.getEntity());
+
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
         if (data.hasClass())
         {
@@ -109,6 +114,8 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onKill(EntityDeathEvent event)
     {
+        FlagManager.clearFlags(event.getEntity());
+        BuffManager.clearData(event.getEntity());
 
         // Cancel experience when applicable
         if (event.getEntity().hasMetadata(S_TYPE))
@@ -288,7 +295,7 @@ public class MainListener implements Listener
      * @param event event details
      */
     @EventHandler
-    public void onHit(EntityDamageByEntityEvent event)
+    public void onShoot(EntityDamageByEntityEvent event)
     {
         if (event.getDamager() instanceof Projectile)
         {
@@ -298,5 +305,26 @@ public class MainListener implements Listener
                 ((ProjectileMechanic)p.getMetadata(P_CALL).get(0).value()).callback(p, (LivingEntity)event.getEntity());
             }
         }
+    }
+
+    /**
+     * Applies damage and defense buffs when something takes or deals
+     * damage to something else.
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onDamage(EntityDamageByEntityEvent event)
+    {
+        LivingEntity damager = ListenerUtil.getDamager(event);
+        event.setDamage(BuffManager.modifyDealtDamage(damager, event.getDamage()));
+
+        if (!(event.getEntity() instanceof LivingEntity))
+        {
+            return;
+        }
+
+        LivingEntity damaged = (LivingEntity)event.getEntity();
+        event.setDamage(BuffManager.modifyDealtDamage(damaged, event.getDamage()));
     }
 }

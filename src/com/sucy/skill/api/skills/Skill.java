@@ -4,8 +4,10 @@ import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.config.LanguageConfig;
 import com.rit.sucy.text.TextFormatter;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.language.DefaultsNodes;
@@ -16,6 +18,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -330,6 +333,16 @@ public abstract class Skill
                     p.sendMessage(RPGFilter.SKILL.setReplacement(getName()).apply(Filter.PLAYER.setReplacement(player.getName()).apply(message)));
                 }
             }
+        }
+    }
+
+    public void damage(LivingEntity target, double damage, LivingEntity source)
+    {
+        SkillDamageEvent event = new SkillDamageEvent(source, target, damage);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled())
+        {
+            VersionManager.damage(target, source, event.getAmount());
         }
     }
 

@@ -1,9 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -37,12 +34,7 @@ public class DamageMechanic extends EffectComponent
             {
                 amount = damage * target.getMaxHealth() / 100;
             }
-            SkillDamageEvent event = new SkillDamageEvent(caster, target, amount);
-            Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled())
-            {
-                VersionManager.damage(target, caster, event.getAmount());
-            }
+            skill.damage(target, amount, caster);
         }
         return targets.size() > 0;
     }

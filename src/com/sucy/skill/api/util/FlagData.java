@@ -1,8 +1,11 @@
 package com.sucy.skill.api.util;
 
 import com.sucy.skill.api.event.FlagExpireEvent;
+import com.sucy.skill.hook.PluginChecker;
+import com.sucy.skill.hook.VaultHook;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -50,6 +53,10 @@ public class FlagData
                 tasks.remove(flag).cancel();
             }
         }
+        else if (flag.startsWith("perm:") && PluginChecker.isVaultActive() && entity instanceof Player)
+        {
+            VaultHook.add((Player)entity, flag.substring(5));
+        }
         flags.put(flag, System.currentTimeMillis() + ticks * 50);
         tasks.put(flag, new FlagTask(flag).runTaskLater(plugin, ticks));
     }
@@ -64,8 +71,17 @@ public class FlagData
         if (flags.containsKey(flag))
         {
             flags.remove(flag);
+            tasks.remove(flag).cancel();
             FlagExpireEvent event = new FlagExpireEvent(entity, flag);
             Bukkit.getPluginManager().callEvent(event);
+            if (flag.startsWith("perm:") && PluginChecker.isVaultActive() && entity instanceof Player)
+            {
+                VaultHook.remove((Player)entity, flag.substring(5));
+            }
+            if (flags.size() == 0)
+            {
+                FlagManager.clearFlags(entity);
+            }
         }
     }
 
@@ -76,10 +92,8 @@ public class FlagData
     {
         for (String flag : flags.keySet())
         {
-            FlagExpireEvent event = new FlagExpireEvent(entity, flag);
-            Bukkit.getPluginManager().callEvent(event);
+            removeFlag(flag);
         }
-        flags.clear();
         for (BukkitTask task : tasks.values())
         {
             task.cancel();
@@ -152,13 +166,7 @@ public class FlagData
                 FlagManager.clearFlags(entity);
                 return;
             }
-            flags.remove(flag);
-            FlagExpireEvent event = new FlagExpireEvent(entity, flag);
-            Bukkit.getPluginManager().callEvent(event);
-            if (flags.size() == 0)
-            {
-                FlagManager.clearFlags(entity);
-            }
+            removeFlag(flag);
         }
     }
 }

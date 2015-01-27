@@ -36,6 +36,7 @@ import com.sucy.skill.data.ComboManager;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
+import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.manager.CmdManager;
@@ -98,6 +99,9 @@ public class SkillAPI extends JavaPlugin
         // Load settings
         language = new LanguageConfig(this, "language");
         settings = new Settings(this);
+
+        // Hook plugins
+        PluginChecker.isVaultActive();
 
         // Set up managers
         comboManager = new ComboManager();

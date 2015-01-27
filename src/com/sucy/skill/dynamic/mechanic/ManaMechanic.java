@@ -60,7 +60,7 @@ public class ManaMechanic extends EffectComponent
             }
             else
             {
-                data.useMana(amount, ManaCost.SKILL_EFFECT);
+                data.useMana(-amount, ManaCost.SKILL_EFFECT);
             }
         }
         return worked;

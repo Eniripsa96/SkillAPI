@@ -29,6 +29,9 @@ public class RegistrationManager
         STARTUP, SKILL, CLASS, DONE
     }
 
+    private static final String SKILL_DIR = "dynamic" + File.separator + "skill" + File.separator;
+    private static final String CLASS_DIR = "dynamic" + File.separator + "class" + File.separator;
+
     private final SkillAPI api;
 
     private Config skillConfig;
@@ -83,7 +86,7 @@ public class RegistrationManager
         if (!skillConfig.getConfig().getBoolean("loaded", false))
         {
             log("Loading dynamic skills from skills.yml...", 1);
-            //skillConfig.getConfig().set("loaded", true);
+            skillConfig.getConfig().set("loaded", true);
             for (String key : skillConfig.getConfig().getKeys(false))
             {
                 if (!skillConfig.getConfig().isConfigurationSection(key))
@@ -96,8 +99,10 @@ public class RegistrationManager
                     DynamicSkill skill = new DynamicSkill(key);
                     api.skills.put(key.toLowerCase(), skill);
                     skill.load(skillConfig.getConfig().getConfigurationSection(key));
-                    Config sConfig = new Config(api, "dynamic" + File.separator + "skill" + File.separator + key);
-                    skill.save(sConfig.getConfig().createSection(key));
+                    Config sConfig = new Config(api, SKILL_DIR + key);
+                    sConfig.clear();
+                    skill.save(sConfig.getConfig());
+                    skill.save(skillConfig.getConfig().createSection(key));
                     sConfig.saveConfig();
                     log("Loaded the dynamic skill: " + key, 2);
                 }
@@ -110,6 +115,35 @@ public class RegistrationManager
         else
         {
             log("skills.yml doesn't have any changes, skipping it", 1);
+        }
+
+        // Load individual dynamic skills
+        log("Loading individual dynamic skill files...", 1);
+        File skillRoot = new File(api.getDataFolder().getPath() + SKILL_DIR);
+        if (skillRoot.exists()) {
+            File[] files = skillRoot.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    String name = file.getName().replace(".yml", "");
+                    try {
+                        if (!SkillAPI.isSkillRegistered(name)) {
+                            Config sConfig = new Config(api, SKILL_DIR + name);
+                            DynamicSkill skill = new DynamicSkill(name);
+                            api.skills.put(name.toLowerCase(), skill);
+                            skill.load(sConfig.getConfig());
+                            sConfig.clear();
+                            skill.save(sConfig.getConfig());
+                            skill.save(skillConfig.getConfig().createSection(name));
+                            log("Loaded the dynamic skill: " + name, 2);
+                        }
+                        else if (SkillAPI.getSkill(name) instanceof DynamicSkill) log(name + " is already loaded, skipping it", 3);
+                        else api.getLogger().severe("Duplicate skill detected: " + name);
+                    }
+                    catch (Exception ex) {
+                        api.getLogger().severe("Failed to load skill: " + name);
+                    }
+                }
+            }
         }
 
         log("Loading classes...", 1);
@@ -125,18 +159,61 @@ public class RegistrationManager
             }
         }
 
-        // Load example classes if enabled
-        DynamicClass wiz = new DynamicClass(api, "Wizard");
-        wiz.addSkills("Testing", "Another Skill");
-        api.addClass(wiz);
+        // Load dynamic classes from classes.yml
+        if (!classConfig.getConfig().getBoolean("loaded", false)) {
+            log("Loading dynamic classes from classes.yml...", 1);
+            classConfig.getConfig().set("loaded", true);
+            for (String key : classConfig.getConfig().getKeys(false)) {
+                if (key.equals("loaded")) continue;
+                if (!SkillAPI.isClassRegistered(key)) {
+                    DynamicClass tree = new DynamicClass(api, key);
+                    api.classes.put(key.toLowerCase(), tree);
+                    tree.load(classConfig.getConfig().getConfigurationSection(key));
+                    Config cConfig = new Config(api, CLASS_DIR + key);
+                    cConfig.clear();
+                    tree.save(cConfig.getConfig());
+                    tree.save(classConfig.getConfig().createSection(key));
+                    cConfig.saveConfig();
+                    log("Loaded the dynamic class: " + key, 2);
+                }
+                else api.getLogger().severe("Duplicate class detected: " + key);
+            }
+        }
+        else log("classes.yml doesn't have any changes, skipping it", 1);
+
+        // Load individual dynamic classes
+        log("Loading individual dynamic class files...", 1);
+        File classRoot = new File(api.getDataFolder().getPath() + File.separator + "dynamic" + File.separator + "class");
+        if (classRoot.exists()) {
+            File[] files = classRoot.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    try {
+                        String name = file.getName().replace(".yml", "");
+                        if (!SkillAPI.isClassRegistered(name)) {
+                            Config cConfig = new Config(api, "dynamic" + File.separator + "class" + File.separator + name);
+                            DynamicClass tree = new DynamicClass(api, name);
+                            api.classes.put(name.toLowerCase(), tree);
+                            tree.load(cConfig.getConfig().getConfigurationSection(name));
+                            cConfig.clear();
+                            tree.save(cConfig.getConfig());
+                            tree.save(classConfig.getConfig().createSection(name));
+                            log("Loaded the dynamic class: " + name, 2);
+                        }
+                        else if (SkillAPI.getClass(name) instanceof DynamicClass) log(name + " is already loaded, skipping it", 3);
+                        else api.getLogger().severe("Duplicate class detected: " + name);
+                    }
+                    catch (Exception ex) {
+                        api.getLogger().severe("Failed to load class file: " + file.getName() + " - Invalid format");
+                    }
+                }
+            }
+        }
 
         skillConfig.saveConfig();
         classConfig.saveConfig();
 
         mode = Mode.DONE;
-
-        // TODO
-        // Arrange trees
 
         log("Registration complete", 0);
         log(" - " + SkillAPI.getSkills().size() + " skills", 0);

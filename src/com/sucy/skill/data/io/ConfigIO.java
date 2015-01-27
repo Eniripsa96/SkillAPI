@@ -1,6 +1,8 @@
 package com.sucy.skill.data.io;
 
 import com.rit.sucy.config.Config;
+import com.rit.sucy.version.VersionManager;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
@@ -44,9 +46,15 @@ public class ConfigIO extends IOManager
     public PlayerAccounts loadData(OfflinePlayer player)
     {
         PlayerAccounts data = new PlayerAccounts(player);
-        if (config.getConfig().contains(player.getUniqueId().toString()))
+        String playerKey = new VersionPlayer(player).getIdString();
+        if (!playerKey.equals(player.getName()) && config.getConfig().contains(player.getName()))
         {
-            ConfigurationSection file = config.getConfig().getConfigurationSection(player.getUniqueId().toString());
+            config.getConfig().set(playerKey, config.getConfig().getConfigurationSection(player.getName()));
+            config.getConfig().set(player.getName(), null);
+        }
+        if (config.getConfig().contains(playerKey))
+        {
+            ConfigurationSection file = config.getConfig().getConfigurationSection(playerKey);
 
             ConfigurationSection accounts = file.getConfigurationSection(ACCOUNTS);
             for (String accountKey : accounts.getKeys(false))

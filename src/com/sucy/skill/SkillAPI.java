@@ -26,6 +26,7 @@ package com.sucy.skill;
 
 import com.rit.sucy.config.LanguageConfig;
 import com.rit.sucy.player.PlayerUUIDs;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;
@@ -62,7 +63,7 @@ public class SkillAPI extends JavaPlugin
 
     public final HashMap<String, Skill>        skills  = new HashMap<String, Skill>();
     public final HashMap<String, RPGClass>     classes = new HashMap<String, RPGClass>();
-    public final HashMap<UUID, PlayerAccounts> players = new HashMap<UUID, PlayerAccounts>();
+    public final HashMap<String, PlayerAccounts> players = new HashMap<String, PlayerAccounts>();
     public final ArrayList<String>             groups  = new ArrayList<String>();
 
     private LanguageConfig language;
@@ -384,13 +385,13 @@ public class SkillAPI extends JavaPlugin
      */
     public static PlayerAccounts loadPlayerData(String name)
     {
-        if (singleton == null)
+        if (singleton == null || name == null)
         {
             return null;
         }
         OfflinePlayer player = PlayerUUIDs.getOfflinePlayer(name);
         PlayerAccounts data = singleton.io.loadData(player);
-        singleton.players.put(player.getUniqueId(), data);
+        singleton.players.put(new VersionPlayer(player).getIdString(), data);
         return data;
     }
 
@@ -405,19 +406,20 @@ public class SkillAPI extends JavaPlugin
      */
     public static PlayerAccounts getPlayerAccountData(OfflinePlayer player)
     {
-        if (singleton == null)
+        if (singleton == null || player == null)
         {
             return null;
         }
-        else if (!singleton.players.containsKey(player.getUniqueId()))
+        String id = new VersionPlayer(player).getIdString();
+        if (!singleton.players.containsKey(id))
         {
             PlayerAccounts data = new PlayerAccounts(player);
-            singleton.players.put(player.getUniqueId(), data);
+            singleton.players.put(id, data);
             return data;
         }
         else
         {
-            return singleton.players.get(player.getUniqueId());
+            return singleton.players.get(id);
         }
     }
 
@@ -427,7 +429,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return all SkillAPI player data
      */
-    public static HashMap<UUID, PlayerAccounts> getPlayerAccountData()
+    public static HashMap<String, PlayerAccounts> getPlayerAccountData()
     {
         if (singleton == null)
         {

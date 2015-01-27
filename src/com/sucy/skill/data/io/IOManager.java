@@ -6,7 +6,6 @@ import org.bukkit.OfflinePlayer;
 
 public abstract class IOManager
 {
-
     protected final SkillAPI api;
 
     protected IOManager(SkillAPI api)

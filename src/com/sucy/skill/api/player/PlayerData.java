@@ -25,6 +25,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * Represents one account for a player which can contain one class from each group
+ * and the skills in each of those classes. You should not instantiate this class
+ * yourself and instead get it from the SkillAPI static methods.
+ */
 public final class PlayerData
 {
     private final HashMap<String, PlayerClass>   classes = new HashMap<String, PlayerClass>();
@@ -38,6 +43,11 @@ public final class PlayerData
     private double         bonusHealth;
     private double         bonusMana;
 
+    /**
+     * Initializes a new account data representation for a player.
+     *
+     * @param player player to store the data for
+     */
     public PlayerData(OfflinePlayer player)
     {
         this.player = player;
@@ -55,21 +65,31 @@ public final class PlayerData
         this.skillBar = new PlayerSkillBar(this);
     }
 
+    /**
+     * Retrieves the Bukkit player object of the owner
+     *
+     * @return Bukkit player object of the owner or null if offline
+     */
     public Player getPlayer()
     {
         return player.getPlayer();
     }
 
+    /**
+     * Retrieves the name of the owner
+     *
+     * @return name of the owner
+     */
     public String getPlayerName()
     {
         return player.getName();
     }
 
-    public UUID getUUID()
-    {
-        return player.getUniqueId();
-    }
-
+    /**
+     * Retrieves the skill bar data for the owner
+     *
+     * @return skill bar data of the owner
+     */
     public PlayerSkillBar getSkillBar()
     {
         return skillBar;
@@ -81,6 +101,14 @@ public final class PlayerData
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Checks if the owner has a skill by name. This is not case-sensitive
+     * and does not check to see if the skill is unlocked. It only checks if
+     * the skill is available to upgrade/use.
+     *
+     * @param name name of the skill
+     * @return     true if has the skill, false otherwise
+     */
     public boolean hasSkill(String name)
     {
         if (name == null)
@@ -90,6 +118,12 @@ public final class PlayerData
         return skills.containsKey(name.toLowerCase());
     }
 
+    /**
+     * Retrieves a skill of the owner by name. This is not case-sensitive.
+     *
+     * @param name name of the skill
+     * @return     data for the skill or null if the player doesn't have the skill
+     */
     public PlayerSkill getSkill(String name)
     {
         if (name == null)
@@ -99,22 +133,48 @@ public final class PlayerData
         return skills.get(name.toLowerCase());
     }
 
+    /**
+     * Retrieves all of the skill data the player has. Modifying this
+     * collection will not modify the player's owned skills but modifying
+     * one of the elements will change that element's data for the player.
+     *
+     * @return collection of skill data for the owner
+     */
     public Collection<PlayerSkill> getSkills()
     {
         return skills.values();
     }
 
+    /**
+     * Retrieves the level of a skill for the owner. This is not case-sensitive.
+     *
+     * @param name name of the skill
+     * @return     level of the skill or 0 if not found
+     */
     public int getSkillLevel(String name)
     {
         PlayerSkill skill = getSkill(name);
         return skill == null ? 0 : skill.getLevel();
     }
 
+    /**
+     * Gives the player a skill outside of the normal class skills.
+     * This skill will not show up in a skill tree.
+     *
+     * @param skill skill to give the player
+     */
     public void giveSkill(Skill skill)
     {
         giveSkill(skill, null);
     }
 
+    /**
+     * Gives the player a skill using the class data as a parent. This
+     * skill will not show up in a skill tree.
+     *
+     * @param skill  skill to give the player
+     * @param parent parent class data
+     */
     public void giveSkill(Skill skill, PlayerClass parent)
     {
         String key = skill.getName().toLowerCase();
@@ -124,6 +184,15 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Upgrades a skill owned by the player. The player must own the skill,
+     * have enough skill points, meet the level and skill requirements, and
+     * not have maxed out the skill already in order to upgrade the skill.
+     * This will consume the skill point cost while upgrading the skill.
+     *
+     * @param skill skill to upgrade
+     * @return      true if successfully was upgraded, false otherwise
+     */
     public boolean upgradeSkill(Skill skill)
     {
         // Cannot be null
@@ -193,6 +262,14 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Downgrades a skill owned by the player. The player must own the skill and it must
+     * not currently be level 0 for the player to downgrade the skill. This will refund
+     * the skill point cost when downgrading the skill.
+     *
+     * @param skill skill to downgrade
+     * @return      true if successfully downgraded, false otherwise
+     */
     public boolean downgradeSkill(Skill skill)
     {
         // Cannot be null
@@ -260,11 +337,22 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Shows the skill tree for the player. If the player has multiple trees,
+     * this will show the list of skill trees they can view.
+     */
     public void showSkills()
     {
         showSkills(getPlayer());
     }
 
+    /**
+     * Shows the skill tree for the player. If the player has multiple trees,
+     * this will show the list of skill trees they can view.
+     *
+     * @param player player to show the skill tree for
+     * @return       true if able to show the player, false otherwise
+     */
     public boolean showSkills(Player player)
     {
         // Cannot show an invalid player, and cannot show no skills
@@ -299,21 +387,44 @@ public final class PlayerData
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Checks whether or not the player has as least one class they have professed as.
+     *
+     * @return true if professed, false otherwise
+     */
     public boolean hasClass()
     {
         return classes.size() > 0;
     }
 
+    /**
+     * Retrieves the collection of the data for classes the player has professed as.
+     *
+     * @return collection of the data for professed classes
+     */
     public Collection<PlayerClass> getClasses()
     {
         return classes.values();
     }
 
+    /**
+     * Retrieves the data of a class the player professed as by group. This is
+     * case-sensitive.
+     *
+     * @param group group to get the profession for
+     * @return      professed class data or null if not professed for the group
+     */
     public PlayerClass getClass(String group)
     {
         return classes.get(group);
     }
 
+    /**
+     * Retrieves the data of the professed class under the main class group. The
+     * "main" group is determined by the setting in the config.
+     *
+     * @return main professed class data or null if not professed for the main group
+     */
     public PlayerClass getMainClass()
     {
         String main = SkillAPI.getSettings().getMainGroup();
@@ -331,6 +442,14 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Sets the professed class for the player for the corresponding group. This
+     * will not save any skills, experience, or levels of the previous class if
+     * there was any. The new class will start at level 1 with 0 experience.
+     *
+     * @param rpgClass class to assign to the player
+     * @return         the player-specific data for the new class
+     */
     public PlayerClass setClass(RPGClass rpgClass)
     {
 
@@ -348,11 +467,25 @@ public final class PlayerData
         return classes.get(rpgClass.getGroup());
     }
 
+    /**
+     * Checks whether or not the player is professed as the class
+     * without checking child classes.
+     *
+     * @param rpgClass class to check
+     * @return         true if professed as the specific class, false otherwise
+     */
     public boolean isExactClass(RPGClass rpgClass)
     {
         return rpgClass != null && classes.get(rpgClass.getGroup()).getData() == rpgClass;
     }
 
+    /**
+     * Checks whether or not the player is professed as the class
+     * or any of its children.
+     *
+     * @param rpgClass class to check
+     * @return         true if professed as the class or one of its children, false otherwise
+     */
     public boolean isClass(RPGClass rpgClass)
     {
         if (rpgClass == null)
@@ -373,6 +506,14 @@ public final class PlayerData
         return false;
     }
 
+    /**
+     * Checks whether or not the player can profess into the given class. This
+     * checks to make sure the player is currently professed as the parent of the
+     * given class and is high enough of a level to do so.
+     *
+     * @param rpgClass class to check
+     * @return         true if can profess, false otherwise
+     */
     public boolean canProfess(RPGClass rpgClass)
     {
         if (classes.containsKey(rpgClass.getGroup()))
@@ -386,6 +527,13 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Resets the class data for the owner under the given group. This will remove
+     * the profession entirely, leaving no remaining data until the player professes
+     * again to a starting class.
+     *
+     * @param group group to reset
+     */
     public void reset(String group)
     {
         PlayerClass playerClass = classes.remove(group);
@@ -402,6 +550,10 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Resets all profession data for the player. This clears all professions the player
+     * has, leaving no remaining data until the player professes again to a starting class.
+     */
     public void resetAll()
     {
         for (String key : classes.keySet())
@@ -410,15 +562,27 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Professes the player into the class if they are able to. This will
+     * reset the class data if the group options are set to reset upon
+     * profession. Otherwise, all skills, experience, and levels of the
+     * current class under the group will be retained and carried over into
+     * the new profession.
+     *
+     * @param rpgClass class to profess into
+     * @return         true if successfully professed, false otherwise
+     */
     public boolean profess(RPGClass rpgClass)
     {
         if (rpgClass != null && canProfess(rpgClass))
         {
+            // Reset data if applicable
             if (SkillAPI.getSettings().getGroupSettings(rpgClass.getGroup()).isProfessReset())
             {
                 reset(rpgClass.getGroup());
             }
 
+            // Inherit previous class data if any
             PlayerClass current = classes.get(rpgClass.getGroup());
             RPGClass previous;
             if (current == null)
@@ -432,6 +596,8 @@ public final class PlayerData
                 previous = current.getData();
                 current.setClassData(rpgClass);
             }
+
+            // Add skills
             for (Skill skill : rpgClass.getSkills())
             {
                 if (!skills.containsKey(skill.getKey()))
@@ -439,6 +605,7 @@ public final class PlayerData
                     skills.put(skill.getKey(), new PlayerSkill(this, skill, current));
                 }
             }
+
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(current, previous, current.getData()));
             return true;
         }
@@ -518,6 +685,11 @@ public final class PlayerData
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Updates the player's max health and mana using class data.
+     *
+     * @param player player to update the health and mana for
+     */
     public void updateHealthAndMana(Player player)
     {
         // Update maxes
@@ -554,6 +726,13 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Gives max health to the player. This does not carry over to other accounts
+     * and will reset when SkillAPI is disabled. This does however carry over through
+     * death and professions. This will accept negative values.
+     *
+     * @param amount amount of bonus health to give
+     */
     public void addMaxHealth(double amount)
     {
         bonusHealth += amount;
@@ -565,27 +744,54 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Gives max mana to the player. This does not carry over to other accounts
+     * and will reset when SkillAPI is disabled. This does however carry over through
+     * death and professions. This will accept negative values.
+     *
+     * @param amount amount of bonus mana to give
+     */
     public void addMaxMana(double amount)
     {
+        bonusMana += amount;
         maxMana += amount;
         mana += amount;
     }
 
+    /**
+     * Retrieves the amount of mana the player currently has.
+     *
+     * @return current player mana
+     */
     public double getMana()
     {
         return mana;
     }
 
+    /**
+     * Checks whether or not the player has at least the specified amount of mana
+     *
+     * @param amount required mana amount
+     * @return true if has the amount of mana, false otherwise
+     */
     public boolean hasMana(double amount)
     {
         return mana >= amount;
     }
 
+    /**
+     * Retrieves the max amount of mana the player can have including bonus mana
+     *
+     * @return max amount of mana the player can have
+     */
     public double getMaxMana()
     {
         return maxMana;
     }
 
+    /**
+     * Regenerates mana for the player based on the regen amounts of professed classes
+     */
     public void regenMana()
     {
         double amount = 0;
@@ -602,11 +808,24 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Gives mana to the player from an unknown source. This will not
+     * cause the player's mana to go above their max amount.
+     *
+     * @param amount amount of mana to give
+     */
     public void giveMana(double amount)
     {
         giveMana(amount, ManaSource.SPECIAL);
     }
 
+    /**
+     * Gives mana to the player from the given mana source. This will not
+     * cause the player's mana to go above the max amount.
+     *
+     * @param amount amount of mana to give
+     * @param source source of the mana
+     */
     public void giveMana(double amount, ManaSource source)
     {
         PlayerManaGainEvent event = new PlayerManaGainEvent(this, amount, source);
@@ -622,11 +841,24 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Takes mana away from the player for an unknown reason. This will not
+     * cause the player to fall below 0 mana.
+     *
+     * @param amount amount of mana to take away
+     */
     public void useMana(double amount)
     {
         useMana(amount, ManaCost.SPECIAL);
     }
 
+    /**
+     * Takes mana away from the player for the specified reason. This will not
+     * cause the player to fall below 0 mana.
+     *
+     * @param amount amount of mana to take away
+     * @param cost   source of the mana cost
+     */
     public void useMana(double amount, ManaCost cost)
     {
         PlayerManaLossEvent event = new PlayerManaLossEvent(this, amount, cost);
@@ -648,21 +880,47 @@ public final class PlayerData
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Retrieves a skill the player has bound by material
+     *
+     * @param mat material to get the bind for
+     * @return skill bound to the material or null if none are bound
+     */
     public PlayerSkill getBoundSkill(Material mat)
     {
         return binds.get(mat);
     }
 
+    /**
+     * Retrieves the bound data for the player. Modifying this map will
+     * modify the bindings the player has.
+     *
+     * @return the skill binds data for the player
+     */
     public HashMap<Material, PlayerSkill> getBinds()
     {
         return binds;
     }
 
+    /**
+     * Checks whether or not the material has a skill bound to it
+     *
+     * @param mat material to check
+     * @return true if a skill is bound to it, false otherwise
+     */
     public boolean isBound(Material mat)
     {
         return binds.containsKey(mat);
     }
 
+    /**
+     * Binds a skill to a material for the player. The bind will not work if the skill
+     * was already bound to the material.
+     *
+     * @param mat   material to bind the skill to
+     * @param skill skill to bind to the material
+     * @return true if was able to bind the skill, false otherwise
+     */
     public boolean bind(Material mat, PlayerSkill skill)
     {
         // Make sure the skill is owned by the player
@@ -706,11 +964,24 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Clears a skill binding on the material. If there is no binding on the
+     * material, this will do nothing.
+     *
+     * @param mat material to clear bindings from
+     * @return true if a binding was cleared, false otherwise
+     */
     public boolean clearBind(Material mat)
     {
         return binds.remove(mat) != null;
     }
 
+    /**
+     * Clears the skill binding for the given skill. This will remove the bindings
+     * on all materials involving the skill.
+     *
+     * @param skill skill to unbind
+     */
     public void clearBinds(Skill skill)
     {
         for (Material key : binds.keySet())
@@ -723,6 +994,9 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Clears all binds the player currently has
+     */
     public void clearAllBinds()
     {
         binds.clear();
@@ -734,10 +1008,18 @@ public final class PlayerData
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Updates the level bar for the player if they're online and
+     * the setting is enabled. The level bar will be set to the
+     * level and experience progress of the main group's profession.
+     * If the main group doesn't have a profession, this will fall back
+     * to the first profession found or set the level to 0 if not
+     * professed as any class.
+     */
     public void updateLevelBar()
     {
         Player player = getPlayer();
-        if (player != null)
+        if (player != null && SkillAPI.getSettings().isUseLevelBar())
         {
             if (hasClass())
             {
@@ -753,6 +1035,12 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Starts passive abilities for the player if they are online. This is
+     * already called by the API and shouldn't be called by other plugins.
+     *
+     * @param player player to set the passive skills up for
+     */
     public void startPassives(Player player)
     {
         if (player == null)
@@ -768,6 +1056,12 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Stops passive abilities for the player if they are online. This is already
+     * called by the API and shouldn't be called by other plugins.
+     *
+     * @param player player to stop the passive skills for
+     */
     public void stopPassives(Player player)
     {
         if (player == null)
@@ -783,11 +1077,27 @@ public final class PlayerData
         }
     }
 
+    /**
+     * Casts a skill by name for the player. In order to cast the skill,
+     * the player must be online, have the skill unlocked, have enough mana,
+     * have the skill off cooldown, and have a proper target if applicable.
+     *
+     * @param skillName name of the skill ot cast
+     * @return true if successfully cast the skill, false otherwise
+     */
     public boolean cast(String skillName)
     {
         return cast(skills.get(skillName.toLowerCase()));
     }
 
+    /**
+     * Casts a skill for the player. In order to cast the skill,
+     * the player must be online, have the skill unlocked, have enough mana,
+     * have the skill off cooldown, and have a proper target if applicable.
+     *
+     * @param skill skill to cast
+     * @return true if successfully cast the skill, false otherwise
+     */
     public boolean cast(PlayerSkill skill)
     {
         // Invalid skill
@@ -835,7 +1145,6 @@ public final class PlayerData
         // Skill Shots
         else if (skill.getData() instanceof SkillShot)
         {
-
             Player p = getPlayer();
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
             Bukkit.getPluginManager().callEvent(event);

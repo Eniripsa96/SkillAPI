@@ -101,7 +101,7 @@ public class RegistrationManager
                     skill.load(skillConfig.getConfig().getConfigurationSection(key));
                     Config sConfig = new Config(api, SKILL_DIR + key);
                     sConfig.clear();
-                    skill.save(sConfig.getConfig());
+                    skill.save(sConfig.getConfig().createSection(key));
                     skill.save(skillConfig.getConfig().createSection(key));
                     sConfig.saveConfig();
                     log("Loaded the dynamic skill: " + key, 2);
@@ -130,10 +130,11 @@ public class RegistrationManager
                             Config sConfig = new Config(api, SKILL_DIR + name);
                             DynamicSkill skill = new DynamicSkill(name);
                             api.skills.put(name.toLowerCase(), skill);
-                            skill.load(sConfig.getConfig());
+                            skill.load(sConfig.getConfig().getConfigurationSection(name));
                             sConfig.clear();
-                            skill.save(sConfig.getConfig());
+                            skill.save(sConfig.getConfig().createSection(name));
                             skill.save(skillConfig.getConfig().createSection(name));
+                            sConfig.saveConfig();
                             log("Loaded the dynamic skill: " + name, 2);
                         }
                         else if (SkillAPI.getSkill(name) instanceof DynamicSkill) log(name + " is already loaded, skipping it", 3);
@@ -171,7 +172,7 @@ public class RegistrationManager
                     tree.load(classConfig.getConfig().getConfigurationSection(key));
                     Config cConfig = new Config(api, CLASS_DIR + key);
                     cConfig.clear();
-                    tree.save(cConfig.getConfig());
+                    tree.save(cConfig.getConfig().createSection(key));
                     tree.save(classConfig.getConfig().createSection(key));
                     cConfig.saveConfig();
                     log("Loaded the dynamic class: " + key, 2);
@@ -196,8 +197,9 @@ public class RegistrationManager
                             api.classes.put(name.toLowerCase(), tree);
                             tree.load(cConfig.getConfig().getConfigurationSection(name));
                             cConfig.clear();
-                            tree.save(cConfig.getConfig());
+                            tree.save(cConfig.getConfig().createSection(name));
                             tree.save(classConfig.getConfig().createSection(name));
+                            cConfig.saveConfig();
                             log("Loaded the dynamic class: " + name, 2);
                         }
                         else if (SkillAPI.getClass(name) instanceof DynamicClass) log(name + " is already loaded, skipping it", 3);

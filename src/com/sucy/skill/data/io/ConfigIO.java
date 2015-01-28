@@ -197,7 +197,7 @@ public class ConfigIO extends IOManager
     @Override
     public void saveAll()
     {
-        for (Map.Entry<UUID, PlayerAccounts> entry : SkillAPI.getPlayerAccountData().entrySet())
+        for (Map.Entry<String, PlayerAccounts> entry : SkillAPI.getPlayerAccountData().entrySet())
         {
             saveData(entry.getValue());
         }

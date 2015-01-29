@@ -1,5 +1,7 @@
 package com.sucy.skill.dynamic;
 
+import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
@@ -10,6 +12,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,7 +74,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public void initialize(LivingEntity user, int level)
     {
-        trigger(user, level, Trigger.INITIALIZE);
+        trigger(user, user, level, Trigger.INITIALIZE);
         active.put(user.getUniqueId(), level);
     }
 
@@ -98,7 +101,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public boolean cast(LivingEntity user, int level)
     {
-        return trigger(user, level, Trigger.CAST);
+        return trigger(user, user, level, Trigger.CAST);
     }
 
     /**
@@ -111,11 +114,110 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     {
         if (active.containsKey(event.getEntity().getUniqueId()))
         {
-            trigger(event.getEntity(), active.get(event.getEntity().getUniqueId()), Trigger.DEATH);
+            trigger(event.getEntity(), event.getEntity(), active.get(event.getEntity().getUniqueId()), Trigger.DEATH);
         }
     }
 
-    private boolean trigger(LivingEntity user, int level, Trigger trigger)
+    /**
+     * Applies physical damage triggers
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onPhysical(PhysicalDamageEvent event)
+    {
+        LivingEntity damager = event.getDamager();
+        LivingEntity target = event.getTarget();
+        boolean projectile = event.isProjectile();
+
+        // Physical receieved
+        EffectComponent component = components.get(Trigger.TOOK_PHYSICAL_DAMAGE);
+        if (component != null && active.containsKey(target.getUniqueId()))
+        {
+            String type = component.settings.getString("type", "both").toLowerCase();
+            double min = component.settings.get("dmg-min");
+            double max = component.settings.get("dmg-max");
+
+            if (event.getDamage() >= min && event.getDamage() <= max
+                    && (type.equals("both") || type.equals("projectile") == projectile))
+            {
+                trigger(target, damager, active.get(event.getTarget().getUniqueId()), Trigger.TOOK_PHYSICAL_DAMAGE);
+            }
+        }
+
+        // Physical dealt
+        component = components.get(Trigger.PHYSICAL_DAMAGE);
+        if (component != null && active.containsKey(damager.getUniqueId()))
+        {
+            String type = component.settings.getString("type", "both").toLowerCase();
+            double min = component.settings.get("dmg-min");
+            double max = component.settings.get("dmg-max");
+
+            if (event.getDamage() >= min && event.getDamage() <= max
+                    && (type.equals("both") || type.equals("projectile") == projectile))
+            {
+                trigger(damager, target, active.get(event.getTarget().getUniqueId()), Trigger.PHYSICAL_DAMAGE);
+            }
+        }
+    }
+
+    /**
+     * Applies skill damage triggers
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onSkillDamage(SkillDamageEvent event)
+    {
+        LivingEntity damager = event.getCaster();
+        LivingEntity target = event.getTarget();
+
+        // Skill received
+        EffectComponent component = components.get(Trigger.TOOK_SKILL_DAMAGE);
+        if (component != null && active.containsKey(target.getUniqueId()))
+        {
+            double min = component.settings.get("dmg-min");
+            double max = component.settings.get("dmg-max");
+
+            if (event.getDamage() >= min && event.getDamage() <= max)
+            {
+                trigger(target, damager, active.get(event.getTarget().getUniqueId()), Trigger.TOOK_SKILL_DAMAGE);
+            }
+        }
+
+        // Skill dealt
+        component = components.get(Trigger.SKILL_DAMAGE);
+        if (component != null && active.containsKey(damager.getUniqueId()))
+        {
+            double min = component.settings.get("dmg-min");
+            double max = component.settings.get("dmg-max");
+
+            if (event.getDamage() >= min && event.getDamage() <= max)
+            {
+                trigger(damager, target, active.get(event.getTarget().getUniqueId()), Trigger.TOOK_SKILL_DAMAGE);
+            }
+        }
+    }
+
+    /**
+     * Applies crouch triggers
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onCrouch(PlayerToggleSneakEvent event)
+    {
+        EffectComponent component = components.get(Trigger.CROUCH);
+        if (component != null && active.containsKey(event.getPlayer().getUniqueId()))
+        {
+            if (event.isSneaking() != component.settings.getString("type", "start crouching").toLowerCase().equals("stop crouching"))
+            {
+                trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getUniqueId()), Trigger.CROUCH);
+            }
+        }
+    }
+
+    private boolean trigger(LivingEntity user, LivingEntity target, int level, Trigger trigger)
     {
         if (user != null && components.containsKey(trigger))
         {

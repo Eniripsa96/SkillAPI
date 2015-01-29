@@ -22,7 +22,7 @@ public enum Trigger
     /**
      * Trigger effects when the player inflicts non-skill damage
      */
-    MELEE_DAMAGE,
+    PHYSICAL_DAMAGE,
 
     /**
      * Trigger effects when the player inflicts skill damage
@@ -47,7 +47,7 @@ public enum Trigger
     /**
      * Trigger effects when taking non-skill damage
      */
-    TOOK_MELEE_DAMAGE,
+    TOOK_PHYSICAL_DAMAGE,
 
     /**
      * Trigger effects when taking skill damage

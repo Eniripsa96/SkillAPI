@@ -156,6 +156,7 @@ public abstract class EffectComponent
             put("fire", FireCondition.class);
             put("flag", FlagCondition.class);
             put("health", HealthCondition.class);
+            put("item", ItemCondition.class);
             put("light", LightCondition.class);
             put("lore", LoreCondition.class);
             put("mana", ManaCondition.class);
@@ -175,6 +176,7 @@ public abstract class EffectComponent
             put("cooldown", CooldownMechanic.class);
             put("damage", DamageMechanic.class);
             put("damage buff", DamageBuffMechanic.class);
+            put("damage lore", DamageLoreMechanic.class);
             put("defense buff", DefenseBuffMechanic.class);
             put("delay", DelayMechanic.class);
             put("fire", FireMechanic.class);
@@ -200,5 +202,6 @@ public abstract class EffectComponent
             put("warp location", WarpLocMechanic.class);
             put("warp random", WarpRandomMechanic.class);
             put("warp target", WarpTargetMechanic.class);
+            put("wolf", WolfMechanic.class);
         }};
 }

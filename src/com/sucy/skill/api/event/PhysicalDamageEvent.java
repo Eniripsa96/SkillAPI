@@ -5,25 +5,27 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class SkillDamageEvent extends Event implements Cancellable
+public class PhysicalDamageEvent extends Event implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
-    private LivingEntity caster;
+    private LivingEntity damager;
     private LivingEntity target;
     private double       damage;
+    private boolean      projectile;
     private boolean      cancelled;
 
-    public SkillDamageEvent(LivingEntity caster, LivingEntity target, double damage)
+    public PhysicalDamageEvent(LivingEntity damager, LivingEntity target, double damage, boolean projectile)
     {
-        this.caster = caster;
+        this.damager = damager;
         this.target = target;
         this.damage = damage;
+        this.projectile = projectile;
         this.cancelled = false;
     }
 
-    public LivingEntity getCaster()
+    public LivingEntity getDamager()
     {
-        return caster;
+        return damager;
     }
 
     public LivingEntity getTarget()
@@ -39,6 +41,11 @@ public class SkillDamageEvent extends Event implements Cancellable
     public void setAmount(double amount)
     {
         damage = amount;
+    }
+
+    public boolean isProjectile()
+    {
+        return projectile;
     }
 
     @Override

@@ -26,6 +26,7 @@ package com.sucy.skill;
 
 import com.rit.sucy.config.LanguageConfig;
 import com.rit.sucy.player.PlayerUUIDs;
+import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerAccounts;
@@ -37,11 +38,13 @@ import com.sucy.skill.data.ComboManager;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
+import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -127,7 +130,7 @@ public class SkillAPI extends JavaPlugin
         // Load player data
         for (Player player : getServer().getOnlinePlayers())
         {
-            PlayerData data = loadPlayerData(player.getName()).getActiveData();
+            PlayerData data = loadPlayerData(player).getActiveData();
             data.updateHealthAndMana(player);
         }
     }
@@ -143,6 +146,8 @@ public class SkillAPI extends JavaPlugin
         {
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
         }
+
+        WolfMechanic.removeWolves();
 
         // Clear skill bars before disabling
         for (Player player : getServer().getOnlinePlayers())
@@ -381,15 +386,14 @@ public class SkillAPI extends JavaPlugin
      * load a player's data without them logging on. This should be run
      * asynchronously since it is loading configuration files.
      *
-     * @param name name of the player to load
+     * @param player player to load the data for
      */
-    public static PlayerAccounts loadPlayerData(String name)
+    public static PlayerAccounts loadPlayerData(OfflinePlayer player)
     {
-        if (singleton == null || name == null)
+        if (singleton == null || player == null)
         {
             return null;
         }
-        OfflinePlayer player = PlayerUUIDs.getOfflinePlayer(name);
         PlayerAccounts data = singleton.io.loadData(player);
         singleton.players.put(new VersionPlayer(player).getIdString(), data);
         return data;

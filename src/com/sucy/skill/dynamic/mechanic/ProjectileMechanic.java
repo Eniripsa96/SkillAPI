@@ -5,6 +5,7 @@ import com.sucy.skill.api.projectile.ItemProjectile;
 import com.sucy.skill.api.projectile.ParticleProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -85,6 +86,7 @@ public class ProjectileMechanic extends EffectComponent
                     Projectile p = caster.launchProjectile(type);
                     p.teleport(target.getLocation());
                     p.setVelocity(d.multiply(speed));
+                    p.setMetadata(MechanicListener.P_CALL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), this));
                 }
             }
         }

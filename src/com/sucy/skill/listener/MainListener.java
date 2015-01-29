@@ -1,14 +1,17 @@
 package com.sucy.skill.listener;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
-import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
 import com.sucy.skill.manager.ClassBoardManager;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -32,8 +35,6 @@ import org.bukkit.metadata.FixedMetadataValue;
  */
 public class MainListener implements Listener
 {
-    public static final String P_CALL = "pmCallback";
-
     private static final String S_TYPE  = "sType";
     private static final int    SPAWNER = 0, EGG = 1;
 
@@ -59,7 +60,14 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLogin(AsyncPlayerPreLoginEvent event)
     {
-        SkillAPI.loadPlayerData(event.getName());
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_7_5))
+        {
+            SkillAPI.loadPlayerData(Bukkit.getOfflinePlayer(event.getUniqueId()));
+        }
+        else
+        {
+            SkillAPI.loadPlayerData(VersionManager.getOfflinePlayer(event.getName()));
+        }
     }
 
     /**
@@ -144,11 +152,10 @@ public class MainListener implements Listener
         }
 
         Player k = event.getEntity().getKiller();
-        if (event.getEntity().getKiller() != null && event.getEntity().getKiller().hasPermission(Permissions.EXP))
+        if (k != null && k.hasPermission(Permissions.EXP))
         {
-
             // Block creative experience
-            if (event.getEntity().getKiller().getGameMode() == GameMode.CREATIVE && SkillAPI.getSettings().isBlockCreative())
+            if (k.getGameMode() == GameMode.CREATIVE && SkillAPI.getSettings().isBlockCreative())
             {
                 if (SkillAPI.getSettings().isUseOrbs())
                 {
@@ -157,7 +164,7 @@ public class MainListener implements Listener
                 return;
             }
 
-            PlayerData player = SkillAPI.getPlayerData(event.getEntity().getKiller());
+            PlayerData player = SkillAPI.getPlayerData(k);
 
             // Give experience based on orbs when enabled
             if (SkillAPI.getSettings().isUseOrbs())
@@ -276,48 +283,16 @@ public class MainListener implements Listener
     }
 
     /**
-     * Applies projectile callbacks when landing on the ground
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onLand(ProjectileHitEvent event)
-    {
-        if (event.getEntity().hasMetadata(P_CALL))
-        {
-            ((ProjectileMechanic)event.getEntity().getMetadata(P_CALL).get(0).value()).callback(event.getEntity(), null);
-        }
-    }
-
-    /**
-     * Applies projectile callbacks when striking an enemy
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onShoot(EntityDamageByEntityEvent event)
-    {
-        if (event.getDamager() instanceof Projectile)
-        {
-            Projectile p = (Projectile)event.getDamager();
-            if (p.hasMetadata(P_CALL) && event.getEntity() instanceof LivingEntity)
-            {
-                ((ProjectileMechanic)p.getMetadata(P_CALL).get(0).value()).callback(p, (LivingEntity)event.getEntity());
-            }
-        }
-    }
-
-    /**
      * Applies damage and defense buffs when something takes or deals
      * damage to something else.
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOW)
     public void onDamage(EntityDamageByEntityEvent event)
     {
         LivingEntity damager = ListenerUtil.getDamager(event);
-        event.setDamage(BuffManager.modifyDealtDamage(damager, event.getDamage()));
+        VersionManager.setDamage(event, BuffManager.modifyDealtDamage(damager, event.getDamage()));
 
         if (!(event.getEntity() instanceof LivingEntity))
         {
@@ -325,6 +300,22 @@ public class MainListener implements Listener
         }
 
         LivingEntity damaged = (LivingEntity)event.getEntity();
-        event.setDamage(BuffManager.modifyDealtDamage(damaged, event.getDamage()));
+        VersionManager.setDamage(event, BuffManager.modifyDealtDamage(damaged, event.getDamage()));
+    }
+
+    /**
+     * Launches physical damage events to differentiate skill damage from physical damage
+     *
+     * @param event event details
+     */
+    @EventHandler (priority = EventPriority.LOWEST)
+    public void onPhysicalDamage(EntityDamageByEntityEvent event)
+    {
+        if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity)) return;
+
+        PhysicalDamageEvent e = new PhysicalDamageEvent(ListenerUtil.getDamager(event), (LivingEntity)event.getEntity(), event.getDamage(), event.getDamager() instanceof Projectile);
+        Bukkit.getPluginManager().callEvent(e);
+        event.setDamage(e.getDamage());
+        event.setCancelled(e.isCancelled());
     }
 }

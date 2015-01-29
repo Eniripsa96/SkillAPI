@@ -342,8 +342,18 @@ public abstract class Skill
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled())
         {
-            VersionManager.damage(target, source, event.getAmount());
+            skillDamage = true;
+            VersionManager.damage(target, source, event.getDamage());
         }
+    }
+
+    private static boolean skillDamage = false;
+
+    public static boolean isSkillDamage()
+    {
+        boolean result = skillDamage;
+        skillDamage = false;
+        return result;
     }
 
     private static final String NAME      = "name";

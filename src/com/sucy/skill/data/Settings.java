@@ -4,12 +4,16 @@ import com.rit.sucy.config.Config;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>The management class for SkillAPI's config.yml settings.</p>
@@ -33,6 +37,7 @@ public class Settings
     public Settings(SkillAPI plugin)
     {
         this.plugin = plugin;
+        this.plugin.saveDefaultConfig();
         config = plugin.getConfig();
         reload();
     }
@@ -105,9 +110,14 @@ public class Settings
     private static final String ACCOUNT_BASE = "Accounts.";
     private static final String ACCOUNT_MAIN = ACCOUNT_BASE + "main-class-group";
     private static final String ACCOUNT_EACH = ACCOUNT_BASE + "one-per-class";
+    private static final String ACCOUNT_MAX  = ACCOUNT_BASE + "max-accounts";
+    private static final String ACCOUNT_PERM = ACCOUNT_BASE + "perm-accounts";
 
     private String  mainGroup;
     private boolean onePerClass;
+    private int     maxAccounts;
+
+    private HashMap<String, Integer> permAccounts = new HashMap<String, Integer>();
 
     /**
      * Retrieves the main class group for displaying prefixes
@@ -131,10 +141,61 @@ public class Settings
         return onePerClass;
     }
 
+    /**
+     * Retrieves the max accounts allowed for most players
+     *
+     * @return max accounts allowed for most players
+     */
+    public int getMaxAccounts()
+    {
+        return maxAccounts;
+    }
+
+    /**
+     * Retrieves the max amount of accounts allowed for a specific player
+     * by checking permissions for additional accounts.
+     *
+     * @param player player to check the max allowed accounts for
+     * @return number of allowed accounts
+     */
+    public int getMaxAccounts(Player player)
+    {
+        if (player == null) return maxAccounts;
+        int max = maxAccounts;
+        for (Map.Entry<String, Integer> entry : permAccounts.entrySet())
+        {
+            if (player.hasPermission(entry.getKey()))
+            {
+                max = Math.max(max, entry.getValue());
+            }
+        }
+        return max;
+    }
+
     private void loadAccountSettings()
     {
         mainGroup = config.getString(ACCOUNT_MAIN);
         onePerClass = config.getBoolean(ACCOUNT_EACH);
+        maxAccounts = config.getInt(ACCOUNT_MAX);
+
+        // Permission account amounts
+        List<String> list = config.getStringList(ACCOUNT_PERM);
+        for (String item : list)
+        {
+            if (!item.contains(":")) continue;
+
+            String[] pieces = item.split(":");
+            if (pieces.length != 2) continue;
+
+            try
+            {
+                permAccounts.put(pieces[0], Integer.parseInt(pieces[1]));
+            }
+            catch (Exception ex)
+            {
+                // Invalid setting value
+            }
+        }
     }
 
     ///////////////////////////////////////////////////////
@@ -143,13 +204,12 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String CLASS_BASE     = "Classes.";
-    private static final String CLASS_HP       = CLASS_BASE + "classless-hp";
-    private static final String CLASS_EXAMPLES = CLASS_BASE + "use-examples";
-    private static final String CLASS_SKILLS   = CLASS_BASE + "use-example-skills";
+    private static final String CLASS_BASE = "Classes.";
+    private static final String CLASS_HP   = CLASS_BASE + "classless-hp";
+    private static final String CLASS_SHOW = CLASS_BASE + "show-auto-skills";
 
     private int     defaultHealth;
-    private boolean useExampleClasses;
+    private boolean showAutoSkills;
 
     /**
      * <p>Retrieves the default health for players that do not have a class.</p>
@@ -162,13 +222,13 @@ public class Settings
     }
 
     /**
-     * <p>Retrieves whether or not example classes are to be loaded.</p>
+     * Checks whether or not auto-leveled skills are to be shown.
      *
-     * @return true if example classes are to be loaded, false otherwise
+     * @return true if shown, false otherwise
      */
-    public boolean isUseExampleClasses()
+    public boolean isShowingAutoSkills()
     {
-        return useExampleClasses;
+        return showAutoSkills;
     }
 
     /**
@@ -186,7 +246,7 @@ public class Settings
     private void loadClassSettings()
     {
         defaultHealth = config.getInt(CLASS_HP);
-        useExampleClasses = config.getBoolean(CLASS_EXAMPLES);
+        showAutoSkills = config.getBoolean(CLASS_SHOW);
     }
 
     ///////////////////////////////////////////////////////

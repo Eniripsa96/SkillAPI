@@ -7,6 +7,7 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
@@ -29,8 +30,10 @@ public class RegistrationManager
         STARTUP, SKILL, CLASS, DONE
     }
 
-    private static final String SKILL_DIR = "dynamic" + File.separator + "skill" + File.separator;
-    private static final String CLASS_DIR = "dynamic" + File.separator + "class" + File.separator;
+    private static final String SKILL_FOLDER = "dynamic" + File.separator + "skill";
+    private static final String CLASS_FOLDER = "dynamic" + File.separator + "class";
+    private static final String SKILL_DIR = SKILL_FOLDER + File.separator;
+    private static final String CLASS_DIR = CLASS_FOLDER + File.separator;
 
     private final SkillAPI api;
 
@@ -119,7 +122,7 @@ public class RegistrationManager
 
         // Load individual dynamic skills
         log("Loading individual dynamic skill files...", 1);
-        File skillRoot = new File(api.getDataFolder().getPath() + SKILL_DIR);
+        File skillRoot = new File(api.getDataFolder().getPath() + File.separator + SKILL_FOLDER);
         if (skillRoot.exists()) {
             File[] files = skillRoot.listFiles();
             if (files != null) {
@@ -168,7 +171,7 @@ public class RegistrationManager
                 if (key.equals("loaded")) continue;
                 if (!SkillAPI.isClassRegistered(key)) {
                     DynamicClass tree = new DynamicClass(api, key);
-                    api.classes.put(key.toLowerCase(), tree);
+                    api.addDynamicClass(tree);
                     tree.load(classConfig.getConfig().getConfigurationSection(key));
                     Config cConfig = new Config(api, CLASS_DIR + key);
                     cConfig.clear();
@@ -184,7 +187,7 @@ public class RegistrationManager
 
         // Load individual dynamic classes
         log("Loading individual dynamic class files...", 1);
-        File classRoot = new File(api.getDataFolder().getPath() + File.separator + "dynamic" + File.separator + "class");
+        File classRoot = new File(api.getDataFolder().getPath() + File.separator + CLASS_FOLDER);
         if (classRoot.exists()) {
             File[] files = classRoot.listFiles();
             if (files != null) {
@@ -192,9 +195,9 @@ public class RegistrationManager
                     try {
                         String name = file.getName().replace(".yml", "");
                         if (!SkillAPI.isClassRegistered(name)) {
-                            Config cConfig = new Config(api, "dynamic" + File.separator + "class" + File.separator + name);
+                            Config cConfig = new Config(api, CLASS_DIR + name);
                             DynamicClass tree = new DynamicClass(api, name);
-                            api.classes.put(name.toLowerCase(), tree);
+                            api.addDynamicClass(tree);
                             tree.load(cConfig.getConfig().getConfigurationSection(name));
                             cConfig.clear();
                             tree.save(cConfig.getConfig().createSection(name));

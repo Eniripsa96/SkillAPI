@@ -38,12 +38,14 @@ import com.sucy.skill.data.ComboManager;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
+import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
+import com.sucy.skill.task.ManaTask;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -76,6 +78,8 @@ public class SkillAPI extends JavaPlugin
     private CmdManager          cmd;
     private ComboManager        comboManager;
     private RegistrationManager registrationManager;
+
+    private ManaTask task;
 
     private boolean enabled = false;
 
@@ -132,6 +136,12 @@ public class SkillAPI extends JavaPlugin
         {
             PlayerData data = loadPlayerData(player).getActiveData();
             data.updateHealthAndMana(player);
+        }
+
+        // Set up tasks
+        if (settings.isManaEnabled())
+        {
+            new ManaTask(this);
         }
     }
 
@@ -501,6 +511,26 @@ public class SkillAPI extends JavaPlugin
         if (rpgClass != null)
         {
             classes.put(rpgClass.getName().toLowerCase(), rpgClass);
+            ClassBoardManager.registerClass(rpgClass);
+            if (!groups.contains(rpgClass.getGroup()))
+            {
+                groups.add(rpgClass.getGroup());
+            }
+        }
+    }
+
+    /**
+     * Adds a dynamic class which ignores validation. This should only
+     * be used by the API as other plugins should use the regular addClass.
+     *
+     * @param rpgClass dynamic class to add
+     */
+    public void addDynamicClass(DynamicClass rpgClass)
+    {
+        String key;
+        if (rpgClass != null && !classes.containsKey(key = rpgClass.getName().toLowerCase()))
+        {
+            classes.put(key, rpgClass);
             ClassBoardManager.registerClass(rpgClass);
             if (!groups.contains(rpgClass.getGroup()))
             {

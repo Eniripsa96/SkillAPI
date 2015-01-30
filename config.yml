@@ -10,13 +10,16 @@
 Accounts:
   main-class-group: class
   one-per-class: false
+  max-accounts: 3
+  perm-accounts:
+  - 'skillapi.account.admin:10'
 Classes:
   classless-hp: 20
   use-example-skills: false
+  show-auto-skills: false
 Mana:
   enabled: true
   gain-freq: 1
-  gain-amount: 2
 Skills:
   allow-downgrade: true
   show-messages: true

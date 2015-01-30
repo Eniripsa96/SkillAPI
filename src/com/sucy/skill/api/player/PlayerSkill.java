@@ -108,6 +108,26 @@ public final class PlayerSkill
     }
 
     /**
+     * Retrieves the cost to upgrade the skill to the next level
+     *
+     * @return cost to upgrade the skill to the next level
+     */
+    public int getCost()
+    {
+        return skill.getCost(level);
+    }
+
+    /**
+     * Retrieves the level requirement of the skill to get to the next level
+     *
+     * @return the level requirement to get to the next level
+     */
+    public int getLevelReq()
+    {
+        return skill.getLevelReq(level);
+    }
+
+    /**
      * Checks whether or not the skill is currently on cooldown
      *
      * @return true if on cooldown, false otherwise

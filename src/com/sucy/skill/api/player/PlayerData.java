@@ -180,7 +180,12 @@ public final class PlayerData
         String key = skill.getName().toLowerCase();
         if (!skills.containsKey(key))
         {
-            skills.put(key, new PlayerSkill(this, skill, parent));
+            PlayerSkill data = new PlayerSkill(this, skill, parent);
+            skills.put(key, data);
+            while (data.getCost() == 0 && !data.isMaxed() && data.getLevelReq() <= data.getPlayerClass().getLevel())
+            {
+                upgradeSkill(skill);
+            }
         }
     }
 
@@ -219,8 +224,9 @@ public final class PlayerData
         }
 
         int level = data.getPlayerClass().getLevel();
-        int cost = skill.getCost(data.getLevel());
-        if (!data.isMaxed() && level >= skill.getLevelReq(data.getLevel()) && data.getPlayerClass().getPoints() >= cost)
+        int points = data.getPlayerClass().getPoints();
+        int cost = data.getCost();
+        if (!data.isMaxed() && level >= data.getLevelReq() && points >= cost)
         {
             // Upgrade event
             PlayerSkillUpgradeEvent event = new PlayerSkillUpgradeEvent(this, data, cost);

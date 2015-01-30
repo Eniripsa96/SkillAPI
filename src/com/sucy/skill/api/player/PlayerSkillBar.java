@@ -247,6 +247,7 @@ public class PlayerSkillBar
             }
             player.getInventory().setItem(i, null);
         }
+        setup = false;
     }
 
     /**
@@ -269,6 +270,7 @@ public class PlayerSkillBar
             event.getDrops().remove(event.getEntity().getInventory().getItem(i));
             event.getEntity().getInventory().setItem(i, null);
         }
+        setup = false;
     }
 
     /**
@@ -327,8 +329,8 @@ public class PlayerSkillBar
         }
 
         // Update the slots
-        update(player);
         setup = true;
+        update(player);
     }
 
     /**
@@ -378,6 +380,11 @@ public class PlayerSkillBar
      */
     public void update(HumanEntity player)
     {
+        if (!setup)
+        {
+            setup(player);
+            return;
+        }
         for (int i = 1; i <= 9; i++)
         {
             int index = i - 1;
@@ -392,6 +399,7 @@ public class PlayerSkillBar
                 slots.put(i, UNASSIGNED);
                 if (enabled && player != null && player.getGameMode() != GameMode.CREATIVE)
                 {
+                    player.getInventory().clear(index);
                     player.getInventory().setItem(index, SkillAPI.getSettings().getUnassigned());
                 }
             }

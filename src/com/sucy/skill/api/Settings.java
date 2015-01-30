@@ -383,8 +383,7 @@ public class Settings
         }
         for (String key : settings.keySet())
         {
-            ConfigurationSection section = config.createSection(key);
-            section.set(key, settings.get(key));
+            config.set(key, settings.get(key));
         }
     }
 

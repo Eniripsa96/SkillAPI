@@ -34,6 +34,16 @@ public abstract class EffectComponent
     protected Skill skill;
 
     /**
+     * Key of the component for the config
+     */
+    private String key;
+
+    /**
+     * Type of the component
+     */
+    private String type = "trigger";
+
+    /**
      * Executes the children of the component using the given targets
      *
      * @param caster  caster of the skill
@@ -81,6 +91,22 @@ public abstract class EffectComponent
     private static final String TYPE = "type";
 
     /**
+     * Saves the component and its children to the config
+     *
+     * @param config config to save to
+     */
+    public void save(ConfigurationSection config)
+    {
+        config.set(TYPE, type);
+        settings.save(config.createSection("data"));
+        ConfigurationSection children = config.createSection("children");
+        for (EffectComponent child : this.children)
+        {
+            child.save(children.createSection(child.key));
+        }
+    }
+
+    /**
      * Loads component data from the configuration
      *
      * @param skill  owning skill of the component
@@ -124,6 +150,8 @@ public abstract class EffectComponent
                     try
                     {
                         EffectComponent child = map.get(key.toLowerCase()).newInstance();
+                        child.key = key;
+                        child.type = type;
                         child.load(skill, children.getConfigurationSection(key));
                         this.children.add(child);
                     }

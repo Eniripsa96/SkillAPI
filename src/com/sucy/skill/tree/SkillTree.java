@@ -76,7 +76,10 @@ public abstract class SkillTree
                 api.getLogger().severe("Failed to add skill to tree - " + skill + ": Skill does not exist");
                 continue;
             }
-            skills.add(skill);
+            if (SkillAPI.getSettings().isShowingAutoSkills() || skill.getCost(0) != 0 || skill.getMaxLevel() > 1)
+            {
+                skills.add(skill);
+            }
         }
 
         // Arrange the skills

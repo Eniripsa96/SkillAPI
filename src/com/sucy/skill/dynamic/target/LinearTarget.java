@@ -20,6 +20,7 @@ public class LinearTarget extends EffectComponent
     private static final String ALLY      = "group";
     private static final String MAX       = "max";
     private static final String WALL      = "wall";
+    private static final String CASTER    = "caster";
 
     /**
      * Executes the component
@@ -39,11 +40,14 @@ public class LinearTarget extends EffectComponent
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
+        boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
+
         int max = settings.getInt(MAX, 999);
         Location wallCheckLoc = caster.getLocation().add(0, 1.5, 0);
         for (LivingEntity t : targets)
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+            if (self) list.add(caster);
             List<LivingEntity> result = TargetHelper.getLivingTargets(t, range, tolerance);
             for (LivingEntity target : result)
             {

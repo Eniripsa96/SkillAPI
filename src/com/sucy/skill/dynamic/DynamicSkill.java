@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic;
 
+import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
@@ -169,7 +170,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @EventHandler
     public void onSkillDamage(SkillDamageEvent event)
     {
-        LivingEntity damager = event.getCaster();
+        LivingEntity damager = event.getDamager();
         LivingEntity target = event.getTarget();
 
         // Skill received
@@ -237,22 +238,39 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public void load(ConfigurationSection config)
     {
         ConfigurationSection triggers = config.getConfigurationSection("components");
-        for (String key : triggers.getKeys(false))
+        if (triggers != null)
         {
-            try
+            for (String key : triggers.getKeys(false))
             {
-                Trigger trigger = Trigger.valueOf(key.toUpperCase().replace(' ', '_'));
-                EffectComponent component = trigger.getComponent();
-                component.load(this, triggers.getConfigurationSection(key));
-                components.put(trigger, component);
-            }
-            catch (Exception ex)
-            {
-                // Invalid trigger
-                Bukkit.getLogger().warning("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
+                try
+                {
+                    Trigger trigger = Trigger.valueOf(key.toUpperCase().replace(' ', '_'));
+                    EffectComponent component = trigger.getComponent();
+                    component.load(this, triggers.getConfigurationSection(key));
+                    components.put(trigger, component);
+                }
+                catch (Exception ex)
+                {
+                    // Invalid trigger
+                    Bukkit.getLogger().warning("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
+                }
             }
         }
 
         super.load(config);
+
+        Bukkit.getLogger().info(getName() + " - " + components.size() + " triggers loaded");
+    }
+
+    @Override
+    public void save(ConfigurationSection config)
+    {
+        ConfigurationSection triggers = config.createSection("components");
+        for (Trigger trigger : components.keySet())
+        {
+            components.get(trigger).save(triggers.createSection(TextFormatter.format(trigger.name())));
+        }
+
+        super.save(config);
     }
 }

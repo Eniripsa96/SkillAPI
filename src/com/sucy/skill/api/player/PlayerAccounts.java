@@ -1,5 +1,6 @@
 package com.sucy.skill.api.player;
 
+import com.sucy.skill.SkillAPI;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -12,7 +13,6 @@ public class PlayerAccounts
 
     private int           active;
     private OfflinePlayer player;
-    private int           accounts;
 
     public PlayerAccounts(OfflinePlayer player)
     {
@@ -21,7 +21,6 @@ public class PlayerAccounts
         PlayerData data = new PlayerData(player);
         classData.put(1, data);
         active = 1;
-        accounts = 1;
     }
 
     public int getActiveId()
@@ -51,7 +50,12 @@ public class PlayerAccounts
 
     public int getAccountLimit()
     {
-        return accounts;
+        return SkillAPI.getSettings().getMaxAccounts(getPlayer());
+    }
+
+    public boolean hasData(int id)
+    {
+        return classData.containsKey(id);
     }
 
     public PlayerData getData(int id)
@@ -66,13 +70,25 @@ public class PlayerAccounts
 
     public void setAccount(int id)
     {
+        Player player = getPlayer();
+        if (player == null || id == active) return;
+        if (id <= getAccountLimit() && id > 0 && !classData.containsKey(id))
+        {
+            classData.put(id, new PlayerData(player));
+        }
         if (classData.containsKey(id))
         {
+            getActiveData().stopPassives(player);
+            if (getActiveData().hasClass())
+            {
+                getActiveData().getSkillBar().clear(player);
+            }
             active = id;
-        }
-        else if (id > 0)
-        {
-
+            getActiveData().startPassives(player);
+            if (getActiveData().hasClass())
+            {
+                getActiveData().getSkillBar().setup(player);
+            }
         }
     }
 }

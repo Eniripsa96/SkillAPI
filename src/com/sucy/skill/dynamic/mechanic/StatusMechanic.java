@@ -32,7 +32,7 @@ public class StatusMechanic extends EffectComponent
         }
 
         String key = settings.getString(KEY, "stun").toLowerCase();
-        double seconds = settings.get(SECONDS, level, 3.0);
+        double seconds = settings.getAttr(SECONDS, level, 3.0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {

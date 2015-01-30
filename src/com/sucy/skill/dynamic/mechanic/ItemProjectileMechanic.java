@@ -14,7 +14,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -57,8 +56,8 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         item.setData(new MaterialData(mat, (byte) settings.getInt(DATA, 0)));
 
         // Get other common values
-        double speed = settings.get(SPEED, level, 3.0);
-        int amount = (int) settings.get(AMOUNT, level, 1.0);
+        double speed = settings.getAttr(SPEED, level, 3.0);
+        int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
 
         // Fire from each target
@@ -68,8 +67,8 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
             ArrayList<ItemProjectile> list;
             if (spread.equals("rain"))
             {
-                double radius = settings.get(RADIUS, level, 2.0);
-                double height = settings.get(HEIGHT, level, 8.0);
+                double radius = settings.getAttr(RADIUS, level, 2.0);
+                double height = settings.getAttr(HEIGHT, level, 8.0);
                 list = ItemProjectile.rain(caster, target.getLocation(), item, radius, height, speed, amount, this);
             }
             else
@@ -80,7 +79,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = settings.get(ANGLE, level, 30.0);
+                double angle = settings.getAttr(ANGLE, level, 30.0);
                 list = ItemProjectile.spread(caster, dir, target.getLocation(), item, angle, amount, this);
             }
 

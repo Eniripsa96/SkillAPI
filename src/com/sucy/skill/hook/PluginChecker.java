@@ -13,7 +13,8 @@ public class PluginChecker
      *
      * @return true if active with permissions plugin, false otherwise
      */
-    public static boolean isVaultActive() {
+    public static boolean isVaultActive()
+    {
         return Bukkit.getPluginManager().getPlugin("Vault") != null && VaultHook.isValid();
     }
 }

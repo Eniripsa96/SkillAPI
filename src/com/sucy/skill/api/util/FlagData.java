@@ -55,7 +55,7 @@ public class FlagData
         }
         else if (flag.startsWith("perm:") && PluginChecker.isVaultActive() && entity instanceof Player)
         {
-            VaultHook.add((Player)entity, flag.substring(5));
+            VaultHook.add((Player) entity, flag.substring(5));
         }
         flags.put(flag, System.currentTimeMillis() + ticks * 50);
         tasks.put(flag, new FlagTask(flag).runTaskLater(plugin, ticks));
@@ -76,7 +76,7 @@ public class FlagData
             Bukkit.getPluginManager().callEvent(event);
             if (flag.startsWith("perm:") && PluginChecker.isVaultActive() && entity instanceof Player)
             {
-                VaultHook.remove((Player)entity, flag.substring(5));
+                VaultHook.remove((Player) entity, flag.substring(5));
             }
             if (flags.size() == 0)
             {

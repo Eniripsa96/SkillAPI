@@ -25,8 +25,6 @@
 package com.sucy.skill;
 
 import com.rit.sucy.config.LanguageConfig;
-import com.rit.sucy.player.PlayerUUIDs;
-import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerAccounts;
@@ -35,6 +33,7 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.ComboManager;
+import com.sucy.skill.data.PlayerStats;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
@@ -46,7 +45,6 @@ import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
 import com.sucy.skill.task.ManaTask;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -56,7 +54,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <p>The main class of the plugin which has the accessor methods into most of the API.</p>
@@ -66,10 +63,10 @@ public class SkillAPI extends JavaPlugin
 {
     private static SkillAPI singleton;
 
-    public final HashMap<String, Skill>        skills  = new HashMap<String, Skill>();
-    public final HashMap<String, RPGClass>     classes = new HashMap<String, RPGClass>();
+    public final HashMap<String, Skill>          skills  = new HashMap<String, Skill>();
+    public final HashMap<String, RPGClass>       classes = new HashMap<String, RPGClass>();
     public final HashMap<String, PlayerAccounts> players = new HashMap<String, PlayerAccounts>();
-    public final ArrayList<String>             groups  = new ArrayList<String>();
+    public final ArrayList<String>               groups  = new ArrayList<String>();
 
     private LanguageConfig language;
     private Settings       settings;
@@ -116,6 +113,7 @@ public class SkillAPI extends JavaPlugin
         registrationManager = new RegistrationManager(this);
         cmd = new CmdManager(this);
         io = new ConfigIO(this);
+        PlayerStats.init();
         ClassBoardManager.registerText();
 
         // Set up listeners

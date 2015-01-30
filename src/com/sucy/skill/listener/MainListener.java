@@ -288,7 +288,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
     public void onDamage(EntityDamageByEntityEvent event)
     {
         LivingEntity damager = ListenerUtil.getDamager(event);
@@ -299,7 +299,7 @@ public class MainListener implements Listener
             return;
         }
 
-        LivingEntity damaged = (LivingEntity)event.getEntity();
+        LivingEntity damaged = (LivingEntity) event.getEntity();
         VersionManager.setDamage(event, BuffManager.modifyDealtDamage(damaged, event.getDamage()));
     }
 
@@ -308,12 +308,15 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPhysicalDamage(EntityDamageByEntityEvent event)
     {
-        if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity)) return;
+        if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity))
+        {
+            return;
+        }
 
-        PhysicalDamageEvent e = new PhysicalDamageEvent(ListenerUtil.getDamager(event), (LivingEntity)event.getEntity(), event.getDamage(), event.getDamager() instanceof Projectile);
+        PhysicalDamageEvent e = new PhysicalDamageEvent(ListenerUtil.getDamager(event), (LivingEntity) event.getEntity(), event.getDamage(), event.getDamager() instanceof Projectile);
         Bukkit.getPluginManager().callEvent(e);
         event.setDamage(e.getDamage());
         event.setCancelled(e.isCancelled());

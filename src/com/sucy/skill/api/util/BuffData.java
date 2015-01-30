@@ -66,7 +66,8 @@ public class BuffData
      * multipliers and bonuses.
      *
      * @param damage base damage amount to modify
-     * @return       modified damage amount
+     *
+     * @return modified damage amount
      */
     public double modifyDealtDamage(double damage)
     {
@@ -78,7 +79,8 @@ public class BuffData
      * multipliers and bonuses.
      *
      * @param damage base damage amount to modify
-     * @return       modified damage amount
+     *
+     * @return modified damage amount
      */
     public double modifyTakenDefense(double damage)
     {

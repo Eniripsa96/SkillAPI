@@ -35,7 +35,7 @@ public class AreaTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double radius = settings.get(RADIUS, level, 3.0);
+        double radius = settings.getAttr(RADIUS, level, 3.0);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
@@ -46,7 +46,10 @@ public class AreaTarget extends EffectComponent
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            if (self) list.add(caster);
+            if (self)
+            {
+                list.add(caster);
+            }
 
             for (int i = 0; i < entities.size() && list.size() < max; i++)
             {

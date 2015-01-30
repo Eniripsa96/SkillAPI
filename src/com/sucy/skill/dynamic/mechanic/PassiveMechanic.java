@@ -1,7 +1,5 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
@@ -32,7 +30,7 @@ public class PassiveMechanic extends EffectComponent
     {
         if (targets.size() > 0)
         {
-            int period = (int)(settings.get(PERIOD, 1.0) * 20);
+            int period = (int) (settings.getDouble(PERIOD, 1.0) * 20);
             new RepeatTask(caster, level, targets, period);
             return true;
         }
@@ -42,8 +40,8 @@ public class PassiveMechanic extends EffectComponent
     private class RepeatTask extends BukkitRunnable
     {
         private List<LivingEntity> targets;
-        private LivingEntity caster;
-        private int level;
+        private LivingEntity       caster;
+        private int                level;
 
         public RepeatTask(LivingEntity caster, int level, List<LivingEntity> targets, int period)
         {
@@ -57,7 +55,10 @@ public class PassiveMechanic extends EffectComponent
         @Override
         public void run()
         {
-            if (!caster.isValid() || caster.isDead()) cancel();
+            if (!caster.isValid() || caster.isDead())
+            {
+                cancel();
+            }
             else if (caster instanceof Player)
             {
                 PlayerSkill data = getSkillData(caster);

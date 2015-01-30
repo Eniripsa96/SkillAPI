@@ -98,7 +98,7 @@ public class ParticleHelper
         String particle = settings.getString(PARTICLE_KEY, "invalid");
         if (settings.has(ARRANGEMENT_KEY))
         {
-            double radius = settings.get(RADIUS_KEY, 3.0);
+            double radius = settings.getDouble(RADIUS_KEY, 3.0);
             int amount = settings.getInt(AMOUNT_KEY, 10);
 
             String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
@@ -162,7 +162,7 @@ public class ParticleHelper
         // Reflection particles
         else if (REFLECT_PARTICLES.containsKey(particle))
         {
-            Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.get(DX_KEY, 0.0), (float) settings.get(DY_KEY, 0.0), (float) settings.get(DZ_KEY, 0.0), (float) settings.get(SPEED_KEY, 1.0), 1);
+            Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), 1);
         }
     }
 

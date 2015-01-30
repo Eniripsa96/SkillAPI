@@ -16,8 +16,8 @@ import org.bukkit.event.entity.ProjectileHitEvent;
  */
 public class MechanicListener implements Listener
 {
-    public static String SUMMON_DAMAGE = "sapiSumDamage";
-    public static final String P_CALL = "pmCallback";
+    public static       String SUMMON_DAMAGE = "sapiSumDamage";
+    public static final String P_CALL        = "pmCallback";
 
     /**
      * Initializes a new listener for dynamic mechanic related events.
@@ -40,7 +40,7 @@ public class MechanicListener implements Listener
     {
         if (event.getEntity().hasMetadata(P_CALL))
         {
-            ((ProjectileMechanic)event.getEntity().getMetadata(P_CALL).get(0).value()).callback(event.getEntity(), null);
+            ((ProjectileMechanic) event.getEntity().getMetadata(P_CALL).get(0).value()).callback(event.getEntity(), null);
         }
     }
 
@@ -49,15 +49,15 @@ public class MechanicListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onShoot(EntityDamageByEntityEvent event)
     {
         if (event.getDamager() instanceof Projectile)
         {
-            Projectile p = (Projectile)event.getDamager();
+            Projectile p = (Projectile) event.getDamager();
             if (p.hasMetadata(P_CALL) && event.getEntity() instanceof LivingEntity)
             {
-                ((ProjectileMechanic)p.getMetadata(P_CALL).get(0).value()).callback(p, (LivingEntity)event.getEntity());
+                ((ProjectileMechanic) p.getMetadata(P_CALL).get(0).value()).callback(p, (LivingEntity) event.getEntity());
                 event.setCancelled(true);
             }
         }
@@ -66,7 +66,7 @@ public class MechanicListener implements Listener
     /**
      * Handles when summoned monsters deal damage
      */
-    @EventHandler (priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
     public void onSummonDamage(EntityDamageByEntityEvent event)
     {
         if (event.getDamager().hasMetadata(SUMMON_DAMAGE))

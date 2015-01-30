@@ -136,8 +136,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         if (component != null && active.containsKey(target.getUniqueId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();
-            double min = component.settings.get("dmg-min");
-            double max = component.settings.get("dmg-max");
+            double min = component.settings.getDouble("dmg-min");
+            double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max
                     && (type.equals("both") || type.equals("projectile") == projectile))
@@ -151,8 +151,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         if (component != null && active.containsKey(damager.getUniqueId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();
-            double min = component.settings.get("dmg-min");
-            double max = component.settings.get("dmg-max");
+            double min = component.settings.getDouble("dmg-min");
+            double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max
                     && (type.equals("both") || type.equals("projectile") == projectile))
@@ -177,8 +177,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         EffectComponent component = components.get(Trigger.TOOK_SKILL_DAMAGE);
         if (component != null && active.containsKey(target.getUniqueId()))
         {
-            double min = component.settings.get("dmg-min");
-            double max = component.settings.get("dmg-max");
+            double min = component.settings.getDouble("dmg-min");
+            double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
@@ -190,8 +190,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         component = components.get(Trigger.SKILL_DAMAGE);
         if (component != null && active.containsKey(damager.getUniqueId()))
         {
-            double min = component.settings.get("dmg-min");
-            double max = component.settings.get("dmg-max");
+            double min = component.settings.getDouble("dmg-min");
+            double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
@@ -258,8 +258,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         }
 
         super.load(config);
-
-        Bukkit.getLogger().info(getName() + " - " + components.size() + " triggers loaded");
     }
 
     @Override

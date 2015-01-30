@@ -154,27 +154,27 @@ public abstract class Skill
 
     public int getLevelReq(int level)
     {
-        return (int) settings.get(SkillAttribute.LEVEL, level + 1);
+        return (int) settings.getAttr(SkillAttribute.LEVEL, level + 1);
     }
 
     public double getManaCost(int level)
     {
-        return settings.get(SkillAttribute.MANA, level);
+        return settings.getAttr(SkillAttribute.MANA, level);
     }
 
     public double getCooldown(int level)
     {
-        return settings.get(SkillAttribute.COOLDOWN, level);
+        return settings.getAttr(SkillAttribute.COOLDOWN, level);
     }
 
     public double getRange(int level)
     {
-        return settings.get(SkillAttribute.RANGE, level);
+        return settings.getAttr(SkillAttribute.RANGE, level);
     }
 
     public int getCost(int level)
     {
-        return (int) settings.get(SkillAttribute.COST, level + 1);
+        return (int) settings.getAttr(SkillAttribute.COST, level + 1);
     }
 
     public boolean canCast()

@@ -15,6 +15,7 @@ import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -23,7 +24,6 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * Represents one account for a player which can contain one class from each group
@@ -107,7 +107,8 @@ public final class PlayerData
      * the skill is available to upgrade/use.
      *
      * @param name name of the skill
-     * @return     true if has the skill, false otherwise
+     *
+     * @return true if has the skill, false otherwise
      */
     public boolean hasSkill(String name)
     {
@@ -122,7 +123,8 @@ public final class PlayerData
      * Retrieves a skill of the owner by name. This is not case-sensitive.
      *
      * @param name name of the skill
-     * @return     data for the skill or null if the player doesn't have the skill
+     *
+     * @return data for the skill or null if the player doesn't have the skill
      */
     public PlayerSkill getSkill(String name)
     {
@@ -149,7 +151,8 @@ public final class PlayerData
      * Retrieves the level of a skill for the owner. This is not case-sensitive.
      *
      * @param name name of the skill
-     * @return     level of the skill or 0 if not found
+     *
+     * @return level of the skill or 0 if not found
      */
     public int getSkillLevel(String name)
     {
@@ -196,7 +199,8 @@ public final class PlayerData
      * This will consume the skill point cost while upgrading the skill.
      *
      * @param skill skill to upgrade
-     * @return      true if successfully was upgraded, false otherwise
+     *
+     * @return true if successfully was upgraded, false otherwise
      */
     public boolean upgradeSkill(Skill skill)
     {
@@ -274,7 +278,8 @@ public final class PlayerData
      * the skill point cost when downgrading the skill.
      *
      * @param skill skill to downgrade
-     * @return      true if successfully downgraded, false otherwise
+     *
+     * @return true if successfully downgraded, false otherwise
      */
     public boolean downgradeSkill(Skill skill)
     {
@@ -357,7 +362,8 @@ public final class PlayerData
      * this will show the list of skill trees they can view.
      *
      * @param player player to show the skill tree for
-     * @return       true if able to show the player, false otherwise
+     *
+     * @return true if able to show the player, false otherwise
      */
     public boolean showSkills(Player player)
     {
@@ -418,7 +424,8 @@ public final class PlayerData
      * case-sensitive.
      *
      * @param group group to get the profession for
-     * @return      professed class data or null if not professed for the group
+     *
+     * @return professed class data or null if not professed for the group
      */
     public PlayerClass getClass(String group)
     {
@@ -454,7 +461,8 @@ public final class PlayerData
      * there was any. The new class will start at level 1 with 0 experience.
      *
      * @param rpgClass class to assign to the player
-     * @return         the player-specific data for the new class
+     *
+     * @return the player-specific data for the new class
      */
     public PlayerClass setClass(RPGClass rpgClass)
     {
@@ -478,7 +486,8 @@ public final class PlayerData
      * without checking child classes.
      *
      * @param rpgClass class to check
-     * @return         true if professed as the specific class, false otherwise
+     *
+     * @return true if professed as the specific class, false otherwise
      */
     public boolean isExactClass(RPGClass rpgClass)
     {
@@ -490,7 +499,8 @@ public final class PlayerData
      * or any of its children.
      *
      * @param rpgClass class to check
-     * @return         true if professed as the class or one of its children, false otherwise
+     *
+     * @return true if professed as the class or one of its children, false otherwise
      */
     public boolean isClass(RPGClass rpgClass)
     {
@@ -518,7 +528,8 @@ public final class PlayerData
      * given class and is high enough of a level to do so.
      *
      * @param rpgClass class to check
-     * @return         true if can profess, false otherwise
+     *
+     * @return true if can profess, false otherwise
      */
     public boolean canProfess(RPGClass rpgClass)
     {
@@ -576,7 +587,8 @@ public final class PlayerData
      * the new profession.
      *
      * @param rpgClass class to profess into
-     * @return         true if successfully professed, false otherwise
+     *
+     * @return true if successfully professed, false otherwise
      */
     public boolean profess(RPGClass rpgClass)
     {
@@ -613,6 +625,8 @@ public final class PlayerData
             }
 
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(current, previous, current.getData()));
+            updateHealthAndMana(getPlayer());
+            ClassBoardManager.update(this, rpgClass.getPrefix(), rpgClass.getPrefixColor());
             return true;
         }
         else
@@ -698,6 +712,11 @@ public final class PlayerData
      */
     public void updateHealthAndMana(Player player)
     {
+        if (player == null)
+        {
+            return;
+        }
+
         // Update maxes
         double health = bonusHealth;
         maxMana = bonusMana;
@@ -778,6 +797,7 @@ public final class PlayerData
      * Checks whether or not the player has at least the specified amount of mana
      *
      * @param amount required mana amount
+     *
      * @return true if has the amount of mana, false otherwise
      */
     public boolean hasMana(double amount)
@@ -890,6 +910,7 @@ public final class PlayerData
      * Retrieves a skill the player has bound by material
      *
      * @param mat material to get the bind for
+     *
      * @return skill bound to the material or null if none are bound
      */
     public PlayerSkill getBoundSkill(Material mat)
@@ -912,6 +933,7 @@ public final class PlayerData
      * Checks whether or not the material has a skill bound to it
      *
      * @param mat material to check
+     *
      * @return true if a skill is bound to it, false otherwise
      */
     public boolean isBound(Material mat)
@@ -925,6 +947,7 @@ public final class PlayerData
      *
      * @param mat   material to bind the skill to
      * @param skill skill to bind to the material
+     *
      * @return true if was able to bind the skill, false otherwise
      */
     public boolean bind(Material mat, PlayerSkill skill)
@@ -975,6 +998,7 @@ public final class PlayerData
      * material, this will do nothing.
      *
      * @param mat material to clear bindings from
+     *
      * @return true if a binding was cleared, false otherwise
      */
     public boolean clearBind(Material mat)
@@ -1089,6 +1113,7 @@ public final class PlayerData
      * have the skill off cooldown, and have a proper target if applicable.
      *
      * @param skillName name of the skill ot cast
+     *
      * @return true if successfully cast the skill, false otherwise
      */
     public boolean cast(String skillName)
@@ -1102,6 +1127,7 @@ public final class PlayerData
      * have the skill off cooldown, and have a proper target if applicable.
      *
      * @param skill skill to cast
+     *
      * @return true if successfully cast the skill, false otherwise
      */
     public boolean cast(PlayerSkill skill)

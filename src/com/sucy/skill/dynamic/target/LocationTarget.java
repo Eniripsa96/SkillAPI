@@ -30,12 +30,12 @@ public class LocationTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double range = settings.get(RANGE, level, 5.0);
+        double range = settings.getAttr(RANGE, level, 5.0);
         boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
         for (LivingEntity t : targets)
         {
             Location loc;
-            Block b = t.getTargetBlock(null, (int)Math.ceil(range));
+            Block b = t.getTargetBlock(null, (int) Math.ceil(range));
             if (b == null && !groundOnly)
             {
                 loc = t.getLocation().add(t.getLocation().getDirection().multiply(range));
@@ -44,7 +44,10 @@ public class LocationTarget extends EffectComponent
             {
                 loc = b.getLocation();
             }
-            else continue;
+            else
+            {
+                continue;
+            }
 
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             Bat bat = loc.getWorld().spawn(loc, Bat.class);

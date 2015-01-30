@@ -4,7 +4,6 @@ import com.rit.sucy.config.Config;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -156,11 +155,15 @@ public class Settings
      * by checking permissions for additional accounts.
      *
      * @param player player to check the max allowed accounts for
+     *
      * @return number of allowed accounts
      */
     public int getMaxAccounts(Player player)
     {
-        if (player == null) return maxAccounts;
+        if (player == null)
+        {
+            return maxAccounts;
+        }
         int max = maxAccounts;
         for (Map.Entry<String, Integer> entry : permAccounts.entrySet())
         {
@@ -182,10 +185,16 @@ public class Settings
         List<String> list = config.getStringList(ACCOUNT_PERM);
         for (String item : list)
         {
-            if (!item.contains(":")) continue;
+            if (!item.contains(":"))
+            {
+                continue;
+            }
 
             String[] pieces = item.split(":");
-            if (pieces.length != 2) continue;
+            if (pieces.length != 2)
+            {
+                continue;
+            }
 
             try
             {

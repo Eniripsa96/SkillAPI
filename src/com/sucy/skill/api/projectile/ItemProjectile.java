@@ -1,7 +1,6 @@
 package com.sucy.skill.api.projectile;
 
 import com.rit.sucy.player.Protection;
-import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.ItemProjectileHitEvent;
 import com.sucy.skill.api.event.ItemProjectileLandEvent;
 import com.sucy.skill.api.event.ItemProjectileLaunchEvent;
@@ -105,6 +104,7 @@ public class ItemProjectile extends CustomProjectile
      * @param angle    angle of the spread
      * @param amount   number of projectiles to fire
      * @param callback optional callback for when projectiles hit
+     *
      * @return list of fired projectiles
      */
     public static ArrayList<ItemProjectile> spread(LivingEntity shooter, Vector center, Location loc, ItemStack item, double angle, int amount, ProjectileCallback callback)
@@ -133,12 +133,16 @@ public class ItemProjectile extends CustomProjectile
      * @param speed    speed of the projectiles
      * @param amount   number of projectiles to fire
      * @param callback optional callback for when projectiles hit
+     *
      * @return list of fired projectiles
      */
     public static ArrayList<ItemProjectile> rain(LivingEntity shooter, Location center, ItemStack item, double radius, double height, double speed, int amount, ProjectileCallback callback)
     {
         Vector vel = new Vector(0, speed, 0);
-        if (vel.getY() == 0) vel.setY(1);
+        if (vel.getY() == 0)
+        {
+            vel.setY(1);
+        }
         ArrayList<Location> locs = calcRain(center, radius, height, amount);
         ArrayList<ItemProjectile> list = new ArrayList<ItemProjectile>();
         for (Location l : locs)

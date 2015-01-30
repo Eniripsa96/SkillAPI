@@ -31,7 +31,7 @@ public class ManaMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean percent = settings.getString(TYPE, "mana").toLowerCase().equals("percent");
-        double value = settings.get(VALUE, level, 1.0);
+        double value = settings.getAttr(VALUE, level, 1.0);
 
         boolean worked = false;
         for (LivingEntity target : targets)

@@ -4,10 +4,8 @@ import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,11 +14,11 @@ import java.util.List;
  */
 public class ConeTarget extends EffectComponent
 {
-    private static final String ANGLE = "angle";
-    private static final String RANGE = "range";
-    private static final String ALLY  = "group";
-    private static final String MAX   = "max";
-    private static final String WALL  = "wall";
+    private static final String ANGLE  = "angle";
+    private static final String RANGE  = "range";
+    private static final String ALLY   = "group";
+    private static final String MAX    = "max";
+    private static final String WALL   = "wall";
     private static final String CASTER = "caster";
 
     /**
@@ -36,8 +34,8 @@ public class ConeTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double range = settings.get(RANGE, level, 3.0);
-        double angle = settings.get(ANGLE, level, 90.0);
+        double range = settings.getAttr(RANGE, level, 3.0);
+        double angle = settings.getAttr(ANGLE, level, 90.0);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
@@ -47,7 +45,10 @@ public class ConeTarget extends EffectComponent
         for (LivingEntity t : targets)
         {
             List<LivingEntity> list = TargetHelper.getConeTargets(caster, angle, range);
-            if (self) list.add(caster);
+            if (self)
+            {
+                list.add(caster);
+            }
             for (int i = 0; i < list.size(); i++)
             {
                 LivingEntity target = list.get(i);

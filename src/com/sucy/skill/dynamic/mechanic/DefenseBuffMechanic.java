@@ -2,7 +2,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.util.Buff;
 import com.sucy.skill.api.util.BuffManager;
-import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
@@ -35,8 +34,8 @@ public class DefenseBuffMechanic extends EffectComponent
         }
 
         boolean percent = settings.getString(TYPE, "flat").toLowerCase().equals("percent");
-        double value = settings.get(VALUE, level, 1.0);
-        double seconds = settings.get(SECONDS, level, 3.0);
+        double value = settings.getAttr(VALUE, level, 1.0);
+        double seconds = settings.getAttr(SECONDS, level, 3.0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {

@@ -1,21 +1,16 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.projectile.CustomProjectile;
-import com.sucy.skill.api.projectile.ItemProjectile;
 import com.sucy.skill.api.projectile.ParticleProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,7 +38,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         // Get common values
-        int amount = (int) settings.get(AMOUNT, level, 1.0);
+        int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
 
         // Fire from each target
@@ -53,8 +48,8 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
             ArrayList<ParticleProjectile> list;
             if (spread.equals("rain"))
             {
-                double radius = settings.get(RADIUS, level, 2.0);
-                double height = settings.get(HEIGHT, level, 8.0);
+                double radius = settings.getAttr(RADIUS, level, 2.0);
+                double height = settings.getAttr(HEIGHT, level, 8.0);
                 list = ParticleProjectile.rain(caster, target.getLocation(), settings, radius, height, amount, this);
             }
             else
@@ -65,7 +60,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = settings.get(ANGLE, level, 30.0);
+                double angle = settings.getAttr(ANGLE, level, 30.0);
                 list = ParticleProjectile.spread(caster, dir, target.getLocation(), settings, angle, amount, this);
             }
 

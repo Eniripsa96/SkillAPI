@@ -35,8 +35,8 @@ public class LinearTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double tolerance = settings.get(TOLERANCE, level, 4.0);
-        double range = settings.get(RANGE, level, 5.0);
+        double tolerance = settings.getAttr(TOLERANCE, level, 4.0);
+        double range = settings.getAttr(RANGE, level, 5.0);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
@@ -47,7 +47,10 @@ public class LinearTarget extends EffectComponent
         for (LivingEntity t : targets)
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-            if (self) list.add(caster);
+            if (self)
+            {
+                list.add(caster);
+            }
             List<LivingEntity> result = TargetHelper.getLivingTargets(t, range, tolerance);
             for (LivingEntity target : result)
             {

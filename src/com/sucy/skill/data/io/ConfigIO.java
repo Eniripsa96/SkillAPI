@@ -1,7 +1,6 @@
 package com.sucy.skill.data.io;
 
 import com.rit.sucy.config.Config;
-import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -13,7 +12,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class ConfigIO extends IOManager
 {

@@ -1,17 +1,11 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.projectile.CustomProjectile;
-import com.sucy.skill.api.projectile.ItemProjectile;
-import com.sucy.skill.api.projectile.ParticleProjectile;
-import com.sucy.skill.api.projectile.ProjectileCallback;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -25,13 +19,13 @@ import java.util.List;
 public class ProjectileMechanic extends EffectComponent
 {
     private static final String PROJECTILE = "projectile";
-    private static final String SPEED = "speed";
-    private static final String ANGLE  = "angle";
-    private static final String AMOUNT = "amount";
-    private static final String LEVEL  = "skill_level";
-    private static final String HEIGHT = "height";
-    private static final String RADIUS = "radius";
-    private static final String SPREAD = "spread";
+    private static final String SPEED      = "speed";
+    private static final String ANGLE      = "angle";
+    private static final String AMOUNT     = "amount";
+    private static final String LEVEL      = "skill_level";
+    private static final String HEIGHT     = "height";
+    private static final String RADIUS     = "radius";
+    private static final String SPREAD     = "spread";
 
     /**
      * Executes the component
@@ -46,12 +40,15 @@ public class ProjectileMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         // Get common values
-        int amount = (int) settings.get(AMOUNT, level, 1.0);
-        double speed = settings.get(SPEED, level, 2.0);
+        int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
+        double speed = settings.getAttr(SPEED, level, 2.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow");
         Class<? extends Projectile> type = PROJECTILES.get(projectile);
-        if (type == null) type = Arrow.class;
+        if (type == null)
+        {
+            type = Arrow.class;
+        }
 
         // Fire from each target
         for (LivingEntity target : targets)
@@ -59,8 +56,8 @@ public class ProjectileMechanic extends EffectComponent
             // Apply the spread type
             if (spread.equals("rain"))
             {
-                double radius = settings.get(RADIUS, level, 2.0);
-                double height = settings.get(HEIGHT, level, 8.0);
+                double radius = settings.getAttr(RADIUS, level, 2.0);
+                double height = settings.getAttr(HEIGHT, level, 8.0);
 
                 ArrayList<Location> locs = CustomProjectile.calcRain(target.getLocation(), radius, height, amount);
                 for (Location loc : locs)
@@ -79,7 +76,7 @@ public class ProjectileMechanic extends EffectComponent
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = settings.get(ANGLE, level, 30.0);
+                double angle = settings.getAttr(ANGLE, level, 30.0);
                 ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
                 for (Vector d : dirs)
                 {
@@ -112,7 +109,7 @@ public class ProjectileMechanic extends EffectComponent
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
-        executeChildren((LivingEntity)projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
+        executeChildren((LivingEntity) projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
         if (remove)
         {
             hit.remove();
@@ -125,5 +122,5 @@ public class ProjectileMechanic extends EffectComponent
             put("egg", Egg.class);
             put("ghast fireball", LargeFireball.class);
             put("snowball", Snowball.class);
-    }};
+        }};
 }

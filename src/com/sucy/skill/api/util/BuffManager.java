@@ -104,7 +104,8 @@ public class BuffManager
      *
      * @param entity entity to use the data of
      * @param damage base damage amount to modify
-     * @return       modified damage amount
+     *
+     * @return modified damage amount
      */
     public static double modifyDealtDamage(LivingEntity entity, double damage)
     {
@@ -125,7 +126,8 @@ public class BuffManager
      *
      * @param entity entity to use the data of
      * @param damage base damage amount to modify
-     * @return       modified damage amount
+     *
+     * @return modified damage amount
      */
     public static double modifyTakenDefense(LivingEntity entity, double damage)
     {

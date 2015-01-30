@@ -33,8 +33,8 @@ public class SingleTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double range = settings.get(RANGE, level, 5.0);
-        double tolerance = settings.get(TOLERANCE, level, 4.0);
+        double range = settings.getAttr(RANGE, level, 5.0);
+        double tolerance = settings.getAttr(TOLERANCE, level, 4.0);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");

@@ -44,9 +44,9 @@ public class ParticleProjectile extends CustomProjectile
 
         this.loc = loc;
         this.settings = settings;
-        this.vel = loc.getDirection().multiply(settings.get(SPEED, 1.0));
-        this.freq = (int) (20 * settings.get(FREQUENCY, 0.5) * 20);
-        this.life = (int) (settings.get(LIFESPAN, 10.0) * 20);
+        this.vel = loc.getDirection().multiply(settings.getDouble(SPEED, 1.0));
+        this.freq = (int) (20 * settings.getDouble(FREQUENCY, 0.5) * 20);
+        this.life = (int) (settings.getDouble(LIFESPAN, 10.0) * 20);
 
         steps = (int) Math.ceil(vel.length() * 2);
         vel.multiply(1.0 / steps);
@@ -181,6 +181,7 @@ public class ParticleProjectile extends CustomProjectile
      * @param angle    angle of the spread
      * @param amount   number of projectiles to fire
      * @param callback optional callback for when projectiles hit
+     *
      * @return list of fired projectiles
      */
     public static ArrayList<ParticleProjectile> spread(LivingEntity shooter, Vector center, Location loc, Settings settings, double angle, int amount, ProjectileCallback callback)
@@ -206,12 +207,16 @@ public class ParticleProjectile extends CustomProjectile
      * @param height   height above the center location
      * @param amount   number of projectiles to fire
      * @param callback optional callback for when projectiles hit
+     *
      * @return list of fired projectiles
      */
     public static ArrayList<ParticleProjectile> rain(LivingEntity shooter, Location center, Settings settings, double radius, double height, int amount, ProjectileCallback callback)
     {
         Vector vel = new Vector(0, 1, 0);
-        if (vel.getY() == 0) vel.setY(1);
+        if (vel.getY() == 0)
+        {
+            vel.setY(1);
+        }
         ArrayList<Location> locs = calcRain(center, radius, height, amount);
         ArrayList<ParticleProjectile> list = new ArrayList<ParticleProjectile>();
         for (Location l : locs)

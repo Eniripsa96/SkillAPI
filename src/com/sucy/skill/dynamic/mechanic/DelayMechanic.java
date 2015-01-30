@@ -30,7 +30,7 @@ public class DelayMechanic extends EffectComponent
             return false;
         }
 
-        double seconds = settings.get(SECONDS, level, 2.0);
+        double seconds = settings.getAttr(SECONDS, level, 2.0);
         Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
         {
             @Override

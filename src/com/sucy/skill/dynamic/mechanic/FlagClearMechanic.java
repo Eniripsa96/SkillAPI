@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class FlagClearMechanic extends EffectComponent
 {
-    private static final String KEY     = "key";
+    private static final String KEY = "key";
 
     /**
      * Executes the component

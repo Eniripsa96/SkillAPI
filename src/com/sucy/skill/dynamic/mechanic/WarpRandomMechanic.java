@@ -2,12 +2,9 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Random;
@@ -43,7 +40,7 @@ public class WarpRandomMechanic extends EffectComponent
         // Get the world
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean horizontal = !settings.getString(HORIZONTAL, "true").toLowerCase().equals("false");
-        double distance = settings.get(DISTANCE, level, 3.0);
+        double distance = settings.getAttr(DISTANCE, level, 3.0);
 
         for (LivingEntity target : targets)
         {

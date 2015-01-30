@@ -1,10 +1,8 @@
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 

@@ -92,9 +92,9 @@ public class Settings
      *
      * @return double setting value
      */
-    public double get(String key)
+    public double getDouble(String key)
     {
-        return get(key, 0);
+        return getAttr(key, 0);
     }
 
     /**
@@ -106,7 +106,7 @@ public class Settings
      *
      * @return double setting value
      */
-    public double get(String key, double defaultValue)
+    public double getDouble(String key, double defaultValue)
     {
         if (settings.containsKey(key))
         {
@@ -233,9 +233,9 @@ public class Settings
      *
      * @return scaled setting value
      */
-    public double get(String key, int level)
+    public double getAttr(String key, int level)
     {
-        return get(key, level, 0);
+        return getAttr(key, level, 0);
     }
 
     /**
@@ -249,7 +249,7 @@ public class Settings
      *
      * @return scaled setting value
      */
-    public double get(String key, int level, double defaultValue)
+    public double getAttr(String key, int level, double defaultValue)
     {
         if (!has(key))
         {
@@ -316,7 +316,7 @@ public class Settings
         }
         else if (settings.containsKey(key + BASE))
         {
-            return get(key, level);
+            return getAttr(key, level);
         }
         else
         {

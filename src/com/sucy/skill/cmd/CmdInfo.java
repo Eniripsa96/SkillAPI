@@ -3,7 +3,6 @@ package com.sucy.skill.cmd;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
-import com.rit.sucy.player.PlayerUUIDs;
 import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;

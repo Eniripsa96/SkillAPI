@@ -3,14 +3,11 @@ package com.sucy.skill.cmd;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
-import com.rit.sucy.player.PlayerUUIDs;
-import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.language.RPGFilter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -61,9 +58,9 @@ public class CmdList implements IFunction
                     String name = cData == null ? ChatColor.GRAY + "Not Professed" : cData.getData().getPrefix();
                     String level = cData == null ? "0" : cData.getLevel() + "";
                     sender.sendMessage(line
-                        .replace("{id}", i + "")
-                        .replace("{level}", level)
-                        .replace("{class}", name)
+                                    .replace("{id}", i + "")
+                                    .replace("{level}", level)
+                                    .replace("{class}", name)
                     );
                 }
             }

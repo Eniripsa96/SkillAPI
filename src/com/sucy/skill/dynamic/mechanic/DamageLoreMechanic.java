@@ -4,7 +4,6 @@ import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,7 +32,7 @@ public class DamageLoreMechanic extends EffectComponent
         String regex = settings.getString(REGEX, "Damage: {value}");
         regex = regex.replace("{value}", "([0-9]+)");
         Pattern pattern = Pattern.compile(regex);
-        double m = settings.get(MULTIPLIER, level, 1.0);
+        double m = settings.getAttr(MULTIPLIER, level, 1.0);
         boolean worked = false;
         for (LivingEntity target : targets)
         {

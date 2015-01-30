@@ -10,15 +10,12 @@ import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Represents a template for a class used in the RPG system. This is
@@ -26,7 +23,7 @@ import java.util.Map;
  */
 public abstract class RPGClass
 {
-    private final ArrayList<Skill>          skills           = new ArrayList<Skill>();
+    private final ArrayList<Skill> skills = new ArrayList<Skill>();
 
     private OfflinePlayer manaPlayer;
     private SkillTree     skillTree;
@@ -222,6 +219,7 @@ public abstract class RPGClass
      * from the given source
      *
      * @param source source of experience to check
+     *
      * @return true if receives experience from the source, false otherwise
      */
     public boolean receivesExp(ExpSource source)
@@ -243,6 +241,7 @@ public abstract class RPGClass
      * Retrieves the required amount of experience this class need to level
      *
      * @param level current level of the class
+     *
      * @return required amount of experience to reach the next level
      */
     public int getRequiredExp(int level)
@@ -254,22 +253,24 @@ public abstract class RPGClass
      * Retrieves the amount of max health this class provides
      *
      * @param level current level of the class
+     *
      * @return amount of max health the class provides
      */
     public double getHealth(int level)
     {
-        return settings.get(ClassAttribute.HEALTH, level);
+        return settings.getAttr(ClassAttribute.HEALTH, level);
     }
 
     /**
      * Retrieves the amount of max mana this class provides
      *
      * @param level current level of the class
+     *
      * @return amount of max mana the class provides
      */
     public double getMana(int level)
     {
-        return settings.get(ClassAttribute.MANA, level);
+        return settings.getAttr(ClassAttribute.MANA, level);
     }
 
     /**

@@ -7,7 +7,6 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
@@ -32,8 +31,8 @@ public class RegistrationManager
 
     private static final String SKILL_FOLDER = "dynamic" + File.separator + "skill";
     private static final String CLASS_FOLDER = "dynamic" + File.separator + "class";
-    private static final String SKILL_DIR = SKILL_FOLDER + File.separator;
-    private static final String CLASS_DIR = CLASS_FOLDER + File.separator;
+    private static final String SKILL_DIR    = SKILL_FOLDER + File.separator;
+    private static final String CLASS_DIR    = CLASS_FOLDER + File.separator;
 
     private final SkillAPI api;
 
@@ -123,13 +122,18 @@ public class RegistrationManager
         // Load individual dynamic skills
         log("Loading individual dynamic skill files...", 1);
         File skillRoot = new File(api.getDataFolder().getPath() + File.separator + SKILL_FOLDER);
-        if (skillRoot.exists()) {
+        if (skillRoot.exists())
+        {
             File[] files = skillRoot.listFiles();
-            if (files != null) {
-                for (File file : files) {
+            if (files != null)
+            {
+                for (File file : files)
+                {
                     String name = file.getName().replace(".yml", "");
-                    try {
-                        if (!SkillAPI.isSkillRegistered(name)) {
+                    try
+                    {
+                        if (!SkillAPI.isSkillRegistered(name))
+                        {
                             Config sConfig = new Config(api, SKILL_DIR + name);
                             DynamicSkill skill = new DynamicSkill(name);
                             api.skills.put(name.toLowerCase(), skill);
@@ -140,10 +144,17 @@ public class RegistrationManager
                             sConfig.saveConfig();
                             log("Loaded the dynamic skill: " + name, 2);
                         }
-                        else if (SkillAPI.getSkill(name) instanceof DynamicSkill) log(name + " is already loaded, skipping it", 3);
-                        else api.getLogger().severe("Duplicate skill detected: " + name);
+                        else if (SkillAPI.getSkill(name) instanceof DynamicSkill)
+                        {
+                            log(name + " is already loaded, skipping it", 3);
+                        }
+                        else
+                        {
+                            api.getLogger().severe("Duplicate skill detected: " + name);
+                        }
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         api.getLogger().severe("Failed to load skill: " + name);
                     }
                 }
@@ -164,15 +175,21 @@ public class RegistrationManager
         }
 
         // Load dynamic classes from classes.yml
-        if (!classConfig.getConfig().getBoolean("loaded", false)) {
+        if (!classConfig.getConfig().getBoolean("loaded", false))
+        {
             log("Loading dynamic classes from classes.yml...", 1);
             classConfig.getConfig().set("loaded", true);
-            for (String key : classConfig.getConfig().getKeys(false)) {
-                if (key.equals("loaded")) continue;
-                if (!SkillAPI.isClassRegistered(key)) {
+            for (String key : classConfig.getConfig().getKeys(false))
+            {
+                if (key.equals("loaded"))
+                {
+                    continue;
+                }
+                if (!SkillAPI.isClassRegistered(key))
+                {
                     DynamicClass tree = new DynamicClass(api, key);
-                    api.addDynamicClass(tree);
                     tree.load(classConfig.getConfig().getConfigurationSection(key));
+                    api.addDynamicClass(tree);
                     Config cConfig = new Config(api, CLASS_DIR + key);
                     cConfig.clear();
                     tree.save(cConfig.getConfig().createSection(key));
@@ -180,35 +197,53 @@ public class RegistrationManager
                     cConfig.saveConfig();
                     log("Loaded the dynamic class: " + key, 2);
                 }
-                else api.getLogger().severe("Duplicate class detected: " + key);
+                else
+                {
+                    api.getLogger().severe("Duplicate class detected: " + key);
+                }
             }
         }
-        else log("classes.yml doesn't have any changes, skipping it", 1);
+        else
+        {
+            log("classes.yml doesn't have any changes, skipping it", 1);
+        }
 
         // Load individual dynamic classes
         log("Loading individual dynamic class files...", 1);
         File classRoot = new File(api.getDataFolder().getPath() + File.separator + CLASS_FOLDER);
-        if (classRoot.exists()) {
+        if (classRoot.exists())
+        {
             File[] files = classRoot.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    try {
+            if (files != null)
+            {
+                for (File file : files)
+                {
+                    try
+                    {
                         String name = file.getName().replace(".yml", "");
-                        if (!SkillAPI.isClassRegistered(name)) {
+                        if (!SkillAPI.isClassRegistered(name))
+                        {
                             Config cConfig = new Config(api, CLASS_DIR + name);
                             DynamicClass tree = new DynamicClass(api, name);
-                            api.addDynamicClass(tree);
                             tree.load(cConfig.getConfig().getConfigurationSection(name));
+                            api.addDynamicClass(tree);
                             cConfig.clear();
                             tree.save(cConfig.getConfig().createSection(name));
                             tree.save(classConfig.getConfig().createSection(name));
                             cConfig.saveConfig();
                             log("Loaded the dynamic class: " + name, 2);
                         }
-                        else if (SkillAPI.getClass(name) instanceof DynamicClass) log(name + " is already loaded, skipping it", 3);
-                        else api.getLogger().severe("Duplicate class detected: " + name);
+                        else if (SkillAPI.getClass(name) instanceof DynamicClass)
+                        {
+                            log(name + " is already loaded, skipping it", 3);
+                        }
+                        else
+                        {
+                            api.getLogger().severe("Duplicate class detected: " + name);
+                        }
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         api.getLogger().severe("Failed to load class file: " + file.getName() + " - Invalid format");
                     }
                 }

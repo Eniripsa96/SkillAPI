@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 
@@ -15,10 +14,10 @@ import java.util.List;
 public class WarpLocMechanic extends EffectComponent
 {
     private static final String WORLD = "world";
-    private static final String X = "x";
-    private static final String Y = "y";
-    private static final String Z = "z";
-    private static final String YAW = "yaw";
+    private static final String X     = "x";
+    private static final String Y     = "y";
+    private static final String Z     = "z";
+    private static final String YAW   = "yaw";
     private static final String PITCH = "pitch";
 
     /**
@@ -51,11 +50,11 @@ public class WarpLocMechanic extends EffectComponent
         }
 
         // Get the other values
-        double x = settings.get(X, 0.0);
-        double y = settings.get(Y, 0.0);
-        double z = settings.get(Z, 0.0);
-        float yaw = (float)settings.get(YAW, 0.0);
-        float pitch = (float)settings.get(PITCH, 0.0);
+        double x = settings.getDouble(X, 0.0);
+        double y = settings.getDouble(Y, 0.0);
+        double z = settings.getDouble(Z, 0.0);
+        float yaw = (float) settings.getDouble(YAW, 0.0);
+        float pitch = (float) settings.getDouble(PITCH, 0.0);
 
         Location loc = new Location(w, x, y, z, yaw, pitch);
 

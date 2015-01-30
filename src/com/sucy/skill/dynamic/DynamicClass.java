@@ -1,6 +1,5 @@
 package com.sucy.skill.dynamic;
 
-import com.rit.sucy.config.Config;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import org.bukkit.Material;
@@ -26,7 +25,5 @@ public class DynamicClass extends RPGClass
     public DynamicClass(SkillAPI api, String key)
     {
         super(key, new ItemStack(Material.APPLE), 20);
-
-        load(new Config(api, "dynamic/skill/" + key).getConfig());
     }
 }

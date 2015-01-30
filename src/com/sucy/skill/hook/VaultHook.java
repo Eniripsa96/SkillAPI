@@ -8,7 +8,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 /**
  * Manages setting permissions through vault
  */
-public class VaultHook {
+public class VaultHook
+{
 
     private static Permission permission;
     private static boolean checked = false;
@@ -16,9 +17,11 @@ public class VaultHook {
     /**
      * Initializes the permissions manager
      */
-    private static void initialize() {
+    private static void initialize()
+    {
         RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
-        if (permissionProvider != null) {
+        if (permissionProvider != null)
+        {
             permission = permissionProvider.getProvider();
         }
     }
@@ -28,8 +31,10 @@ public class VaultHook {
      *
      * @return true if valid, false otherwise
      */
-    public static boolean isValid() {
-        if (!checked) {
+    public static boolean isValid()
+    {
+        if (!checked)
+        {
             initialize();
             checked = true;
         }
@@ -42,7 +47,8 @@ public class VaultHook {
      * @param player player to add to
      * @param node   permission node to add
      */
-    public static void add(Player player, String node) {
+    public static void add(Player player, String node)
+    {
         permission.playerAdd(player, node);
     }
 
@@ -52,7 +58,8 @@ public class VaultHook {
      * @param player player to remove from
      * @param node   permission node to remove
      */
-    public static void remove(Player player, String node) {
+    public static void remove(Player player, String node)
+    {
         permission.playerRemove(player, node);
     }
 
@@ -61,9 +68,11 @@ public class VaultHook {
      *
      * @param player player to check for
      * @param node   permission node to remove
-     * @return       true if the player has it, false otherwise
+     *
+     * @return true if the player has it, false otherwise
      */
-    public static boolean has(Player player, String node) {
+    public static boolean has(Player player, String node)
+    {
         return permission.has(player, node);
     }
 }

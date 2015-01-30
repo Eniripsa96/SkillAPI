@@ -71,7 +71,10 @@ public class PlayerAccounts
     public void setAccount(int id)
     {
         Player player = getPlayer();
-        if (player == null || id == active) return;
+        if (player == null || id == active)
+        {
+            return;
+        }
         if (id <= getAccountLimit() && id > 0 && !classData.containsKey(id))
         {
             classData.put(id, new PlayerData(player));

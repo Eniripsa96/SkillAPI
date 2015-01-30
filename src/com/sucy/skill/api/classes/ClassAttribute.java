@@ -8,10 +8,10 @@ public final class ClassAttribute
     /**
      * Maximum health for a class
      */
-    public static final String HEALTH = "Health";
+    public static final String HEALTH = "health";
 
     /**
      * Maximum mana for a class
      */
-    public static final String MANA = "Mana";
+    public static final String MANA = "mana";
 }

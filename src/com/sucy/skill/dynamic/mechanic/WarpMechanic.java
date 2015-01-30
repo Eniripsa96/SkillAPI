@@ -2,9 +2,7 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
@@ -42,9 +40,9 @@ public class WarpMechanic extends EffectComponent
 
         // Get the world
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
-        double forward = settings.get(FORWARD, level, 0.0);
-        double upward = settings.get(UPWARD, level, 0.0);
-        double right = settings.get(RIGHT, level, 0.0);
+        double forward = settings.getAttr(FORWARD, level, 0.0);
+        double upward = settings.getAttr(UPWARD, level, 0.0);
+        double right = settings.getAttr(RIGHT, level, 0.0);
 
         for (LivingEntity target : targets)
         {

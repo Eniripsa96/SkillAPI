@@ -66,15 +66,19 @@ public abstract class EffectComponent
      * Gets the skill data for the caster
      *
      * @param caster caster of the skill
+     *
      * @return skill data for the caster or null if not found
      */
     protected PlayerSkill getSkillData(LivingEntity caster)
     {
         if (caster instanceof Player)
         {
-            return SkillAPI.getPlayerData((Player)caster).getSkill(skill.getName());
+            return SkillAPI.getPlayerData((Player) caster).getSkill(skill.getName());
         }
-        else return null;
+        else
+        {
+            return null;
+        }
     }
 
     /**

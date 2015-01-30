@@ -2,7 +2,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.dynamic.EffectComponent;
-import com.sucy.skill.listener.MainListener;
 import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
 import org.bukkit.Bukkit;
@@ -40,12 +39,15 @@ public class WolfMechanic extends EffectComponent
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
-        if (!(caster instanceof Player)) return false;
+        if (!(caster instanceof Player))
+        {
+            return false;
+        }
 
         String color = settings.getString(COLOR);
-        double health = settings.get(HEALTH, level, 10.0);
+        double health = settings.getAttr(HEALTH, level, 10.0);
         String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", ((Player) caster).getName()));
-        double damage = settings.get(DAMAGE, level, 3.0);
+        double damage = settings.getAttr(DAMAGE, level, 3.0);
 
         DyeColor dye = null;
         if (color != null)
@@ -58,13 +60,13 @@ public class WolfMechanic extends EffectComponent
             { /* Invalid color */ }
         }
 
-        double seconds = settings.get(SECONDS, level, 10.0);
+        double seconds = settings.getAttr(SECONDS, level, 10.0);
         int ticks = (int) (seconds * 20);
         ArrayList<LivingEntity> wolves = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
             Wolf wolf = target.getWorld().spawn(target.getLocation(), Wolf.class);
-            wolf.setOwner((Player)caster);
+            wolf.setOwner((Player) caster);
             wolf.setMaxHealth(health);
             wolf.setHealth(health);
             wolf.setMetadata(MechanicListener.SUMMON_DAMAGE, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), damage));

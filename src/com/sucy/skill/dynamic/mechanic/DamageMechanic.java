@@ -26,7 +26,7 @@ public class DamageMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean percent = settings.getString(TYPE, "damage").toLowerCase().equals("percent");
-        double damage = settings.get(DAMAGE, level, 1.0);
+        double damage = settings.getAttr(DAMAGE, level, 1.0);
         for (LivingEntity target : targets)
         {
             double amount = damage;

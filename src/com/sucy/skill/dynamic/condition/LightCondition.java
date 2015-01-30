@@ -26,8 +26,8 @@ public class LightCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        double min = settings.get(MIN, level);
-        double max = settings.get(MAX, level);
+        double min = settings.getAttr(MIN, level);
+        double max = settings.getAttr(MAX, level);
 
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)

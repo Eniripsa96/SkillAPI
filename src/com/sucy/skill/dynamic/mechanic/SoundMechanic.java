@@ -35,8 +35,8 @@ public class SoundMechanic extends EffectComponent
         try
         {
             Sound sound = Sound.valueOf(settings.getString(SOUND, ""));
-            float volume = (float)settings.get(VOLUME, 100.0) / 100;
-            float pitch = (float)settings.get(PITCH, 0.0);
+            float volume = (float) settings.getDouble(VOLUME, 100.0) / 100;
+            float pitch = (float) settings.getDouble(PITCH, 0.0);
             for (LivingEntity target : targets)
             {
                 target.getWorld().playSound(target.getLocation(), sound, volume, pitch);

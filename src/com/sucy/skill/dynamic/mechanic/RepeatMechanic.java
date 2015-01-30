@@ -30,10 +30,13 @@ public class RepeatMechanic extends EffectComponent
     {
         if (targets.size() > 0)
         {
-            int count = (int)settings.get(REPETITIONS, level, 3.0);
-            if (count <= 0) return false;
-            int delay = (int)(settings.get(DELAY, 0.0) * 20);
-            int period = (int)(settings.get(PERIOD, 1.0) * 20);
+            int count = (int) settings.getAttr(REPETITIONS, level, 3.0);
+            if (count <= 0)
+            {
+                return false;
+            }
+            int delay = (int) (settings.getDouble(DELAY, 0.0) * 20);
+            int period = (int) (settings.getDouble(PERIOD, 1.0) * 20);
             new RepeatTask(caster, level, targets, count, delay, period);
             return true;
         }
@@ -43,9 +46,9 @@ public class RepeatMechanic extends EffectComponent
     private class RepeatTask extends BukkitRunnable
     {
         private List<LivingEntity> targets;
-        private LivingEntity caster;
-        private int level;
-        private int count;
+        private LivingEntity       caster;
+        private int                level;
+        private int                count;
 
         public RepeatTask(LivingEntity caster, int level, List<LivingEntity> targets, int count, int delay, int period)
         {

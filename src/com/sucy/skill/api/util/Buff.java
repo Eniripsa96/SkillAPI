@@ -5,7 +5,7 @@ package com.sucy.skill.api.util;
  */
 public class Buff
 {
-    private double value;
+    private double  value;
     private boolean percent;
 
     /**

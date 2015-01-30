@@ -29,9 +29,12 @@ public class CooldownMechanic extends EffectComponent
     {
         String skill = settings.getString(SKILL);
         String type = settings.getString(TYPE).toLowerCase();
-        double value = settings.get(VALUE, level);
+        double value = settings.getAttr(VALUE, level);
         PlayerSkill skillData = getSkillData(caster);
-        if (skill == null) return false;
+        if (skill == null)
+        {
+            return false;
+        }
 
         boolean worked = false;
         if (skill.equals("all"))

@@ -2,9 +2,7 @@ package com.sucy.skill.api.projectile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.Plugin;
@@ -133,12 +131,16 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
      * @param dir    center direction of the spread
      * @param angle  angle which to spread at
      * @param amount amount of directions to calculate
+     *
      * @return the list of calculated directions
      */
     public static ArrayList<Vector> calcSpread(Vector dir, double angle, int amount)
     {
         // Special cases
-        if (amount <= 0) return new ArrayList<Vector>();
+        if (amount <= 0)
+        {
+            return new ArrayList<Vector>();
+        }
 
         ArrayList<Vector> list = new ArrayList<Vector>();
 
@@ -149,7 +151,10 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
             amount--;
         }
 
-        if (amount <= 0) return list;
+        if (amount <= 0)
+        {
+            return list;
+        }
 
         // Get the base velocity
         Vector base = dir.clone();
@@ -160,9 +165,15 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
 
         // Get the vertical angle
         double vBaseAngle = base.angle(dir);
-        if (dir.getY() < 0) vBaseAngle = -vBaseAngle;
+        if (dir.getY() < 0)
+        {
+            vBaseAngle = -vBaseAngle;
+        }
         double hAngle = base.angle(X_VEC) / DEGREE_TO_RAD;
-        if (base.getZ() < 0) hAngle = -hAngle;
+        if (base.getZ() < 0)
+        {
+            hAngle = -hAngle;
+        }
 
         // Calculate directions
         double angleIncrement = angle / (amount - 1);
@@ -197,12 +208,16 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
      * @param radius radius of the circle
      * @param height height above the target to use
      * @param amount amount of locations to calculate
+     *
      * @return list of locations to spawn projectiles
      */
     public static ArrayList<Location> calcRain(Location loc, double radius, double height, int amount)
     {
         ArrayList<Location> list = new ArrayList<Location>();
-        if (amount <= 0) return list;
+        if (amount <= 0)
+        {
+            return list;
+        }
         loc.add(0, height, 0);
 
         // One would be in the center
@@ -211,12 +226,14 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
 
         // Calculate locations
         int tiers = (amount + 7) / 8;
-        for (int i = 0; i < tiers; i++) {
+        for (int i = 0; i < tiers; i++)
+        {
             double rad = radius * (tiers - i) / tiers;
             int tierNum = Math.min(amount, 8);
             double increment = 360 / tierNum;
             double angle = (i % 2) * 22.5;
-            for (int j = 0; j < tierNum; j++) {
+            for (int j = 0; j < tierNum; j++)
+            {
                 double dx = Math.cos(angle) * rad;
                 double dz = Math.sin(angle) * rad;
                 Location l = loc.clone();

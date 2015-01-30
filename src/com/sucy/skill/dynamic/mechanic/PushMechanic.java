@@ -30,12 +30,15 @@ public class PushMechanic extends EffectComponent
             return false;
         }
 
-        double speed = settings.get(SPEED, level, 3.0);
+        double speed = settings.getAttr(SPEED, level, 3.0);
         boolean worked = false;
         for (LivingEntity target : targets)
         {
             Vector vel = target.getLocation().subtract(caster.getLocation()).toVector();
-            if (vel.lengthSquared() == 0) continue;
+            if (vel.lengthSquared() == 0)
+            {
+                continue;
+            }
             vel.multiply(speed / vel.lengthSquared());
             vel.setY(vel.getY() / 5 + 0.5);
             target.setVelocity(vel);

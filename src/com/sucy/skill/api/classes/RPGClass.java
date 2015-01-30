@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a template for a class used in the RPG system. This is
+ * the class to extend when creating your own classes.
+ */
 public abstract class RPGClass
 {
-    private final HashMap<Material, Double> weaponDamage     = new HashMap<Material, Double>();
-    private final HashMap<Material, Double> projectileDamage = new HashMap<Material, Double>();
     private final ArrayList<Skill>          skills           = new ArrayList<Skill>();
 
     private OfflinePlayer manaPlayer;
@@ -40,6 +42,10 @@ public abstract class RPGClass
     private double        manaRegen;
     private boolean       needsPermission;
 
+    /**
+     * The settings for your class. This will include the
+     * health and mana scaling for the class.
+     */
     protected final Settings settings = new Settings();
 
     ///////////////////////////////////////////////////////
@@ -48,16 +54,50 @@ public abstract class RPGClass
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Initializes a class template that does not profess from other
+     * classes but is rather a starting class.
+     *
+     * @param name     name of the class
+     * @param icon     icon representing the class in menus
+     * @param maxLevel max level the class can reach
+     */
     protected RPGClass(String name, ItemStack icon, int maxLevel)
     {
         this(name, icon, maxLevel, null, null);
     }
 
+    /**
+     * Initializes a class template that can profess from the parent
+     * class when that class reaches its max level.
+     *
+     * @param name     name of the class
+     * @param icon     icon representing the class in menus
+     * @param maxLevel max level the class can reach
+     * @param parent   parent class to profess from
+     */
     protected RPGClass(String name, ItemStack icon, int maxLevel, String parent)
     {
         this(name, icon, maxLevel, null, parent);
     }
 
+    /**
+     * Initializes a class template that can profess from the parent
+     * class when that class reaches its max level. The group is
+     * the category for the class which determines which classes
+     * can be professed into simultaneously. Classes in the same
+     * group will not be able to both be professed into at the same
+     * time while classes in different groups are able to. For example,
+     * a class "Warrior" in the "class" group and an "Elf" class in the
+     * "race" group can both be professed as by a player at the same
+     * time, giving the player the stats and skills from both.
+     *
+     * @param name     name of the class
+     * @param icon     icon representing the class in menus
+     * @param maxLevel max level the class can reach
+     * @param group    class group
+     * @param parent   parent class to profess from
+     */
     protected RPGClass(String name, ItemStack icon, int maxLevel, String group, String parent)
     {
         this.parent = SkillAPI.getClass(parent);
@@ -82,16 +122,31 @@ public abstract class RPGClass
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Retrieves the name of the class
+     *
+     * @return class name
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Retrieves the prefix of the class
+     *
+     * @return class prefix
+     */
     public String getPrefix()
     {
         return prefix;
     }
 
+    /**
+     * Retrieves the color of the class's prefix
+     *
+     * @return prefix color
+     */
     public ChatColor getPrefixColor()
     {
         String colors = ChatColor.getLastColors(prefix);
@@ -102,111 +157,178 @@ public abstract class RPGClass
         return ChatColor.getByChar(colors.charAt(1));
     }
 
+    /**
+     * Retrieves the skill tree representing the class skills
+     *
+     * @return class skill tree
+     */
     public SkillTree getSkillTree()
     {
         return skillTree;
     }
 
+    /**
+     * Retrieves the group this class falls in
+     *
+     * @return class group
+     */
     public String getGroup()
     {
         return group;
     }
 
+    /**
+     * Retrieves the settings for the class's group
+     *
+     * @return settings for the class's group
+     */
     public GroupSettings getGroupSettings()
     {
         return SkillAPI.getSettings().getGroupSettings(group);
     }
 
+    /**
+     * Checks whether or not the class professes from another class
+     *
+     * @return true if professes from another class, false otherwise
+     */
     public boolean hasParent()
     {
         return parent != null;
     }
 
+    /**
+     * Retrieves the parent of this class
+     *
+     * @return parent of the class or null if none
+     */
     public RPGClass getParent()
     {
         return parent;
     }
 
+    /**
+     * Retrieves the icon representing this class for menus
+     *
+     * @return icon representation of the class
+     */
     public ItemStack getIcon()
     {
         return icon;
     }
 
-    public String getSerializedIcon()
-    {
-        return icon.getType().name() + "," + icon.getData().getData();
-    }
-
+    /**
+     * Checks whether or not the class receives experience
+     * from the given source
+     *
+     * @param source source of experience to check
+     * @return true if receives experience from the source, false otherwise
+     */
     public boolean receivesExp(ExpSource source)
     {
         return (expSources & source.getId()) != 0;
     }
 
+    /**
+     * Retrieves the max level in which this class can reach
+     *
+     * @return max level this class can reach
+     */
     public int getMaxLevel()
     {
         return maxLevel;
     }
 
+    /**
+     * Retrieves the required amount of experience this class need to level
+     *
+     * @param level current level of the class
+     * @return required amount of experience to reach the next level
+     */
     public int getRequiredExp(int level)
     {
         return SkillAPI.getSettings().getRequiredExp(level);
     }
 
+    /**
+     * Retrieves the amount of max health this class provides
+     *
+     * @param level current level of the class
+     * @return amount of max health the class provides
+     */
     public double getHealth(int level)
     {
         return settings.get(ClassAttribute.HEALTH, level);
     }
 
+    /**
+     * Retrieves the amount of max mana this class provides
+     *
+     * @param level current level of the class
+     * @return amount of max mana the class provides
+     */
     public double getMana(int level)
     {
         return settings.get(ClassAttribute.MANA, level);
     }
 
+    /**
+     * Retrieves the alias for mana this class uses
+     *
+     * @return mana alias for the class
+     */
     public String getManaName()
     {
         return mana;
     }
 
+    /**
+     * Retrieves the offline player used by this class for scoreboard stats
+     * to show a player's current mana.
+     *
+     * @return scoreboard offline player for mana displays
+     */
     public OfflinePlayer getManaPlayer()
     {
         return manaPlayer;
     }
 
+    /**
+     * Retrieves the list of skills this class provides a player
+     *
+     * @return list of skills provided by the class
+     */
     public ArrayList<Skill> getSkills()
     {
         return skills;
     }
 
+    /**
+     * Checks whether or not this class has mana regeneration
+     *
+     * @return true if has mana regeneration, false otherwise
+     */
     public boolean hasManaRegen()
     {
         return manaRegen > 0;
     }
 
+    /**
+     * Retrieves the amount of mana regeneration this class has
+     *
+     * @return mana regeneration per update or a non-positive number if no regeneration
+     */
     public double getManaRegen()
     {
         return manaRegen;
     }
 
-    public boolean hasWeaponDamage(Material mat)
-    {
-        return weaponDamage.containsKey(mat);
-    }
-
-    public boolean hasProjectileDamage(Material mat)
-    {
-        return projectileDamage.containsKey(mat);
-    }
-
-    public double getWeaponDamage(Material mat)
-    {
-        return weaponDamage.get(mat);
-    }
-
-    public double getProjectileDamage(Material mat)
-    {
-        return projectileDamage.get(mat);
-    }
-
+    /**
+     * Retrieves the list of child classes that the player has
+     * as options to profess into upon reaching max level.
+     *
+     * @return list of child classes
+     */
     public ArrayList<RPGClass> getOptions()
     {
         ArrayList<RPGClass> list = new ArrayList<RPGClass>();
@@ -226,6 +348,12 @@ public abstract class RPGClass
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    /**
+     * Adds a skill to the class by name. This will not add it to the
+     * skill tree or to players who are already professed as the class.
+     *
+     * @param name name of the skill
+     */
     public void addSkill(String name)
     {
         Skill skill = SkillAPI.getSkill(name);
@@ -239,6 +367,12 @@ public abstract class RPGClass
         }
     }
 
+    /**
+     * Adds multiple skills to the class by name. This will not add it to
+     * the skill tree or to players who are already professed as the class.
+     *
+     * @param names names of the skills
+     */
     public void addSkills(String... names)
     {
         for (String name : names)
@@ -247,26 +381,31 @@ public abstract class RPGClass
         }
     }
 
+    /**
+     * Sets the prefix for the class
+     *
+     * @param prefix class prefix
+     */
     public void setPrefix(String prefix)
     {
         this.prefix = prefix;
     }
 
+    /**
+     * Sets the mana alias for the class
+     *
+     * @param name mana alias
+     */
     public void setManaName(String name)
     {
         mana = name;
     }
 
-    public void setWeaponDamage(Material mat, double damage)
-    {
-        weaponDamage.put(mat, damage);
-    }
-
-    public void setProjectileDamage(Material mat, double damage)
-    {
-        projectileDamage.put(mat, damage);
-    }
-
+    /**
+     * Sets the experience sources this class can receive experience from.
+     *
+     * @param sources allowed sources of experience
+     */
     public void setAllowedExpSources(ExpSource... sources)
     {
         expSources = 0;
@@ -276,16 +415,32 @@ public abstract class RPGClass
         }
     }
 
+    /**
+     * Adds an experience source to the list of allowed sources for the class.
+     *
+     * @param source allowed source of experience
+     */
     public void allowExpSource(ExpSource source)
     {
         expSources |= source.getId();
     }
 
+    /**
+     * Removes an experience source from the list of allowed
+     * sources for the class.
+     *
+     * @param source disallowed source of experience
+     */
     public void disallowExpSource(ExpSource source)
     {
         expSources &= (~source.getId());
     }
 
+    /**
+     * Sets the amount of mana regen this class has
+     *
+     * @param amount amount of mana regen
+     */
     public void setManaRegen(double amount)
     {
         this.manaRegen = amount;
@@ -313,21 +468,13 @@ public abstract class RPGClass
     private static final String ATTR     = "attributes";
     private static final String TREE     = "tree";
 
+    /**
+     * Saves the class template data to the config
+     *
+     * @param config config to save to
+     */
     public void save(ConfigurationSection config)
     {
-
-        ConfigurationSection weapons = config.createSection(WEAPON);
-        for (Map.Entry<Material, Double> entry : weaponDamage.entrySet())
-        {
-            weapons.set(entry.getKey().name(), entry.getValue());
-        }
-
-        ConfigurationSection projects = config.createSection(PROJECTS);
-        for (Map.Entry<Material, Double> entry : projectileDamage.entrySet())
-        {
-            projects.set(entry.getKey().name(), entry.getValue());
-        }
-
         ArrayList<String> skillNames = new ArrayList<String>();
         for (Skill skill : skills)
         {
@@ -341,7 +488,6 @@ public abstract class RPGClass
         }
 
         Data.serializeIcon(icon, config);
-        config.set(ITEM, getSerializedIcon());
         config.set(NAME, name);
         config.set(PREFIX, prefix);
         config.set(GROUP, group);
@@ -355,28 +501,16 @@ public abstract class RPGClass
         settings.save(config.createSection(ATTR));
     }
 
+    /**
+     * Saves some of the class template data to the config, avoiding
+     * overwriting any existing data.
+     *
+     * @param config config to save to
+     */
     public void softSave(ConfigurationSection config)
     {
 
         boolean neededOnly = config.getKeys(false).size() > 0;
-
-        if (weaponDamage.size() > 0 && !neededOnly)
-        {
-            ConfigurationSection weapons = config.createSection(WEAPON);
-            for (Map.Entry<Material, Double> entry : weaponDamage.entrySet())
-            {
-                weapons.set(entry.getKey().name(), entry.getValue());
-            }
-        }
-
-        if (projectileDamage.size() > 0 && !neededOnly)
-        {
-            ConfigurationSection projects = config.createSection(PROJECTS);
-            for (Map.Entry<Material, Double> entry : projectileDamage.entrySet())
-            {
-                projects.set(entry.getKey().name(), entry.getValue());
-            }
-        }
 
         if (skills.size() > 0 && !neededOnly)
         {
@@ -430,27 +564,13 @@ public abstract class RPGClass
         }
     }
 
+    /**
+     * Loads class template data from the configuration
+     *
+     * @param config config to load from
+     */
     public void load(ConfigurationSection config)
     {
-
-        if (config.isConfigurationSection(WEAPON))
-        {
-            ConfigurationSection weapons = config.getConfigurationSection(WEAPON);
-            for (String key : weapons.getKeys(false))
-            {
-                weaponDamage.put(Data.parseMat(key), weapons.getDouble(key));
-            }
-        }
-
-        if (config.isConfigurationSection(PROJECTS))
-        {
-            ConfigurationSection projects = config.getConfigurationSection(PROJECTS);
-            for (String key : projects.getKeys(false))
-            {
-                projectileDamage.put(Data.parseMat(key), projects.getDouble(key));
-            }
-        }
-
         if (config.isList(SKILLS))
         {
             skills.clear();

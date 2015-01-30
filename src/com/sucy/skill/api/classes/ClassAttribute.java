@@ -5,7 +5,6 @@ package com.sucy.skill.api.classes;
  */
 public final class ClassAttribute
 {
-
     /**
      * Maximum health for a class
      */

@@ -44,6 +44,7 @@ import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
+import com.sucy.skill.manager.ResourceManager;
 import com.sucy.skill.task.ManaTask;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -115,6 +116,7 @@ public class SkillAPI extends JavaPlugin
         io = new ConfigIO(this);
         PlayerStats.init();
         ClassBoardManager.registerText();
+        ResourceManager.copyQuestsModule();
 
         // Set up listeners
         new MainListener(this);

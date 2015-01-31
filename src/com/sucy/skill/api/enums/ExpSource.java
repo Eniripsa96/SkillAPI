@@ -45,7 +45,12 @@ public enum ExpSource
     /**
      * Experience from smelting ore
      */
-    SMELT(0x80);
+    SMELT(0x80),
+
+    /**
+     * Experience from a quest
+     */
+    QUEST(0x100);
 
     /**
      * The ID of the experience source which should be a unique power of 2 (or bit value)

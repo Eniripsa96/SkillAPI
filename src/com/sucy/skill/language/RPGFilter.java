@@ -2,6 +2,9 @@ package com.sucy.skill.language;
 
 import com.rit.sucy.config.CustomFilter;
 
+/**
+ * Various text filters used by SkillAPI
+ */
 public class RPGFilter
 {
     public static final CustomFilter NAME       = new CustomFilter("{name}", "");

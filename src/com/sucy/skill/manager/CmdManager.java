@@ -7,16 +7,28 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.cmd.*;
 import com.sucy.skill.data.Permissions;
 
+/**
+ * Sets up commands for the plugin
+ */
 public class CmdManager
 {
     private SkillAPI api;
 
+    /**
+     * Initializes a new command manager. This is handled by the API and
+     * shouldn't be used by other plugins.
+     *
+     * @param api SkillAPI reference
+     */
     public CmdManager(SkillAPI api)
     {
         this.api = api;
         this.initialize();
     }
 
+    /**
+     * Initializes commands with MCCore's CommandManager
+     */
     public void initialize()
     {
         ConfigurableCommand root = new ConfigurableCommand(api, "class", SenderType.ANYONE);
@@ -43,6 +55,9 @@ public class CmdManager
         CommandManager.registerCommand(root);
     }
 
+    /**
+     * Unregisters all commands for SkillAPI from the server
+     */
     public void clear()
     {
         CommandManager.unregisterCommands(api);

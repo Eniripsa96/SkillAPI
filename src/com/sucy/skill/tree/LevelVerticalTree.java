@@ -8,7 +8,6 @@ import com.sucy.skill.api.classes.RPGClass;
  */
 public class LevelVerticalTree extends LevelTree
 {
-
     /**
      * Constructor
      *

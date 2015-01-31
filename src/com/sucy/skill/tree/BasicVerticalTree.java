@@ -13,8 +13,6 @@ import java.util.List;
  */
 public class BasicVerticalTree extends SkillTree
 {
-
-    // Width of the skill tree
     private int width;
 
     /**

@@ -12,7 +12,6 @@ import java.util.*;
  */
 public class RequirementTree extends SkillTree
 {
-
     /**
      * Constructor
      *

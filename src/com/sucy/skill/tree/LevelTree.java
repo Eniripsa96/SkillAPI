@@ -13,7 +13,6 @@ import java.util.*;
  */
 public abstract class LevelTree extends SkillTree
 {
-
     /**
      * Constructor
      *

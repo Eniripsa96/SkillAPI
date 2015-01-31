@@ -1,5 +1,8 @@
 package com.sucy.skill.language;
 
+/**
+ * Error message language nodes
+ */
 public class ErrorNodes
 {
     public static final String

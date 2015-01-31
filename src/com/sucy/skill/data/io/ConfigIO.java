@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * IO manager that saves/loads to a .yml configuration file
+ */
 public class ConfigIO extends IOManager
 {
-
     private static final String
             LIMIT          = "limit",
             ACTIVE         = "active",
@@ -34,12 +36,23 @@ public class ConfigIO extends IOManager
 
     private final Config config;
 
+    /**
+     * Initializes a new .yml config manager
+     *
+     * @param plugin SkillAPI reference
+     */
     public ConfigIO(SkillAPI plugin)
     {
         super(plugin);
         config = new Config(plugin, "players");
     }
 
+    /**
+     * Loads data for the given player
+     *
+     * @param player player to load data for
+     * @return loaded player data
+     */
     @Override
     public PlayerAccounts loadData(OfflinePlayer player)
     {
@@ -135,6 +148,11 @@ public class ConfigIO extends IOManager
         return data;
     }
 
+    /**
+     * Saves player data to the config
+     *
+     * @param data data to save to the config
+     */
     @Override
     public void saveData(PlayerAccounts data)
     {
@@ -196,6 +214,9 @@ public class ConfigIO extends IOManager
         }
     }
 
+    /**
+     * Saves all player data to the config
+     */
     @Override
     public void saveAll()
     {

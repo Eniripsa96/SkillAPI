@@ -116,10 +116,7 @@ public class MainListener implements Listener
         if (data.hasClass())
         {
             data.stopPassives(event.getEntity());
-            if (SkillAPI.getSettings().getDeathPenalty() > 0)
-            {
-                data.loseExp(SkillAPI.getSettings().getDeathPenalty());
-            }
+            data.loseExp();
         }
     }
 
@@ -129,7 +126,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onKill(EntityDeathEvent event)
     {
         FlagManager.clearFlags(event.getEntity());

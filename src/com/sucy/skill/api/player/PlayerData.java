@@ -652,14 +652,12 @@ public final class PlayerData
 
     /**
      * Causes the player to lose experience as a penalty (generally for dying)
-     *
-     * @param percent percent of experience to lose
      */
-    public void loseExp(double percent)
+    public void loseExp()
     {
         for (PlayerClass playerClass : classes.values())
         {
-            playerClass.loseExp(percent);
+            playerClass.loseExp(playerClass.getData().getGroupSettings().getDeathPenalty());
         }
         updateLevelBar();
     }

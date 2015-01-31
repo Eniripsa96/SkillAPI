@@ -2,6 +2,9 @@ package com.sucy.skill.data;
 
 import com.rit.sucy.text.TextFormatter;
 
+/**
+ * Represents a single click in a click combination
+ */
 public enum Click
 {
     LEFT(0),

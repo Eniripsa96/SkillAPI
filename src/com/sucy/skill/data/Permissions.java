@@ -1,5 +1,8 @@
 package com.sucy.skill.data;
 
+/**
+ * Permission nodes used by the plugin
+ */
 public class Permissions
 {
     private static final String ROOT = "skillapi.";

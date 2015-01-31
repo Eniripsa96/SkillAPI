@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class BasicHorizontalTree extends SkillTree
 {
-
     /**
      * Constructor
      *

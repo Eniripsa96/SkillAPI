@@ -60,7 +60,6 @@ public class Settings
         loadSkillSettings();
         loadItemSettings();
         loadGUISettings();
-        loadCastSettings();
         loadExpSettings();
         loadSkillBarSettings();
         loadLoggingSettings();
@@ -240,18 +239,6 @@ public class Settings
         return showAutoSkills;
     }
 
-    /**
-     * <p>Sets the default health for classless players.</p>
-     *
-     * @param health the new default health for classless players
-     */
-    public void setDefaultHealth(int health)
-    {
-        this.defaultHealth = health;
-        config.set(CLASS_HP, health);
-        plugin.saveConfig();
-    }
-
     private void loadClassSettings()
     {
         defaultHealth = config.getInt(CLASS_HP);
@@ -289,30 +276,6 @@ public class Settings
     public int getGainFreq()
     {
         return gainFreq;
-    }
-
-    /**
-     * Sets whether or not mana is enabled
-     *
-     * @param enabled whether or not mana is enabled
-     */
-    public void setManaEnabled(boolean enabled)
-    {
-        this.manaEnabled = enabled;
-        config.set(MANA_ENABLED, enabled);
-        plugin.saveConfig();
-    }
-
-    /**
-     * Sets the frequency of mana gain
-     *
-     * @param ticks ticks between gains
-     */
-    public void setGainFreq(int ticks)
-    {
-        this.gainFreq = ticks;
-        config.set(MANA_FREQ, ticks);
-        plugin.saveConfig();
     }
 
     private void loadManaSettings()
@@ -365,42 +328,6 @@ public class Settings
     public int getMessageRadius()
     {
         return messageRadius;
-    }
-
-    /**
-     * Sets whether or not skills can be downgraded
-     *
-     * @param allow whether or not skills can be downgraded
-     */
-    public void setAllowDowngrade(boolean allow)
-    {
-        this.allowDowngrade = allow;
-        config.set(SKILL_DOWNGRADE, allow);
-        plugin.saveConfig();
-    }
-
-    /**
-     * Sets whether or not to show skill messages
-     *
-     * @param enabled whether or not to show skill messages
-     */
-    public void setShowSkillMessages(boolean enabled)
-    {
-        this.showSkillMessages = enabled;
-        config.set(SKILL_MESSAGE, enabled);
-        plugin.saveConfig();
-    }
-
-    /**
-     * Sets the radius for messages to be displayed
-     *
-     * @param radius radius of the messages
-     */
-    public void setMessageRadius(int radius)
-    {
-        this.messageRadius = radius;
-        config.set(SKILL_RADIUS, radius);
-        plugin.saveConfig();
     }
 
     private void loadSkillSettings()
@@ -505,26 +432,53 @@ public class Settings
     private boolean showClassName;
     private boolean showClassLevel;
 
+    /**
+     * Checks whether or not old health bars (fixed 10 hearts) are enabled
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isOldHealth()
     {
         return oldHealth;
     }
 
+    /**
+     * Checks whether or not the level bar is to be used for class level
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isUseLevelBar()
     {
         return useLevelBar;
     }
 
+    /**
+     * Checks whether or not the stats scoreboard is to be shown
+     *
+     * @return true if shown, false otherwise
+     */
     public boolean isShowScoreboard()
     {
         return showScoreboard;
     }
 
+    /**
+     * Checks whether or not a player's class name is to be
+     * shown next to their name
+     *
+     * @return true if shown, false otherwise
+     */
     public boolean isShowClassName()
     {
         return showClassName;
     }
 
+    /**
+     * Checks whether or not a player's class level is to be
+     * shown below their name
+     *
+     * @return true if shown, false otherwise
+     */
     public boolean isShowClassLevel()
     {
         return showClassLevel;
@@ -541,48 +495,10 @@ public class Settings
 
     ///////////////////////////////////////////////////////
     //                                                   //
-    //                   Cast Settings                   //
+    //               Click Combo Settings                //
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private final HashMap<Click, Boolean> enabledClicks = new HashMap<Click, Boolean>();
-
-    private boolean useSkillBars;
-    private boolean useSkillBarCooldowns;
-    private boolean useClickCombos;
-
-    public boolean isUseSkillBars()
-    {
-        return useSkillBars;
-    }
-
-    public boolean isUseSkillBarCooldowns()
-    {
-        return useSkillBarCooldowns;
-    }
-
-    public boolean isUseClickCombos()
-    {
-        return useClickCombos;
-    }
-
-    public boolean isClickEnabled(Click click)
-    {
-        return useClickCombos && enabledClicks.get(click);
-    }
-
-    private static final String CAST_BASE = "Casting.";
-
-    private void loadCastSettings()
-    {
-        useSkillBars = config.getBoolean(CAST_BASE + "use-skill-bars");
-        useSkillBarCooldowns = config.getBoolean(CAST_BASE + "show-skill-bar-cooldowns");
-        useClickCombos = config.getBoolean(CAST_BASE + "use-click-combos");
-
-        enabledClicks.put(Click.LEFT, config.getBoolean(CAST_BASE + "use-click-left"));
-        enabledClicks.put(Click.RIGHT, config.getBoolean(CAST_BASE + "use-click-right"));
-        enabledClicks.put(Click.SHIFT, config.getBoolean(CAST_BASE + "use-click-shift"));
-    }
 
     ///////////////////////////////////////////////////////
     //                                                   //
@@ -599,13 +515,24 @@ public class Settings
     private boolean    blockCreative;
     private boolean    showExpMessages;
     private boolean    showLevelMessages;
-    private double     deathPenalty;
 
+    /**
+     * Gets the required amount of experience at a given level
+     *
+     * @param level level of the class
+     * @return required experience to gain a level
+     */
     public int getRequiredExp(int level)
     {
         return expFormula.calculate(level);
     }
 
+    /**
+     * Gets the experience yield of a mob
+     *
+     * @param mob mob to get the yield of
+     * @return experience yield
+     */
     public double getYield(String mob)
     {
         mob = mob.toLowerCase();
@@ -619,74 +546,70 @@ public class Settings
         }
     }
 
+    /**
+     * Checks whether or not experience is to be gained through
+     * vanilla experience orbs
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isUseOrbs()
     {
         return useOrbs;
     }
 
+    /**
+     * Checks whether or not experience from mobs spawned
+     * via a mob spawner is to be blocked.
+     *
+     * @return true if blocked, false otherwise
+     */
     public boolean isBlockSpawner()
     {
         return blockSpawner;
     }
 
+    /**
+     * Checks whether or not experience from mobs spawned
+     * via eggs are to be blocked
+     *
+     * @return true if blocked, false otherwise
+     */
     public boolean isBlockEgg()
     {
         return blockEgg;
     }
 
+    /**
+     * Checks whether or not players in creative mode
+     * are blocked from receiving experience.
+     *
+     * @return true if blocked, false otherwise
+     */
     public boolean isBlockCreative()
     {
         return blockCreative;
     }
 
+    /**
+     * Checks whether or not messages should
+     * be displayed when a player gains experience
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isShowExpMessages()
     {
         return showExpMessages;
     }
 
+    /**
+     * Checks whether or not messages should be displayed
+     * when a player gains a level
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isShowLevelMessages()
     {
         return showLevelMessages;
-    }
-
-    public double getDeathPenalty()
-    {
-        return deathPenalty;
-    }
-
-    public void setExpFormula(ExpFormula formula)
-    {
-        expFormula = formula;
-    }
-
-    public void setBlockSpawner(boolean block)
-    {
-        blockSpawner = block;
-    }
-
-    public void setBlockEgg(boolean block)
-    {
-        blockEgg = block;
-    }
-
-    public void setBlockCreative(boolean block)
-    {
-        blockCreative = block;
-    }
-
-    public void setShowExpMessages(boolean show)
-    {
-        showExpMessages = show;
-    }
-
-    public void setShowLevelMessages(boolean show)
-    {
-        showLevelMessages = show;
-    }
-
-    public void setDeathPenalty(double percent)
-    {
-        deathPenalty = percent;
     }
 
     private static final String EXP_BASE = "Experience.";
@@ -699,7 +622,6 @@ public class Settings
         this.blockCreative = config.getBoolean(EXP_BASE + "block-creative");
         this.showExpMessages = config.getBoolean(EXP_BASE + "exp-message-enabled");
         this.showLevelMessages = config.getBoolean(EXP_BASE + "level-message-enabled");
-        this.deathPenalty = config.getDouble(EXP_BASE + "death-penalty");
 
         ConfigurationSection formula = config.getConfigurationSection(EXP_BASE + "formula");
         int x = formula.getInt("x");
@@ -727,26 +649,51 @@ public class Settings
     private boolean[] defaultBarLayout = new boolean[9];
     private boolean[] lockedSlots      = new boolean[9];
 
+    /**
+     * Checks whether or not the skill bar is enabled
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isSkillBarEnabled()
     {
         return skillBarEnabled;
     }
 
+    /**
+     * Checks whether or not the skill bar is to display cooldowns
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean isSkillBarCooldowns()
     {
         return skillBarCooldowns;
     }
 
+    /**
+     * Retrieves the indicator for an unassigned skill slot
+     *
+     * @return unassigned indicator
+     */
     public ItemStack getUnassigned()
     {
         return unassigned;
     }
 
+    /**
+     * Retrieves the default skill bar layout
+     *
+     * @return default skill bar layout
+     */
     public boolean[] getDefaultBarLayout()
     {
         return defaultBarLayout;
     }
 
+    /**
+     * Retrieves the list of locked skill bar slots
+     *
+     * @return list of locked skill bar slots
+     */
     public boolean[] getLockedSlots()
     {
         return lockedSlots;
@@ -792,14 +739,14 @@ public class Settings
 
     private int loadLogLevel;
 
+    /**
+     * Gets the logging level
+     *
+     * @return logging level
+     */
     public int getLoadLogLevel()
     {
         return loadLogLevel;
-    }
-
-    public void setLoadLogLevel(int level)
-    {
-        loadLogLevel = level;
     }
 
     private void loadLoggingSettings()

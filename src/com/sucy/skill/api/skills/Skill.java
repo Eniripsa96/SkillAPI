@@ -423,11 +423,13 @@ public abstract class Skill
         }
 
         // Click string at the bottom
+        /*
         if (SkillAPI.getSettings().isUseClickCombos() && canCast())
         {
             lore.add("");
             lore.add(ChatColor.GOLD + SkillAPI.getComboManager().getComboString(name));
         }
+        */
 
         if (lore.size() > 0)
         {
@@ -610,8 +612,9 @@ public abstract class Skill
     }
 
     /**
-     * 
-     * @param config
+     * Loads skill data from the configuration
+     *
+     * @param config config to load from
      */
     public void load(ConfigurationSection config)
     {

@@ -4,6 +4,9 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import org.bukkit.configuration.ConfigurationSection;
 
+/**
+ * Settings for class groups
+ */
 public class GroupSettings
 {
     private static final String PROFESS_RESET    = "profess-reset";
@@ -22,6 +25,12 @@ public class GroupSettings
     private int     startingPoints;
     private int     pointsPerLevel;
 
+    /**
+     * Initializes a new set of settings for a class group by
+     * loading settings from the config
+     *
+     * @param config config to load from
+     */
     public GroupSettings(ConfigurationSection config)
     {
         this();
@@ -37,6 +46,9 @@ public class GroupSettings
         save(config);
     }
 
+    /**
+     * Initializes a default collection of group settings
+     */
     public GroupSettings()
     {
         defaultClass = "none";
@@ -48,66 +60,91 @@ public class GroupSettings
         pointsPerLevel = 1;
     }
 
+    /**
+     * Retrieves the default class of the group
+     *
+     * @return default class of the group or null/"none" if none
+     */
     public RPGClass getDefault()
     {
         return SkillAPI.getClass(defaultClass);
     }
 
+    /**
+     * Retrieves whether or not the group requires a permission to use at all
+     *
+     * @return true if requires a permission, false otherwise
+     */
     public boolean requiresPermission()
     {
         return !permission.equals("none");
     }
 
+    /**
+     * Gets the permission required by the group
+     *
+     * @return required permission or null if none
+     */
     public String getPermission()
     {
         return requiresPermission() ? permission : null;
     }
 
+    /**
+     * Checks whether or not classes reset upon profession in the group
+     *
+     * @return true if resets upon profession, false otherwise
+     */
     public boolean isProfessReset()
     {
         return professReset;
     }
 
+    /**
+     * Checks whether or not players can reset their class via command in the group
+     *
+     * @return true if can reset, false otherwise
+     */
     public boolean isResetable()
     {
         return resetable;
     }
 
+    /**
+     * Retrieves the death penalty for classes in this group
+     *
+     * @return death penalty
+     */
     public double getDeathPenalty()
     {
         return deathPenalty;
     }
 
+    /**
+     * Retrieves the number of skill points classes in this group start with
+     *
+     * @return starting skill points
+     */
     public int getStartingPoints()
     {
         return startingPoints;
     }
 
+    /**
+     * Retrieves the number of skill points gained in the group per level
+     *
+     * @return skill points per level
+     */
     public int getPointsPerLevel()
     {
         return pointsPerLevel;
     }
 
-    public void setResetable(boolean resetable)
-    {
-        this.resetable = resetable;
-    }
-
-    public void setDeathPenalty(double penalty)
-    {
-        this.deathPenalty = penalty;
-    }
-
-    public void setStartingPoints(int points)
-    {
-        this.startingPoints = points;
-    }
-
-    public void setPointsPerLevel(int points)
-    {
-        this.pointsPerLevel = points;
-    }
-
+    /**
+     * Saves the group settings to a config
+     *
+     * @param config config to save to
+     */
     public void save(ConfigurationSection config)
     {
         config.set(DEFAULT, defaultClass);

@@ -9,12 +9,21 @@ import org.bukkit.material.MaterialData;
 
 import java.util.List;
 
+/**
+ * Helper class for managing loading/saving certain data
+ */
 public class Data
 {
     private static final String MAT  = "icon";
     private static final String DATA = "icon-data";
     private static final String LORE = "icon-lore";
 
+    /**
+     * Parses a material from a string
+     *
+     * @param name material name string
+     * @return parsed material or null if invalid
+     */
     public static Material parseMat(String name)
     {
         try
@@ -27,6 +36,12 @@ public class Data
         }
     }
 
+    /**
+     * Serializes an item icon into a configuration
+     *
+     * @param item   item to serialize
+     * @param config config to serialize into
+     */
     public static void serializeIcon(ItemStack item, ConfigurationSection config)
     {
         config.set(MAT, item.getType().name());
@@ -39,6 +54,12 @@ public class Data
         }
     }
 
+    /**
+     * Parses an item icon from a configuration
+     *
+     * @param config config to load from
+     * @return parsed item icon or a plain Jack O' Lantern if invalid
+     */
     public static ItemStack parseIcon(ConfigurationSection config)
     {
         if (config == null)

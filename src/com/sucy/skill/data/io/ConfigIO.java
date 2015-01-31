@@ -58,7 +58,7 @@ public class ConfigIO extends IOManager
             for (String accountKey : accounts.getKeys(false))
             {
                 ConfigurationSection account = accounts.getConfigurationSection(accountKey);
-                PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")));
+                PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")), player);
 
                 // Load classes
                 ConfigurationSection classes = account.getConfigurationSection(CLASSES);

@@ -5,6 +5,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.BuffManager;
@@ -22,10 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerExpChangeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.metadata.FixedMetadataValue;
 
 /**
@@ -86,9 +84,21 @@ public class MainListener implements Listener
             data.updateHealthAndMana(event.getPlayer());
             data.updateLevelBar();
             data.startPassives(event.getPlayer());
-            RPGClass classData = data.getMainClass().getData();
-            ClassBoardManager.update(data, classData.getPrefix(), classData.getPrefixColor());
+            data.updateScoreboard();
         }
+    }
+
+    /**
+     * Saves player data when they log out and stops passives
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event)
+    {
+        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+        data.stopPassives(event.getPlayer());
+        SkillAPI.unloadPlayerData(event.getPlayer());
     }
 
     /**

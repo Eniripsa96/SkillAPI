@@ -408,6 +408,23 @@ public class SkillAPI extends JavaPlugin
     }
 
     /**
+     * Unloads player data from memory, saving it to the config
+     * first and then removing it from the map.
+     *
+     * @param player player to unload data for
+     */
+    public static void unloadPlayerData(Player player)
+    {
+        if (singleton == null || player == null)
+        {
+            return;
+        }
+        PlayerAccounts accounts = getPlayerAccountData(player);
+        singleton.io.saveData(accounts);
+        singleton.players.remove(new VersionPlayer(player).getIdString());
+    }
+
+    /**
      * Retrieves all class data for the player. This includes the active and
      * all inactive accounts the player has. If no data is found, a new set
      * of data will be created and returned.

@@ -112,6 +112,25 @@ public class PlayerAccounts
     }
 
     /**
+     * Gets the account data by ID for the owner. If no data
+     * exists under the given ID, new data is created as long
+     * as the ID is a positive integer (not necessarily in
+     * bounds for the player's allowed accounts).
+     *
+     * @param id     account ID
+     * @param player offline player reference
+     * @return account data or null if invalid id or player
+     */
+    public PlayerData getData(int id, OfflinePlayer player)
+    {
+        if (!hasData(id) && id > 0 && player != null)
+        {
+            classData.put(id, new PlayerData(player));
+        }
+        return classData.get(id);
+    }
+
+    /**
      * Retrieves all of the data for the owner. Modifying this map will
      * alter the player's actual data.
      *
@@ -149,6 +168,7 @@ public class PlayerAccounts
             }
             active = id;
             getActiveData().startPassives(player);
+            getActiveData().updateScoreboard();
             if (getActiveData().hasClass())
             {
                 getActiveData().getSkillBar().setup(player);

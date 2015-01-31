@@ -375,7 +375,8 @@ public final class PlayerClass
         }
 
         // Level up
-        amount = Math.max(amount, classData.getMaxLevel() - level);
+        amount = Math.min(amount, classData.getMaxLevel() - level);
+        if (amount <= 0) return;
         level += amount;
         points += classData.getGroupSettings().getPointsPerLevel() * amount;
         /*

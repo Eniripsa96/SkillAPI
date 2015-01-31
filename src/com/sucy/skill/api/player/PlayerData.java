@@ -626,7 +626,7 @@ public final class PlayerData
 
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(current, previous, current.getData()));
             updateHealthAndMana(getPlayer());
-            ClassBoardManager.update(this, rpgClass.getPrefix(), rpgClass.getPrefixColor());
+            updateScoreboard();
             return true;
         }
         else
@@ -674,9 +674,18 @@ public final class PlayerData
     {
         for (PlayerClass playerClass : classes.values())
         {
-            if (playerClass.getData().receivesExp(source))
+            RPGClass data = playerClass.getData();
+            if (data.receivesExp(source))
             {
-                playerClass.giveLevels(amount);
+                int exp = 0;
+                int count = 0;
+                int temp = amount;
+                while (temp > 0)
+                {
+                    temp--;
+                    exp += data.getRequiredExp(playerClass.getLevel() + count++);
+                }
+                playerClass.giveExp(exp, source);
             }
         }
         updateLevelBar();
@@ -1037,6 +1046,20 @@ public final class PlayerData
     //                     Functions                     //
     //                                                   //
     ///////////////////////////////////////////////////////
+
+    /**
+     * Updates the scoreboard with the player's current class.
+     * This is already done by the API and doesn't need to be
+     * done by other plugins.
+     */
+    public void updateScoreboard()
+    {
+        PlayerClass main = getMainClass();
+        if (main != null)
+        {
+            ClassBoardManager.update(this, main.getData().getPrefix(), main.getData().getPrefixColor());
+        }
+    }
 
     /**
      * Updates the level bar for the player if they're online and

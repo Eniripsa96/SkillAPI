@@ -42,8 +42,11 @@ public class CmdProfess implements IFunction
             }
             else
             {
+                String name = args[0];
+                for (int i = 1 ; i < args.length; i++) name += args[i];
+
                 PlayerData data = SkillAPI.getPlayerData((Player) sender);
-                RPGClass target = SkillAPI.getClass(args[0]);
+                RPGClass target = SkillAPI.getClass(name);
 
                 // Invalid class
                 if (target == null)

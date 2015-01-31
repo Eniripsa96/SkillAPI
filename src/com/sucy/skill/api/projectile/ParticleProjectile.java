@@ -19,8 +19,19 @@ import java.util.List;
  */
 public class ParticleProjectile extends CustomProjectile
 {
-    public static final String SPEED     = "velocity";
-    public static final String LIFESPAN  = "lifespan";
+    /**
+     * Settings key for the projectile speed
+     */
+    public static final String SPEED = "velocity";
+
+    /**
+     * Settings key for the projectile lifespan
+     */
+    public static final String LIFESPAN = "lifespan";
+
+    /**
+     * Settings key for the projectile's frequency of playing particles
+     */
     public static final String FREQUENCY = "frequency";
 
     private Location loc;

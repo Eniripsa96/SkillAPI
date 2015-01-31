@@ -138,7 +138,11 @@ public class ConfigIO extends IOManager
     @Override
     public void saveData(PlayerAccounts data)
     {
-        ConfigurationSection file = config.getConfig().createSection(data.getUUID().toString());
+        if (data.getPlayer() == null)
+        {
+            return;
+        }
+        ConfigurationSection file = config.getConfig().createSection(new VersionPlayer(data.getPlayer()).getIdString());
         file.set(LIMIT, data.getAccountLimit());
         file.set(ACTIVE, data.getActiveId());
         ConfigurationSection accounts = file.createSection(ACCOUNTS);

@@ -27,6 +27,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a template for a skill used in the RPG system. This is
+ * the class to extend when creating your own custom skills.
+ */
 public abstract class Skill
 {
     private static final DecimalFormat FORMAT = new DecimalFormat("#########0.0#");
@@ -45,23 +49,69 @@ public abstract class Skill
     private int          skillReqLevel;
     private boolean      needsPermission;
 
+    /**
+     * The settings for the skill which include configurable stats
+     * for your mechanics and the defaults such as mana cost, level
+     * requirement, skill point cost, and cooldown.
+     */
     protected final Settings settings = new Settings();
 
+    /**
+     * Initializes a new skill that doesn't require any other skill.
+     *
+     * @param name      name of the skill
+     * @param type      descriptive type of the skill
+     * @param indicator indicator to represent the skill
+     * @param maxLevel  max level the skill can reach
+     */
     public Skill(String name, String type, Material indicator, int maxLevel)
     {
         this(name, type, new ItemStack(indicator), maxLevel, null, 0);
     }
 
+    /**
+     * Initializes a skill that requires another skill to be upgraded
+     * before it can be upgraded itself.
+     *
+     * @param name          name of the skill
+     * @param type          descriptive type of the skill
+     * @param indicator     indicator to represent the skill
+     * @param maxLevel      max level the skill can reach
+     * @param skillReq      name of the skill required to raise this one
+     * @param skillReqLevel level of the required skill needed
+     */
     public Skill(String name, String type, Material indicator, int maxLevel, String skillReq, int skillReqLevel)
     {
         this(name, type, new ItemStack(indicator), maxLevel, skillReq, skillReqLevel);
     }
 
+    /**
+     * Initializes a new skill that doesn't require any other skill.
+     * The indicator's display name and lore will be used as the layout
+     * for the skill tree display.
+     *
+     * @param name      name of the skill
+     * @param type      descriptive type of the skill
+     * @param indicator indicator to respresent the skill
+     * @param maxLevel  max level the skill can reach
+     */
     public Skill(String name, String type, ItemStack indicator, int maxLevel)
     {
         this(name, type, indicator, maxLevel, null, 0);
     }
 
+    /**
+     * Initializes a skill that requires another skill to be upgraded
+     * before it can be upgraded itself. The indicator's display name
+     * and lore will be used as the layout for the skill tree display.
+     *
+     * @param name          name of the skill
+     * @param type          descriptive type of the skill
+     * @param indicator     indicator to represent the skill
+     * @param maxLevel      max level the skill can reach
+     * @param skillReq      name of the skill required to raise this one
+     * @param skillReqLevel level of the required skill needed
+     */
     public Skill(String name, String type, ItemStack indicator, int maxLevel, String skillReq, int skillReqLevel)
     {
         if (name == null)
@@ -97,91 +147,189 @@ public abstract class Skill
         this.iconLore = SkillAPI.getLanguage().getMessage(SkillNodes.LAYOUT, true, FilterType.COLOR);
     }
 
+    /**
+     * Retrieves the configuration key for the skill
+     *
+     * @return configuration key for the skill
+     */
     public String getKey()
     {
         return key;
     }
 
+    /**
+     * Retrieves the name of the skill
+     *
+     * @return skill name
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Retrieves the max level the skill can reach
+     *
+     * @return max skill level
+     */
     public int getMaxLevel()
     {
         return maxLevel;
     }
 
+    /**
+     * Checks whether or not the skill has a message to display when cast.
+     *
+     * @return true if has a message, false otherwise
+     */
     public boolean hasMessage()
     {
         return message != null && message.length() > 0;
     }
 
+    /**
+     * Retrieves the message for the skill to display when cast.
+     *
+     * @return cast message of the skill
+     */
     public String getMessage()
     {
         return message;
     }
 
+    /**
+     * Checks whether or not the skill needs a permission for a player to use it.
+     *
+     * @return true if requires a permission, false otherwise
+     */
     public boolean needsPermission()
     {
         return needsPermission;
     }
 
+    /**
+     * Retrieves the indicator representing the skill for menus
+     *
+     * @return indicator for the skill
+     */
     public ItemStack getIndicator()
     {
         return indicator;
     }
 
+    /**
+     * Retrieves the descriptive type of the skill
+     *
+     * @return descriptive type of the skill
+     */
     public String getType()
     {
         return type;
     }
 
+    /**
+     * Retrieves the skill required to be upgraded before this one
+     *
+     * @return required skill
+     */
     public String getSkillReq()
     {
         return skillReq;
     }
 
+    /**
+     * Retrieves the level of the required skill needed to be obtained
+     * before this one can be upgraded.
+     *
+     * @return required skill level
+     */
     public int getSkillReqLevel()
     {
         return skillReqLevel;
     }
 
+    /**
+     * Retrieves the skill's description
+     *
+     * @return description of the skill
+     */
     public List<String> getDescription()
     {
         return description;
     }
 
+    /**
+     * Retrieves the level requirement for the skill to reach the next level
+     *
+     * @param level current level of the skill
+     * @return level requirement for the next level
+     */
     public int getLevelReq(int level)
     {
         return (int) settings.getAttr(SkillAttribute.LEVEL, level + 1);
     }
 
+    /**
+     * Retrieves the mana cost of the skill
+     *
+     * @param level current level of the skill
+     * @return mana cost
+     */
     public double getManaCost(int level)
     {
         return settings.getAttr(SkillAttribute.MANA, level);
     }
 
+    /**
+     * Retrieves the cooldown of the skill in seconds
+     *
+     * @param level current level of the skill
+     * @return cooldown
+     */
     public double getCooldown(int level)
     {
         return settings.getAttr(SkillAttribute.COOLDOWN, level);
     }
 
+    /**
+     * Retrieves the range of the skill in blocks
+     *
+     * @param level current level of the skill
+     * @return target range
+     */
     public double getRange(int level)
     {
         return settings.getAttr(SkillAttribute.RANGE, level);
     }
 
+    /**
+     * Retrieves the skill point cost of the skill
+     *
+     * @param level current level of the skill
+     * @return skill point cost
+     */
     public int getCost(int level)
     {
         return (int) settings.getAttr(SkillAttribute.COST, level + 1);
     }
 
+    /**
+     * Checks whether or not this skill can be cast by players
+     *
+     * @return true if can be cast, false otherwise
+     */
     public boolean canCast()
     {
         return this instanceof SkillShot || this instanceof TargetSkill;
     }
 
+    /**
+     * Retrieves the indicator for the skill while applying filters to match
+     * the player-specific data.
+     *
+     * @param skillData player data
+     * @return filtered skill indicator
+     */
     public ItemStack getIndicator(PlayerSkill skillData)
     {
 
@@ -221,8 +369,8 @@ public abstract class Skill
                     int start = line.indexOf("{attr:");
                     int end = line.indexOf("}", start);
                     String attr = line.substring(start + 6, end);
-                    Object currValue = getAttrValue(attr, Math.min(1, skillData.getLevel()));
-                    Object nextValue = getAttrValue(attr, Math.max(skillData.getLevel() + 1, maxLevel));
+                    Object currValue = settings.getObj(attr, Math.min(1, skillData.getLevel()));
+                    Object nextValue = settings.getObj(attr, Math.max(skillData.getLevel() + 1, maxLevel));
                     if (attr.equals("level") || attr.equals("cost"))
                     {
                         currValue = nextValue;
@@ -291,16 +439,23 @@ public abstract class Skill
         return item;
     }
 
-    protected Object getAttrValue(String key, int level)
-    {
-        return settings.getObj(key, level);
-    }
-
+    /**
+     * Formats an attribute name for applying to the indicator
+     *
+     * @param key attribute key
+     * @return formatted attribute name
+     */
     protected String getAttrName(String key)
     {
         return TextFormatter.format(key);
     }
 
+    /**
+     * Formats a double value to prevent excessive decimals
+     *
+     * @param value double value to format
+     * @return formatted double value
+     */
     private String format(double value)
     {
         if ((int) value == value)
@@ -310,16 +465,13 @@ public abstract class Skill
         return FORMAT.format(value);
     }
 
-    private String getRequirementString(LanguageConfig language, String name, int value, boolean satisfied)
-    {
-        String reqString = language.getMessage(satisfied ?
-                SkillNodes.REQUIREMENT_MET
-                : SkillNodes.REQUIREMENT_NOT_MET).get(0);
-
-        return reqString.replace("{name}", name)
-                .replace("{value}", value + "");
-    }
-
+    /**
+     * Sends the skill message if one is present from the player to entities
+     * within the given radius.
+     *
+     * @param player player to project the message from
+     * @param radius radius to include targets of the message
+     */
     public void sendMessage(Player player, double radius)
     {
         if (hasMessage())
@@ -336,6 +488,14 @@ public abstract class Skill
         }
     }
 
+    /**
+     * Applies skill damage to the target, launching the skill damage event
+     * and keeping the damage version compatible.
+     *
+     * @param target target to receive the damage
+     * @param damage amount of damage to deal
+     * @param source source of the damage (skill caster)
+     */
     public void damage(LivingEntity target, double damage, LivingEntity source)
     {
         SkillDamageEvent event = new SkillDamageEvent(source, target, damage);
@@ -349,6 +509,13 @@ public abstract class Skill
 
     private static boolean skillDamage = false;
 
+    /**
+     * Checks whether or not the current damage event is due to
+     * skills damaging an entity. This method is used by the API
+     * and shouldn't be used by other plugins.
+     *
+     * @return true if caused by a skill, false otherwise
+     */
     public static boolean isSkillDamage()
     {
         boolean result = skillDamage;
@@ -369,6 +536,11 @@ public abstract class Skill
     private static final String ATTR      = "attributes";
     private static final String ATTR_INFO = "attribute-info";
 
+    /**
+     * Saves the skill data to the configuration, overwriting all previous data
+     *
+     * @param config config to save to
+     */
     public void save(ConfigurationSection config)
     {
         config.set(NAME, name);
@@ -387,6 +559,12 @@ public abstract class Skill
         settings.save(config.createSection(ATTR));
     }
 
+    /**
+     * Saves some of the skill data to the config, avoiding
+     * overwriting any pre-existing data
+     *
+     * @param config config to save to
+     */
     public void softSave(ConfigurationSection config)
     {
 
@@ -431,6 +609,10 @@ public abstract class Skill
         }
     }
 
+    /**
+     * 
+     * @param config
+     */
     public void load(ConfigurationSection config)
     {
         name = config.getString(NAME, name);

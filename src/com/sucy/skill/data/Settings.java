@@ -267,11 +267,9 @@ public class Settings
     private static final String MANA_BASE    = "Mana.";
     private static final String MANA_ENABLED = MANA_BASE + "enabled";
     private static final String MANA_FREQ    = MANA_BASE + "freq";
-    private static final String MANA_AMOUNT  = MANA_BASE + "amount";
 
     private boolean manaEnabled;
     private int     gainFreq;
-    private int     gainAmount;
 
     /**
      * Checks whether or not mana is enabled
@@ -317,23 +315,10 @@ public class Settings
         plugin.saveConfig();
     }
 
-    /**
-     * Sets the amount of mana gained each time
-     *
-     * @param mana amount gained
-     */
-    public void setGainAmount(int mana)
-    {
-        this.gainAmount = mana;
-        config.set(MANA_AMOUNT, mana);
-        plugin.saveConfig();
-    }
-
     private void loadManaSettings()
     {
         manaEnabled = config.getBoolean(MANA_ENABLED);
-        gainFreq = config.getInt(MANA_FREQ);
-        gainAmount = config.getInt(MANA_AMOUNT);
+        gainFreq = (int)(config.getDouble(MANA_FREQ) * 20);
     }
 
     ///////////////////////////////////////////////////////

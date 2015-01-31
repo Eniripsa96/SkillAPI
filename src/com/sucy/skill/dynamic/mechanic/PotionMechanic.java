@@ -13,6 +13,7 @@ import java.util.List;
 public class PotionMechanic extends EffectComponent
 {
     private static final String POTION  = "potion";
+    private static final String AMBIENT = "ambient";
     private static final String TIER    = "tier";
     private static final String SECONDS = "seconds";
 
@@ -38,10 +39,11 @@ public class PotionMechanic extends EffectComponent
             PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption").toUpperCase().replace(' ', '_'));
             int tier = settings.getInt(TIER, 1) - 1;
             double seconds = settings.getAttr(SECONDS, level, 3.0);
+            boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
             int ticks = (int) (seconds * 20);
             for (LivingEntity target : targets)
             {
-                target.addPotionEffect(new PotionEffect(potion, ticks, tier), true);
+                target.addPotionEffect(new PotionEffect(potion, ticks, tier), ambient);
             }
             return targets.size() > 0;
         }

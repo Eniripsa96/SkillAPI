@@ -29,10 +29,12 @@ public class SkillLevelCondition extends EffectComponent
     {
         int min = settings.getInt(MIN_LEVEL);
         int max = settings.getInt(MAX_LEVEL);
-        PlayerSkill data = getSkillData(caster);
 
-        return data != null
-                && data.getLevel() >= min
+        String skill = settings.getString(SKILL, "");
+        PlayerSkill data = getSkillData(caster).getPlayerData().getSkill(skill);
+        if (data == null) data = getSkillData(caster);
+
+        return data.getLevel() >= min
                 && data.getLevel() <= max
                 && executeChildren(caster, level, targets);
     }

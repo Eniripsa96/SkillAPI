@@ -100,7 +100,7 @@ public final class PlayerClass
      *
      * @return the current required experience
      */
-    public double getRequiredExp()
+    public int getRequiredExp()
     {
         return classData.getRequiredExp(level);
     }
@@ -344,7 +344,7 @@ public final class PlayerClass
         // Count the number of levels gained, if any
         int levels = 0;
         int required;
-        while (exp >= (required = classData.getRequiredExp(level)))
+        while (exp >= (required = classData.getRequiredExp(level + levels)))
         {
             exp -= required;
             levels++;

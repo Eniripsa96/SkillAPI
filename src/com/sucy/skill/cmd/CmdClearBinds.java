@@ -15,6 +15,7 @@ public class CmdClearBinds implements IFunction
 {
     private static final String NOT_PLAYER = "not-player";
     private static final String UNBOUND    = "skills-unbound";
+    private static final String DISABLED   = "world-disabled";
 
     /**
      * Executes the command
@@ -30,6 +31,12 @@ public class CmdClearBinds implements IFunction
         if (!(sender instanceof Player))
         {
             command.sendMessage(sender, NOT_PLAYER, "&4Only players can use this command");
+        }
+
+        // Disabled world
+        else if (!SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()))
+        {
+            command.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
         }
 
         else

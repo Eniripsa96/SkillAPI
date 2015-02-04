@@ -108,3 +108,8 @@ Experience:
     witherskeleton: 5
     zombie: 2
 Logging: 0
+Worlds:
+  enable: false
+  use-as-enabling: true
+  worlds:
+  - world

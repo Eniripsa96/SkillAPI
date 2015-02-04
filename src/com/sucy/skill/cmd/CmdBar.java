@@ -21,6 +21,7 @@ public class CmdBar implements IFunction
     private static final String NO_SPACE    = "no-space";
     private static final String TOGGLE_ON   = "toggle-on";
     private static final String TOGGLE_OFF  = "toggle-off";
+    private static final String DISABLED    = "world-disabled";
 
     /**
      * Executes the command
@@ -36,6 +37,13 @@ public class CmdBar implements IFunction
         if (!(sender instanceof Player))
         {
             command.sendMessage(sender, NOT_PLAYER, "&4Only players can use this command");
+            return;
+        }
+
+        // Disabled world
+        else if (!SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()))
+        {
+            command.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
             return;
         }
 

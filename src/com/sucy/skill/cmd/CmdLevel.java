@@ -25,6 +25,7 @@ public class CmdLevel implements IFunction
     private static final String NOT_POSITIVE   = "not-positive";
     private static final String GAVE_LEVEL     = "gave-level";
     private static final String RECEIVED_LEVEL = "received-level";
+    private static final String DISABLED       = "world-disabled";
 
     /**
      * Runs the command
@@ -37,8 +38,14 @@ public class CmdLevel implements IFunction
     @Override
     public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
     {
+        // Disabled world
+        if (sender instanceof Player && !SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()) && args.length == 1)
+        {
+            cmd.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
+        }
+
         // Only can show info of a player so console needs to provide a name
-        if (args.length >= 1 && (args.length >= 2 || sender instanceof Player))
+        else if (args.length >= 1 && (args.length >= 2 || sender instanceof Player))
         {
             // Get the player data
             OfflinePlayer target = args.length == 1 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);

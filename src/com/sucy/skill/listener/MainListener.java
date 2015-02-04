@@ -1,6 +1,7 @@
 package com.sucy.skill.listener;
 
 import com.rit.sucy.version.VersionManager;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
@@ -79,7 +80,7 @@ public class MainListener implements Listener
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
 
         // Apply player data as long as they have a class
-        if (data.hasClass())
+        if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             data.updateHealthAndMana(event.getPlayer());
             data.updateLevelBar();
@@ -97,7 +98,10 @@ public class MainListener implements Listener
     public void onQuit(PlayerQuitEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        data.stopPassives(event.getPlayer());
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        {
+            data.stopPassives(event.getPlayer());
+        }
         SkillAPI.unloadPlayerData(event.getPlayer());
     }
 
@@ -113,7 +117,7 @@ public class MainListener implements Listener
         BuffManager.clearData(event.getEntity());
 
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
-        if (data.hasClass())
+        if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
         {
             data.stopPassives(event.getEntity());
             data.loseExp();
@@ -131,6 +135,12 @@ public class MainListener implements Listener
     {
         FlagManager.clearFlags(event.getEntity());
         BuffManager.clearData(event.getEntity());
+
+        // Disabled world
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
+        {
+            return;
+        }
 
         // Cancel experience when applicable
         if (event.getEntity().hasMetadata(S_TYPE))
@@ -199,7 +209,7 @@ public class MainListener implements Listener
     public void onBreak(BlockBreakEvent event)
     {
         Player player = event.getPlayer();
-        if (SkillAPI.getSettings().isUseOrbs() && player != null)
+        if (SkillAPI.getSettings().isUseOrbs() && player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
             SkillAPI.getPlayerData(player).giveExp(event.getExpToDrop(), ExpSource.BLOCK_BREAK);
         }
@@ -214,7 +224,7 @@ public class MainListener implements Listener
     public void onSmelt(FurnaceExtractEvent event)
     {
         Player player = event.getPlayer();
-        if (SkillAPI.getSettings().isUseOrbs() && player != null)
+        if (SkillAPI.getSettings().isUseOrbs() && player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
             SkillAPI.getPlayerData(player).giveExp(event.getExpToDrop(), ExpSource.SMELT);
         }
@@ -228,7 +238,7 @@ public class MainListener implements Listener
     @EventHandler
     public void onExpBottleBreak(ExpBottleEvent event)
     {
-        if (!(event.getEntity().getShooter() instanceof Player))
+        if (!(event.getEntity().getShooter() instanceof Player) || !SkillAPI.getSettings().isWorldEnabled(((Player) event.getEntity().getShooter()).getWorld()))
         {
             return;
         }
@@ -248,9 +258,10 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onExpChange(PlayerExpChangeEvent event)
     {
-
         // Prevent it from changing the level bar when that is being used to display class level
-        if (SkillAPI.getSettings().isUseLevelBar() && event.getPlayer().hasPermission(Permissions.EXP))
+        if (SkillAPI.getSettings().isUseLevelBar()
+                && event.getPlayer().hasPermission(Permissions.EXP)
+                && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             event.setAmount(0);
         }
@@ -265,7 +276,7 @@ public class MainListener implements Listener
     public void onRespawn(PlayerRespawnEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        if (data.hasClass())
+        if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             data.startPassives(event.getPlayer());
         }
@@ -327,5 +338,39 @@ public class MainListener implements Listener
         Bukkit.getPluginManager().callEvent(e);
         event.setDamage(e.getDamage());
         event.setCancelled(e.isCancelled());
+    }
+
+    /**
+     * Applies or removes SkillAPI features from a player upon switching worlds
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        boolean oldEnabled = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
+        boolean newEnabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
+        if (oldEnabled && !newEnabled)
+        {
+            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+            data.stopPassives(event.getPlayer());
+            data.getSkillBar().clear(event.getPlayer());
+            ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
+            event.getPlayer().setHealth(20);
+            if (SkillAPI.getSettings().isUseLevelBar())
+            {
+                event.getPlayer().setLevel(0);
+                event.getPlayer().setExp(0);
+            }
+        }
+        else if (!oldEnabled && newEnabled)
+        {
+            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+            data.startPassives(event.getPlayer());
+            data.getSkillBar().setup(event.getPlayer());
+            data.updateScoreboard();
+            data.updateHealthAndMana(event.getPlayer());
+            data.updateLevelBar();
+        }
     }
 }

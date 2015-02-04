@@ -17,6 +17,7 @@ public class CmdAccount implements IFunction
     private static final String NOT_PLAYER  = "not-player";
     private static final String NOT_ACCOUNT = "not-account";
     private static final String CHANGED     = "account-changed";
+    private static final String DISABLED    = "world-disabled";
 
     /**
      * Executes the command
@@ -33,6 +34,12 @@ public class CmdAccount implements IFunction
         if (!(sender instanceof Player))
         {
             command.sendMessage(sender, NOT_PLAYER, "&4Only players can use this command");
+        }
+
+        // Disabled world
+        else if (!SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()))
+        {
+            command.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
         }
 
         // Needs an argument

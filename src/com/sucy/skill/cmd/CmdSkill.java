@@ -16,6 +16,7 @@ public class CmdSkill implements IFunction
 {
     private static final String CANNOT_USE = "cannot-use";
     private static final String NO_SKILLS  = "no-skills";
+    private static final String DISABLED   = "world-disabled";
 
     /**
      * Runs the command
@@ -28,8 +29,14 @@ public class CmdSkill implements IFunction
     @Override
     public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
     {
+        // Disabled world
+        if (sender instanceof Player && !SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()))
+        {
+            cmd.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
+        }
+
         // Only players have profession options
-        if (sender instanceof Player)
+        else if (sender instanceof Player)
         {
             PlayerData data = SkillAPI.getPlayerData((Player) sender);
             if (!data.showSkills((Player) sender))

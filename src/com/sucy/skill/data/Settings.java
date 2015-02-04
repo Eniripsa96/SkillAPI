@@ -4,6 +4,7 @@ import com.rit.sucy.config.Config;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -824,5 +825,50 @@ public class Settings
     private void loadLoggingSettings()
     {
         loadLogLevel = config.getInt("Logging");
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
+    //                  World Settings                   //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    private static final String WORLD_BASE = "Worlds.";
+    private static final String WORLD_ENABLE = WORLD_BASE + "enable";
+    private static final String WORLD_TYPE = WORLD_BASE + "use-as-enabling";
+    private static final String WORLD_LIST = WORLD_BASE + "worlds";
+
+    private List<String> worlds;
+    private boolean worldEnabled;
+    private boolean worldEnableList;
+
+    /**
+     * Checks whether or not SkillAPI is active in the world
+     *
+     * @param world world to check
+     * @return true if active, false otherwise
+     */
+    public boolean isWorldEnabled(World world)
+    {
+        return isWorldEnabled(world.getName());
+    }
+
+    /**
+     * Checks whether or not SkillAPI is active in the world with
+     * the given name.
+     *
+     * @param world world name
+     * @return true if active, false otherwise
+     */
+    public boolean isWorldEnabled(String world)
+    {
+        return !worldEnabled || (worldEnableList == worlds.contains(world));
+    }
+
+    private void loadWorldSettings()
+    {
+        worldEnabled = config.getBoolean(WORLD_ENABLE);
+        worldEnableList = config.getBoolean(WORLD_TYPE);
+        worlds = config.getStringList(WORLD_LIST);
     }
 }

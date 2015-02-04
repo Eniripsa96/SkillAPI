@@ -18,6 +18,8 @@ public class CmdCast implements IFunction
 
     private static final String NOT_SKILL    = "not-skill";
     private static final String NOT_UNLOCKED = "not-unlocked";
+    private static final String NOT_PLAYER   = "not-player";
+    private static final String DISABLED     = "world-disabled";
 
     /**
      * Executes the command
@@ -30,9 +32,20 @@ public class CmdCast implements IFunction
     @Override
     public void execute(ConfigurableCommand command, Plugin plugin, CommandSender sender, String[] args)
     {
+        // Player only command
+        if (!(sender instanceof Player))
+        {
+            command.sendMessage(sender, NOT_PLAYER, "&4Only players can use this command");
+        }
+
+        // Disabled world
+        else if (!SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()))
+        {
+            command.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
+        }
 
         // Requires at least one argument
-        if (args.length >= 1)
+        else if (args.length >= 1)
         {
 
             PlayerData player = SkillAPI.getPlayerData((Player) sender);

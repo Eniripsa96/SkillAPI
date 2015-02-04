@@ -37,6 +37,10 @@ public class CastListener implements Listener
     public void onInteract(PlayerInteractEvent event)
     {
         Player player = event.getPlayer();
+        if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+        {
+            return;
+        }
 
         PlayerData data = SkillAPI.getPlayerData(player);
         Material heldItem = player.getItemInHand().getType();

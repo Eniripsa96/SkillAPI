@@ -22,6 +22,7 @@ public class CmdUnbind implements IFunction
     private static final String NOT_BOUND   = "not-bound";
     private static final String NO_ITEM     = "no-item";
     private static final String SKILL_BOUND = "skill-unbound";
+    private static final String DISABLED    = "world-disabled";
 
     /**
      * Executes the command
@@ -37,6 +38,12 @@ public class CmdUnbind implements IFunction
         if (!(sender instanceof Player))
         {
             command.sendMessage(sender, NOT_PLAYER, "&4Only players can use this command");
+        }
+
+        // Disabled world
+        else if (!SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()))
+        {
+            command.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
         }
 
         else

@@ -21,6 +21,7 @@ public class CmdProfess implements IFunction
     private static final String INVALID_CLASS  = "invalid-class";
     private static final String PROFESSED      = "professed";
     private static final String CANNOT_PROFESS = "cannot-profess";
+    private static final String DISABLED       = "world-disabled";
 
     /**
      * Runs the command
@@ -33,8 +34,14 @@ public class CmdProfess implements IFunction
     @Override
     public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
     {
+        // Disabled world
+        if (sender instanceof Player && !SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()))
+        {
+            cmd.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
+        }
+
         // Only players have profession options
-        if (sender instanceof Player)
+        else if (sender instanceof Player)
         {
             if (args.length == 0)
             {

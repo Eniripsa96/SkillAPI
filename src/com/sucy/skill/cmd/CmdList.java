@@ -24,6 +24,7 @@ public class CmdList implements IFunction
     private static final String LINE       = "line";
     private static final String END        = "end";
     private static final String NOT_PLAYER = "not-player";
+    private static final String DISABLED   = "world-disabled";
 
     /**
      * Runs the command
@@ -36,8 +37,14 @@ public class CmdList implements IFunction
     @Override
     public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
     {
+        // Disabled world
+        if (sender instanceof Player && !SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()) && args.length == 0)
+        {
+            cmd.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
+        }
+
         // Only can show info of a player so console needs to provide a name
-        if (sender instanceof Player || args.length >= 1)
+        else if (sender instanceof Player || args.length >= 1)
         {
             OfflinePlayer target = args.length == 0 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
             if (target == null)

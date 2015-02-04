@@ -369,14 +369,14 @@ public abstract class Skill
                     int start = line.indexOf("{attr:");
                     int end = line.indexOf("}", start);
                     String attr = line.substring(start + 6, end);
-                    Object currValue = settings.getObj(attr, Math.min(1, skillData.getLevel()));
-                    Object nextValue = settings.getObj(attr, Math.max(skillData.getLevel() + 1, maxLevel));
+                    Object currValue = getAttr(attr, Math.min(1, skillData.getLevel()));
+                    Object nextValue = getAttr(attr, Math.max(skillData.getLevel() + 1, maxLevel));
                     if (attr.equals("level") || attr.equals("cost"))
                     {
                         currValue = nextValue;
                     }
 
-                    if (currValue == nextValue)
+                    if (currValue.equals(nextValue))
                     {
                         line = line.replace("{attr:" + attr + "}", attrStatic.replace("{name}", getAttrName(attr)).replace("{value}", currValue.toString()));
                     }
@@ -450,6 +450,18 @@ public abstract class Skill
     protected String getAttrName(String key)
     {
         return TextFormatter.format(key);
+    }
+
+    /**
+     * Retrieves an attribute value for using in the icon lore
+     *
+     * @param key   attribute key
+     * @param level skill level
+     * @return attribute value
+     */
+    protected Object getAttr(String key, int level)
+    {
+        return settings.getObj(key, level);
     }
 
     /**

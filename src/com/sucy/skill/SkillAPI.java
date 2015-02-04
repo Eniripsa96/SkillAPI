@@ -452,7 +452,7 @@ public class SkillAPI extends JavaPlugin
         String id = new VersionPlayer(player).getIdString();
         if (!singleton.players.containsKey(id))
         {
-            PlayerAccounts data = new PlayerAccounts(player);
+            PlayerAccounts data = loadPlayerData(player);
             singleton.players.put(id, data);
             return data;
         }

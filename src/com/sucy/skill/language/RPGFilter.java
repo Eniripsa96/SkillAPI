@@ -23,4 +23,5 @@ public class RPGFilter
     public static final CustomFilter PROFESSION = new CustomFilter("{profession}", "");
     public static final CustomFilter EXP        = new CustomFilter("{exp}", "");
     public static final CustomFilter ITEM       = new CustomFilter("{item}", "");
+    public static final CustomFilter ACCOUNT    = new CustomFilter("{account}", "");
 }

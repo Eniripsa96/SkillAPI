@@ -153,7 +153,7 @@ public abstract class EffectComponent
                 {
                     try
                     {
-                        EffectComponent child = map.get(key.toLowerCase()).newInstance();
+                        EffectComponent child = map.get(key.toLowerCase().replaceAll("-.+", "")).newInstance();
                         child.key = key;
                         child.type = type;
                         child.load(skill, children.getConfigurationSection(key));

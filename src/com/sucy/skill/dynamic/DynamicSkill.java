@@ -244,7 +244,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 try
                 {
-                    Trigger trigger = Trigger.valueOf(key.toUpperCase().replace(' ', '_'));
+                    Trigger trigger = Trigger.valueOf(key.toUpperCase().replace(' ', '_').replaceAll("-.+", ""));
                     EffectComponent component = trigger.getComponent();
                     component.load(this, triggers.getConfigurationSection(key));
                     components.put(trigger, component);

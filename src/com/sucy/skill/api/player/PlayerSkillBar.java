@@ -411,6 +411,34 @@ public class PlayerSkillBar
     }
 
     /**
+     * Updates the displayed cooldown for the skill bar
+     */
+    public void updateCooldowns()
+    {
+        Player player = getPlayer();
+        if (!setup || !enabled || player == null) return;
+
+        for (int i = 0; i < 9; i++)
+        {
+            if (!isWeaponSlot(i))
+            {
+                PlayerSkill skill = this.player.getSkill(slots.get(i + 1));
+                if (skill != null && skill.isUnlocked())
+                {
+                    ItemStack item = player.getInventory().getItem(i);
+                    int amount = Math.min(Math.max(skill.getCooldown(), 1), 64);
+                    if (item.getAmount() != amount)
+                    {
+                        item.setAmount(amount);
+                        player.getInventory().clear(i);
+                        player.getInventory().setItem(i, item);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Checks if the slot is the weapon slot for the player
      *
      * @param slot slot to check

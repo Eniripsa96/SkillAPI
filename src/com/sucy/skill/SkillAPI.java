@@ -45,6 +45,7 @@ import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
 import com.sucy.skill.manager.ResourceManager;
+import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.ManaTask;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -77,7 +78,8 @@ public class SkillAPI extends JavaPlugin
     private ComboManager        comboManager;
     private RegistrationManager registrationManager;
 
-    private ManaTask task;
+    private ManaTask     manaTask;
+    private CooldownTask cdTask;
 
     private boolean enabled = false;
 
@@ -143,6 +145,10 @@ public class SkillAPI extends JavaPlugin
         {
             new ManaTask(this);
         }
+        if (settings.isSkillBarCooldowns())
+        {
+            new CooldownTask(this);
+        }
     }
 
     /**
@@ -158,6 +164,8 @@ public class SkillAPI extends JavaPlugin
         }
 
         WolfMechanic.removeWolves();
+        manaTask.cancel();
+        cdTask.cancel();
 
         // Clear skill bars before disabling
         for (Player player : getServer().getOnlinePlayers())

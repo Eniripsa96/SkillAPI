@@ -39,6 +39,7 @@ Click Combos:
   use-click-left: true
   use-click-right: true
   use-click-shift: false
+  combo-size: 4
 Skill Bar:
   enabled: false
   show-cooldown: true

@@ -32,7 +32,7 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.data.ComboManager;
+import com.sucy.skill.manager.ComboManager;
 import com.sucy.skill.data.PlayerStats;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;

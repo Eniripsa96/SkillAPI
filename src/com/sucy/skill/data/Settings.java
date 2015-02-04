@@ -60,6 +60,7 @@ public class Settings
         loadSkillSettings();
         loadItemSettings();
         loadGUISettings();
+        loadComboSettings();
         loadExpSettings();
         loadSkillBarSettings();
         loadLoggingSettings();
@@ -499,6 +500,77 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
+    private static final String COMBO_BASE = "Click Combos.";
+    private static final String COMBO_ENABLED = COMBO_BASE + "enabled";
+    private static final String COMBO_LEFT = COMBO_BASE + "use-click-left";
+    private static final String COMBO_RIGHT = COMBO_BASE + "use-click-right";
+    private static final String COMBO_SHIFT = COMBO_BASE + "use-click-shift";
+    private static final String COMBO_SIZE = COMBO_BASE + "combo-size";
+
+    private boolean combosEnabled;
+    private boolean comboLeft;
+    private boolean comboRight;
+    private boolean comboShift;
+    private int comboSize;
+
+    /**
+     * Checks whether or not click combos are enabled
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isCombosEnabled()
+    {
+        return combosEnabled;
+    }
+
+    /**
+     * Checks whether or not left clicks are enabled for combos
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isComboLeft()
+    {
+        return comboLeft;
+    }
+
+    /**
+     * Checks whether or not right clicks are enabled for combos
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isComboRight()
+    {
+        return comboRight;
+    }
+
+    /**
+     * Checks whether or not shift clicks are enabled for combos
+     *
+     * @return true if enabled, false othewise
+     */
+    public boolean isComboShift()
+    {
+        return comboShift;
+    }
+
+    /**
+     * Retrieves the max length of combos to be used
+     *
+     * @return max length of combos to be used
+     */
+    public int getComboSize()
+    {
+        return comboSize;
+    }
+
+    private void loadComboSettings()
+    {
+        combosEnabled = config.getBoolean(COMBO_ENABLED);
+        comboLeft = config.getBoolean(COMBO_LEFT);
+        comboRight = config.getBoolean(COMBO_RIGHT);
+        comboShift = config.getBoolean(COMBO_SHIFT);
+        comboSize = config.getInt(COMBO_SIZE);
+    }
 
     ///////////////////////////////////////////////////////
     //                                                   //

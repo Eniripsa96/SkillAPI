@@ -116,15 +116,11 @@ public class BarListener implements Listener
     @EventHandler
     public void onUnlock(PlayerSkillUnlockEvent event)
     {
-        if (event.getUnlockedSkill().getData() instanceof DynamicSkill && !((DynamicSkill) event.getUnlockedSkill().getData()).canCast())
+        if (!event.getUnlockedSkill().getData().canCast() || event.getPlayerData().getPlayer() == null)
         {
             return;
         }
-        if (!(event.getUnlockedSkill().getData() instanceof TargetSkill) && !(event.getUnlockedSkill().getData() instanceof SkillShot))
-        {
-            return;
-        }
-        SkillAPI.getPlayerData(event.getPlayerData().getPlayer()).getSkillBar().unlock(event.getUnlockedSkill());
+        event.getPlayerData().getSkillBar().unlock(event.getUnlockedSkill());
     }
 
     /**
@@ -136,14 +132,17 @@ public class BarListener implements Listener
     public void onUpgrade(PlayerSkillUpgradeEvent event)
     {
         final Player player = event.getPlayerData().getPlayer();
-        Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable()
+        if (player != null)
         {
-            @Override
-            public void run()
+            Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable()
             {
-                SkillAPI.getPlayerData(player).getSkillBar().update(player);
-            }
-        }, 0);
+                @Override
+                public void run()
+                {
+                    SkillAPI.getPlayerData(player).getSkillBar().update(player);
+                }
+            }, 0);
+        }
     }
 
     /**

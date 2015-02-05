@@ -8,6 +8,9 @@ import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Wolf;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -82,7 +85,8 @@ public class ParticleHelper
      */
     public static void play(Location loc, EntityEffect effect)
     {
-        Entity wolf = loc.getWorld().spawnEntity(loc, EntityType.WOLF);
+        Wolf wolf = (Wolf)loc.getWorld().spawnEntity(loc, EntityType.WOLF);
+        wolf.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100));
         wolf.playEffect(effect);
         wolf.remove();
     }

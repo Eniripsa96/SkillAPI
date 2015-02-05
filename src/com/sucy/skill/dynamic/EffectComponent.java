@@ -149,11 +149,12 @@ public abstract class EffectComponent
                     Bukkit.getLogger().warning("Invalid component type - " + type);
                     continue;
                 }
-                if (map.containsKey(key.toLowerCase()))
+                String mkey = key.toLowerCase().replaceAll("-.+", "");
+                if (map.containsKey(mkey))
                 {
                     try
                     {
-                        EffectComponent child = map.get(key.toLowerCase().replaceAll("-.+", "")).newInstance();
+                        EffectComponent child = map.get(mkey).newInstance();
                         child.key = key;
                         child.type = type;
                         child.load(skill, children.getConfigurationSection(key));
@@ -162,7 +163,12 @@ public abstract class EffectComponent
                     catch (Exception ex)
                     {
                         // Failed to create the component, just don't add it
+                        Bukkit.getLogger().warning("Failed to create " + type + " component: " + key);
                     }
+                }
+                else
+                {
+                    Bukkit.getLogger().warning("Invalid " + type + " component: " + key);
                 }
             }
         }

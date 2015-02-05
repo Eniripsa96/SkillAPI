@@ -299,7 +299,7 @@ public final class PlayerData
         // Must not be required by another skill
         for (PlayerSkill s : skills.values())
         {
-            if (s.getData().getSkillReq().equalsIgnoreCase(skill.getName()) && data.getLevel() <= s.getData().getSkillReqLevel())
+            if (s.getData().getSkillReq() != null && s.getData().getSkillReq().equalsIgnoreCase(skill.getName()) && data.getLevel() <= s.getData().getSkillReqLevel())
             {
                 return false;
             }

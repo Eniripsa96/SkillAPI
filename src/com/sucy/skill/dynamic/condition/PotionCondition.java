@@ -28,7 +28,7 @@ public class PotionCondition extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean active = !settings.getString(TYPE, "active").toLowerCase().equals("not active");
-        String potion = settings.getString(POTION).toUpperCase().replace(' ', '_');
+        String potion = settings.getString(POTION, "").toUpperCase().replace(' ', '_');
         PotionEffectType type = null;
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         try

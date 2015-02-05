@@ -21,7 +21,7 @@ import java.util.List;
  */
 public abstract class EffectComponent
 {
-    private final ArrayList<EffectComponent> children = new ArrayList<EffectComponent>();
+    public final ArrayList<EffectComponent> children = new ArrayList<EffectComponent>();
 
     /**
      * The settings for the component
@@ -232,6 +232,7 @@ public abstract class EffectComponent
             put("permission", PermissionMechanic.class);
             put("potion", PotionMechanic.class);
             put("projectile", ProjectileMechanic.class);
+            put("purge", PurgeMechanic.class);
             put("push", PushMechanic.class);
             put("repeat", RepeatMechanic.class);
             put("sound", SoundMechanic.class);

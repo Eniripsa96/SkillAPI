@@ -44,11 +44,12 @@ public class CleanseMechanic extends EffectComponent
         }
         catch (Exception ex)
         {
+            // Invalid potion type
         }
 
         for (LivingEntity target : targets)
         {
-            if (status.equals("any"))
+            if (status.equals("all"))
             {
                 for (String flag : StatusFlag.NEGATIVE)
                 {
@@ -65,7 +66,7 @@ public class CleanseMechanic extends EffectComponent
                 worked = true;
             }
 
-            if (potion.equals("any"))
+            if (potion.equals("all"))
             {
                 for (PotionEffectType p : POTIONS)
                 {

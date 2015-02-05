@@ -106,6 +106,94 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     /**
+     * Retrieves the formatted name of an attribute which ignores the dynamic
+     * path overhead.
+     *
+     * @param key attribute key
+     * @return formatted attribute name
+     */
+    @Override
+    protected String getAttrName(String key)
+    {
+        if (key.contains("."))
+        {
+            return TextFormatter.format(key.substring(key.lastIndexOf('.') + 1));
+        }
+        else
+        {
+            return super.getAttrName(key);
+        }
+    }
+
+    /**
+     * Retrieves an attribute while supporting dynamic skill attribute paths.
+     * Paths are in the format: {trigger}.{childIndex}.{attrKey} where
+     * there can be any number of child indices. If a trigger is not provided
+     * while there is only one used trigger in the skill, it will default
+     * to the only trigger. Any invalid indices or path elements will be
+     * ignored. An invalid path will return 0 instead. If a path is not
+     * provided, this returns a normal attribute on the skill.
+     *
+     * @param key   attribute key
+     * @param level skill level
+     * @return attribute value or 0 if invalid dynamic path
+     */
+    @Override
+    protected Object getAttr(String key, int level)
+    {
+        // Dynamic attribute paths use periods
+        if (key.contains("."))
+        {
+            String[] path = key.split("\\.");
+            int next = 0;
+            Trigger trigger = null;
+            try
+            {
+                trigger = Trigger.valueOf(path[0]);
+                next = 1;
+            }
+            catch (Exception ex)
+            {
+                if (components.size() == 1)
+                {
+                    trigger = components.keySet().toArray(new Trigger[1])[0];
+                }
+            }
+
+            if (trigger != null)
+            {
+                EffectComponent current = components.get(trigger);
+                for (int i = next; i < path.length - 1; i++)
+                {
+                    try
+                    {
+                        int id = Integer.parseInt(path[i]);
+                        if (id >= 0 && id < current.children.size())
+                        {
+                            current = current.children.get(id);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Invalid format
+                    }
+                }
+                if (current.settings.has(path[path.length - 1]))
+                {
+                    return current.settings.getObj(path[path.length - 1], level);
+                }
+            }
+            return 0;
+        }
+
+        // Otherwise get the attribute normally
+        else
+        {
+            return super.getAttr(key, level);
+        }
+    }
+
+    /**
      * Applies the death trigger effects
      *
      * @param event event details

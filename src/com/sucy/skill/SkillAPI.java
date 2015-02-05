@@ -395,6 +395,10 @@ public class SkillAPI extends JavaPlugin
      */
     public static PlayerData getPlayerData(OfflinePlayer player)
     {
+        if (singleton == null || player == null)
+        {
+            return null;
+        }
         return getPlayerAccountData(player).getActiveData();
     }
 
@@ -415,6 +419,20 @@ public class SkillAPI extends JavaPlugin
         PlayerAccounts data = singleton.io.loadData(player);
         singleton.players.put(new VersionPlayer(player).getIdString(), data);
         return data;
+    }
+
+    /**
+     * Checks whether or not SkillAPI currently has loaded data for the
+     * given player. This returning false doesn't necessarily mean the
+     * player doesn't have any data at all, just not data that is
+     * currently loaded.
+     *
+     * @param player player to check for
+     * @return true if has loaded data, false otherwise
+     */
+    public static boolean hasPlayerData(OfflinePlayer player)
+    {
+        return singleton != null && player != null && singleton.players.containsKey(new VersionPlayer(player).getIdString());
     }
 
     /**

@@ -149,7 +149,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             Trigger trigger = null;
             try
             {
-                trigger = Trigger.valueOf(path[0]);
+                trigger = Trigger.valueOf(path[0].toUpperCase().replace(" ", "_"));
                 next = 1;
             }
             catch (Exception ex)

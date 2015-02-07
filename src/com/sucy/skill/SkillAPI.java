@@ -46,11 +46,13 @@ import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.RegistrationManager;
 import com.sucy.skill.manager.ResourceManager;
 import com.sucy.skill.task.CooldownTask;
+import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -78,8 +80,9 @@ public class SkillAPI extends JavaPlugin
     private ComboManager        comboManager;
     private RegistrationManager registrationManager;
 
-    private ManaTask     manaTask;
-    private CooldownTask cdTask;
+    private ManaTask      manaTask;
+    private CooldownTask  cdTask;
+    private InventoryTask invTask;
 
     private boolean enabled = false;
 
@@ -143,11 +146,15 @@ public class SkillAPI extends JavaPlugin
         // Set up tasks
         if (settings.isManaEnabled())
         {
-            new ManaTask(this);
+            manaTask = new ManaTask(this);
         }
         if (settings.isSkillBarCooldowns())
         {
-            new CooldownTask(this);
+            cdTask = new CooldownTask(this);
+        }
+        if (settings.isCheckLore())
+        {
+            invTask = new InventoryTask(this, settings.getPlayersPerCheck());
         }
     }
 
@@ -164,8 +171,21 @@ public class SkillAPI extends JavaPlugin
         }
 
         WolfMechanic.removeWolves();
-        manaTask.cancel();
-        cdTask.cancel();
+        if (manaTask != null)
+        {
+            manaTask.cancel();
+            manaTask = null;
+        }
+        if (cdTask != null)
+        {
+            cdTask.cancel();
+            cdTask = null;
+        }
+        if (invTask != null)
+        {
+            invTask.cancel();
+            invTask = null;
+        }
 
         // Clear skill bars before disabling
         for (Player player : getServer().getOnlinePlayers())

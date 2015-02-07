@@ -16,6 +16,7 @@ Errors:
   on-cooldown: '&6{skill} &4cooldown - &6{cooldown} &4seconds left'
   no-mana: '&4You need &6{missing} &4more mana'
   no-skills: '&4That class does not have any skills'
+  cannot-use: '&4You cannot equip that item'
 Skill Tree:
   title: '{name} ({level}/{max})'
   type: '&2Skill Type: &6{name}'

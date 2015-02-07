@@ -27,7 +27,6 @@ Skills:
 Items:
   lore-requirements: true
   players-per-check: 1
-  default-one-damage: false
 GUI:
   old-health-bar: false
   use-level-bar: false

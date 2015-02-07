@@ -15,7 +15,7 @@ Notifications:
 Errors:
   on-cooldown: '&6{skill} &4cooldown - &6{cooldown} &4seconds left'
   no-mana: '&4You need &6{missing} &4more mana'
-  no-skills: '&4That class doesn't have any skills'
+  no-skills: '&4That class does not have any skills'
 Skill Tree:
   title: '{name} ({level}/{max})'
   type: '&2Skill Type: &6{name}'

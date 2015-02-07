@@ -10,7 +10,7 @@ import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.Data;
-import com.sucy.skill.language.DefaultsNodes;
+import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.language.SkillNodes;
 import org.bukkit.Bukkit;
@@ -143,7 +143,7 @@ public abstract class Skill
         this.attrInfo = "";
         this.needsPermission = false;
 
-        this.message = SkillAPI.getLanguage().getMessage(DefaultsNodes.CAST, true, FilterType.COLOR).get(0);
+        this.message = SkillAPI.getLanguage().getMessage(NotificationNodes.CAST, true, FilterType.COLOR).get(0);
         this.iconLore = SkillAPI.getLanguage().getMessage(SkillNodes.LAYOUT, true, FilterType.COLOR);
     }
 

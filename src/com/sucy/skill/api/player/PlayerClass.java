@@ -1,5 +1,7 @@
 package com.sucy.skill.api.player;
 
+import com.rit.sucy.config.Filter;
+import com.rit.sucy.config.FilterType;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
@@ -9,6 +11,8 @@ import com.sucy.skill.api.event.PlayerExperienceLostEvent;
 import com.sucy.skill.api.event.PlayerGainSkillPointsEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.language.NotificationNodes;
+import com.sucy.skill.language.RPGFilter;
 import org.bukkit.Bukkit;
 
 /**
@@ -290,6 +294,18 @@ public final class PlayerClass
         // Add experience if not cancelled
         if (!event.isCancelled() && event.getExp() > 0)
         {
+            if (SkillAPI.getSettings().isShowExpMessages() && player.getPlayer() != null)
+            {
+                SkillAPI.getLanguage().sendMessage(
+                        NotificationNodes.EXP,
+                        player.getPlayer(),
+                        FilterType.COLOR,
+                        RPGFilter.EXP.setReplacement(exp + ""),
+                        RPGFilter.CLASS.setReplacement(classData.getName()),
+                        Filter.AMOUNT.setReplacement(amount + "")
+                );
+            }
+
             exp += amount;
             totalExp += amount;
             checkLevelUp();
@@ -379,29 +395,19 @@ public final class PlayerClass
         if (amount <= 0) return;
         level += amount;
         points += classData.getGroupSettings().getPointsPerLevel() * amount;
-        /*
-        SkillAPI.getLanguage().sendMessage(
-                OtherNodes.LEVEL_UP,
-                player.getPlayer(),
-                FilterType.COLOR,
-                RPGFilter.LEVEL.setReplacement(level + ""),
-                RPGFilter.CLASS.setReplacement(classData.getName()),
-                RPGFilter.POINTS.setReplacement(points + ""),
-                Filter.AMOUNT.setReplacement(amount + "")
-        );
 
-        // Max Level
-        if (isLevelMaxed())
+        if (SkillAPI.getSettings().isShowLevelMessages())
         {
             SkillAPI.getLanguage().sendMessage(
-                    OtherNodes.MAX_LEVEL,
+                    NotificationNodes.LVL,
                     player.getPlayer(),
                     FilterType.COLOR,
                     RPGFilter.LEVEL.setReplacement(level + ""),
-                    RPGFilter.CLASS.setReplacement(classData.getName())
+                    RPGFilter.CLASS.setReplacement(classData.getName()),
+                    RPGFilter.POINTS.setReplacement(points + ""),
+                    Filter.AMOUNT.setReplacement(amount + "")
             );
         }
-        */
 
         // Call the event
         PlayerLevelUpEvent event = new PlayerLevelUpEvent(this, amount);

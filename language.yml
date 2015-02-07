@@ -8,11 +8,14 @@
 # and look at the tutorials section for the      #
 # configuration tutorials.                       #
 # ---------------------------------------------- #
-Defaults:
+Notifications:
   cast: '&6{player} &2has cast &6{skill}'
+  gain-exp: '&2You have gained &6{exp} experience'
+  gain-lvl: '&6Level Up! &2You are now &6level {level}'
 Errors:
   on-cooldown: '&6{skill} &4cooldown - &6{cooldown} &4seconds left'
   no-mana: '&4You need &6{missing} &4more mana'
+  no-skills: '&4That class doesn't have any skills'
 Skill Tree:
   title: '{name} ({level}/{max})'
   type: '&2Skill Type: &6{name}'

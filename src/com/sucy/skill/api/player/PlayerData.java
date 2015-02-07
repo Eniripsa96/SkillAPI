@@ -1,6 +1,7 @@
 package com.sucy.skill.api.player;
 
 import com.rit.sucy.config.FilterType;
+import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.rit.sucy.version.VersionManager;
@@ -15,12 +16,14 @@ import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.listener.TreeListener;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -389,6 +392,12 @@ public final class PlayerData
         // Show list of classes that have skill trees
         else
         {
+            Inventory inv = InventoryManager.createInventory(TreeListener.CLASS_LIST_KEY, (classes.size() + 8) / 9, player.getName());
+            for (PlayerClass c : classes.values())
+            {
+                inv.addItem(c.getData().getIcon());
+            }
+            player.openInventory(inv);
             return true;
         }
     }

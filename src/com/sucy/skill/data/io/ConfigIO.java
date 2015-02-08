@@ -34,8 +34,6 @@ public class ConfigIO extends IOManager
             SLOTS          = "slots",
             UNASSIGNED     = "e";
 
-    private final Config config;
-
     /**
      * Initializes a new .yml config manager
      *
@@ -44,7 +42,6 @@ public class ConfigIO extends IOManager
     public ConfigIO(SkillAPI plugin)
     {
         super(plugin);
-        config = new Config(plugin, "players");
     }
 
     /**
@@ -58,93 +55,97 @@ public class ConfigIO extends IOManager
     {
         PlayerAccounts data = new PlayerAccounts(player);
         String playerKey = new VersionPlayer(player).getIdString();
-        if (!playerKey.equals(player.getName()) && config.getConfig().contains(player.getName()))
+        Config config = new Config(api, "players/" + playerKey);
+        Config nameConfig = new Config(api, "players/" + player.getName());
+        if (!playerKey.equals(player.getName()) && nameConfig.getConfigFile().exists())
         {
-            config.getConfig().set(playerKey, config.getConfig().getConfigurationSection(player.getName()));
-            config.getConfig().set(player.getName(), null);
-        }
-        if (config.getConfig().contains(playerKey))
-        {
-            ConfigurationSection file = config.getConfig().getConfigurationSection(playerKey);
-
-            ConfigurationSection accounts = file.getConfigurationSection(ACCOUNTS);
-            for (String accountKey : accounts.getKeys(false))
+            ConfigurationSection old = nameConfig.getConfig();
+            for (String key : old.getKeys(false))
             {
-                ConfigurationSection account = accounts.getConfigurationSection(accountKey);
-                PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")), player);
+                config.getConfig().set(key, old.get(key));
+            }
+            nameConfig.getConfigFile().delete();
+        }
+        ConfigurationSection file = config.getConfig();
 
-                // Load classes
-                ConfigurationSection classes = account.getConfigurationSection(CLASSES);
-                for (String classKey : classes.getKeys(false))
+        ConfigurationSection accounts = file.getConfigurationSection(ACCOUNTS);
+        if (accounts == null) accounts = file.createSection(ACCOUNTS);
+        for (String accountKey : accounts.getKeys(false))
+        {
+            ConfigurationSection account = accounts.getConfigurationSection(accountKey);
+            PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")), player);
+
+            // Load classes
+            ConfigurationSection classes = account.getConfigurationSection(CLASSES);
+            for (String classKey : classes.getKeys(false))
+            {
+                RPGClass rpgClass = SkillAPI.getClass(classKey);
+                if (rpgClass != null)
                 {
-                    RPGClass rpgClass = SkillAPI.getClass(classKey);
-                    if (rpgClass != null)
+                    PlayerClass c = acc.setClass(rpgClass);
+                    ConfigurationSection classData = classes.getConfigurationSection(classKey);
+                    int levels = classData.getInt(LEVEL) - 1;
+                    if (levels > 0)
                     {
-                        PlayerClass c = acc.setClass(rpgClass);
-                        ConfigurationSection classData = classes.getConfigurationSection(classKey);
-                        int levels = classData.getInt(LEVEL) - 1;
-                        if (levels > 0)
-                        {
-                            c.giveLevels(levels);
-                        }
-                        c.setPoints(classData.getInt(POINTS));
-                        c.setTotalExp(classData.getDouble(TOTAL_EXP));
+                        c.giveLevels(levels);
                     }
-                }
-
-                // Load skills
-                ConfigurationSection skills = account.getConfigurationSection(SKILLS);
-                for (String skillKey : skills.getKeys(false))
-                {
-                    ConfigurationSection skill = skills.getConfigurationSection(skillKey);
-                    PlayerSkill skillData = acc.getSkill(skillKey);
-                    if (skillData != null)
-                    {
-                        skillData.addLevels(skill.getInt(LEVEL));
-                        skillData.addPoints(skill.getInt(POINTS));
-                    }
-                }
-
-                // Load binds
-                ConfigurationSection binds = account.getConfigurationSection(BINDS);
-                for (String bindKey : binds.getKeys(false))
-                {
-                    acc.bind(Material.valueOf(bindKey), acc.getSkill(binds.getString(bindKey)));
-                }
-
-                // Load skill bar
-                ConfigurationSection skillBar = account.getConfigurationSection(SKILL_BAR);
-                PlayerSkillBar bar = acc.getSkillBar();
-                if (skillBar != null && bar != null)
-                {
-                    for (String key : skillBar.getKeys(false))
-                    {
-                        if (key.equals(ENABLED))
-                        {
-                            if (bar.isEnabled() != skillBar.getBoolean(key))
-                            {
-                                bar.toggleEnabled();
-                            }
-                        }
-                        else if (key.equals(SLOTS))
-                        {
-                            List<Integer> slots = skillBar.getIntegerList(SLOTS);
-                            for (int i : slots)
-                            {
-                                bar.getData().put(i, UNASSIGNED);
-                            }
-                        }
-                        else if (SkillAPI.getSkill(key) != null)
-                        {
-                            bar.getData().put(skillBar.getInt(key), key);
-                        }
-                    }
-                    bar.applySettings();
+                    c.setPoints(classData.getInt(POINTS));
+                    c.setTotalExp(classData.getDouble(TOTAL_EXP));
                 }
             }
 
-            data.setAccount(file.getInt(ACTIVE, data.getActiveId()));
+            // Load skills
+            ConfigurationSection skills = account.getConfigurationSection(SKILLS);
+            for (String skillKey : skills.getKeys(false))
+            {
+                ConfigurationSection skill = skills.getConfigurationSection(skillKey);
+                PlayerSkill skillData = acc.getSkill(skillKey);
+                if (skillData != null)
+                {
+                    skillData.addLevels(skill.getInt(LEVEL));
+                    skillData.addPoints(skill.getInt(POINTS));
+                }
+            }
+
+            // Load binds
+            ConfigurationSection binds = account.getConfigurationSection(BINDS);
+            for (String bindKey : binds.getKeys(false))
+            {
+                acc.bind(Material.valueOf(bindKey), acc.getSkill(binds.getString(bindKey)));
+            }
+
+            // Load skill bar
+            ConfigurationSection skillBar = account.getConfigurationSection(SKILL_BAR);
+            PlayerSkillBar bar = acc.getSkillBar();
+            if (skillBar != null && bar != null)
+            {
+                for (String key : skillBar.getKeys(false))
+                {
+                    if (key.equals(ENABLED))
+                    {
+                        if (bar.isEnabled() != skillBar.getBoolean(key))
+                        {
+                            bar.toggleEnabled();
+                        }
+                    }
+                    else if (key.equals(SLOTS))
+                    {
+                        List<Integer> slots = skillBar.getIntegerList(SLOTS);
+                        for (int i : slots)
+                        {
+                            bar.getData().put(i, UNASSIGNED);
+                        }
+                    }
+                    else if (SkillAPI.getSkill(key) != null)
+                    {
+                        bar.getData().put(skillBar.getInt(key), key);
+                    }
+                }
+                bar.applySettings();
+            }
         }
+        data.setAccount(file.getInt(ACTIVE, data.getActiveId()));
+
         return data;
     }
 
@@ -160,7 +161,9 @@ public class ConfigIO extends IOManager
         {
             return;
         }
-        ConfigurationSection file = config.getConfig().createSection(new VersionPlayer(data.getPlayer()).getIdString());
+        Config config = new Config(api, "players/" + new VersionPlayer(data.getPlayer()).getIdString());
+        config.clear();
+        ConfigurationSection file = config.getConfig();
         file.set(LIMIT, data.getAccountLimit());
         file.set(ACTIVE, data.getActiveId());
         ConfigurationSection accounts = file.createSection(ACCOUNTS);
@@ -212,6 +215,7 @@ public class ConfigIO extends IOManager
                 }
             }
         }
+        config.saveConfig();
     }
 
     /**
@@ -224,6 +228,5 @@ public class ConfigIO extends IOManager
         {
             saveData(entry.getValue());
         }
-        config.saveConfig();
     }
 }

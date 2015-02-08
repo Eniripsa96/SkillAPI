@@ -99,6 +99,7 @@ public class RegistrationManager
                 if (!SkillAPI.isSkillRegistered(key))
                 {
                     DynamicSkill skill = new DynamicSkill(key);
+                    api.getServer().getPluginManager().registerEvents(skill, api);
                     api.skills.put(key.toLowerCase(), skill);
                     skill.load(skillConfig.getConfig().getConfigurationSection(key));
                     Config sConfig = new Config(api, SKILL_DIR + key);

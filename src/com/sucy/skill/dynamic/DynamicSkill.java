@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * A skill implementation for the Dynamic system
@@ -25,7 +24,7 @@ import java.util.UUID;
 public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener
 {
     private HashMap<Trigger, EffectComponent> components = new HashMap<Trigger, EffectComponent>();
-    private HashMap<UUID, Integer>            active     = new HashMap<UUID, Integer>();
+    private HashMap<Integer, Integer>         active     = new HashMap<Integer, Integer>();
 
     /**
      * Initializes a new dynamic skill
@@ -63,7 +62,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public void update(LivingEntity user, int prevLevel, int newLevel)
     {
-        active.put(user.getUniqueId(), newLevel);
+        active.put(user.getEntityId(), newLevel);
     }
 
     /**
@@ -76,7 +75,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public void initialize(LivingEntity user, int level)
     {
         trigger(user, user, level, Trigger.INITIALIZE);
-        active.put(user.getUniqueId(), level);
+        active.put(user.getEntityId(), level);
     }
 
     /**
@@ -88,7 +87,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public void stopEffects(LivingEntity user, int level)
     {
-        active.remove(user.getUniqueId());
+        active.remove(user.getEntityId());
     }
 
     /**
@@ -201,9 +200,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @EventHandler
     public void onDeath(EntityDeathEvent event)
     {
-        if (active.containsKey(event.getEntity().getUniqueId()))
+        if (active.containsKey(event.getEntity().getEntityId()))
         {
-            trigger(event.getEntity(), event.getEntity(), active.get(event.getEntity().getUniqueId()), Trigger.DEATH);
+            trigger(event.getEntity(), event.getEntity(), active.get(event.getEntity().getEntityId()), Trigger.DEATH);
         }
     }
 
@@ -221,7 +220,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
         // Physical receieved
         EffectComponent component = components.get(Trigger.TOOK_PHYSICAL_DAMAGE);
-        if (component != null && active.containsKey(target.getUniqueId()))
+        if (component != null && active.containsKey(target.getEntityId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();
             double min = component.settings.getDouble("dmg-min");
@@ -230,13 +229,13 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.getDamage() >= min && event.getDamage() <= max
                     && (type.equals("both") || type.equals("projectile") == projectile))
             {
-                trigger(target, damager, active.get(event.getTarget().getUniqueId()), Trigger.TOOK_PHYSICAL_DAMAGE);
+                trigger(target, damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
             }
         }
 
         // Physical dealt
         component = components.get(Trigger.PHYSICAL_DAMAGE);
-        if (component != null && active.containsKey(damager.getUniqueId()))
+        if (component != null && active.containsKey(damager.getEntityId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();
             double min = component.settings.getDouble("dmg-min");
@@ -245,7 +244,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.getDamage() >= min && event.getDamage() <= max
                     && (type.equals("both") || type.equals("projectile") == projectile))
             {
-                trigger(damager, target, active.get(event.getTarget().getUniqueId()), Trigger.PHYSICAL_DAMAGE);
+                trigger(damager, target, active.get(event.getTarget().getEntityId()), Trigger.PHYSICAL_DAMAGE);
             }
         }
     }
@@ -263,27 +262,27 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
         // Skill received
         EffectComponent component = components.get(Trigger.TOOK_SKILL_DAMAGE);
-        if (component != null && active.containsKey(target.getUniqueId()))
+        if (component != null && active.containsKey(target.getEntityId()))
         {
             double min = component.settings.getDouble("dmg-min");
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
-                trigger(target, damager, active.get(event.getTarget().getUniqueId()), Trigger.TOOK_SKILL_DAMAGE);
+                trigger(target, damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
             }
         }
 
         // Skill dealt
         component = components.get(Trigger.SKILL_DAMAGE);
-        if (component != null && active.containsKey(damager.getUniqueId()))
+        if (component != null && active.containsKey(damager.getEntityId()))
         {
             double min = component.settings.getDouble("dmg-min");
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
-                trigger(damager, target, active.get(event.getTarget().getUniqueId()), Trigger.TOOK_SKILL_DAMAGE);
+                trigger(damager, target, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
             }
         }
     }
@@ -297,11 +296,11 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public void onCrouch(PlayerToggleSneakEvent event)
     {
         EffectComponent component = components.get(Trigger.CROUCH);
-        if (component != null && active.containsKey(event.getPlayer().getUniqueId()))
+        if (component != null && active.containsKey(event.getPlayer().getEntityId()))
         {
             if (event.isSneaking() != component.settings.getString("type", "start crouching").toLowerCase().equals("stop crouching"))
             {
-                trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getUniqueId()), Trigger.CROUCH);
+                trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.CROUCH);
             }
         }
     }

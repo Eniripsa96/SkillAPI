@@ -6,6 +6,7 @@ import com.rit.sucy.commands.SenderType;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.cmd.*;
 import com.sucy.skill.data.Permissions;
+import org.bukkit.permissions.Permission;
 
 /**
  * Sets up commands for the plugin
@@ -45,11 +46,13 @@ public class CmdManager
                 new ConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profess options", "", Permissions.BASIC),
                 new ConfigurableCommand(api, "points", SenderType.ANYONE, new CmdPoints(), "Gives player points", "[player] <amount>", Permissions.POINTS),
                 new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes", "<class>", Permissions.BASIC),
+                new ConfigurableCommand(api, "reload", SenderType.ANYONE, new CmdReload(), "Reloads the plugin", "", Permissions.RELOAD),
                 new ConfigurableCommand(api, "skill", SenderType.PLAYER_ONLY, new CmdSkill(), "Shows player skills", "", Permissions.BASIC),
                 new ConfigurableCommand(api, "unbind", SenderType.PLAYER_ONLY, new CmdUnbind(), "Unbinds held item", "", Permissions.BASIC)
         );
         root.addSubCommands(
-                new ConfigurableCommand(api, "forceaccount", SenderType.CONSOLE_ONLY, new CmdForceAccount(), "Changes player's account", "<player> <accountId>")
+                new ConfigurableCommand(api, "forceaccount", SenderType.CONSOLE_ONLY, new CmdForceAccount(), "Changes player's account", "<player> <accountId>", Permissions.FORCE),
+                new ConfigurableCommand(api, "forceprofess", SenderType.CONSOLE_ONLY, new CmdForceProfess(), "Professes a player", "<player> <class>", Permissions.FORCE)
         );
         if (SkillAPI.getSettings().isSkillBarEnabled())
         {

@@ -136,6 +136,7 @@ public class RegistrationManager
                         {
                             Config sConfig = new Config(api, SKILL_DIR + name);
                             DynamicSkill skill = new DynamicSkill(name);
+                            api.getServer().getPluginManager().registerEvents(skill, api);
                             api.skills.put(name.toLowerCase(), skill);
                             skill.load(sConfig.getConfig().getConfigurationSection(name));
                             sConfig.clear();

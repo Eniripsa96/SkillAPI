@@ -9,6 +9,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerSkill;
+import com.sucy.skill.api.util.DamageLoreRemover;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
@@ -438,7 +439,7 @@ public abstract class Skill
 
         meta.setLore(lore);
         item.setItemMeta(meta);
-        return item;
+        return DamageLoreRemover.removeAttackDmg(item);
     }
 
     /**

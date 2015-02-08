@@ -124,9 +124,10 @@ public class SkillAPI extends JavaPlugin
         ResourceManager.copyQuestsModule();
 
         // Set up listeners
-        new MainListener(this);
-        new StatusListener(this);
         new CastListener(this);
+        new MainListener(this);
+        new MechanicListener(this);
+        new StatusListener(this);
         new TreeListener(this);
         if (settings.isSkillBarEnabled())
         {

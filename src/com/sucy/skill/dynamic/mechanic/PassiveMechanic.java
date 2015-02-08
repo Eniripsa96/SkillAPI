@@ -30,7 +30,7 @@ public class PassiveMechanic extends EffectComponent
     {
         if (targets.size() > 0)
         {
-            int period = (int) (settings.getDouble(PERIOD, 1.0) * 20);
+            int period = (int) (settings.getAttr(PERIOD, level, 1.0) * 20);
             new RepeatTask(caster, level, targets, period);
             return true;
         }

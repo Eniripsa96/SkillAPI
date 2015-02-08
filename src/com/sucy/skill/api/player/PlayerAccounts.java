@@ -1,6 +1,8 @@
 package com.sucy.skill.api.player;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerAccountChangeEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -161,12 +163,19 @@ public class PlayerAccounts
         }
         if (classData.containsKey(id))
         {
+            PlayerAccountChangeEvent event = new PlayerAccountChangeEvent(this, active, id);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled())
+            {
+                return;
+            }
+
             getActiveData().stopPassives(player);
             if (getActiveData().hasClass())
             {
                 getActiveData().getSkillBar().clear(player);
             }
-            active = id;
+            active = event.getNewID();
             getActiveData().startPassives(player);
             getActiveData().updateScoreboard();
             if (getActiveData().hasClass())

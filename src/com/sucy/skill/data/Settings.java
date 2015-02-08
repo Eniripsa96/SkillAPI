@@ -65,6 +65,7 @@ public class Settings
         loadExpSettings();
         loadSkillBarSettings();
         loadLoggingSettings();
+        loadWorldSettings();
     }
 
     ///////////////////////////////////////////////////////
@@ -293,7 +294,6 @@ public class Settings
     ///////////////////////////////////////////////////////
 
     private static final String SKILL_BASE      = "Skills.";
-    private static final String SKILL_TYPE      = SKILL_BASE + "tree-type";
     private static final String SKILL_DOWNGRADE = SKILL_BASE + "allow-downgrade";
     private static final String SKILL_MESSAGE   = SKILL_BASE + "show-messages";
     private static final String SKILL_RADIUS    = SKILL_BASE + "message-radius";
@@ -347,11 +347,9 @@ public class Settings
 
     private static final String ITEM_BASE   = "Items.";
     private static final String ITEM_LORE   = ITEM_BASE + "lore-requirements";
-    private static final String ITEM_DAMAGE = ITEM_BASE + "default-one-damage";
     private static final String ITEM_CHECK  = ITEM_BASE + "players-per-check";
 
     private boolean checkLore;
-    private boolean defaultOneDamage;
     private int     playersPerCheck;
 
     /**
@@ -365,16 +363,6 @@ public class Settings
     }
 
     /**
-     * Checks whether or not items are defaulted to one damage when unknown
-     *
-     * @return true if enabled, false otherwise
-     */
-    public boolean isDefaultOneDamage()
-    {
-        return defaultOneDamage;
-    }
-
-    /**
      * Retrieves the number of players checked each update
      *
      * @return number of players checked each update
@@ -384,34 +372,9 @@ public class Settings
         return playersPerCheck;
     }
 
-    /**
-     * Sets whether or not to default unknown items to one damage
-     *
-     * @param oneDamage whether or not to default unknown items to one damage
-     */
-    public void setDefaultOneDamage(boolean oneDamage)
-    {
-        defaultOneDamage = oneDamage;
-        config.set(ITEM_DAMAGE, oneDamage);
-        plugin.saveConfig();
-    }
-
-    /**
-     * Sets the number of players to check each update
-     *
-     * @param players players to check each update
-     */
-    public void setPlayersPerCheck(int players)
-    {
-        playersPerCheck = players;
-        config.set(ITEM_CHECK, players);
-        plugin.saveConfig();
-    }
-
     private void loadItemSettings()
     {
         checkLore = config.getBoolean(ITEM_LORE);
-        defaultOneDamage = config.getBoolean(ITEM_DAMAGE);
         playersPerCheck = config.getInt(ITEM_CHECK);
     }
 

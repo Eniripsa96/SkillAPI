@@ -24,6 +24,7 @@ import java.util.HashMap;
 public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener
 {
     private HashMap<Trigger, EffectComponent> components = new HashMap<Trigger, EffectComponent>();
+    private HashMap<String, EffectComponent>  attribKeys = new HashMap<String, EffectComponent>();
     private HashMap<Integer, Integer>         active     = new HashMap<Integer, Integer>();
 
     /**
@@ -50,6 +51,18 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public boolean canCast()
     {
         return components.containsKey(Trigger.CAST);
+    }
+
+    /**
+     * Sets an attribute key for obtaining attributes used
+     * in the skill indicator.
+     *
+     * @param key       key string
+     * @param component component to grab attributes from
+     */
+    public void setAttribKey(String key, EffectComponent component)
+    {
+        attribKeys.put(key, component);
     }
 
     /**
@@ -126,12 +139,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
     /**
      * Retrieves an attribute while supporting dynamic skill attribute paths.
-     * Paths are in the format: {trigger}.{childIndex}.{attrKey} where
-     * there can be any number of child indices. If a trigger is not provided
-     * while there is only one used trigger in the skill, it will default
-     * to the only trigger. Any invalid indices or path elements will be
-     * ignored. An invalid path will return 0 instead. If a path is not
-     * provided, this returns a normal attribute on the skill.
+     * Paths are set up by the "icon-key" setting in components. An invalid
+     * path will instead return a value of 0. If a path is not provided, this
+     * returns a normal attribute on the skill.
      *
      * @param key   attribute key
      * @param level skill level
@@ -144,45 +154,15 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         if (key.contains("."))
         {
             String[] path = key.split("\\.");
-            int next = 0;
-            Trigger trigger = null;
-            try
+            String attr = path[1].toLowerCase();
+            if (attribKeys.containsKey(path[0]) && attribKeys.get(path[0]).settings.has(attr))
             {
-                trigger = Trigger.valueOf(path[0].toUpperCase().replace(" ", "_"));
-                next = 1;
+                return attribKeys.get(path[0]).settings.getObj(attr, level);
             }
-            catch (Exception ex)
+            else
             {
-                if (components.size() == 1)
-                {
-                    trigger = components.keySet().toArray(new Trigger[1])[0];
-                }
+                return 0;
             }
-
-            if (trigger != null)
-            {
-                EffectComponent current = components.get(trigger);
-                for (int i = next; i < path.length - 1; i++)
-                {
-                    try
-                    {
-                        int id = Integer.parseInt(path[i]);
-                        if (id >= 0 && id < current.children.size())
-                        {
-                            current = current.children.get(id);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // Invalid format
-                    }
-                }
-                if (current.settings.has(path[path.length - 1]))
-                {
-                    return current.settings.getObj(path[path.length - 1], level);
-                }
-            }
-            return 0;
         }
 
         // Otherwise get the attribute normally

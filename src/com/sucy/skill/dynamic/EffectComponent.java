@@ -21,6 +21,8 @@ import java.util.List;
  */
 public abstract class EffectComponent
 {
+    private static final String ICON_KEY = "icon-key";
+
     public final ArrayList<EffectComponent> children = new ArrayList<EffectComponent>();
 
     /**
@@ -116,7 +118,7 @@ public abstract class EffectComponent
      * @param skill  owning skill of the component
      * @param config config data to load from
      */
-    public void load(Skill skill, ConfigurationSection config)
+    public void load(DynamicSkill skill, ConfigurationSection config)
     {
         this.skill = skill;
         if (config == null)
@@ -124,6 +126,14 @@ public abstract class EffectComponent
             return;
         }
         settings.load(config.getConfigurationSection("data"));
+        if (settings.has(ICON_KEY))
+        {
+            String key = settings.getString(ICON_KEY);
+            if (!key.equals(""))
+            {
+                skill.setAttribKey(key, this);
+            }
+        }
 
         ConfigurationSection children = config.getConfigurationSection("children");
         if (children != null)

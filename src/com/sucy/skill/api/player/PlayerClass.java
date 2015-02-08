@@ -396,7 +396,7 @@ public final class PlayerClass
         level += amount;
         points += classData.getGroupSettings().getPointsPerLevel() * amount;
 
-        if (SkillAPI.getSettings().isShowLevelMessages())
+        if (SkillAPI.getSettings().isShowLevelMessages() && player.getPlayer() != null)
         {
             SkillAPI.getLanguage().sendMessage(
                     NotificationNodes.LVL,

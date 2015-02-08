@@ -226,6 +226,7 @@ public abstract class EffectComponent
             put("launch", LaunchMechanic.class);
             put("lightning", LightningMechanic.class);
             put("mana", ManaMechanic.class);
+            put("message", MessageMechanic.class);
             put("particle", ParticleMechanic.class);
             put("particle projectile", ParticleProjectileMechanic.class);
             put("passive", PassiveMechanic.class);

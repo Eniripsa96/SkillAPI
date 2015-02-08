@@ -110,7 +110,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent event)
     {
         FlagManager.clearFlags(event.getEntity());
@@ -297,6 +297,20 @@ public class MainListener implements Listener
         else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
         {
             event.getEntity().setMetadata(S_TYPE, new FixedMetadataValue(plugin, EGG));
+        }
+    }
+
+    /**
+     * Damage type immunities
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onDamage(EntityDamageEvent event)
+    {
+        if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity)event.getEntity(), "immune:" + event.getCause().name()))
+        {
+            event.setCancelled(true);
         }
     }
 

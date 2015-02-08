@@ -2,13 +2,16 @@ package com.sucy.skill.listener;
 
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.dynamic.mechanic.PotionProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 /**
@@ -16,8 +19,9 @@ import org.bukkit.event.entity.ProjectileHitEvent;
  */
 public class MechanicListener implements Listener
 {
-    public static       String SUMMON_DAMAGE = "sapiSumDamage";
-    public static final String P_CALL        = "pmCallback";
+    public static final String SUMMON_DAMAGE     = "sapiSumDamage";
+    public static final String P_CALL            = "pmCallback";
+    public static final String POTION_PROJECTILE = "potionProjectile";
 
     /**
      * Initializes a new listener for dynamic mechanic related events.
@@ -65,6 +69,8 @@ public class MechanicListener implements Listener
 
     /**
      * Handles when summoned monsters deal damage
+     *
+     * @param event event details
      */
     @EventHandler(priority = EventPriority.LOW)
     public void onSummonDamage(EntityDamageByEntityEvent event)
@@ -72,6 +78,23 @@ public class MechanicListener implements Listener
         if (event.getDamager().hasMetadata(SUMMON_DAMAGE))
         {
             VersionManager.setDamage(event, event.getDamager().getMetadata(SUMMON_DAMAGE).get(0).asDouble());
+        }
+    }
+
+    /**
+     * Handles when a potion projectile hits things
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onSplash(PotionSplashEvent event)
+    {
+        if (event.getEntity().hasMetadata(POTION_PROJECTILE))
+        {
+            event.setCancelled(true);
+            PotionProjectileMechanic mechanic = (PotionProjectileMechanic)event.getEntity().getMetadata(POTION_PROJECTILE).get(0).value();
+            mechanic.callback(event.getEntity(), event.getAffectedEntities());
+            event.getAffectedEntities().clear();
         }
     }
 }

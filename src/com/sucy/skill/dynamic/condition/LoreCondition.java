@@ -32,7 +32,9 @@ public class LoreCondition extends EffectComponent
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null)
+            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null
+                    || !target.getEquipment().getItemInHand().hasItemMeta()
+                    || !target.getEquipment().getItemInHand().getItemMeta().hasLore())
             {
                 continue;
             }

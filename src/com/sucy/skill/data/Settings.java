@@ -211,6 +211,45 @@ public class Settings
 
     ///////////////////////////////////////////////////////
     //                                                   //
+    //                  Saving Settings                  //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    private static final String SAVE_BASE = "Saving.";
+    private static final String SAVE_AUTO = SAVE_BASE + "auto-save";
+    private static final String SAVE_MINS = SAVE_AUTO + "minutes";
+
+    private boolean auto;
+    private int minutes;
+
+    /**
+     * Checks whether or not auto saving is enabled
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isAutoSave()
+    {
+        return auto;
+    }
+
+    /**
+     * Retrieves the amount of ticks in between each auto save
+     *
+     * @return frequency of saves
+     */
+    public int getSaveFreq()
+    {
+        return minutes * 60 * 20;
+    }
+
+    private void loadSaveSettings()
+    {
+        auto = config.getBoolean(SAVE_AUTO);
+        minutes = config.getInt(SAVE_MINS);
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
     //                  Class Settings                   //
     //                                                   //
     ///////////////////////////////////////////////////////

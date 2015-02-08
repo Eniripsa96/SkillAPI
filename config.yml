@@ -13,6 +13,9 @@ Accounts:
   max-accounts: 3
   perm-accounts:
   - 'skillapi.account.admin:10'
+Saving:
+  auto-save: false
+  minutes: 30
 Classes:
   classless-hp: 20
   use-example-skills: false

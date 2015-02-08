@@ -48,6 +48,7 @@ import com.sucy.skill.manager.ResourceManager;
 import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
+import com.sucy.skill.task.SaveTask;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -83,6 +84,7 @@ public class SkillAPI extends JavaPlugin
     private ManaTask      manaTask;
     private CooldownTask  cdTask;
     private InventoryTask invTask;
+    private SaveTask      saveTask;
 
     private boolean enabled = false;
 
@@ -157,6 +159,10 @@ public class SkillAPI extends JavaPlugin
         {
             invTask = new InventoryTask(this, settings.getPlayersPerCheck());
         }
+        if (settings.isAutoSave())
+        {
+            saveTask = new SaveTask(this);
+        }
     }
 
     /**
@@ -166,11 +172,13 @@ public class SkillAPI extends JavaPlugin
     @Override
     public void onDisable()
     {
+        // Validate instance
         if (singleton != this)
         {
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
         }
 
+        // Clear tasks
         WolfMechanic.removeWolves();
         if (manaTask != null)
         {
@@ -186,6 +194,11 @@ public class SkillAPI extends JavaPlugin
         {
             invTask.cancel();
             invTask = null;
+        }
+        if (saveTask != null)
+        {
+            saveTask.cancel();
+            saveTask = null;
         }
 
         // Clear skill bars before disabling
@@ -440,6 +453,23 @@ public class SkillAPI extends JavaPlugin
         PlayerAccounts data = singleton.io.loadData(player);
         singleton.players.put(new VersionPlayer(player).getIdString(), data);
         return data;
+    }
+
+    /**
+     * Saves all player data to the configs. This
+     * should be called asynchronously to avoid problems
+     * with the main server loop.
+     */
+    public static void saveData()
+    {
+        if (singleton == null)
+        {
+            return;
+        }
+        for (PlayerAccounts data : singleton.players.values())
+        {
+            singleton.io.saveData(data);
+        }
     }
 
     /**

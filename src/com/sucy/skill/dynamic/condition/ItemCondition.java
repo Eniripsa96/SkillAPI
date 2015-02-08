@@ -26,7 +26,7 @@ public class ItemCondition extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        String item = settings.getString(MATERIAL, "").toUpperCase().replace(" ", "_");
+        String item = settings.getString(MATERIAL, "");
 
         for (LivingEntity target : targets)
         {

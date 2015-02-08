@@ -343,9 +343,10 @@ public abstract class Skill
         ArrayList<String> lore = new ArrayList<String>();
 
         String lvlReq = SkillAPI.getLanguage().getMessage(getLevelReq(skillData.getLevel()) <= skillData.getPlayerClass().getLevel() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
+        lvlReq = lvlReq.replace("{value}", "" + getLevelReq(skillData.getLevel()));
+
         String costReq = SkillAPI.getLanguage().getMessage(getCost(skillData.getLevel()) <= skillData.getPlayerClass().getPoints() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
-        lvlReq = lvlReq.substring(0, lvlReq.length() - 2);
-        costReq = costReq.substring(0, costReq.length() - 2);
+        costReq = costReq.replace("{value}", "" + getCost(skillData.getLevel()));
 
         String attrChanging = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_CHANGING, true, FilterType.COLOR).get(0);
         String attrStatic = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, true, FilterType.COLOR).get(0);
@@ -357,7 +358,6 @@ public abstract class Skill
                 // General data
                 line = line.replace("{level}", "" + skillData.getLevel())
                         .replace("{req:lvl}", lvlReq)
-                        .replace("{req:level}", lvlReq)
                         .replace("{req:cost}", costReq)
                         .replace("{max}", "" + maxLevel)
                         .replace("{name}", name)
@@ -382,7 +382,7 @@ public abstract class Skill
                     }
                     else
                     {
-                        line = line.replace("{attr:" + attr + "}", attrChanging.replace("{name}", getAttrName(attr)).replace("{value}", currValue.toString()).replace("{new}", nextValue.toString()));
+                        line = line.replace("{attr:" + attr + "}", attrChanging.replace("{name}", getAttrName(attr)).replace("{value}", currValue.toString()).replace("{value}", nextValue.toString()));
                     }
                 }
 
@@ -518,7 +518,6 @@ public abstract class Skill
         {
             skillDamage = true;
             VersionManager.damage(target, source, event.getDamage());
-            skillDamage = false;
         }
     }
 
@@ -533,13 +532,15 @@ public abstract class Skill
      */
     public static boolean isSkillDamage()
     {
-        return skillDamage;
+        boolean result = skillDamage;
+        skillDamage = false;
+        return result;
     }
 
     private static final String NAME      = "name";
     private static final String TYPE      = "type";
     private static final String ITEM      = "item";
-    private static final String LAYOUT    = "icon-lore";
+    private static final String LAYOUT    = "layout";
     private static final String MAX       = "max";
     private static final String REQ       = "req";
     private static final String REQLVL    = "req-lvl";

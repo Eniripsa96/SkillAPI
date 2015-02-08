@@ -27,7 +27,7 @@ public class ChanceCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        double chance = settings.getDouble(CHANCE) / 100.0;
+        double chance = settings.getDouble(CHANCE) / 100;
 
         // Check the biomes of the targets
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();

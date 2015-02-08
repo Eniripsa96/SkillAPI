@@ -7,7 +7,6 @@ import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -24,9 +23,9 @@ import java.util.HashMap;
  */
 public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener
 {
-    private final HashMap<Trigger, EffectComponent> components = new HashMap<Trigger, EffectComponent>();
-    private final HashMap<String, EffectComponent>  attribKeys = new HashMap<String, EffectComponent>();
-    private final HashMap<Integer, Integer>         active     = new HashMap<Integer, Integer>();
+    private HashMap<Trigger, EffectComponent> components = new HashMap<Trigger, EffectComponent>();
+    private HashMap<String, EffectComponent>  attribKeys = new HashMap<String, EffectComponent>();
+    private HashMap<Integer, Integer>         active     = new HashMap<Integer, Integer>();
 
     /**
      * Initializes a new dynamic skill
@@ -199,12 +198,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         LivingEntity target = event.getTarget();
         boolean projectile = event.isProjectile();
 
-        // Can't be null
-        if (damager == null || target == null)
-        {
-            return;
-        }
-
         // Physical receieved
         EffectComponent component = components.get(Trigger.TOOK_PHYSICAL_DAMAGE);
         if (component != null && active.containsKey(target.getEntityId()))
@@ -214,7 +207,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max
-                    && (type.equals("both") || (type.equals("projectile") == projectile)))
+                    && (type.equals("both") || type.equals("projectile") == projectile))
             {
                 trigger(target, damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
             }
@@ -231,7 +224,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.getDamage() >= min && event.getDamage() <= max
                     && (type.equals("both") || type.equals("projectile") == projectile))
             {
-                trigger(damager, target, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
+                trigger(damager, target, active.get(event.getTarget().getEntityId()), Trigger.PHYSICAL_DAMAGE);
             }
         }
     }
@@ -244,7 +237,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @EventHandler
     public void onSkillDamage(SkillDamageEvent event)
     {
-        Bukkit.getLogger().info("Skill Damage Event!");
         LivingEntity damager = event.getDamager();
         LivingEntity target = event.getTarget();
 
@@ -270,7 +262,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
-                trigger(damager, target, active.get(damager.getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
+                trigger(damager, target, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
             }
         }
     }

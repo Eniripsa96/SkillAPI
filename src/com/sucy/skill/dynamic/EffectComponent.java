@@ -232,8 +232,6 @@ public abstract class EffectComponent
             put("flag clear", FlagClearMechanic.class);
             put("flag toggle", FlagToggleMechanic.class);
             put("heal", HealMechanic.class);
-            put("immunity", ImmunityMechanic.class);
-            put("item", ItemMechanic.class);
             put("item projectile", ItemProjectileMechanic.class);
             put("launch", LaunchMechanic.class);
             put("lightning", LightningMechanic.class);
@@ -244,7 +242,6 @@ public abstract class EffectComponent
             put("passive", PassiveMechanic.class);
             put("permission", PermissionMechanic.class);
             put("potion", PotionMechanic.class);
-            put("potion projectile", PotionProjectileMechanic.class);
             put("projectile", ProjectileMechanic.class);
             put("purge", PurgeMechanic.class);
             put("push", PushMechanic.class);

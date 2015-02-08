@@ -1,11 +1,8 @@
 package com.sucy.skill.api;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * <p>Represents a set of settings that store configurable data for an object.</p>
@@ -97,7 +94,7 @@ public class Settings
      */
     public double getDouble(String key)
     {
-        return getDouble(key, 0);
+        return getAttr(key, 0);
     }
 
     /**
@@ -216,7 +213,7 @@ public class Settings
      */
     public String getString(String key, String defaultValue)
     {
-        if (settings.containsKey(key) && settings.get(key) != null)
+        if (settings.containsKey(key))
         {
             return settings.get(key).toString();
         }
@@ -224,24 +221,6 @@ public class Settings
         {
             set(key, defaultValue);
             return defaultValue;
-        }
-    }
-
-    /**
-     * Retrieves a string list from the settings
-     *
-     * @param key settings key
-     * @return string list or empty list if not found
-     */
-    public List<String> getStringList(String key)
-    {
-        if (settings.containsKey(key) && settings.get(key) instanceof List<?>)
-        {
-            return (List<String>)settings.get(key);
-        }
-        else
-        {
-            return new ArrayList<String>();
         }
     }
 
@@ -428,19 +407,7 @@ public class Settings
 
         for (String key : config.getKeys(false))
         {
-            settings.put(key, config.get(key));
-        }
-    }
-
-    /**
-     * Dumps the settings to the console for debugging purposes
-     */
-    public void dumpToConsole()
-    {
-        Bukkit.getLogger().info("Settings:");
-        for (String key : settings.keySet())
-        {
-            Bukkit.getLogger().info("- " + key + ": " + settings.get(key).toString());
+            settings.put(key, config.getString(key));
         }
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class DirectionCondition extends EffectComponent
 {
-    private static final String TYPE      = "type";
+    private static final String TYPE      = "ty[e";
     private static final String DIRECTION = "direction";
 
     /**

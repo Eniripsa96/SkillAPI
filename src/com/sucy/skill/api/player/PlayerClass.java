@@ -360,7 +360,7 @@ public final class PlayerClass
         // Count the number of levels gained, if any
         int levels = 0;
         int required;
-        while (exp >= (required = classData.getRequiredExp(level + levels)))
+        while (exp >= (required = classData.getRequiredExp(level + levels)) && level + levels < classData.getMaxLevel())
         {
             exp -= required;
             levels++;

@@ -79,7 +79,7 @@ public class CmdOptions implements IFunction
                     }
                     else
                     {
-                        options = SkillAPI.getBaseClasses();
+                        options = SkillAPI.getBaseClasses(group);
                     }
 
                     // Compose the message

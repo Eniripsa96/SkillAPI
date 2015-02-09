@@ -34,7 +34,7 @@ public class PlayerAccounts
     {
         this.player = player;
 
-        PlayerData data = new PlayerData(player);
+        PlayerData data = new PlayerData(player, true);
         classData.put(1, data);
         active = 1;
     }
@@ -121,13 +121,14 @@ public class PlayerAccounts
      *
      * @param id     account ID
      * @param player offline player reference
+     * @param init   whether or not the data is being initialized
      * @return account data or null if invalid id or player
      */
-    public PlayerData getData(int id, OfflinePlayer player)
+    public PlayerData getData(int id, OfflinePlayer player, boolean init)
     {
         if (!hasData(id) && id > 0 && player != null)
         {
-            classData.put(id, new PlayerData(player));
+            classData.put(id, new PlayerData(player, init));
         }
         return classData.get(id);
     }
@@ -159,7 +160,7 @@ public class PlayerAccounts
         }
         if (id <= getAccountLimit() && id > 0 && !classData.containsKey(id))
         {
-            classData.put(id, new PlayerData(player));
+            classData.put(id, new PlayerData(player, false));
         }
         if (classData.containsKey(id))
         {

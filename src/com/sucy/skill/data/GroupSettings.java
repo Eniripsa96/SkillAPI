@@ -20,7 +20,6 @@ public class GroupSettings
     private String  defaultClass;
     private String  permission;
     private boolean professReset;
-    private boolean resetable;
     private double  deathPenalty;
     private int     startingPoints;
     private int     pointsPerLevel;
@@ -38,7 +37,6 @@ public class GroupSettings
         defaultClass = config.getString(DEFAULT, defaultClass);
         permission = config.getString(PERMISSION, permission);
         professReset = config.getBoolean(PROFESS_RESET, professReset);
-        resetable = config.getBoolean(CAN_RESET, resetable);
         deathPenalty = config.getDouble(EXP_LOST, deathPenalty);
         startingPoints = config.getInt(STARTING_POINTS, startingPoints);
         pointsPerLevel = config.getInt(POINTS_PER_LEVEL, pointsPerLevel);
@@ -54,7 +52,6 @@ public class GroupSettings
         defaultClass = "none";
         permission = "none";
         professReset = false;
-        resetable = true;
         deathPenalty = 0;
         startingPoints = 1;
         pointsPerLevel = 1;
@@ -101,16 +98,6 @@ public class GroupSettings
     }
 
     /**
-     * Checks whether or not players can reset their class via command in the group
-     *
-     * @return true if can reset, false otherwise
-     */
-    public boolean isResetable()
-    {
-        return resetable;
-    }
-
-    /**
      * Retrieves the death penalty for classes in this group
      *
      * @return death penalty
@@ -150,7 +137,6 @@ public class GroupSettings
         config.set(DEFAULT, defaultClass);
         config.set(PERMISSION, permission);
         config.set(PROFESS_RESET, professReset);
-        config.set(CAN_RESET, resetable);
         config.set(EXP_LOST, deathPenalty);
         config.set(STARTING_POINTS, startingPoints);
         config.set(POINTS_PER_LEVEL, pointsPerLevel);

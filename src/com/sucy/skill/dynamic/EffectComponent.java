@@ -210,7 +210,7 @@ public abstract class EffectComponent
             put("mana", ManaCondition.class);
             put("name", NameCondition.class);
             put("potion", PotionCondition.class);
-            put("skillLevel", SkillLevelCondition.class);
+            put("skill level", SkillLevelCondition.class);
             put("status", StatusCondition.class);
             put("time", TimeCondition.class);
             put("tool", ToolCondition.class);

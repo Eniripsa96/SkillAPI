@@ -45,15 +45,18 @@ public final class PlayerData
     private double         maxMana;
     private double         bonusHealth;
     private double         bonusMana;
+    private boolean        init;
 
     /**
      * Initializes a new account data representation for a player.
      *
      * @param player player to store the data for
      */
-    public PlayerData(OfflinePlayer player)
+    public PlayerData(OfflinePlayer player, boolean init)
     {
         this.player = player;
+        this.skillBar = new PlayerSkillBar(this);
+        this.init = SkillAPI.isLoaded() && init;
         for (String group : SkillAPI.getGroups())
         {
             GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
@@ -64,8 +67,6 @@ public final class PlayerData
                 setClass(rpgClass);
             }
         }
-
-        this.skillBar = new PlayerSkillBar(this);
     }
 
     /**
@@ -96,6 +97,16 @@ public final class PlayerData
     public PlayerSkillBar getSkillBar()
     {
         return skillBar;
+    }
+
+    /**
+     * Ends the initialization flag for the data. Used by the
+     * API to avoid async issues. Do not use this in other
+     * plugins.
+     */
+    public void endInit()
+    {
+        init = false;
     }
 
     ///////////////////////////////////////////////////////
@@ -487,6 +498,8 @@ public final class PlayerData
 
         classes.put(rpgClass.getGroup(), new PlayerClass(this, rpgClass));
         updateLevelBar();
+        updateHealthAndMana(getPlayer());
+        updateScoreboard();
         return classes.get(rpgClass.getGroup());
     }
 
@@ -1062,7 +1075,7 @@ public final class PlayerData
     public void updateScoreboard()
     {
         PlayerClass main = getMainClass();
-        if (main != null)
+        if (main != null && !init)
         {
             ClassBoardManager.update(this, main.getData().getPrefix(), main.getData().getPrefixColor());
         }

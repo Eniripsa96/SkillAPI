@@ -87,6 +87,7 @@ public class SkillAPI extends JavaPlugin
     private SaveTask      saveTask;
 
     private boolean enabled = false;
+    private boolean loaded = false;
 
     /**
      * <p>Enables SkillAPI, setting up listeners, managers, and loading data. This
@@ -139,6 +140,9 @@ public class SkillAPI extends JavaPlugin
         // Load classes and skills
         registrationManager.initialize();
 
+        // Load group settings after groups are determined
+        settings.loadGroupSettings();
+
         // Load player data
         for (Player player : getServer().getOnlinePlayers())
         {
@@ -163,6 +167,8 @@ public class SkillAPI extends JavaPlugin
         {
             saveTask = new SaveTask(this);
         }
+
+        loaded = true;
     }
 
     /**
@@ -221,6 +227,19 @@ public class SkillAPI extends JavaPlugin
 
         enabled = false;
         singleton = null;
+
+        loaded = false;
+    }
+
+    /**
+     * Checks whether or not SkillAPI has all its
+     * data loaded and running.
+     *
+     * @return true if loaded and set up, false otherwise
+     */
+    public static boolean isLoaded()
+    {
+        return singleton != null && singleton.loaded;
     }
 
     /**
@@ -370,12 +389,12 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the list of base classes
      */
-    public static ArrayList<RPGClass> getBaseClasses()
+    public static ArrayList<RPGClass> getBaseClasses(String group)
     {
         ArrayList<RPGClass> list = new ArrayList<RPGClass>();
         for (RPGClass c : singleton.classes.values())
         {
-            if (!c.hasParent())
+            if (!c.hasParent() && c.getGroup().equals(group))
             {
                 list.add(c);
             }
@@ -451,6 +470,10 @@ public class SkillAPI extends JavaPlugin
             return null;
         }
         PlayerAccounts data = singleton.io.loadData(player);
+        for (PlayerData account : data.getAllData().values())
+        {
+            account.endInit();
+        }
         singleton.players.put(new VersionPlayer(player).getIdString(), data);
         return data;
     }

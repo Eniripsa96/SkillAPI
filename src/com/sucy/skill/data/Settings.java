@@ -55,7 +55,6 @@ public class Settings
         plugin.saveConfig();
 
         loadAccountSettings();
-        loadGroupSettings();
         loadClassSettings();
         loadManaSettings();
         loadSkillSettings();
@@ -74,7 +73,7 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private void loadGroupSettings()
+    public void loadGroupSettings()
     {
         Config file = new Config(plugin, "groups");
         ConfigurationSection config = file.getConfig();
@@ -84,6 +83,17 @@ public class Settings
         {
             groups.put(key.toLowerCase(), new GroupSettings(config.getConfigurationSection(key)));
         }
+        for (String group : SkillAPI.getGroups())
+        {
+            if (!groups.containsKey(group.toLowerCase()))
+            {
+                GroupSettings settings = new GroupSettings();
+                groups.put(group.toLowerCase(), settings);
+                settings.save(config.createSection(group.toLowerCase()));
+            }
+        }
+
+        file.saveConfig();
     }
 
     /**

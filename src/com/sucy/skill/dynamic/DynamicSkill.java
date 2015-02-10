@@ -244,7 +244,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @EventHandler
     public void onSkillDamage(SkillDamageEvent event)
     {
-        Bukkit.getLogger().info("Skill Damage Event!");
+        Bukkit.getLogger().info("Skill Damage Event");
+        Bukkit.getLogger().info("- Damager: " + event.getDamager());
+        Bukkit.getLogger().info("- Target: " + event.getTarget());
         LivingEntity damager = event.getDamager();
         LivingEntity target = event.getTarget();
 

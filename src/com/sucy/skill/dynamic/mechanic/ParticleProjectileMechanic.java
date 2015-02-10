@@ -61,7 +61,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
                     dir.normalize();
                 }
                 double angle = settings.getAttr(ANGLE, level, 30.0);
-                list = ParticleProjectile.spread(caster, dir, target.getLocation(), settings, angle, amount, this);
+                list = ParticleProjectile.spread(caster, dir, target.getLocation().add(0, 1.25, 0), settings, angle, amount, this);
             }
 
             // Set metadata for when the callback happens
@@ -93,6 +93,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
+        Bukkit.getLogger().info("Targets: " + targets.size());
         executeChildren(projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
         if (remove)
         {

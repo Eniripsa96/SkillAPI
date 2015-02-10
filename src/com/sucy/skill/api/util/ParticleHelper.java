@@ -3,6 +3,7 @@ package com.sucy.skill.api.util;
 import com.rit.sucy.reflect.Particle;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.Direction;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
@@ -168,6 +169,8 @@ public class ParticleHelper
         {
             Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), 1);
         }
+
+        else Bukkit.getLogger().info("\"" + particle + "\" not a valid particle");
     }
 
     /**
@@ -307,7 +310,7 @@ public class ParticleHelper
             put("drip water", "dripWater");
             put("enchantment table", "enchantmenttable");
             put("explode", "explode");
-            put("fireworks spark", "fireworksSpark");
+            put("firework spark", "fireworksSpark");
             put("flame", "flame");
             put("footstep", "footstep");
             put("happy villager", "happyVillager");

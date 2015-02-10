@@ -155,8 +155,6 @@ public class ParticleProjectile extends CustomProjectile
             }
         }
 
-        Bukkit.getLogger().info("Count: " + count + "/" + freq);
-
         // Particle along path
         count++;
         if (count >= freq)

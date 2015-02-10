@@ -11,6 +11,8 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
@@ -94,6 +96,7 @@ public class PotionProjectileMechanic extends EffectComponent
         if (targets.size() == 0)
         {
             loc = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Bat.class);
+            loc.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100), false);
             loc.setMaxHealth(10000);
             loc.setHealth(loc.getMaxHealth());
             targets.add(loc);

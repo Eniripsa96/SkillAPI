@@ -491,7 +491,7 @@ public abstract class RPGClass
 
         Data.serializeIcon(icon, config);
         config.set(NAME, name);
-        config.set(PREFIX, prefix);
+        config.set(PREFIX, prefix.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(GROUP, group);
         config.set(MANA, mana);
         config.set(MAX, maxLevel);

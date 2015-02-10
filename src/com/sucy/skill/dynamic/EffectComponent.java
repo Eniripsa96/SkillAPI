@@ -57,7 +57,6 @@ public abstract class EffectComponent
     protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        Bukkit.getLogger().info("Children: " + children.size());
         for (EffectComponent child : children)
         {
             worked = child.execute(caster, level, targets) || worked;

@@ -56,7 +56,7 @@ public class ParticleProjectile extends CustomProjectile
         this.loc = loc;
         this.settings = settings;
         this.vel = loc.getDirection().multiply(settings.getDouble(SPEED, 1.0));
-        this.freq = (int) (20 * settings.getDouble(FREQUENCY, 0.5) * 20);
+        this.freq = (int) (20 * settings.getDouble(FREQUENCY, 0.5));
         this.life = (int) (settings.getDouble(LIFESPAN, 10.0) * 20);
 
         steps = (int) Math.ceil(vel.length() * 2);
@@ -154,6 +154,8 @@ public class ParticleProjectile extends CustomProjectile
                 }
             }
         }
+
+        Bukkit.getLogger().info("Count: " + count + "/" + freq);
 
         // Particle along path
         count++;

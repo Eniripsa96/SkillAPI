@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -87,13 +89,13 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         if (hit == null)
         {
             hit = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Bat.class);
+            hit.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100), false);
             hit.setMaxHealth(10000);
             hit.setHealth(hit.getMaxHealth());
             remove = true;
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
-        Bukkit.getLogger().info("Targets: " + targets.size());
         executeChildren(projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
         if (remove)
         {

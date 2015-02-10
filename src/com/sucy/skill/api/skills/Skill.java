@@ -513,7 +513,6 @@ public abstract class Skill
      */
     public void damage(LivingEntity target, double damage, LivingEntity source)
     {
-        Bukkit.getLogger().info("Deal " + damage + " to " + target);
         SkillDamageEvent event = new SkillDamageEvent(source, target, damage);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled())

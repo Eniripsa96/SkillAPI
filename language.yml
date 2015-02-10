@@ -1,0 +1,54 @@
+# ---------------------------------------------- #
+#             Language Configuration             #
+# ---------------------------------------------- #
+# If you are unsure of how to use this file,     #
+# but would like to change how the plugin shows  #
+# text, visit the BukkitDev page at:             #
+# http://dev.bukkit.org/bukkit-plugins/skillapi/ #
+# and look at the tutorials section for the      #
+# configuration tutorials.                       #
+# ---------------------------------------------- #
+Notifications:
+  cast: '&6{player} &2has cast &6{skill}'
+  gain-exp: '&2You have gained &6{exp} experience'
+  gain-lvl: '&6Level Up! &2You are now &6level {level}'
+Errors:
+  on-cooldown: '&6{skill} &4cooldown - &6{cooldown} &4seconds left'
+  no-mana: '&4You need &6{missing} &4more mana'
+  no-skills: '&4That class does not have any skills'
+  cannot-use: '&4You cannot equip that item'
+Skill Tree:
+  title: '{name} ({level}/{max})'
+  type: '&2Skill Type: &6{name}'
+  requirement:
+    met: '&2'
+    not-met: '&4'
+  attribute:
+    changing: '&6{value} -> {new}'
+    not-changing: '&6{value}'
+  layout:
+  - '&d{name} &7({level}/{max})'
+  - '&2Type: &6{type}'
+  - ''
+  - '{req:lvl}Level: {attr:level}'
+  - '{req:cost}Cost: {attr:cost}'
+  - ''
+  - '&2Mana: {attr:mana}'
+  - '&2Cooldown: {attr:cooldown}'
+  - '&2Range: {attr:range}'
+  - ''
+  - '&2Details: &7{desc:1}'
+  - '&7{desc:2-x}'
+Stats:
+  health: '&2Health'
+  mana: '&2Mana'
+  points: '&2Points'
+  level: '&2Level'
+  exp: '&2Exp'
+Status:
+  silenced: '&4You are silenced for another &6{duration} &4seconds'
+  stunned: '&4You are stunned for another &6{duration} &4seconds'
+  rooted: '&4You are rooted for another &6{duration} &4seconds'
+  disarmed: '&4You are disarmed for another &6{duration} &4seconds'
+  invincible: '&4That target is invincible for another &6{duration} &4seconds'
+

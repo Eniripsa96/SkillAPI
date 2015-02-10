@@ -1,0 +1,8 @@
+default:
+  permission: none
+  default: none
+  can-reset: true
+  starting-points: 1
+  points-per-level: 1
+  profess-reset: false
+  exp-lost-on-death: 0.0

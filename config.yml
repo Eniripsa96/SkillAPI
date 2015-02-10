@@ -1,0 +1,117 @@
+# ---------------------------------------------- #
+#              General Configuration             #
+# ---------------------------------------------- #
+# If you are unsure of how to use this file,     #
+# but would like to change how the plugin shows  #
+# text, visit the BukkitDev page at:             #
+# http://dev.bukkit.org/bukkit-plugins/skillapi/ #
+# and look at the default configuration section  #
+# ---------------------------------------------- #
+Accounts:
+  main-class-group: class
+  one-per-class: false
+  max-accounts: 3
+  perm-accounts:
+  - 'skillapi.account.admin:10'
+Saving:
+  auto-save: false
+  minutes: 30
+Classes:
+  classless-hp: 20
+  use-example-skills: false
+  show-auto-skills: false
+Mana:
+  enabled: true
+  gain-freq: 1
+Skills:
+  allow-downgrade: true
+  show-messages: true
+  message-radius: 20
+Items:
+  lore-requirements: true
+  players-per-check: 1
+GUI:
+  old-health-bar: false
+  use-level-bar: false
+  scoreboard-enabled: true
+  show-class-name: true
+  show-class-level: true
+Click Combos:
+  enabled: false
+  use-click-left: true
+  use-click-right: true
+  use-click-shift: false
+  combo-size: 4
+Skill Bar:
+  enabled: false
+  show-cooldown: true
+  empty-icon:
+    material: PUMPKIN_SEEDS
+    data: 0
+    text: '&7Unassigned'
+  layout:
+    1:
+      skill: true
+      locked: false
+    2:
+      skill: true
+      locked: false
+    3:
+      skill: true
+      locked: false
+    4:
+      skill: true
+      locked: false
+    5:
+      skill: true
+      locked: false
+    6:
+      skill: false
+      locked: false
+    7:
+      skill: false
+      locked: false
+    8:
+      skill: false
+      locked: false
+    9:
+      skill: false
+      locked: false
+Experience:
+  use-exp-orbs: false
+  block-mob-spawner: true
+  block-mob-egg: true
+  block-creative: true
+  exp-message-enabled: true
+  level-message-enabled: true
+  death-penalty: 0.0
+  formula:
+    x: 1
+    y: 8
+    z: 16
+  yields:
+    blaze: 10
+    cavespider: 5
+    creeper: 3
+    enderdragon: 400
+    enderman: 5
+    ghast: 5
+    giant: 20
+    irongolem: 10
+    magmacube: 1
+    pigzombie: 5
+    player: 5
+    silverfish: 2
+    skeleton: 3
+    slime: 1
+    spider: 3
+    witch: 3
+    wither: 500
+    witherskeleton: 5
+    zombie: 2
+Logging: 0
+Worlds:
+  enable: false
+  use-as-enabling: true
+  worlds:
+  - world

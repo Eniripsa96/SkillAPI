@@ -200,9 +200,15 @@ public final class PlayerData
         {
             PlayerSkill data = new PlayerSkill(this, skill, parent);
             skills.put(key, data);
-            while (data.getCost() == 0 && !data.isMaxed() && data.getLevelReq() <= data.getPlayerClass().getLevel())
+            int lastLevel = 0;
+            while (data.getCost() == 0 && !data.isMaxed())
             {
                 upgradeSkill(skill);
+                if (lastLevel == data.getLevel())
+                {
+                    break;
+                }
+                lastLevel++;
             }
         }
     }
@@ -222,6 +228,7 @@ public final class PlayerData
         // Cannot be null
         if (skill == null)
         {
+            Bukkit.getLogger().info("Invalid skill");
             return false;
         }
 
@@ -229,6 +236,7 @@ public final class PlayerData
         PlayerSkill data = skills.get(skill.getName().toLowerCase());
         if (data == null)
         {
+            Bukkit.getLogger().info("Invalid data");
             return false;
         }
 
@@ -236,8 +244,9 @@ public final class PlayerData
         if (skill.getSkillReq() != null)
         {
             PlayerSkill req = skills.get(skill.getSkillReq().toLowerCase());
-            if (req == null || req.getLevel() < skill.getSkillReqLevel())
+            if (req != null && req.getLevel() < skill.getSkillReqLevel())
             {
+                Bukkit.getLogger().info("Requirement not met");
                 return false;
             }
         }

@@ -556,18 +556,18 @@ public abstract class Skill
     {
         config.set(NAME, name);
         config.set(TYPE, type.replace(ChatColor.COLOR_CHAR, '&'));
-        Data.serializeIcon(indicator, config);
         config.set(MAX, maxLevel);
         config.set(REQ, skillReq);
         config.set(REQLVL, skillReqLevel);
-        if (message != null)
+        config.set(PERM, needsPermission);
+        settings.save(config.createSection(ATTR));
+        if (hasMessage())
         {
             config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
         }
-        config.set(PERM, needsPermission);
-        config.set(DESC, description);
+        Data.serializeIcon(indicator, config);
         config.set(LAYOUT, iconLore);
-        settings.save(config.createSection(ATTR));
+        config.set(DESC, description);
     }
 
     /**
@@ -630,7 +630,7 @@ public abstract class Skill
         skillReq = config.getString(REQ);
         skillReqLevel = config.getInt(REQLVL, skillReqLevel);
         message = TextFormatter.colorString(config.getString(MSG, message));
-        needsPermission = config.getBoolean(PERM, needsPermission);
+        needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
 
         if (config.isList(DESC))
         {

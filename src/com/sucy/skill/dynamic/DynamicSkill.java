@@ -337,12 +337,11 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public void save(ConfigurationSection config)
     {
+        super.save(config);
         ConfigurationSection triggers = config.createSection("components");
         for (Trigger trigger : components.keySet())
         {
             components.get(trigger).save(triggers.createSection(TextFormatter.format(trigger.name())));
         }
-
-        super.save(config);
     }
 }

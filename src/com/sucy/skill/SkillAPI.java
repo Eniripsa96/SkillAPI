@@ -126,17 +126,6 @@ public class SkillAPI extends JavaPlugin
         ClassBoardManager.registerText();
         ResourceManager.copyQuestsModule();
 
-        // Set up listeners
-        new CastListener(this);
-        new MainListener(this);
-        new MechanicListener(this);
-        new StatusListener(this);
-        new TreeListener(this);
-        if (settings.isSkillBarEnabled())
-        {
-            new BarListener(this);
-        }
-
         // Load classes and skills
         registrationManager.initialize();
 
@@ -148,6 +137,19 @@ public class SkillAPI extends JavaPlugin
         {
             PlayerData data = loadPlayerData(player).getActiveData();
             data.updateHealthAndMana(player);
+            data.updateLevelBar();
+            data.updateScoreboard();
+        }
+
+        // Set up listeners
+        new CastListener(this);
+        new MainListener(this);
+        new MechanicListener(this);
+        new StatusListener(this);
+        new TreeListener(this);
+        if (settings.isSkillBarEnabled())
+        {
+            new BarListener(this);
         }
 
         // Set up tasks
@@ -206,6 +208,9 @@ public class SkillAPI extends JavaPlugin
             saveTask.cancel();
             saveTask = null;
         }
+
+        // Clear scoreboards
+        ClassBoardManager.clearAll();
 
         // Clear skill bars before disabling
         for (Player player : getServer().getOnlinePlayers())

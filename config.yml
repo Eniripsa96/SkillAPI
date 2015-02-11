@@ -18,7 +18,6 @@ Saving:
   minutes: 30
 Classes:
   classless-hp: 20
-  use-example-skills: false
   show-auto-skills: false
 Mana:
   enabled: true

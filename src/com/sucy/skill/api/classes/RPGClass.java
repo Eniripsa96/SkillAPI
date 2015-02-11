@@ -474,6 +474,20 @@ public abstract class RPGClass
      */
     public void save(ConfigurationSection config)
     {
+        config.set(NAME, name);
+        config.set(PREFIX, prefix.replace(ChatColor.COLOR_CHAR, '&'));
+        config.set(GROUP, group);
+        config.set(MANA, mana);
+        config.set(MAX, maxLevel);
+        if (parent != null)
+        {
+            config.set(PARENT, parent.getName());
+        }
+        config.set(PERM, needsPermission);
+        settings.save(config.createSection(ATTR));
+        config.set(REGEN, manaRegen);
+        config.set(TREE, tree.toString());
+
         ArrayList<String> skillNames = new ArrayList<String>();
         for (Skill skill : skills)
         {
@@ -481,23 +495,8 @@ public abstract class RPGClass
         }
         config.set(SKILLS, skillNames);
 
-        if (parent != null)
-        {
-            config.set(PARENT, parent.getName());
-        }
-
         Data.serializeIcon(icon, config);
-        config.set(NAME, name);
-        config.set(PREFIX, prefix.replace(ChatColor.COLOR_CHAR, '&'));
-        config.set(GROUP, group);
-        config.set(MANA, mana);
-        config.set(MAX, maxLevel);
         config.set(EXP, expSources);
-        config.set(REGEN, manaRegen);
-        config.set(PERM, needsPermission);
-        config.set(TREE, tree.toString());
-
-        settings.save(config.createSection(ATTR));
     }
 
     /**
@@ -592,7 +591,7 @@ public abstract class RPGClass
         maxLevel = config.getInt(MAX, maxLevel);
         expSources = config.getInt(EXP, expSources);
         manaRegen = config.getDouble(REGEN, manaRegen);
-        needsPermission = config.getBoolean(PERM);
+        needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
         tree = DefaultTreeType.getByName(config.getString(TREE, "requirement"));
         manaPlayer = Bukkit.getServer().getOfflinePlayer(TextFormatter.colorString(mana));
 

@@ -81,11 +81,11 @@ public class CmdPoints implements IFunction
             // Messages
             if (target != sender)
             {
-                cmd.sendMessage(sender, GAVE_SP, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {points} skill points", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.EXP.setReplacement("" + amount));
+                cmd.sendMessage(sender, GAVE_SP, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {points} skill points", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.POINTS.setReplacement("" + amount));
             }
             if (target.isOnline())
             {
-                cmd.sendMessage(target.getPlayer(), RECEIVED_SP, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{points} skill points " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.EXP.setReplacement("" + amount));
+                cmd.sendMessage(target.getPlayer(), RECEIVED_SP, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{points} skill points " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.POINTS.setReplacement("" + amount));
             }
         }
 

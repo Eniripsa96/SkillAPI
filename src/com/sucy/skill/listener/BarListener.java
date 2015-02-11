@@ -45,6 +45,13 @@ public class BarListener implements Listener
     {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        for (Player player : plugin.getServer().getOnlinePlayers())
+        {
+            PlayerData data = SkillAPI.getPlayerData(player);
+            if (data.hasClass()) {
+                data.getSkillBar().setup(player);
+            }
+        }
     }
 
     /**

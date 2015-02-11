@@ -300,7 +300,7 @@ public final class PlayerClass
                         NotificationNodes.EXP,
                         player.getPlayer(),
                         FilterType.COLOR,
-                        RPGFilter.EXP.setReplacement(exp + ""),
+                        RPGFilter.EXP.setReplacement(amount + ""),
                         RPGFilter.CLASS.setReplacement(classData.getName()),
                         Filter.AMOUNT.setReplacement(amount + "")
                 );

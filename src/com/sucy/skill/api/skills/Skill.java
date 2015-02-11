@@ -44,7 +44,6 @@ public abstract class Skill
     private String       name;
     private String       type;
     private String       message;
-    private String       attrInfo;
     private String       skillReq;
     private int          maxLevel;
     private int          skillReqLevel;
@@ -141,7 +140,6 @@ public abstract class Skill
         this.maxLevel = maxLevel;
         this.skillReq = skillReq;
         this.skillReqLevel = skillReqLevel;
-        this.attrInfo = "";
         this.needsPermission = false;
 
         this.message = SkillAPI.getLanguage().getMessage(NotificationNodes.CAST, true, FilterType.COLOR).get(0);
@@ -539,13 +537,12 @@ public abstract class Skill
 
     private static final String NAME      = "name";
     private static final String TYPE      = "type";
-    private static final String ITEM      = "item";
     private static final String LAYOUT    = "icon-lore";
-    private static final String MAX       = "max";
-    private static final String REQ       = "req";
-    private static final String REQLVL    = "req-lvl";
+    private static final String MAX       = "max-level";
+    private static final String REQ       = "skill-req";
+    private static final String REQLVL    = "skill-req-lvl";
     private static final String MSG       = "msg";
-    private static final String PERM      = "reqperm";
+    private static final String PERM      = "needs-permission";
     private static final String DESC      = "desc";
     private static final String ATTR      = "attributes";
     private static final String ATTR_INFO = "attribute-info";
@@ -617,10 +614,6 @@ public abstract class Skill
         {
             config.set(DESC, description);
         }
-        if (!config.isSet(ATTR_INFO))
-        {
-            config.set(ATTR_INFO, attrInfo);
-        }
     }
 
     /**
@@ -638,7 +631,6 @@ public abstract class Skill
         skillReqLevel = config.getInt(REQLVL, skillReqLevel);
         message = TextFormatter.colorString(config.getString(MSG, message));
         needsPermission = config.getBoolean(PERM, needsPermission);
-        attrInfo = config.getString(ATTR_INFO, attrInfo);
 
         if (config.isList(DESC))
         {

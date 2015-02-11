@@ -5,6 +5,7 @@ import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.rit.sucy.version.VersionManager;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.*;
@@ -430,6 +431,14 @@ public final class PlayerData
     }
 
     /**
+     * Checks whether or not a player has a class within the given group
+     *
+     * @param group class group to check
+     * @return true if has a class in the group, false otherwise
+     */
+    public boolean hasClass(String group) { return classes.containsKey(group); }
+
+    /**
      * Retrieves the collection of the data for classes the player has professed as.
      *
      * @return collection of the data for professed classes
@@ -586,6 +595,10 @@ public final class PlayerData
 
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(playerClass, data, null));
             updateLevelBar();
+            if (getPlayer() != null)
+            {
+                ClassBoardManager.clear(new VersionPlayer(getPlayer()));
+            }
         }
     }
 
@@ -709,6 +722,7 @@ public final class PlayerData
             }
         }
         updateLevelBar();
+        updateHealthAndMana(getPlayer());
     }
 
     /**

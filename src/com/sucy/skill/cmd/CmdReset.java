@@ -43,7 +43,7 @@ public class CmdReset implements IFunction
         // Only players have profession options
         else if (sender instanceof Player)
         {
-            if (args.length == 0 || !args[1].equalsIgnoreCase("confirm"))
+            if (args.length == 0 || !args[0].equalsIgnoreCase("confirm"))
             {
                 cmd.sendMessage(sender, CONFIRM, ChatColor.DARK_RED + "This will delete your active account's data entirely");
                 cmd.sendMessage(sender, INSTRUCTIONS, ChatColor.GRAY + "Type " + ChatColor.GOLD + "/class reset confirm" + ChatColor.GRAY + " to continue");

@@ -72,8 +72,7 @@ public class FlagData
         {
             flags.remove(flag);
             tasks.remove(flag).cancel();
-            FlagExpireEvent event = new FlagExpireEvent(entity, flag);
-            Bukkit.getPluginManager().callEvent(event);
+            Bukkit.getPluginManager().callEvent(new FlagExpireEvent(entity, flag));
             if (flag.startsWith("perm:") && PluginChecker.isVaultActive() && entity instanceof Player)
             {
                 VaultHook.remove((Player) entity, flag.substring(5));
@@ -90,10 +89,7 @@ public class FlagData
      */
     public void clear()
     {
-        for (String flag : flags.keySet())
-        {
-            removeFlag(flag);
-        }
+        flags.clear();
         for (BukkitTask task : tasks.values())
         {
             task.cancel();

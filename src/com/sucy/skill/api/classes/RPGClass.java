@@ -454,19 +454,16 @@ public abstract class RPGClass
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String WEAPON   = "weapons";
-    private static final String PROJECTS = "projectiles";
     private static final String SKILLS   = "skills";
     private static final String PARENT   = "parent";
-    private static final String ITEM     = "item";
     private static final String NAME     = "name";
     private static final String PREFIX   = "prefix";
     private static final String GROUP    = "group";
     private static final String MANA     = "mana";
-    private static final String MAX      = "max";
+    private static final String MAX      = "max-level";
     private static final String EXP      = "exp-source";
     private static final String REGEN    = "mana-regen";
-    private static final String PERM     = "perm";
+    private static final String PERM     = "needs-permission";
     private static final String ATTR     = "attributes";
     private static final String TREE     = "tree";
 

@@ -16,7 +16,6 @@ import java.util.Map;
  */
 public class PlayerSkillBar
 {
-
     private static final String
             UNASSIGNED = "e";
 

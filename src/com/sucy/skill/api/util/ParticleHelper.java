@@ -151,7 +151,7 @@ public class ParticleHelper
     public static void play(Location loc, String particle, Settings settings)
     {
         particle = particle.toLowerCase().replace("_", " ");
-        
+
         // Normal bukkit effects
         if (BUKKIT_EFFECTS.containsKey(particle))
         {

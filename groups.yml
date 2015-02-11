@@ -1,4 +1,4 @@
-default:
+class:
   permission: none
   default: none
   can-reset: true

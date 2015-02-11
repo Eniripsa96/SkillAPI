@@ -104,7 +104,6 @@ public class BarListener implements Listener
             PlayerSkillBar bar = event.getPlayerData().getSkillBar();
             bar.reset();
             bar.clear(p);
-            bar.update(p);
         }
     }
 

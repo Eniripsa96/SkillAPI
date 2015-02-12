@@ -50,7 +50,7 @@ public abstract class SkillTree
 
         for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())
         {
-            if (!entry.getValue().needsPermission() || p.hasPermission(Permissions.SKILL + "." + entry.getValue().getName().toLowerCase().replaceAll(" ", "-")))
+            if (!entry.getValue().needsPermission() || p.hasPermission(Permissions.SKILL) || p.hasPermission(Permissions.SKILL + "." + entry.getValue().getName().toLowerCase().replaceAll(" ", "-")))
             {
                 inv.setItem(entry.getKey(), entry.getValue().getIndicator(player.getSkill(entry.getValue().getName())));
             }
@@ -134,10 +134,11 @@ public abstract class SkillTree
      */
     public boolean isSkill(HumanEntity player, int slot)
     {
-        return skillSlots.containsKey(slot) &&
-                !skillSlots.get(slot).needsPermission() ||
+        return skillSlots.get(slot) != null &&
+                player != null &&
+                (!skillSlots.get(slot).needsPermission() ||
                 player.hasPermission(Permissions.SKILL) ||
-                player.hasPermission(Permissions.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-"));
+                player.hasPermission(Permissions.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-")));
     }
 
     /**

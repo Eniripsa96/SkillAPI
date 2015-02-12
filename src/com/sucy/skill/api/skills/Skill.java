@@ -597,15 +597,6 @@ public abstract class Skill
         {
             config.set(LAYOUT, iconLore);
         }
-        if (skillReq != null && !neededOnly)
-        {
-            config.set(REQ, skillReq);
-            config.set(REQLVL, skillReqLevel);
-        }
-        if (message != null && !neededOnly)
-        {
-            config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
-        }
         if (!neededOnly)
         {
             config.set(PERM, needsPermission);

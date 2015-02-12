@@ -15,6 +15,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.data.GroupSettings;
+import com.sucy.skill.data.Permissions;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.listener.TreeListener;
@@ -26,6 +27,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import java.security.Permission;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -228,7 +231,6 @@ public final class PlayerData
         // Cannot be null
         if (skill == null)
         {
-            Bukkit.getLogger().info("Invalid skill");
             return false;
         }
 
@@ -236,7 +238,6 @@ public final class PlayerData
         PlayerSkill data = skills.get(skill.getName().toLowerCase());
         if (data == null)
         {
-            Bukkit.getLogger().info("Invalid data");
             return false;
         }
 
@@ -246,7 +247,6 @@ public final class PlayerData
             PlayerSkill req = skills.get(skill.getSkillReq().toLowerCase());
             if (req != null && req.getLevel() < skill.getSkillReqLevel())
             {
-                Bukkit.getLogger().info("Requirement not met");
                 return false;
             }
         }
@@ -573,6 +573,14 @@ public final class PlayerData
      */
     public boolean canProfess(RPGClass rpgClass)
     {
+        if (rpgClass.isNeedsPermission())
+        {
+            Player p = getPlayer();
+            if (p == null || (!p.hasPermission(Permissions.CLASS) && !p.hasPermission(Permissions.CLASS + "." + rpgClass.getName().toLowerCase().replace(" ", "-"))))
+            {
+                return false;
+            }
+        }
         if (classes.containsKey(rpgClass.getGroup()))
         {
             PlayerClass current = classes.get(rpgClass.getGroup());
@@ -609,6 +617,13 @@ public final class PlayerData
                 ClassBoardManager.clear(new VersionPlayer(getPlayer()));
             }
         }
+        GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
+        RPGClass rpgClass = settings.getDefault();
+
+        if (rpgClass != null && settings.getPermission() == null)
+        {
+            setClass(rpgClass);
+        }
     }
 
     /**
@@ -617,7 +632,8 @@ public final class PlayerData
      */
     public void resetAll()
     {
-        for (String key : classes.keySet())
+        ArrayList<String> keys = new ArrayList<String>(classes.keySet());
+        for (String key : keys)
         {
             reset(key);
         }

@@ -1,6 +1,7 @@
 package com.sucy.skill.api.util;
 
 import com.rit.sucy.text.TextFormatter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -70,8 +71,7 @@ public class Data
         try
         {
             ItemStack item = new ItemStack(parseMat(config.getString(MAT, "JACK_O_LANTERN")));
-            MaterialData data = new MaterialData(item.getType(), (byte) config.getInt(DATA, 0));
-            item.setData(data);
+            short value = (short) config.getInt(DATA, 0);
             if (config.contains(LORE))
             {
                 List<String> lore = TextFormatter.colorStringList(config.getStringList(LORE));
@@ -84,6 +84,7 @@ public class Data
                 meta.setLore(lore);
                 item.setItemMeta(meta);
             }
+            item.setDurability(value);
             return item;
         }
         catch (Exception ex)

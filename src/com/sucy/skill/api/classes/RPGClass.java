@@ -141,6 +141,17 @@ public abstract class RPGClass
     }
 
     /**
+     * Checks whether or not the class needs permission in
+     * order to profess as it
+     *
+     * @return true if needs permission, false otherwise
+     */
+    public boolean isNeedsPermission()
+    {
+        return needsPermission;
+    }
+
+    /**
      * Retrieves the color of the class's prefix
      *
      * @return prefix color

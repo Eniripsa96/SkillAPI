@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -89,12 +90,11 @@ public class FlagData
      */
     public void clear()
     {
-        flags.clear();
-        for (BukkitTask task : tasks.values())
+        ArrayList<String> flags = new ArrayList<String>(this.flags.keySet());
+        for (String flag : flags)
         {
-            task.cancel();
+            removeFlag(flag);
         }
-        tasks.clear();
         FlagManager.clearFlags(entity);
     }
 

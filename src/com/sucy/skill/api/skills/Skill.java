@@ -368,8 +368,8 @@ public abstract class Skill
                     int start = line.indexOf("{attr:");
                     int end = line.indexOf("}", start);
                     String attr = line.substring(start + 6, end);
-                    Object currValue = getAttr(attr, Math.min(1, skillData.getLevel()));
-                    Object nextValue = getAttr(attr, Math.max(skillData.getLevel() + 1, maxLevel));
+                    Object currValue = getAttr(attr, Math.max(1, skillData.getLevel()));
+                    Object nextValue = getAttr(attr, Math.min(skillData.getLevel() + 1, maxLevel));
                     if (attr.equals("level") || attr.equals("cost"))
                     {
                         currValue = nextValue;
@@ -619,6 +619,7 @@ public abstract class Skill
         indicator = Data.parseIcon(config);
         maxLevel = config.getInt(MAX, maxLevel);
         skillReq = config.getString(REQ);
+        if (skillReq == null || skillReq.length() == 0) skillReq = null;
         skillReqLevel = config.getInt(REQLVL, skillReqLevel);
         message = TextFormatter.colorString(config.getString(MSG, message));
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");

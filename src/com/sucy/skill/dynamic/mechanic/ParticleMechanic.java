@@ -44,7 +44,7 @@ public class ParticleMechanic extends EffectComponent
         {
             Location loc = target.getLocation();
             Vector dir = loc.getDirection().setY(0).normalize();
-            Vector side = dir.crossProduct(UP);
+            Vector side = dir.clone().crossProduct(UP);
             loc.add(dir.multiply(forward)).add(0, upward, 0).add(side.multiply(right));
 
             ParticleHelper.play(loc, settings);

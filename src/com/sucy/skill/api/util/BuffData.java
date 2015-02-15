@@ -89,6 +89,10 @@ public class BuffData
 
     private double modify(Collection<Buff> buffs, double value)
     {
+        if (value <= 0)
+        {
+            return 0;
+        }
         double multiplier = 1;
         double bonus = 0;
         for (Buff buff : buffs)

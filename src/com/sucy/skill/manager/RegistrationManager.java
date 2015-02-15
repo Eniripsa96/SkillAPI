@@ -52,6 +52,8 @@ public class RegistrationManager
         this.api = api;
         skillConfig = new Config(api, "dynamic" + File.separator + "skills");
         classConfig = new Config(api, "dynamic" + File.separator + "classes");
+        new File(api.getDataFolder().getAbsolutePath() + File.separator + "dynamic" + File.separator + "skill").mkdirs();
+        new File(api.getDataFolder().getAbsolutePath() + File.separator + "dynamic" + File.separator + "class").mkdirs();
     }
 
     /**

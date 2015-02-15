@@ -1,6 +1,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
@@ -40,8 +41,11 @@ public class LaunchMechanic extends EffectComponent
         for (LivingEntity target : targets)
         {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();
-            Vector nor = dir.crossProduct(up);
-            target.setVelocity(dir.multiply(forward).add(nor.multiply(right)).setY(upward));
+            Vector nor = dir.clone().crossProduct(up);
+            dir.multiply(forward);
+            dir.add(nor.multiply(right)).setY(upward);
+
+            target.setVelocity(dir);
         }
         return targets.size() > 0;
     }

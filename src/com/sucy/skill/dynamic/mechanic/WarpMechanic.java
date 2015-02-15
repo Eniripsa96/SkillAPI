@@ -47,7 +47,7 @@ public class WarpMechanic extends EffectComponent
         for (LivingEntity target : targets)
         {
             Vector dir = target.getLocation().getDirection();
-            Vector side = dir.crossProduct(UP).multiply(right);
+            Vector side = dir.clone().crossProduct(UP).multiply(right);
             Location loc = target.getLocation().add(dir.multiply(forward)).add(side).add(0, upward, 0).add(0, 1, 0);
             loc = TargetHelper.getOpenLocation(target.getLocation().add(0, 1, 0), loc, throughWalls);
             if (!loc.getBlock().getType().isSolid() && loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid())

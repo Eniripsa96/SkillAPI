@@ -38,7 +38,7 @@ public class LightningMechanic extends EffectComponent
         for (LivingEntity target : targets)
         {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();
-            Vector nor = dir.crossProduct(up);
+            Vector nor = dir.clone().crossProduct(up);
             target.getWorld().strikeLightning(target.getLocation().add(dir.multiply(forward).add(nor.multiply(right))));
         }
         return targets.size() > 0;

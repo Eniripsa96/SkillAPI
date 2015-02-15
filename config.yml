@@ -21,7 +21,7 @@ Classes:
   show-auto-skills: false
 Mana:
   enabled: true
-  gain-freq: 1
+  freq: 1
 Skills:
   allow-downgrade: true
   show-messages: true

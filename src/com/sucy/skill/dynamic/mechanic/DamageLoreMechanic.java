@@ -41,6 +41,10 @@ public class DamageLoreMechanic extends EffectComponent
                 continue;
             }
             ItemStack hand = target.getEquipment().getItemInHand();
+            if (!hand.hasItemMeta() || !hand.getItemMeta().hasLore())
+            {
+                continue;
+            }
             List<String> lore = hand.getItemMeta().getLore();
             for (String line : lore)
             {

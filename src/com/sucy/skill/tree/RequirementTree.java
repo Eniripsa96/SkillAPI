@@ -137,13 +137,13 @@ public class RequirementTree extends SkillTree
      */
     private boolean isChained(List<Skill> skills, Skill skill)
     {
-        if (skill.getSkillReq() != null)
+        if (SkillAPI.getSkill(skill.getSkillReq()) != null)
         {
             return true;
         }
         for (Skill s : skills)
         {
-            if (s.getSkillReq() != null && s.getSkillReq().equalsIgnoreCase(skill.getName()))
+            if (SkillAPI.getSkill(s.getSkillReq()) == skill)
             {
                 return true;
             }

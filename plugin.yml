@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 3.2
+version: 3.4
 author: Eniripsa96
 depend: [MCCore]
 softdepend: [Vault]
@@ -33,6 +33,7 @@ permissions:
     default: op
   skillapi.skill:
     description: access to all skills
+    default: op
 
   skillapi.*:
     description: access to all commands

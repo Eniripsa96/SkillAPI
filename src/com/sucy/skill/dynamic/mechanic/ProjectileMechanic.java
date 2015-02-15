@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.listener.MechanicListener;
@@ -85,7 +86,9 @@ public class ProjectileMechanic extends EffectComponent
                     Projectile p = caster.launchProjectile(type);
                     p.teleport(target.getLocation());
                     p.setVelocity(d.multiply(speed));
-                    p.setMetadata(MechanicListener.P_CALL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), this));
+                    SkillAPI api = (SkillAPI)Bukkit.getPluginManager().getPlugin("SkillAPI");
+                    p.setMetadata(MechanicListener.P_CALL, new FixedMetadataValue(api, this));
+                    p.setMetadata(LEVEL, new FixedMetadataValue(api, level));
                 }
             }
         }
@@ -117,6 +120,7 @@ public class ProjectileMechanic extends EffectComponent
         {
             hit.remove();
         }
+        projectile.remove();
     }
 
     private static final HashMap<String, Class<? extends Projectile>> PROJECTILES = new HashMap<String, Class<? extends Projectile>>()

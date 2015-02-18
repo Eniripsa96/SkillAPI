@@ -34,7 +34,7 @@ public class SoundMechanic extends EffectComponent
 
         try
         {
-            Sound sound = Sound.valueOf(settings.getString(SOUND, ""));
+            Sound sound = Sound.valueOf(settings.getString(SOUND, "").toUpperCase().replace(" ", "_"));
             float volume = (float) settings.getDouble(VOLUME, 100.0) / 100;
             float pitch = (float) settings.getDouble(PITCH, 0.0);
             for (LivingEntity target : targets)

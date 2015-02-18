@@ -1,6 +1,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -52,7 +53,7 @@ public class DamageLoreMechanic extends EffectComponent
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find())
                 {
-                    String value = matcher.group();
+                    String value = matcher.group(1);
                     try
                     {
                         double base = Double.parseDouble(value);

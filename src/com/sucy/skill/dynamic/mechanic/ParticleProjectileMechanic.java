@@ -4,9 +4,12 @@ import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.api.projectile.ParticleProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Wolf;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -46,13 +49,15 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         // Fire from each target
         for (LivingEntity target : targets)
         {
+            Location loc = target.getLocation().add(0, 1.25, 0);
+
             // Apply the spread type
             ArrayList<ParticleProjectile> list;
             if (spread.equals("rain"))
             {
                 double radius = settings.getAttr(RADIUS, level, 2.0);
                 double height = settings.getAttr(HEIGHT, level, 8.0);
-                list = ParticleProjectile.rain(caster, target.getLocation(), settings, radius, height, amount, this);
+                list = ParticleProjectile.rain(caster, loc, settings, radius, height, amount, this);
             }
             else
             {
@@ -63,7 +68,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
                     dir.normalize();
                 }
                 double angle = settings.getAttr(ANGLE, level, 30.0);
-                list = ParticleProjectile.spread(caster, dir, target.getLocation().add(0, 1.25, 0), settings, angle, amount, this);
+                list = ParticleProjectile.spread(caster, dir, loc, settings, angle, amount, this);
             }
 
             // Set metadata for when the callback happens
@@ -88,10 +93,11 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         boolean remove = false;
         if (hit == null)
         {
-            hit = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Bat.class);
+            hit = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Wolf.class);
             hit.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100), false);
             hit.setMaxHealth(10000);
             hit.setHealth(hit.getMaxHealth());
+            hit.setMetadata(MechanicListener.TEMP_TARGET, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), true));
             remove = true;
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();

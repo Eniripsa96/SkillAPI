@@ -16,4 +16,5 @@ public class Permissions
     public static final String CLASS  = ROOT + "class";
     public static final String RELOAD = ROOT + "reload";
     public static final String FORCE  = ROOT + "force";
+    public static final String LORE   = ROOT + "lore";
 }

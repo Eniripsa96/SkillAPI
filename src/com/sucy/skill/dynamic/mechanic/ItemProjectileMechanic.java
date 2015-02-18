@@ -4,10 +4,13 @@ import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.api.projectile.ItemProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -48,7 +51,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         Material mat = Material.JACK_O_LANTERN;
         try
         {
-            mat = Material.valueOf(settings.getString(ITEM));
+            mat = Material.valueOf(settings.getString(ITEM).toUpperCase().replace(" ", "_"));
         }
         catch (Exception ex)
         {
@@ -65,13 +68,15 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         // Fire from each target
         for (LivingEntity target : targets)
         {
+            Location loc = target.getLocation().add(0, 1.25, 0);
+
             // Apply the spread type
             ArrayList<ItemProjectile> list;
             if (spread.equals("rain"))
             {
                 double radius = settings.getAttr(RADIUS, level, 2.0);
                 double height = settings.getAttr(HEIGHT, level, 8.0);
-                list = ItemProjectile.rain(caster, target.getLocation(), item, radius, height, speed, amount, this);
+                list = ItemProjectile.rain(caster, loc, item, radius, height, speed, amount, this);
             }
             else
             {
@@ -82,7 +87,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                     dir.normalize();
                 }
                 double angle = settings.getAttr(ANGLE, level, 30.0);
-                list = ItemProjectile.spread(caster, dir, target.getLocation(), item, angle, amount, this);
+                list = ItemProjectile.spread(caster, dir, loc, item, angle, amount, this);
             }
 
             // Set metadata for when the callback happens
@@ -105,12 +110,12 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
     public void callback(CustomProjectile projectile, LivingEntity hit)
     {
         boolean remove = false;
-        if (hit == null)
-        {
-            hit = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Bat.class);
+        if (hit == null) {
+            hit = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Wolf.class);
             hit.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100), false);
             hit.setMaxHealth(10000);
             hit.setHealth(hit.getMaxHealth());
+            hit.setMetadata(MechanicListener.TEMP_TARGET, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), true));
             remove = true;
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();

@@ -566,7 +566,6 @@ public abstract class Skill
             config.set(MSG, message.replace(ChatColor.COLOR_CHAR, '&'));
         }
         Data.serializeIcon(indicator, config);
-        config.set(LAYOUT, iconLore);
         config.set(DESC, description);
     }
 

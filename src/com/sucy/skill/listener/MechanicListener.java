@@ -10,9 +10,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 
 /**
  * The listener for handling events related to dynamic mechanics
@@ -22,6 +20,7 @@ public class MechanicListener implements Listener
     public static final String SUMMON_DAMAGE     = "sapiSumDamage";
     public static final String P_CALL            = "pmCallback";
     public static final String POTION_PROJECTILE = "potionProjectile";
+    public static final String TEMP_TARGET       = "tempWolfTarget";
 
     /**
      * Initializes a new listener for dynamic mechanic related events.
@@ -95,6 +94,42 @@ public class MechanicListener implements Listener
             PotionProjectileMechanic mechanic = (PotionProjectileMechanic)event.getEntity().getMetadata(POTION_PROJECTILE).get(0).value();
             mechanic.callback(event.getEntity(), event.getAffectedEntities());
             event.getAffectedEntities().clear();
+        }
+    }
+
+    /**
+     * Temporary targets can't be damaged
+     *
+     * @param event event details
+     */
+    @EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntity().hasMetadata(TEMP_TARGET)) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Temporary targets can't be damaged
+     *
+     * @param event event details
+     */
+    @EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onDamage(EntityDamageByBlockEvent event) {
+        if (event.getEntity().hasMetadata(TEMP_TARGET)) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Temporary targets can't be damaged
+     *
+     * @param event event details
+     */
+    @EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onDamage(EntityDamageEvent event) {
+        if (event.getEntity().hasMetadata(TEMP_TARGET)) {
+            event.setCancelled(true);
         }
     }
 }

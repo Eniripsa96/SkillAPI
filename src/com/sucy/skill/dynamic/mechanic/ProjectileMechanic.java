@@ -46,7 +46,7 @@ public class ProjectileMechanic extends EffectComponent
         int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
         double speed = settings.getAttr(SPEED, level, 2.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
-        String projectile = settings.getString(PROJECTILE, "arrow");
+        String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
         Class<? extends Projectile> type = PROJECTILES.get(projectile);
         if (type == null)
         {
@@ -107,10 +107,11 @@ public class ProjectileMechanic extends EffectComponent
         boolean remove = false;
         if (hit == null)
         {
-            hit = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Bat.class);
+            hit = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Wolf.class);
             hit.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100), false);
             hit.setMaxHealth(10000);
             hit.setHealth(hit.getMaxHealth());
+            hit.setMetadata(MechanicListener.TEMP_TARGET, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), true));
             remove = true;
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();

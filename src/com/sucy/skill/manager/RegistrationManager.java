@@ -173,7 +173,7 @@ public class RegistrationManager
         {
             if (plugin instanceof SkillPlugin)
             {
-                log(" - " + plugin.getName(), 1);
+                log(" - " + plugin.getName(), 2);
                 ((SkillPlugin) plugin).registerClasses(api);
             }
         }

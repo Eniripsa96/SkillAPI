@@ -42,6 +42,7 @@ public class CmdManager
                 new ConfigurableCommand(api, "info", SenderType.ANYONE, new CmdInfo(), "Shows class info", "[player]", Permissions.BASIC),
                 new ConfigurableCommand(api, "level", SenderType.ANYONE, new CmdLevel(), "Gives players levels", "[player] <amount>", Permissions.LVL),
                 new ConfigurableCommand(api, "list", SenderType.ANYONE, new CmdList(), "Displays accounts", "[player]", Permissions.BASIC),
+                new ConfigurableCommand(api, "lore", SenderType.PLAYER_ONLY, new CmdLore(), "Adds lore to item", "<lore>", Permissions.LORE),
                 new ConfigurableCommand(api, "mana", SenderType.ANYONE, new CmdMana(), "Gives player mana", "[player] <amount>", Permissions.MANA),
                 new ConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profess options", "", Permissions.BASIC),
                 new ConfigurableCommand(api, "points", SenderType.ANYONE, new CmdPoints(), "Gives player points", "[player] <amount>", Permissions.POINTS),

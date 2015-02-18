@@ -26,6 +26,7 @@ package com.sucy.skill;
 
 import com.rit.sucy.config.LanguageConfig;
 import com.rit.sucy.version.VersionPlayer;
+import com.sucy.skill.api.SkillPlugin;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;

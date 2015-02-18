@@ -2,6 +2,7 @@ package com.sucy.skill.api.util;
 
 import com.rit.sucy.text.TextFormatter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -51,6 +52,10 @@ public class Data
         {
             List<String> lore = item.getItemMeta().getLore();
             lore.add(0, item.getItemMeta().getDisplayName());
+            int count = lore.size();
+            for (int i = 0; i < count; i++) {
+                lore.add(lore.remove(0).replace(ChatColor.COLOR_CHAR, '&'));
+            }
             config.set(LORE, lore);
         }
     }

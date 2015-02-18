@@ -305,7 +305,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event)
     {
         if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity)event.getEntity(), "immune:" + event.getCause().name()))
@@ -320,7 +320,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event)
     {
         LivingEntity damager = ListenerUtil.getDamager(event);
@@ -340,7 +340,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPhysicalDamage(EntityDamageByEntityEvent event)
     {
         if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity))

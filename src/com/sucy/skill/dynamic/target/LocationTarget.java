@@ -1,6 +1,7 @@
 package com.sucy.skill.dynamic.target;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Bat;
@@ -50,13 +51,8 @@ public class LocationTarget extends EffectComponent
             }
 
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-            Bat bat = loc.getWorld().spawn(loc, Bat.class);
-            bat.setMaxHealth(9999);
-            bat.setHealth(bat.getMaxHealth());
-            bat.getLocation().setDirection(caster.getLocation().getDirection());
-            list.add(bat);
+            list.add(new TempEntity(loc));
             worked = executeChildren(caster, level, list) || worked;
-            bat.remove();
         }
         return worked;
     }

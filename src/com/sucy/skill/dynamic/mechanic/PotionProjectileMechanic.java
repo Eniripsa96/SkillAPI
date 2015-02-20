@@ -4,6 +4,7 @@ import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -91,21 +92,11 @@ public class PotionProjectileMechanic extends EffectComponent
                 i--;
             }
         }
-        LivingEntity loc = null;
-        boolean remove = false;
         if (targets.size() == 0)
         {
-            loc = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Bat.class);
-            loc.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100), false);
-            loc.setMaxHealth(10000);
-            loc.setHealth(loc.getMaxHealth());
+            LivingEntity loc = new TempEntity(projectile.getLocation());
             targets.add(loc);
-            remove = true;
         }
         executeChildren((LivingEntity) projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
-        if (remove)
-        {
-            loc.remove();
-        }
     }
 }

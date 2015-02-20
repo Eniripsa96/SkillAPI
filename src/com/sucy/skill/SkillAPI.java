@@ -148,6 +148,10 @@ public class SkillAPI extends JavaPlugin
         new MechanicListener(this);
         new StatusListener(this);
         new TreeListener(this);
+        if (settings.isCheckLore())
+        {
+            new ItemListener(this);
+        }
         if (settings.isSkillBarEnabled())
         {
             new BarListener(this);

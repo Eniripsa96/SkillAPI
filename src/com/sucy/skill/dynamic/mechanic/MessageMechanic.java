@@ -28,7 +28,7 @@ public class MessageMechanic extends EffectComponent
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
-        if (targets.size() == 0 || !settings.has(MESSAGE) || !PluginChecker.isVaultActive())
+        if (targets.size() == 0 || !settings.has(MESSAGE))
         {
             return false;
         }

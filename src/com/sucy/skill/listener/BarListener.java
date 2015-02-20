@@ -167,7 +167,7 @@ public class BarListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onDeath(PlayerDeathEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
@@ -182,7 +182,7 @@ public class BarListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onRespawn(PlayerRespawnEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());

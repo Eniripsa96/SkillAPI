@@ -210,13 +210,21 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         if (component != null && active.containsKey(target.getEntityId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();
+            boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
             double min = component.settings.getDouble("dmg-min");
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max
                     && (type.equals("both") || (type.equals("projectile") == projectile)))
             {
-                trigger(target, damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
+                if (caster)
+                {
+                    trigger(target, target, active.get(target.getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
+                }
+                else
+                {
+                    trigger(target, damager, active.get(target.getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
+                }
             }
         }
 
@@ -225,13 +233,21 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         if (component != null && active.containsKey(damager.getEntityId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();
+            boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
             double min = component.settings.getDouble("dmg-min");
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max
                     && (type.equals("both") || type.equals("projectile") == projectile))
             {
-                trigger(damager, target, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
+                if (caster)
+                {
+                    trigger(damager, damager, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
+                }
+                else
+                {
+                    trigger(damager, target, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
+                }
             }
         }
     }
@@ -251,12 +267,20 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         EffectComponent component = components.get(Trigger.TOOK_SKILL_DAMAGE);
         if (component != null && active.containsKey(target.getEntityId()))
         {
+            boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
             double min = component.settings.getDouble("dmg-min");
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
-                trigger(target, damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
+                if (caster)
+                {
+                    trigger(target, target, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
+                }
+                else
+                {
+                    trigger(target, damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
+                }
             }
         }
 
@@ -264,12 +288,20 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         component = components.get(Trigger.SKILL_DAMAGE);
         if (component != null && active.containsKey(damager.getEntityId()))
         {
+            boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
             double min = component.settings.getDouble("dmg-min");
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
-                trigger(damager, target, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);
+                if (caster)
+                {
+                    trigger(damager, damager, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);
+                }
+                else
+                {
+                    trigger(damager, target, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);
+                }
             }
         }
     }
@@ -296,9 +328,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     {
         if (user != null && components.containsKey(trigger))
         {
-            ArrayList<LivingEntity> self = new ArrayList<LivingEntity>();
-            self.add(user);
-            return components.get(trigger).execute(user, level, self);
+            ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
+            targets.add(target);
+            return components.get(trigger).execute(user, level, targets);
         }
         return false;
     }
@@ -334,6 +366,12 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         super.load(config);
     }
 
+    /**
+     * Saves the skill back to the config, appending component data
+     * on top of the normal skill data
+     *
+     * @param config config to save to
+     */
     @Override
     public void save(ConfigurationSection config)
     {

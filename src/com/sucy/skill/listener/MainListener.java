@@ -94,7 +94,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
@@ -320,19 +320,34 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event)
     {
+        // Damage buff application
         LivingEntity damager = ListenerUtil.getDamager(event);
         VersionManager.setDamage(event, BuffManager.modifyDealtDamage(damager, event.getDamage()));
+
+        // Cancel event if no damage
+        if (event.getDamage() <= 0)
+        {
+            event.setCancelled(true);
+            return;
+        }
 
         if (!(event.getEntity() instanceof LivingEntity))
         {
             return;
         }
 
+        // Defense buff application
         LivingEntity damaged = (LivingEntity) event.getEntity();
-        VersionManager.setDamage(event, BuffManager.modifyDealtDamage(damaged, event.getDamage()));
+        VersionManager.setDamage(event, BuffManager.modifyTakenDefense(damaged, event.getDamage()));
+
+        // Cancel event if no damage
+        if (event.getDamage() <= 0)
+        {
+            event.setCancelled(true);
+        }
     }
 
     /**
@@ -340,7 +355,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPhysicalDamage(EntityDamageByEntityEvent event)
     {
         if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity))

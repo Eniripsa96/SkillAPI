@@ -23,6 +23,7 @@ import java.util.List;
 public abstract class EffectComponent
 {
     private static final String ICON_KEY = "icon-key";
+    private static final String COUNTS_KEY = "counts";
 
     public final ArrayList<EffectComponent> children = new ArrayList<EffectComponent>();
 
@@ -60,7 +61,8 @@ public abstract class EffectComponent
         boolean worked = false;
         for (EffectComponent child : children)
         {
-            worked = child.execute(caster, level, targets) || worked;
+            boolean counts = !child.settings.getString(COUNTS_KEY, "true").toLowerCase().equals("false");
+            worked = (child.execute(caster, level, targets) && counts) || worked;
         }
         return worked;
     }

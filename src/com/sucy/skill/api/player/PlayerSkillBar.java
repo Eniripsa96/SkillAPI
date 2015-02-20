@@ -235,7 +235,7 @@ public class PlayerSkillBar
      */
     public void clear(HumanEntity player)
     {
-        if (!isEnabled())
+        if (player == null || !setup)
         {
             return;
         }
@@ -257,7 +257,7 @@ public class PlayerSkillBar
      */
     public void clear(PlayerDeathEvent event)
     {
-        if (!enabled || event.getEntity().getGameMode() == GameMode.CREATIVE)
+        if (event == null || !setup)
         {
             return;
         }
@@ -286,6 +286,7 @@ public class PlayerSkillBar
             }
             slots.put(i + 1, UNASSIGNED);
         }
+        update(getPlayer());
     }
 
     /**
@@ -295,7 +296,7 @@ public class PlayerSkillBar
      */
     public void setup(HumanEntity player)
     {
-        if (!enabled || player.getGameMode() == GameMode.CREATIVE)
+        if (player == null || !enabled || player.getGameMode() == GameMode.CREATIVE || setup)
         {
             return;
         }

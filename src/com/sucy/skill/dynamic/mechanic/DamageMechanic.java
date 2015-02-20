@@ -27,6 +27,7 @@ public class DamageMechanic extends EffectComponent
     {
         boolean percent = settings.getString(TYPE, "damage").toLowerCase().equals("percent");
         double damage = settings.getAttr(DAMAGE, level, 1.0);
+        if (damage < 0) return false;
         for (LivingEntity target : targets)
         {
             double amount = damage;

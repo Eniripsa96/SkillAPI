@@ -7,6 +7,7 @@ import com.rit.sucy.config.Filter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.RPGFilter;
 import org.bukkit.ChatColor;
@@ -76,7 +77,7 @@ public class CmdMana implements IFunction
 
             // Give mana
             PlayerData data = SkillAPI.getPlayerData(target);
-            data.giveExp(amount, ExpSource.COMMAND);
+            data.giveMana(amount, ManaSource.COMMAND);
 
             // Messages
             if (target != sender)

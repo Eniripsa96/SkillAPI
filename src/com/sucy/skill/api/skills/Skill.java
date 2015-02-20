@@ -11,6 +11,7 @@ import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.DamageLoreRemover;
 import com.sucy.skill.api.util.Data;
+import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.language.SkillNodes;
@@ -511,6 +512,8 @@ public abstract class Skill
      */
     public void damage(LivingEntity target, double damage, LivingEntity source)
     {
+        if (target instanceof TempEntity) return;
+
         SkillDamageEvent event = new SkillDamageEvent(source, target, damage);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled())

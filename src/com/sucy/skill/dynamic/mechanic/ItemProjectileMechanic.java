@@ -4,6 +4,7 @@ import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.api.projectile.ItemProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -109,21 +110,11 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
     @Override
     public void callback(CustomProjectile projectile, LivingEntity hit)
     {
-        boolean remove = false;
         if (hit == null) {
-            hit = projectile.getLocation().getWorld().spawn(projectile.getLocation(), Wolf.class);
-            hit.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100), false);
-            hit.setMaxHealth(10000);
-            hit.setHealth(hit.getMaxHealth());
-            hit.setMetadata(MechanicListener.TEMP_TARGET, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), true));
-            remove = true;
+            hit = new TempEntity(projectile.getLocation());
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
         executeChildren(projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
-        if (remove)
-        {
-            hit.remove();
-        }
     }
 }

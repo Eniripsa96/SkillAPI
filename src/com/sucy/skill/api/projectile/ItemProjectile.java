@@ -10,6 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ import java.util.ArrayList;
  */
 public class ItemProjectile extends CustomProjectile
 {
+    private static final String NAME = "SkillAPI#";
+    private static int NEXT = 0;
+
     private Item item;
 
     /**
@@ -32,6 +36,10 @@ public class ItemProjectile extends CustomProjectile
     public ItemProjectile(LivingEntity thrower, Location loc, ItemStack item, Vector vel)
     {
         super(thrower);
+
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(NAME + NEXT++);
+        item.setItemMeta(meta);
 
         this.item = thrower.getWorld().dropItem(loc.add(0, 1, 0), item);
         this.item.setVelocity(vel);

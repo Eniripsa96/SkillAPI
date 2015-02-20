@@ -41,7 +41,7 @@ public class DamageLoreMechanic extends EffectComponent
             {
                 continue;
             }
-            ItemStack hand = target.getEquipment().getItemInHand();
+            ItemStack hand = caster.getEquipment().getItemInHand();
             if (!hand.hasItemMeta() || !hand.getItemMeta().hasLore())
             {
                 continue;
@@ -57,9 +57,11 @@ public class DamageLoreMechanic extends EffectComponent
                     try
                     {
                         double base = Double.parseDouble(value);
-                        skill.damage(target, base * m, caster);
-                        worked = true;
-                        break;
+                        if (base * m > 0) {
+                            skill.damage(target, base * m, caster);
+                            worked = true;
+                            break;
+                        }
                     }
                     catch (Exception ex)
                     {

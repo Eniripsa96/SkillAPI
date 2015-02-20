@@ -30,6 +30,7 @@ public class HealMechanic extends EffectComponent
     {
         boolean percent = settings.getString(TYPE, "health").toLowerCase().equals("percent");
         double value = settings.getAttr(VALUE, level, 1.0);
+        if (value < 0) return false;
         for (LivingEntity target : targets)
         {
             double amount = value;

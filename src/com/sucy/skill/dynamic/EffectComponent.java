@@ -7,6 +7,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
+import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -254,6 +255,7 @@ public abstract class EffectComponent
             put("warp", WarpMechanic.class);
             put("warp location", WarpLocMechanic.class);
             put("warp random", WarpRandomMechanic.class);
+            put("warp swap", WarpSwapMechanic.class);
             put("warp target", WarpTargetMechanic.class);
             put("wolf", WolfMechanic.class);
         }};

@@ -3,16 +3,9 @@ package com.sucy.skill.cmd;
 import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
-import com.rit.sucy.config.Filter;
 import com.rit.sucy.text.TextFormatter;
-import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.enums.ExpSource;
-import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.language.RPGFilter;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -46,11 +39,12 @@ public class CmdLore implements IFunction
         // Must be a player with an argument
         if (args.length >= 1 && sender instanceof Player)
         {
-            Player player = (Player)sender;
+            Player player = (Player) sender;
             ItemStack held = player.getInventory().getItemInHand();
 
             // No held item
-            if (held == null) {
+            if (held == null)
+            {
                 cmd.sendMessage(sender, NO_ITEM, ChatColor.RED + "You are not holding an item");
                 return;
             }
@@ -67,7 +61,8 @@ public class CmdLore implements IFunction
         }
 
         // Not a player
-        else if (!(sender instanceof Player)) {
+        else if (!(sender instanceof Player))
+        {
             cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "Only players can use that command");
         }
 

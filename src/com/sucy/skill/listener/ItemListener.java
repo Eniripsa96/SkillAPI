@@ -2,23 +2,18 @@ package com.sucy.skill.listener;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.task.InventoryTask;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 
 /**
  * Listener that handles weapon item lore requirements
  */
-public class ItemListener implements Listener {
+public class ItemListener implements Listener
+{
 
     /**
      * Sets up the listener. This should not be used
@@ -38,7 +33,7 @@ public class ItemListener implements Listener {
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onAttack(EntityDamageByEntityEvent event)
     {
         if (event.getDamager() instanceof Player)
@@ -61,7 +56,7 @@ public class ItemListener implements Listener {
     {
         if (event.getEntity() instanceof Player)
         {
-            if (InventoryTask.cannotUse(SkillAPI.getPlayerData((Player)event.getEntity()), event.getBow()))
+            if (InventoryTask.cannotUse(SkillAPI.getPlayerData((Player) event.getEntity()), event.getBow()))
             {
                 event.setCancelled(true);
             }

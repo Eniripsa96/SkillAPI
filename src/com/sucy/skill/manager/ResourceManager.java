@@ -38,7 +38,8 @@ public class ResourceManager
             resStreamOut = new FileOutputStream(target);
 
             // Copy to the file
-            while ((readBytes = stream.read(buffer)) > 0) {
+            while ((readBytes = stream.read(buffer)) > 0)
+            {
                 resStreamOut.write(buffer, 0, readBytes);
             }
 
@@ -48,7 +49,8 @@ public class ResourceManager
         }
 
         // An error occurred
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             Bukkit.getLogger().severe("Failed to copy the module for Quests");
         }
     }

@@ -28,6 +28,7 @@ public abstract class IOManager
      * Loads data for the player
      *
      * @param player player to load for
+     *
      * @return loaded player data
      */
     public abstract PlayerAccounts loadData(OfflinePlayer player);

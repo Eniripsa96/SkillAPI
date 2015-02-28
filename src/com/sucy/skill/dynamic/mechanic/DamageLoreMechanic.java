@@ -1,7 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -57,7 +56,8 @@ public class DamageLoreMechanic extends EffectComponent
                     try
                     {
                         double base = Double.parseDouble(value);
-                        if (base * m > 0) {
+                        if (base * m > 0)
+                        {
                             skill.damage(target, base * m, caster);
                             worked = true;
                             break;

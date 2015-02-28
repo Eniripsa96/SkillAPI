@@ -1,9 +1,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
-import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
-import com.sucy.skill.hook.PluginChecker;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -50,8 +48,8 @@ public class ItemMechanic extends EffectComponent
         int amount = settings.getInt(AMOUNT, 1);
         int data = settings.getInt(DATA, 0);
         ItemStack item = new ItemStack(material, amount);
-        item.setData(new MaterialData(material, (byte)data));
-        
+        item.setData(new MaterialData(material, (byte) data));
+
         boolean custom = settings.getString(CUSTOM, "false").toLowerCase().equals("true");
         if (custom)
         {

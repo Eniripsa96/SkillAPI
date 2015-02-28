@@ -7,7 +7,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * Represents the collection of accounts owned by a single player.
@@ -95,6 +94,7 @@ public class PlayerAccounts
      * unless the setting to initialize one account for each class is enabled.
      *
      * @param id account ID
+     *
      * @return true if data exists, false otherwise
      */
     public boolean hasData(int id)
@@ -106,6 +106,7 @@ public class PlayerAccounts
      * Gets the account data by ID for the owner
      *
      * @param id account ID
+     *
      * @return account data or null if not found
      */
     public PlayerData getData(int id)
@@ -122,6 +123,7 @@ public class PlayerAccounts
      * @param id     account ID
      * @param player offline player reference
      * @param init   whether or not the data is being initialized
+     *
      * @return account data or null if invalid id or player
      */
     public PlayerData getData(int id, OfflinePlayer player, boolean init)

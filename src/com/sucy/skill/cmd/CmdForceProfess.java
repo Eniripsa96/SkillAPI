@@ -54,7 +54,7 @@ public class CmdForceProfess implements IFunction
             }
 
             String name = args[1];
-            for (int i = 2 ; i < args.length; i++) name += args[i];
+            for (int i = 2; i < args.length; i++) name += args[i];
 
             PlayerData data = SkillAPI.getPlayerData(player);
             RPGClass target = SkillAPI.getClass(name);
@@ -72,7 +72,7 @@ public class CmdForceProfess implements IFunction
                 if (player.isOnline())
                 {
                     cmd.sendMessage(sender, SUCCESSS, ChatColor.GOLD + "{player}" + ChatColor.DARK_GREEN + " is now a " + ChatColor.GOLD + "{class}", Filter.PLAYER.setReplacement(player.getName()), RPGFilter.CLASS.setReplacement(target.getName()));
-                    cmd.sendMessage((Player)player, PROFESSED, ChatColor.DARK_GREEN + "You are now a " + ChatColor.GOLD + "{class}", RPGFilter.CLASS.setReplacement(target.getName()));
+                    cmd.sendMessage((Player) player, PROFESSED, ChatColor.DARK_GREEN + "You are now a " + ChatColor.GOLD + "{class}", RPGFilter.CLASS.setReplacement(target.getName()));
                 }
             }
 

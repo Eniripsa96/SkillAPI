@@ -13,9 +13,9 @@ public class PlayerAccountChangeEvent extends Event implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
     private PlayerAccounts accounts;
-    private boolean        cancelled = false;
-    private int            prevId;
-    private int            newId;
+    private boolean cancelled = false;
+    private int prevId;
+    private int newId;
 
     /**
      * Constructor

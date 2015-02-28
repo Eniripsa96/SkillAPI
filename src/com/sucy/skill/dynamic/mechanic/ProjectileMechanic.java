@@ -9,8 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -87,7 +85,7 @@ public class ProjectileMechanic extends EffectComponent
                     Projectile p = caster.launchProjectile(type);
                     p.teleport(target.getLocation());
                     p.setVelocity(d.multiply(speed));
-                    SkillAPI api = (SkillAPI)Bukkit.getPluginManager().getPlugin("SkillAPI");
+                    SkillAPI api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
                     p.setMetadata(MechanicListener.P_CALL, new FixedMetadataValue(api, this));
                     p.setMetadata(LEVEL, new FixedMetadataValue(api, level));
                 }

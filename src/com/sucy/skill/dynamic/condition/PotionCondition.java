@@ -49,7 +49,7 @@ public class PotionCondition extends EffectComponent
                 boolean has = false;
                 for (PotionEffectType check : PotionEffectType.values())
                 {
-                    if (target.hasPotionEffect(check))
+                    if (check != null && target.hasPotionEffect(check))
                     {
                         has = true;
                         break;

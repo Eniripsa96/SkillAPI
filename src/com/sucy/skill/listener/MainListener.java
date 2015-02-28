@@ -3,10 +3,8 @@ package com.sucy.skill.listener;
 import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
-import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.BuffManager;
@@ -94,7 +92,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
@@ -110,7 +108,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent event)
     {
         FlagManager.clearFlags(event.getEntity());
@@ -130,7 +128,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onKill(EntityDeathEvent event)
     {
         FlagManager.clearFlags(event.getEntity());
@@ -260,8 +258,8 @@ public class MainListener implements Listener
     {
         // Prevent it from changing the level bar when that is being used to display class level
         if (SkillAPI.getSettings().isUseLevelBar()
-                && event.getPlayer().hasPermission(Permissions.EXP)
-                && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            && event.getPlayer().hasPermission(Permissions.EXP)
+            && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             event.setAmount(0);
         }
@@ -305,10 +303,10 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event)
     {
-        if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity)event.getEntity(), "immune:" + event.getCause().name()))
+        if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity) event.getEntity(), "immune:" + event.getCause().name()))
         {
             event.setCancelled(true);
         }

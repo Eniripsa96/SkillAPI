@@ -1,9 +1,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
-import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
-import com.sucy.skill.hook.PluginChecker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 

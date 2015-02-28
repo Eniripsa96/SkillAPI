@@ -135,8 +135,8 @@ public abstract class SkillTree
     public boolean isSkill(HumanEntity player, int slot)
     {
         return skillSlots.get(slot) != null &&
-                player != null &&
-                (!skillSlots.get(slot).needsPermission() ||
+               player != null &&
+               (!skillSlots.get(slot).needsPermission() ||
                 player.hasPermission(Permissions.SKILL) ||
                 player.hasPermission(Permissions.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-")));
     }

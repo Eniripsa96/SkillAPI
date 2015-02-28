@@ -17,6 +17,7 @@ public class ListenerUtil
      * converts the Entity damager to a LivingEntity if applicable.
      *
      * @param event event to grab the damager from
+     *
      * @return LivingEntity damager of the event or null if not found
      */
     public static LivingEntity getDamager(EntityDamageByEntityEvent event)
@@ -40,6 +41,7 @@ public class ListenerUtil
      * Gets a simple name of the entity
      *
      * @param entity entity to get the name of
+     *
      * @return simple name of the entity
      */
     public static String getName(Entity entity)

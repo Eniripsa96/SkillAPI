@@ -35,7 +35,7 @@ public class SkillLevelCondition extends EffectComponent
         if (data == null) data = getSkillData(caster);
 
         return data.getLevel() >= min
-                && data.getLevel() <= max
-                && executeChildren(caster, level, targets);
+               && data.getLevel() <= max
+               && executeChildren(caster, level, targets);
     }
 }

@@ -53,8 +53,8 @@ public class ConeTarget extends EffectComponent
             {
                 LivingEntity target = list.get(i);
                 if (i >= max
-                        || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
-                        || (!both && ally != Protection.isAlly(caster, target)))
+                    || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
+                    || (!both && ally != Protection.isAlly(caster, target)))
                 {
                     list.remove(i);
                     i--;

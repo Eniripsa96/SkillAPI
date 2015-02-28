@@ -55,6 +55,7 @@ public class BasicHorizontalTree extends SkillTree
      * @param depth  current depth of recursion
      *
      * @return rows needed to fit the skill and all of its children
+     *
      * @throws SkillTreeException
      */
     private int placeChildren(List<Skill> skills, Skill skill, int slot, int depth) throws SkillTreeException

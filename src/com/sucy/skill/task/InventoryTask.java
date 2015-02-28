@@ -15,10 +15,11 @@ import java.util.List;
 /**
  * Repeating task to check for equipment requirements
  */
-public class InventoryTask extends BukkitRunnable {
+public class InventoryTask extends BukkitRunnable
+{
 
     private static SkillAPI plugin;
-    private int playersPerCheck;
+    private        int      playersPerCheck;
     private int index = -1;
 
     /**
@@ -27,7 +28,8 @@ public class InventoryTask extends BukkitRunnable {
      * @param p               API reference
      * @param playersPerCheck how many players to check each tick
      */
-    public InventoryTask(SkillAPI p, int playersPerCheck) {
+    public InventoryTask(SkillAPI p, int playersPerCheck)
+    {
         this.playersPerCheck = playersPerCheck;
         if (plugin != null) return;
         plugin = p;
@@ -38,7 +40,8 @@ public class InventoryTask extends BukkitRunnable {
      * Clears the plugin reference on cancel
      */
     @Override
-    public void cancel() {
+    public void cancel()
+    {
         super.cancel();
         plugin = null;
     }
@@ -47,9 +50,11 @@ public class InventoryTask extends BukkitRunnable {
      * Checks player equipment for requirements
      */
     @Override
-    public void run() {
+    public void run()
+    {
         Player[] players = plugin.getServer().getOnlinePlayers();
-        for (int i = 0; i < playersPerCheck; i++) {
+        for (int i = 0; i < playersPerCheck; i++)
+        {
             if (!getNextPlayer(players)) return;
             if (i >= players.length) return;
 
@@ -60,7 +65,8 @@ public class InventoryTask extends BukkitRunnable {
 
             // Check for lore strings
             int index = 0;
-            for (ItemStack item : player.getInventory().getArmorContents()) {
+            for (ItemStack item : player.getInventory().getArmorContents())
+            {
                 if (cannotUse(data, item)) removeArmor(player, index);
                 index++;
             }
@@ -74,60 +80,78 @@ public class InventoryTask extends BukkitRunnable {
      *
      * @param player player to check for
      * @param item   item to check
-     * @return       true if cannot use, false otherwise
+     *
+     * @return true if cannot use, false otherwise
      */
-    public static boolean cannotUse(PlayerData player, ItemStack item) {
+    public static boolean cannotUse(PlayerData player, ItemStack item)
+    {
         if (plugin == null) return false;
         if (item == null) return false;
         boolean hasRequirement = false;
         boolean needsRequirement = false;
-        if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
+        if (item.hasItemMeta() && item.getItemMeta().hasLore())
+        {
             List<String> lore = item.getItemMeta().getLore();
 
             // Check each line of the lore
-            for (String line : lore) {
+            for (String line : lore)
+            {
                 String colorless = ChatColor.stripColor(line);
 
                 // Level requirements
-                if (colorless.matches("Level Req: [0-9]+")) {
+                if (colorless.matches("Level Req: [0-9]+"))
+                {
                     int level = Integer.parseInt(colorless.substring(11));
-                    if (!player.hasClass() || player.getMainClass().getLevel() < level) {
+                    if (!player.hasClass() || player.getMainClass().getLevel() < level)
+                    {
                         return true;
                     }
                 }
 
                 // Class requirements
-                else if (colorless.matches("Class Req: .+")) {
+                else if (colorless.matches("Class Req: .+"))
+                {
                     needsRequirement = true;
                     String name = colorless.substring(11);
-                    if (name.contains(", ")) {
+                    if (name.contains(", "))
+                    {
                         String[] names = name.split(", ");
-                        for (String n : names) {
-                            if (player.isClass(SkillAPI.getClass(n))) {
+                        for (String n : names)
+                        {
+                            if (player.isClass(SkillAPI.getClass(n)))
+                            {
                                 hasRequirement = true;
                             }
                         }
                     }
-                    else {
-                        if (player.isClass(SkillAPI.getClass(name))) {
+                    else
+                    {
+                        if (player.isClass(SkillAPI.getClass(name)))
+                        {
                             hasRequirement = true;
                         }
                     }
                 }
 
                 // Class exclusion
-                else if (colorless.matches("Excluded Class: .+")) {
+                else if (colorless.matches("Excluded Class: .+"))
+                {
                     String name = colorless.substring(16);
-                    if (name.contains(", ")) {
+                    if (name.contains(", "))
+                    {
                         String[] names = name.split(", ");
-                        for (String n : names) {
-                            if (player.isClass(SkillAPI.getClass(n))) {
+                        for (String n : names)
+                        {
+                            if (player.isClass(SkillAPI.getClass(n)))
+                            {
                                 return true;
                             }
                         }
                     }
-                    else {
-                        if (player.isClass(SkillAPI.getClass(name))) {
+                    else
+                    {
+                        if (player.isClass(SkillAPI.getClass(name)))
+                        {
                             return true;
                         }
                     }
@@ -143,7 +167,8 @@ public class InventoryTask extends BukkitRunnable {
      * @param player player to remove for
      * @param index  index of the armor piece to remove
      */
-    private void removeArmor(Player player, int index) {
+    private void removeArmor(Player player, int index)
+    {
         ItemStack[] armor = player.getInventory().getArmorContents();
         player.getInventory().addItem(armor[index]);
         armor[index] = null;
@@ -156,11 +181,13 @@ public class InventoryTask extends BukkitRunnable {
      *
      * @return true if found a player, false otherwise
      */
-    private boolean getNextPlayer(Player[] players) {
+    private boolean getNextPlayer(Player[] players)
+    {
         index++;
 
         // Limit the index
-        if (index >= players.length) {
+        if (index >= players.length)
+        {
             players = plugin.getServer().getOnlinePlayers();
             index = 0;
         }

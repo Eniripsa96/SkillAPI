@@ -17,6 +17,7 @@ Saving:
   auto-save: false
   minutes: 30
 Classes:
+  modify-health: true
   classless-hp: 20
   show-auto-skills: false
 Mana:
@@ -41,6 +42,7 @@ Click Combos:
   use-click-right: true
   use-click-shift: false
   combo-size: 4
+  click-time: 1.0
 Skill Bar:
   enabled: false
   show-cooldown: true

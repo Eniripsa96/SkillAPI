@@ -9,9 +9,6 @@ import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.api.skills.SkillShot;
-import com.sucy.skill.api.skills.TargetSkill;
-import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -48,7 +45,8 @@ public class BarListener implements Listener
         for (Player player : plugin.getServer().getOnlinePlayers())
         {
             PlayerData data = SkillAPI.getPlayerData(player);
-            if (data.hasClass()) {
+            if (data.hasClass())
+            {
                 data.getSkillBar().setup(player);
             }
         }
@@ -167,7 +165,7 @@ public class BarListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onDeath(PlayerDeathEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
@@ -182,7 +180,7 @@ public class BarListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(PlayerRespawnEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());

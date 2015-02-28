@@ -7,7 +7,6 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
-import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -22,7 +21,7 @@ import java.util.List;
  */
 public abstract class EffectComponent
 {
-    private static final String ICON_KEY = "icon-key";
+    private static final String ICON_KEY   = "icon-key";
     private static final String COUNTS_KEY = "counts";
 
     public final ArrayList<EffectComponent> children = new ArrayList<EffectComponent>();
@@ -193,6 +192,7 @@ public abstract class EffectComponent
             put("cone", ConeTarget.class);
             put("linear", LinearTarget.class);
             put("location", LocationTarget.class);
+            put("nearest", NearestTarget.class);
             put("self", SelfTarget.class);
             put("single", SingleTarget.class);
         }};
@@ -201,6 +201,7 @@ public abstract class EffectComponent
     {{
             put("biome", BiomeCondition.class);
             put("chance", ChanceCondition.class);
+            put("class", ClassCondition.class);
             put("class level", ClassLevelCondition.class);
             put("direction", DirectionCondition.class);
             put("elevation", ElevationCondition.class);

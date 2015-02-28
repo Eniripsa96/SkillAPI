@@ -5,7 +5,6 @@ import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.entity.Player;
@@ -45,7 +44,7 @@ public class TreeListener implements Listener
         if (InventoryManager.isMatching(event.getInventory(), CLASS_LIST_KEY))
         {
             event.setCancelled(true);
-            PlayerData data = SkillAPI.getPlayerData((Player)event.getWhoClicked());
+            PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
             Collection<PlayerClass> classes = data.getClasses();
             boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
             if (classes.size() > event.getSlot() && top && event.getSlot() >= 0)
@@ -58,7 +57,7 @@ public class TreeListener implements Listener
                 }
                 else
                 {
-                    SkillAPI.getLanguage().sendMessage(ErrorNodes.NO_SKILLS, (Player)event.getWhoClicked(), FilterType.COLOR);
+                    SkillAPI.getLanguage().sendMessage(ErrorNodes.NO_SKILLS, (Player) event.getWhoClicked(), FilterType.COLOR);
                 }
             }
         }

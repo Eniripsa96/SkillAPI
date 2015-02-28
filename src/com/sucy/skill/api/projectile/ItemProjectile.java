@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class ItemProjectile extends CustomProjectile
 {
     private static final String NAME = "SkillAPI#";
-    private static int NEXT = 0;
+    private static       int    NEXT = 0;
 
     private Item item;
 

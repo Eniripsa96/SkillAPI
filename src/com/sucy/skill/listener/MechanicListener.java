@@ -4,13 +4,14 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.mechanic.PotionProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 
 /**
  * The listener for handling events related to dynamic mechanics
@@ -90,7 +91,7 @@ public class MechanicListener implements Listener
         if (event.getEntity().hasMetadata(POTION_PROJECTILE))
         {
             event.setCancelled(true);
-            PotionProjectileMechanic mechanic = (PotionProjectileMechanic)event.getEntity().getMetadata(POTION_PROJECTILE).get(0).value();
+            PotionProjectileMechanic mechanic = (PotionProjectileMechanic) event.getEntity().getMetadata(POTION_PROJECTILE).get(0).value();
             mechanic.callback(event.getEntity(), event.getAffectedEntities());
             event.getAffectedEntities().clear();
         }

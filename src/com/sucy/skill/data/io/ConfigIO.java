@@ -5,11 +5,13 @@ import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
+import com.sucy.skill.api.skills.Skill;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +34,8 @@ public class ConfigIO extends IOManager
             SKILL_BAR      = "bar",
             ENABLED        = "enabled",
             SLOTS          = "slots",
-            UNASSIGNED     = "e";
+            UNASSIGNED     = "e",
+            COMBOS         = "combos";
 
     /**
      * Initializes a new .yml config manager
@@ -48,6 +51,7 @@ public class ConfigIO extends IOManager
      * Loads data for the given player
      *
      * @param player player to load data for
+     *
      * @return loaded player data
      */
     @Override
@@ -143,6 +147,21 @@ public class ConfigIO extends IOManager
                 }
                 bar.applySettings();
             }
+
+            // Load combos
+            ConfigurationSection combos = account.getConfigurationSection(COMBOS);
+            PlayerCombos comboData = acc.getComboData();
+            if (combos != null && comboData != null)
+            {
+                for (String key : combos.getKeys(false))
+                {
+                    Skill skill = SkillAPI.getSkill(key);
+                    if (acc.hasSkill(key) && skill != null && skill.canCast())
+                    {
+                        comboData.setSkill(skill, combos.getInt(key));
+                    }
+                }
+            }
         }
         data.setAccount(file.getInt(ACTIVE, data.getActiveId()));
 
@@ -212,6 +231,18 @@ public class ConfigIO extends IOManager
                         continue;
                     }
                     skillBar.set(slotEntry.getValue(), slotEntry.getKey());
+                }
+            }
+
+            // Save combos
+            ConfigurationSection combos = account.createSection(COMBOS);
+            PlayerCombos comboData = acc.getComboData();
+            if (combos != null && comboData != null)
+            {
+                HashMap<String, Integer> comboMap = comboData.getComboData();
+                for (Map.Entry<String, Integer> combo : comboMap.entrySet())
+                {
+                    combos.set(combo.getKey(), combo.getValue());
                 }
             }
         }

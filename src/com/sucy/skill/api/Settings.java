@@ -231,13 +231,14 @@ public class Settings
      * Retrieves a string list from the settings
      *
      * @param key settings key
+     *
      * @return string list or empty list if not found
      */
     public List<String> getStringList(String key)
     {
         if (settings.containsKey(key) && settings.get(key) instanceof List<?>)
         {
-            return (List<String>)settings.get(key);
+            return (List<String>) settings.get(key);
         }
         else
         {

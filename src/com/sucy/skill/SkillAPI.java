@@ -26,14 +26,12 @@ package com.sucy.skill;
 
 import com.rit.sucy.config.LanguageConfig;
 import com.rit.sucy.version.VersionPlayer;
-import com.sucy.skill.api.SkillPlugin;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.manager.ComboManager;
 import com.sucy.skill.data.PlayerStats;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
@@ -42,10 +40,7 @@ import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
-import com.sucy.skill.manager.ClassBoardManager;
-import com.sucy.skill.manager.CmdManager;
-import com.sucy.skill.manager.RegistrationManager;
-import com.sucy.skill.manager.ResourceManager;
+import com.sucy.skill.manager.*;
 import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
@@ -54,7 +49,6 @@ import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -88,7 +82,7 @@ public class SkillAPI extends JavaPlugin
     private SaveTask      saveTask;
 
     private boolean enabled = false;
-    private boolean loaded = false;
+    private boolean loaded  = false;
 
     /**
      * <p>Enables SkillAPI, setting up listeners, managers, and loading data. This
@@ -155,6 +149,10 @@ public class SkillAPI extends JavaPlugin
         if (settings.isSkillBarEnabled())
         {
             new BarListener(this);
+        }
+        if (settings.isCombosEnabled())
+        {
+            new ClickListener(this);
         }
 
         // Set up tasks
@@ -512,6 +510,7 @@ public class SkillAPI extends JavaPlugin
      * currently loaded.
      *
      * @param player player to check for
+     *
      * @return true if has loaded data, false otherwise
      */
     public static boolean hasPlayerData(OfflinePlayer player)

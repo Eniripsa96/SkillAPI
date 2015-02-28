@@ -27,7 +27,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,6 +44,7 @@ public final class PlayerData
 
     private OfflinePlayer  player;
     private PlayerSkillBar skillBar;
+    private PlayerCombos   combos;
     private double         mana;
     private double         maxMana;
     private double         bonusHealth;
@@ -60,6 +60,7 @@ public final class PlayerData
     {
         this.player = player;
         this.skillBar = new PlayerSkillBar(this);
+        this.combos = new PlayerCombos(this);
         this.init = SkillAPI.isLoaded() && init;
         for (String group : SkillAPI.getGroups())
         {
@@ -101,6 +102,16 @@ public final class PlayerData
     public PlayerSkillBar getSkillBar()
     {
         return skillBar;
+    }
+
+    /**
+     * Returns the data for the player's combos
+     *
+     * @return combo data for the player
+     */
+    public PlayerCombos getComboData()
+    {
+        return combos;
     }
 
     /**
@@ -202,6 +213,7 @@ public final class PlayerData
         if (!skills.containsKey(key))
         {
             PlayerSkill data = new PlayerSkill(this, skill, parent);
+            combos.addSkill(skill);
             skills.put(key, data);
             int lastLevel = 0;
             while (data.getCost() == 0 && !data.isMaxed())
@@ -443,9 +455,13 @@ public final class PlayerData
      * Checks whether or not a player has a class within the given group
      *
      * @param group class group to check
+     *
      * @return true if has a class in the group, false otherwise
      */
-    public boolean hasClass(String group) { return classes.containsKey(group); }
+    public boolean hasClass(String group)
+    {
+        return classes.containsKey(group);
+    }
 
     /**
      * Retrieves the collection of the data for classes the player has professed as.
@@ -511,6 +527,7 @@ public final class PlayerData
             for (Skill skill : c.getData().getSkills())
             {
                 skills.remove(skill.getName().toLowerCase());
+                combos.removeSkill(skill);
             }
         }
 
@@ -608,6 +625,7 @@ public final class PlayerData
             for (Skill skill : data.getSkills())
             {
                 skills.remove(skill.getName());
+                combos.removeSkill(skill);
             }
 
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(playerClass, data, null));
@@ -681,6 +699,7 @@ public final class PlayerData
                 if (!skills.containsKey(skill.getKey()))
                 {
                     skills.put(skill.getKey(), new PlayerSkill(this, skill, current));
+                    combos.addSkill(skill);
                 }
             }
 

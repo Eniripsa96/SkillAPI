@@ -1,24 +1,21 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.player.Protection;
-import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.*;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -62,7 +59,7 @@ public class PotionProjectileMechanic extends EffectComponent
         for (LivingEntity target : targets)
         {
             ThrownPotion thrown = caster.launchProjectile(ThrownPotion.class);
-            SkillAPI api = (SkillAPI)Bukkit.getPluginManager().getPlugin("SkillAPI");
+            SkillAPI api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
             thrown.setMetadata(LEVEL, new FixedMetadataValue(api, level));
             thrown.setMetadata(MechanicListener.POTION_PROJECTILE, new FixedMetadataValue(api, this));
             thrown.setItem(item);
@@ -83,7 +80,7 @@ public class PotionProjectileMechanic extends EffectComponent
         String group = settings.getString(ALLY, "enemy").toLowerCase();
         boolean both = group.equals("both");
         boolean ally = group.equals("ally");
-        LivingEntity caster = (LivingEntity)projectile.getShooter();
+        LivingEntity caster = (LivingEntity) projectile.getShooter();
         for (int i = 0; i < targets.size(); i++)
         {
             if (!both && Protection.canAttack(caster, targets.get(i)) == ally)

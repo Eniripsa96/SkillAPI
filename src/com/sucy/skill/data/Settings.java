@@ -230,7 +230,7 @@ public class Settings
     private static final String SAVE_MINS = SAVE_AUTO + "minutes";
 
     private boolean auto;
-    private int minutes;
+    private int     minutes;
 
     /**
      * Checks whether or not auto saving is enabled
@@ -264,12 +264,24 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String CLASS_BASE = "Classes.";
-    private static final String CLASS_HP   = CLASS_BASE + "classless-hp";
-    private static final String CLASS_SHOW = CLASS_BASE + "show-auto-skills";
+    private static final String CLASS_BASE   = "Classes.";
+    private static final String CLASS_MODIFY = CLASS_BASE + "modify-hp";
+    private static final String CLASS_HP     = CLASS_BASE + "classless-hp";
+    private static final String CLASS_SHOW   = CLASS_BASE + "show-auto-skills";
 
+    private boolean modifyHealth;
     private int     defaultHealth;
     private boolean showAutoSkills;
+
+    /**
+     * Checks whether or not SkillAPI should modify the max health of players
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isModifyHealth()
+    {
+        return modifyHealth;
+    }
 
     /**
      * <p>Retrieves the default health for players that do not have a class.</p>
@@ -293,6 +305,7 @@ public class Settings
 
     private void loadClassSettings()
     {
+        modifyHealth = config.getBoolean(CLASS_MODIFY);
         defaultHealth = config.getInt(CLASS_HP);
         showAutoSkills = config.getBoolean(CLASS_SHOW);
     }
@@ -333,7 +346,7 @@ public class Settings
     private void loadManaSettings()
     {
         manaEnabled = config.getBoolean(MANA_ENABLED);
-        gainFreq = (int)(config.getDouble(MANA_FREQ) * 20);
+        gainFreq = (int) (config.getDouble(MANA_FREQ) * 20);
     }
 
     ///////////////////////////////////////////////////////
@@ -394,9 +407,9 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String ITEM_BASE   = "Items.";
-    private static final String ITEM_LORE   = ITEM_BASE + "lore-requirements";
-    private static final String ITEM_CHECK  = ITEM_BASE + "players-per-check";
+    private static final String ITEM_BASE  = "Items.";
+    private static final String ITEM_LORE  = ITEM_BASE + "lore-requirements";
+    private static final String ITEM_CHECK = ITEM_BASE + "players-per-check";
 
     private boolean checkLore;
     private int     playersPerCheck;
@@ -513,18 +526,20 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String COMBO_BASE = "Click Combos.";
+    private static final String COMBO_BASE    = "Click Combos.";
     private static final String COMBO_ENABLED = COMBO_BASE + "enabled";
-    private static final String COMBO_LEFT = COMBO_BASE + "use-click-left";
-    private static final String COMBO_RIGHT = COMBO_BASE + "use-click-right";
-    private static final String COMBO_SHIFT = COMBO_BASE + "use-click-shift";
-    private static final String COMBO_SIZE = COMBO_BASE + "combo-size";
+    private static final String COMBO_LEFT    = COMBO_BASE + "use-click-left";
+    private static final String COMBO_RIGHT   = COMBO_BASE + "use-click-right";
+    private static final String COMBO_SHIFT   = COMBO_BASE + "use-click-shift";
+    private static final String COMBO_SIZE    = COMBO_BASE + "combo-size";
+    private static final String COMBO_TIME    = COMBO_BASE + "click-time";
 
     private boolean combosEnabled;
     private boolean comboLeft;
     private boolean comboRight;
     private boolean comboShift;
-    private int comboSize;
+    private int     comboSize;
+    private int     clickTime;
 
     /**
      * Checks whether or not click combos are enabled
@@ -576,6 +591,16 @@ public class Settings
         return comboSize;
     }
 
+    /**
+     * Retrieves the amount of seconds allowed between clicks before the combo resets
+     *
+     * @return number of seconds before a click combo resets
+     */
+    public int getClickTime()
+    {
+        return clickTime;
+    }
+
     private void loadComboSettings()
     {
         combosEnabled = config.getBoolean(COMBO_ENABLED);
@@ -583,6 +608,7 @@ public class Settings
         comboRight = config.getBoolean(COMBO_RIGHT);
         comboShift = config.getBoolean(COMBO_SHIFT);
         comboSize = config.getInt(COMBO_SIZE);
+        clickTime = (int) (1000 * config.getDouble(COMBO_TIME));
     }
 
     ///////////////////////////////////////////////////////
@@ -605,6 +631,7 @@ public class Settings
      * Gets the required amount of experience at a given level
      *
      * @param level level of the class
+     *
      * @return required experience to gain a level
      */
     public int getRequiredExp(int level)
@@ -616,6 +643,7 @@ public class Settings
      * Gets the experience yield of a mob
      *
      * @param mob mob to get the yield of
+     *
      * @return experience yield
      */
     public double getYield(String mob)
@@ -845,19 +873,20 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String WORLD_BASE = "Worlds.";
+    private static final String WORLD_BASE   = "Worlds.";
     private static final String WORLD_ENABLE = WORLD_BASE + "enable";
-    private static final String WORLD_TYPE = WORLD_BASE + "use-as-enabling";
-    private static final String WORLD_LIST = WORLD_BASE + "worlds";
+    private static final String WORLD_TYPE   = WORLD_BASE + "use-as-enabling";
+    private static final String WORLD_LIST   = WORLD_BASE + "worlds";
 
     private List<String> worlds;
-    private boolean worldEnabled;
-    private boolean worldEnableList;
+    private boolean      worldEnabled;
+    private boolean      worldEnableList;
 
     /**
      * Checks whether or not SkillAPI is active in the world
      *
      * @param world world to check
+     *
      * @return true if active, false otherwise
      */
     public boolean isWorldEnabled(World world)
@@ -870,6 +899,7 @@ public class Settings
      * the given name.
      *
      * @param world world name
+     *
      * @return true if active, false otherwise
      */
     public boolean isWorldEnabled(String world)

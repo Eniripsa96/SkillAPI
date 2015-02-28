@@ -262,6 +262,7 @@ public abstract class Skill
      * Retrieves the level requirement for the skill to reach the next level
      *
      * @param level current level of the skill
+     *
      * @return level requirement for the next level
      */
     public int getLevelReq(int level)
@@ -273,6 +274,7 @@ public abstract class Skill
      * Retrieves the mana cost of the skill
      *
      * @param level current level of the skill
+     *
      * @return mana cost
      */
     public double getManaCost(int level)
@@ -284,6 +286,7 @@ public abstract class Skill
      * Retrieves the cooldown of the skill in seconds
      *
      * @param level current level of the skill
+     *
      * @return cooldown
      */
     public double getCooldown(int level)
@@ -295,6 +298,7 @@ public abstract class Skill
      * Retrieves the range of the skill in blocks
      *
      * @param level current level of the skill
+     *
      * @return target range
      */
     public double getRange(int level)
@@ -306,6 +310,7 @@ public abstract class Skill
      * Retrieves the skill point cost of the skill
      *
      * @param level current level of the skill
+     *
      * @return skill point cost
      */
     public int getCost(int level)
@@ -328,6 +333,7 @@ public abstract class Skill
      * the player-specific data.
      *
      * @param skillData player data
+     *
      * @return filtered skill indicator
      */
     public ItemStack getIndicator(PlayerSkill skillData)
@@ -423,13 +429,11 @@ public abstract class Skill
         }
 
         // Click string at the bottom
-        /*
-        if (SkillAPI.getSettings().isUseClickCombos() && canCast())
+        if (SkillAPI.getSettings().isCombosEnabled() && canCast())
         {
             lore.add("");
-            lore.add(ChatColor.GOLD + SkillAPI.getComboManager().getComboString(name));
+            lore.add(ChatColor.GOLD + skillData.getPlayerData().getComboData().getComboString(this));
         }
-        */
 
         if (lore.size() > 0)
         {
@@ -445,6 +449,7 @@ public abstract class Skill
      * Formats an attribute name for applying to the indicator
      *
      * @param key attribute key
+     *
      * @return formatted attribute name
      */
     protected String getAttrName(String key)
@@ -457,6 +462,7 @@ public abstract class Skill
      *
      * @param key   attribute key
      * @param level skill level
+     *
      * @return attribute value
      */
     protected Object getAttr(String key, int level)
@@ -468,6 +474,7 @@ public abstract class Skill
      * Formats a double value to prevent excessive decimals
      *
      * @param value double value to format
+     *
      * @return formatted double value
      */
     private String format(double value)
@@ -582,30 +589,9 @@ public abstract class Skill
     {
 
         boolean neededOnly = config.getKeys(false).size() > 0;
-
-        if (!config.contains(NAME))
-        {
-            config.set(NAME, name);
-        }
-        if (!config.isSet(TYPE))
-        {
-            config.set(TYPE, type.replace(ChatColor.COLOR_CHAR, '&'));
-        }
-        if (!config.isSet(MAX))
-        {
-            config.set(MAX, maxLevel);
-        }
-        if (!config.isSet(LAYOUT))
-        {
-            config.set(LAYOUT, iconLore);
-        }
         if (!neededOnly)
         {
-            config.set(PERM, needsPermission);
-        }
-        if (!config.isSet(DESC))
-        {
-            config.set(DESC, description);
+            save(config);
         }
     }
 

@@ -7,7 +7,6 @@ import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -123,6 +122,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * path overhead.
      *
      * @param key attribute key
+     *
      * @return formatted attribute name
      */
     @Override
@@ -146,6 +146,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @param key   attribute key
      * @param level skill level
+     *
      * @return attribute value or 0 if invalid dynamic path
      */
     @Override
@@ -215,7 +216,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max
-                    && (type.equals("both") || (type.equals("projectile") == projectile)))
+                && (type.equals("both") || (type.equals("projectile") == projectile)))
             {
                 if (caster)
                 {
@@ -238,7 +239,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             double max = component.settings.getDouble("dmg-max");
 
             if (event.getDamage() >= min && event.getDamage() <= max
-                    && (type.equals("both") || type.equals("projectile") == projectile))
+                && (type.equals("both") || type.equals("projectile") == projectile))
             {
                 if (caster)
                 {

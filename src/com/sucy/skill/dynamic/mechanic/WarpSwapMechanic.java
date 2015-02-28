@@ -23,7 +23,8 @@ public class WarpSwapMechanic extends EffectComponent
     @Override
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
-        if (targets.size() > 0) {
+        if (targets.size() > 0)
+        {
             Location tloc = targets.get(0).getLocation();
             Location cloc = caster.getLocation();
             targets.get(0).teleport(cloc);

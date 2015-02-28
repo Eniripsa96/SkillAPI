@@ -465,18 +465,18 @@ public abstract class RPGClass
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String SKILLS   = "skills";
-    private static final String PARENT   = "parent";
-    private static final String NAME     = "name";
-    private static final String PREFIX   = "prefix";
-    private static final String GROUP    = "group";
-    private static final String MANA     = "mana";
-    private static final String MAX      = "max-level";
-    private static final String EXP      = "exp-source";
-    private static final String REGEN    = "mana-regen";
-    private static final String PERM     = "needs-permission";
-    private static final String ATTR     = "attributes";
-    private static final String TREE     = "tree";
+    private static final String SKILLS = "skills";
+    private static final String PARENT = "parent";
+    private static final String NAME   = "name";
+    private static final String PREFIX = "prefix";
+    private static final String GROUP  = "group";
+    private static final String MANA   = "mana";
+    private static final String MAX    = "max-level";
+    private static final String EXP    = "exp-source";
+    private static final String REGEN  = "mana-regen";
+    private static final String PERM   = "needs-permission";
+    private static final String ATTR   = "attributes";
+    private static final String TREE   = "tree";
 
     /**
      * Saves the class template data to the config
@@ -520,56 +520,9 @@ public abstract class RPGClass
     {
 
         boolean neededOnly = config.getKeys(false).size() > 0;
-
-        if (skills.size() > 0 && !neededOnly)
+        if (!neededOnly)
         {
-            ArrayList<String> skillNames = new ArrayList<String>();
-            for (Skill skill : skills)
-            {
-                skillNames.add(skill.getName());
-            }
-            config.set(SKILLS, skillNames);
-        }
-
-        if (parent != null && !neededOnly)
-        {
-            config.set(PARENT, parent.getName());
-        }
-        if (!config.isSet(NAME))
-        {
-            config.set(NAME, name);
-        }
-        if (!config.isSet(PREFIX))
-        {
-            config.set(PREFIX, prefix.replace(ChatColor.COLOR_CHAR, '&'));
-        }
-        if (!config.isSet(group))
-        {
-            config.set(GROUP, group);
-        }
-        if (!config.isSet(MANA))
-        {
-            config.set(MANA, mana);
-        }
-        if (!config.isSet(MAX))
-        {
-            config.set(MAX, maxLevel);
-        }
-        if (!config.isSet(EXP))
-        {
-            config.set(EXP, expSources);
-        }
-        if (!config.isSet(REGEN))
-        {
-            config.set(REGEN, manaRegen);
-        }
-        if (!config.isSet(PERM))
-        {
-            config.set(PERM, needsPermission);
-        }
-        if (!config.isSet(TREE))
-        {
-            config.set(TREE, tree.toString());
+            save(config);
         }
     }
 

@@ -6,7 +6,6 @@ import com.rit.sucy.commands.SenderType;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.cmd.*;
 import com.sucy.skill.data.Permissions;
-import org.bukkit.permissions.Permission;
 
 /**
  * Sets up commands for the plugin
@@ -59,6 +58,10 @@ public class CmdManager
         if (SkillAPI.getSettings().isSkillBarEnabled())
         {
             root.addSubCommand(new ConfigurableCommand(api, "bar", SenderType.PLAYER_ONLY, new CmdBar(), "Toggles skill bar", "", Permissions.BASIC));
+        }
+        if (SkillAPI.getSettings().isCombosEnabled())
+        {
+            root.addSubCommand(new ConfigurableCommand(api, "combo", SenderType.PLAYER_ONLY, new CmdCombo(), "Sets skill combo", "<skill> <combo>", Permissions.BASIC));
         }
         CommandManager.registerCommand(root);
     }

@@ -181,7 +181,7 @@ public final class PlayerSkill
 
         // If mana is enabled, check to see if the player has enough
         if (SkillAPI.getSettings().isManaEnabled()
-                && player.getMana() < skill.getManaCost(level))
+            && player.getMana() < skill.getManaCost(level))
         {
 
             return SkillStatus.MISSING_MANA;

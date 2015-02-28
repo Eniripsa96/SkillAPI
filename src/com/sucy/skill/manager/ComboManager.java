@@ -1,10 +1,12 @@
 package com.sucy.skill.manager;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Click;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Manages click combos with what combos are active and
@@ -12,21 +14,15 @@ import java.util.*;
  */
 public class ComboManager
 {
-    private HashMap<String, Integer> combos = new HashMap<String, Integer>();
-    private HashMap<Integer, String> skills = new HashMap<Integer, String>();
-
-    private SkillAPI api;
-    private int      comboSize;
-    private Click[]  buffer;
+    private int       comboSize;
+    private Click[]   buffer;
     private boolean[] clicks;
-    private int[] next;
-    private boolean enabled;
 
     /**
      * Initializes the combo manager, grabbing settings from
      * the configuration to prepare data
      */
-    public void initialize()
+    public ComboManager()
     {
         comboSize = Math.min(SkillAPI.getSettings().getComboSize(), Click.MAX_COMBO_SIZE);
         clicks = new boolean[] {
@@ -34,113 +30,55 @@ public class ComboManager
                 SkillAPI.getSettings().isComboRight(),
                 SkillAPI.getSettings().isComboShift()
         };
-        next = new int[comboSize];
         buffer = new Click[comboSize];
-        enabled = comboSize > 0 && (clicks[0] || clicks[1] || clicks[2]) && SkillAPI.getSettings().isCombosEnabled();
     }
 
     /**
-     * Sets a specific combo for a skill if the combo is not already taken.
-     * If it is already taken or the ID is of a combo that uses a disabled
-     * click type, this will return false.
+     * Retrieves the accepted size of combos
      *
-     * @param skill skill to set the combo for
-     * @param id    combo ID
-     *
-     * @return true if successfully set, false otherwise
+     * @return the accepted size of combos
      */
-    public boolean setCombo(Skill skill, int id)
+    public int getComboSize()
     {
-        if (clicks[id])
-        if (!skills.containsKey(id))
+        return comboSize;
+    }
+
+    /**
+     * Checks whether or not the click with the given ID is enabled
+     *
+     * @param id ID of the click
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isClickEnabled(int id)
+    {
+        return id < clicks.length && id >= 0 && clicks[id];
+    }
+
+    /**
+     * Checks whether or not the combo is a valid one
+     *
+     * @param id ID of the combo
+     *
+     * @return true if valid, false otherwise
+     */
+    public boolean isValidCombo(int id)
+    {
+        for (int i = 0; i < comboSize; i++)
         {
-            skills.put(id, skill.getName());
-            combos.put(skill.getName(), id);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Retrieves the name of a skill from the given clicks
-     *
-     * @param clicks clicks in the combo
-     * @return name of the skill resulted from the combo or null if not a valid combo
-     */
-    public String getSkillName(Click... clicks)
-    {
-        if (clicks.length != comboSize)
-        {
-            throw new IllegalArgumentException("Invalid combo - doesn't match desired combo size");
-        }
-        return skills.get(convertCombo(clicks));
-    }
-
-    /**
-     * Retrieves the name of a skill from a list of clicks
-     *
-     * @param clicks list of clicks in the combo
-     * @return name of the skill resulted from the combo or null if not a valid combo
-     */
-    public String getSkillName(Collection<Click> clicks)
-    {
-        return getSkillName(clicks.toArray(buffer));
-    }
-
-    /**
-     * Gets the integer ID of a click combo via skill name
-     *
-     * @param name skill name
-     * @return combo ID attached to the skill
-     */
-    public int getComboId(String name)
-    {
-        Integer id = combos.get(name);
-        if (id == null)
-        {
-            throw new IllegalArgumentException(name + " is not a skill!");
-        }
-
-        return id;
-    }
-
-    /**
-     * Gets a click combination from a skill name
-     *
-     * @param name skill name
-     * @return click combination
-     */
-    public List<Click> getCombo(String name)
-    {
-        return convertId(getComboId(name));
-    }
-
-    /**
-     * Gets a text representation of a combo by skill name
-     *
-     * @param name skill name
-     * @return text combo representation
-     */
-    public String getComboString(String name)
-    {
-        List<Click> clicks = getCombo(name);
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        for (Click click : clicks)
-        {
-            sb.append(click.getName());
-            if (i++ < comboSize - 1)
+            if (!isClickEnabled(Click.BIT_MASK & (id >> (i * Click.BITS))))
             {
-                sb.append(", ");
+                return false;
             }
         }
-        return sb.toString();
+        return id > 0 && id < (1 << (Click.BITS * comboSize));
     }
 
     /**
      * Converts a combo ID to clicks
      *
      * @param id combo ID
+     *
      * @return click combination
      */
     public List<Click> convertId(int id)
@@ -159,6 +97,7 @@ public class ComboManager
      * Converts a click combination to an ID
      *
      * @param clicks clicks to convert
+     *
      * @return combo ID
      */
     public int convertCombo(Click[] clicks)
@@ -176,6 +115,7 @@ public class ComboManager
      * Converts a click combination to an ID
      *
      * @param clicks clicks to convert
+     *
      * @return combo ID
      */
     public int convertCombo(Collection<Click> clicks)

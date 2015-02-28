@@ -83,7 +83,7 @@ public abstract class LevelTree extends SkillTree
                     {
                         Skill nextSkill = list.get(l);
                         if (nextSkill.getSkillReq() != null
-                                && nextSkill.getSkillReq().equalsIgnoreCase(prevSkill.getName()))
+                            && nextSkill.getSkillReq().equalsIgnoreCase(prevSkill.getName()))
                         {
                             list.remove(l);
                             int index = Math.min(Math.max(maxIndex, j), list.size());

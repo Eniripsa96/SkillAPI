@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Applies child components to the closest all nearby entities around
- * each of the current targets.
+ * Applies child components to the closest entities to the caster within a given range
  */
-public class AreaTarget extends EffectComponent
+public class NearestTarget extends EffectComponent
 {
     private static final String RADIUS = "radius";
     private static final String ALLY   = "group";
@@ -51,11 +50,12 @@ public class AreaTarget extends EffectComponent
                 list.add(caster);
             }
 
-            for (int i = 0; i < entities.size() && list.size() < max; i++)
+            // Grab nearby targets
+            for (Entity entity : entities)
             {
-                if (entities.get(i) instanceof LivingEntity)
+                if (entity instanceof LivingEntity)
                 {
-                    LivingEntity target = (LivingEntity) entities.get(i);
+                    LivingEntity target = (LivingEntity) entity;
                     if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
                     {
                         continue;
@@ -70,7 +70,27 @@ public class AreaTarget extends EffectComponent
                     }
                 }
             }
-            worked = executeChildren(caster, level, list) || worked;
+
+            // Take only the closest
+            // TODO optimize getting the nearest ones
+            Location casterLoc = caster.getLocation();
+            while (targets.size() > max && targets.size() > 0)
+            {
+                double dSq = -1;
+                int index = 0;
+                for (int i = 0; i < targets.size(); i++)
+                {
+                    double d = targets.get(i).getLocation().distanceSquared(casterLoc);
+                    if (d > dSq)
+                    {
+                        dSq = d;
+                        index = i;
+                    }
+                }
+                targets.remove(index);
+            }
+
+            worked = targets.size() > 0 && executeChildren(caster, level, list) || worked;
         }
         return worked;
     }

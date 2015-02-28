@@ -33,7 +33,7 @@ public class LightCondition extends EffectComponent
         for (LivingEntity target : targets)
         {
             if (target.getLocation().getBlock().getLightLevel() >= min
-                    && target.getLocation().getBlock().getLightLevel() <= max)
+                && target.getLocation().getBlock().getLightLevel() <= max)
             {
                 list.add(target);
             }

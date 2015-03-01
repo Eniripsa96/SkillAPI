@@ -41,6 +41,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         // Get common values
         int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
+        settings.set("level", level);
 
         // Fire from each target
         for (LivingEntity target : targets)

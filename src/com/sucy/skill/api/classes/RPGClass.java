@@ -533,19 +533,6 @@ public abstract class RPGClass
      */
     public void load(ConfigurationSection config)
     {
-        if (config.isList(SKILLS))
-        {
-            skills.clear();
-            for (String name : config.getStringList(SKILLS))
-            {
-                Skill skill = SkillAPI.getSkill(name);
-                if (skill != null)
-                {
-                    skills.add(skill);
-                }
-            }
-        }
-
         parent = SkillAPI.getClass(config.getString(PARENT));
         icon = Data.parseIcon(config);
         name = config.getString(NAME, name);
@@ -560,6 +547,20 @@ public abstract class RPGClass
         manaPlayer = Bukkit.getServer().getOfflinePlayer(TextFormatter.colorString(mana));
 
         settings.load(config.getConfigurationSection(ATTR));
+
+        if (config.isList(SKILLS))
+        {
+            skills.clear();
+            for (String name : config.getStringList(SKILLS))
+            {
+                Skill skill = SkillAPI.getSkill(name);
+                if (skill != null)
+                {
+                    skills.add(skill);
+                }
+                else Bukkit.getLogger().warning("Invalid skill for class " + name + " - " + name);
+            }
+        }
 
         this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
         try

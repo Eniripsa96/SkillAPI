@@ -39,6 +39,7 @@ public class ParticleMechanic extends EffectComponent
         double forward = settings.getDouble(FORWARD, 0);
         double upward = settings.getDouble(UPWARD, 0);
         double right = settings.getDouble(RIGHT, 0);
+        settings.set("level", level);
 
         for (LivingEntity target : targets)
         {

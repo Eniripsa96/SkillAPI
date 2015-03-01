@@ -736,7 +736,11 @@ public final class PlayerData
     {
         for (PlayerClass playerClass : classes.values())
         {
-            playerClass.loseExp(playerClass.getData().getGroupSettings().getDeathPenalty());
+            double penalty = playerClass.getData().getGroupSettings().getDeathPenalty();
+            if (penalty > 0)
+            {
+                playerClass.loseExp(penalty);
+            }
         }
         updateLevelBar();
     }

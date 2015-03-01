@@ -82,6 +82,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                     dir.setY(0);
                     dir.normalize();
                 }
+                dir.multiply(speed);
                 double angle = settings.getAttr(ANGLE, level, 30.0);
                 list = ItemProjectile.spread(caster, dir, loc, item, angle, amount, this);
             }

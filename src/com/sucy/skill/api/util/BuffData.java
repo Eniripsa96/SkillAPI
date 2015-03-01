@@ -56,7 +56,7 @@ public class BuffData
      */
     public void addDefenseBuff(Buff buff, int ticks)
     {
-        damageBuffs.put(nextId, buff);
+        defenseBuffs.put(nextId, buff);
         tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
         nextId = (nextId + 1) % MAX_ID;
     }

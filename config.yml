@@ -85,7 +85,6 @@ Experience:
   block-creative: true
   exp-message-enabled: true
   level-message-enabled: true
-  death-penalty: 0.0
   formula:
     x: 1
     y: 8

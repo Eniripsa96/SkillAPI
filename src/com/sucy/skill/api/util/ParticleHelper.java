@@ -26,6 +26,11 @@ public class ParticleHelper
     public static final String ARRANGEMENT_KEY = "arrangement";
 
     /**
+     * The level to use for scaling values
+     */
+    public static final String LEVEL = "level";
+
+    /**
      * Settings key for the type of particle
      */
     public static final String PARTICLE_KEY = "particle";
@@ -102,8 +107,9 @@ public class ParticleHelper
         String particle = settings.getString(PARTICLE_KEY, "invalid");
         if (settings.has(ARRANGEMENT_KEY))
         {
-            double radius = settings.getDouble(RADIUS_KEY, 3.0);
-            int amount = settings.getInt(AMOUNT_KEY, 10);
+            int level = settings.getInt(LEVEL, 1);
+            double radius = settings.getAttr(RADIUS_KEY, level, 3.0);
+            int amount = (int)settings.getAttr(AMOUNT_KEY, level, 10);
 
             String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
             if (arrangement.equals("circle"))

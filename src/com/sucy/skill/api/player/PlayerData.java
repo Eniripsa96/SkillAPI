@@ -955,6 +955,9 @@ public final class PlayerData
             {
                 mana = maxMana;
             }
+            if (mana < 0) {
+                mana = 0;
+            }
         }
     }
 

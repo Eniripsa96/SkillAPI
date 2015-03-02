@@ -69,16 +69,28 @@ public abstract class SkillTree
 
         // Get included skills
         ArrayList<Skill> skills = new ArrayList<Skill>();
-        for (Skill skill : tree.getSkills())
+        RPGClass current = tree;
+        while (current != null)
         {
-            if (!SkillAPI.isSkillRegistered(skill))
+            for (Skill skill : current.getSkills())
             {
-                api.getLogger().severe("Failed to add skill to tree - " + skill + ": Skill does not exist");
-                continue;
+                if (!SkillAPI.isSkillRegistered(skill))
+                {
+                    api.getLogger().severe("Failed to add skill to tree - " + skill + ": Skill does not exist");
+                    continue;
+                }
+                if (SkillAPI.getSettings().isShowingAutoSkills() || skill.getCost(0) != 0 || skill.getMaxLevel() > 1 || skill.canCast())
+                {
+                    skills.add(skill);
+                }
             }
-            if (SkillAPI.getSettings().isShowingAutoSkills() || skill.getCost(0) != 0 || skill.getMaxLevel() > 1 || skill.canCast())
+            if (SkillAPI.getSettings().getGroupSettings(current.getGroup()).isProfessReset())
             {
-                skills.add(skill);
+                current = null;
+            }
+            else
+            {
+                current = current.getParent();
             }
         }
 

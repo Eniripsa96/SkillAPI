@@ -348,8 +348,13 @@ public abstract class Skill
         ItemMeta meta = item.hasItemMeta() ? item.getItemMeta() : Bukkit.getItemFactory().getItemMeta(item.getType());
         ArrayList<String> lore = new ArrayList<String>();
 
-        String lvlReq = SkillAPI.getLanguage().getMessage(getLevelReq(skillData.getLevel()) <= skillData.getPlayerClass().getLevel() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
-        String costReq = SkillAPI.getLanguage().getMessage(getCost(skillData.getLevel()) <= skillData.getPlayerClass().getPoints() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
+        Bukkit.getLogger().info("Indicator for skill " + name);
+        Bukkit.getLogger().info("    Class=" + skillData.getPlayerClass().getData().getName());
+        Bukkit.getLogger().info("    Points=" + skillData.getPlayerClass().getPoints());
+        Bukkit.getLogger().info("    Cost=" + skillData.getCost());
+
+        String lvlReq = SkillAPI.getLanguage().getMessage(skillData.getLevelReq() <= skillData.getPlayerClass().getLevel() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
+        String costReq = SkillAPI.getLanguage().getMessage(skillData.getCost() <= skillData.getPlayerClass().getPoints() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
         lvlReq = lvlReq.substring(0, lvlReq.length() - 2);
         costReq = costReq.substring(0, costReq.length() - 2);
 

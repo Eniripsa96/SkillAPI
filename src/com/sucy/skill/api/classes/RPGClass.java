@@ -563,6 +563,12 @@ public abstract class RPGClass
         }
 
         this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
+    }
+
+    /**
+     * Arranges the skill tree for the class
+     */
+    public void arrange() {
         try
         {
             Bukkit.getLogger().info("Arranging for \"" + name + "\" - " + skills.size() + " skills");

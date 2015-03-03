@@ -109,7 +109,7 @@ public class ParticleHelper
         {
             int level = settings.getInt(LEVEL, 1);
             double radius = settings.getAttr(RADIUS_KEY, level, 3.0);
-            int amount = (int)settings.getAttr(AMOUNT_KEY, level, 10);
+            int amount = (int) settings.getAttr(AMOUNT_KEY, level, 10);
 
             String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
             if (arrangement.equals("circle"))

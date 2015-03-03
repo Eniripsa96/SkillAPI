@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 /**
  * Listener for applying default status flags for the API. You should
@@ -26,7 +27,7 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class StatusListener implements Listener
 {
-    private SkillAPI plugin;
+    private final Vector ZERO = new Vector(0, 0, 0);
 
     /**
      * Initializes a new StatusListener. Do not use this constructor
@@ -36,7 +37,6 @@ public class StatusListener implements Listener
      */
     public StatusListener(SkillAPI plugin)
     {
-        this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -59,7 +59,10 @@ public class StatusListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMove(PlayerMoveEvent event)
     {
-        check(event, event.getPlayer(), StatusFlag.STUN, StatusFlag.ROOT);
+        if (check(event, event.getPlayer(), StatusFlag.STUN, StatusFlag.ROOT))
+        {
+            event.getPlayer().setVelocity(ZERO);
+        }
     }
 
     /**

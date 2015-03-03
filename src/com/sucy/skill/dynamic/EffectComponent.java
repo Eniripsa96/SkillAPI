@@ -203,6 +203,7 @@ public abstract class EffectComponent
             put("chance", ChanceCondition.class);
             put("class", ClassCondition.class);
             put("class level", ClassLevelCondition.class);
+            put("combat", CombatCondition.class);
             put("direction", DirectionCondition.class);
             put("elevation", ElevationCondition.class);
             put("fire", FireCondition.class);
@@ -223,6 +224,7 @@ public abstract class EffectComponent
 
     private static final HashMap<String, Class<? extends EffectComponent>> mechanics = new HashMap<String, Class<? extends EffectComponent>>()
     {{
+            put("block", BlockMechanic.class);
             put("cleanse", CleanseMechanic.class);
             put("command", CommandMechanic.class);
             put("cooldown", CooldownMechanic.class);

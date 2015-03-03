@@ -8,6 +8,7 @@ import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.BuffManager;
+import com.sucy.skill.api.util.Combat;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.manager.ClassBoardManager;
@@ -100,6 +101,10 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event)
     {
+        FlagManager.clearFlags(event.getPlayer());
+        BuffManager.clearData(event.getPlayer());
+        Combat.clearData(event.getPlayer());
+
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
@@ -370,6 +375,28 @@ public class MainListener implements Listener
         Bukkit.getPluginManager().callEvent(e);
         event.setDamage(e.getDamage());
         event.setCancelled(e.isCancelled());
+    }
+
+    /**
+     * Handles marking players as in combat
+     *
+     * @param event event details
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onCombat(EntityDamageByEntityEvent event)
+    {
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+
+        if (event.getEntity() instanceof Player)
+        {
+            Combat.applyCombat((Player) event.getEntity());
+        }
+
+        LivingEntity damager = ListenerUtil.getDamager(event);
+        if (damager instanceof Player)
+        {
+            Combat.applyCombat((Player) damager);
+        }
     }
 
     /**

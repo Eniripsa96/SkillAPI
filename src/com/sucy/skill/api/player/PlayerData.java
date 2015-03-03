@@ -209,7 +209,7 @@ public final class PlayerData
      */
     public void giveSkill(Skill skill, PlayerClass parent)
     {
-        String key = skill.getName().toLowerCase();
+        String key = skill.getKey();
         if (!skills.containsKey(key))
         {
             PlayerSkill data = new PlayerSkill(this, skill, parent);
@@ -531,7 +531,18 @@ public final class PlayerData
             }
         }
 
-        classes.put(rpgClass.getGroup(), new PlayerClass(this, rpgClass));
+        PlayerClass classData = new PlayerClass(this, rpgClass);
+        classes.put(rpgClass.getGroup(), classData);
+
+        // Add in missing skills
+        for (Skill skill : rpgClass.getSkills())
+        {
+            if (!skills.containsKey(skill.getKey()))
+            {
+                skills.put(skill.getKey(), new PlayerSkill(this, skill, classData));
+            }
+        }
+
         updateLevelBar();
         updateHealthAndMana(getPlayer());
         updateScoreboard();
@@ -955,7 +966,8 @@ public final class PlayerData
             {
                 mana = maxMana;
             }
-            if (mana < 0) {
+            if (mana < 0)
+            {
                 mana = 0;
             }
         }

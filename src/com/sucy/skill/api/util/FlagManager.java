@@ -3,14 +3,13 @@ package com.sucy.skill.api.util;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * The manager for temporary entity flag data
  */
 public class FlagManager
 {
-    private static final HashMap<UUID, FlagData> data = new HashMap<UUID, FlagData>();
+    private static final HashMap<Integer, FlagData> data = new HashMap<Integer, FlagData>();
 
     /**
      * Retrieves the flag data for an entity. This creates new data if
@@ -41,11 +40,11 @@ public class FlagManager
         {
             return null;
         }
-        if (!data.containsKey(entity.getUniqueId()) && create)
+        if (!data.containsKey(entity.getEntityId()) && create)
         {
-            data.put(entity.getUniqueId(), new FlagData(entity));
+            data.put(entity.getEntityId(), new FlagData(entity));
         }
-        return data.get(entity.getUniqueId());
+        return data.get(entity.getEntityId());
     }
 
     /**
@@ -89,7 +88,7 @@ public class FlagManager
      */
     public static boolean hasFlag(LivingEntity entity, String flag)
     {
-        return entity != null && data.containsKey(entity.getUniqueId()) && getFlagData(entity, false).hasFlag(flag);
+        return entity != null && data.containsKey(entity.getEntityId()) && getFlagData(entity, false).hasFlag(flag);
     }
 
     /**
@@ -106,7 +105,7 @@ public class FlagManager
         {
             return 0;
         }
-        return data.containsKey(entity.getUniqueId()) ? getFlagData(entity).getSecondsLeft(flag) : 0;
+        return data.containsKey(entity.getEntityId()) ? getFlagData(entity).getSecondsLeft(flag) : 0;
     }
 
     /**
@@ -120,7 +119,7 @@ public class FlagManager
         {
             return;
         }
-        FlagData result = data.remove(entity.getUniqueId());
+        FlagData result = data.remove(entity.getEntityId());
         if (result != null)
         {
             result.clear();

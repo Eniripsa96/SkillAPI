@@ -134,7 +134,7 @@ public abstract class Skill
             maxLevel = 1;
         }
 
-        this.key = name;
+        this.key = name.toLowerCase();
         this.type = type;
         this.name = name;
         this.indicator = indicator;
@@ -347,11 +347,6 @@ public abstract class Skill
         item.setAmount(Math.max(1, skillData.getLevel()));
         ItemMeta meta = item.hasItemMeta() ? item.getItemMeta() : Bukkit.getItemFactory().getItemMeta(item.getType());
         ArrayList<String> lore = new ArrayList<String>();
-
-        Bukkit.getLogger().info("Indicator for skill " + name);
-        Bukkit.getLogger().info("    Class=" + skillData.getPlayerClass().getData().getName());
-        Bukkit.getLogger().info("    Points=" + skillData.getPlayerClass().getPoints());
-        Bukkit.getLogger().info("    Cost=" + skillData.getCost());
 
         String lvlReq = SkillAPI.getLanguage().getMessage(skillData.getLevelReq() <= skillData.getPlayerClass().getLevel() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
         String costReq = SkillAPI.getLanguage().getMessage(skillData.getCost() <= skillData.getPlayerClass().getPoints() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);

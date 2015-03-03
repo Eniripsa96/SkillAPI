@@ -27,7 +27,7 @@ public abstract class RPGClass
 
     private OfflinePlayer manaPlayer;
     private SkillTree     skillTree;
-    private RPGClass      parent;
+    private String        parent;
     private ItemStack     icon;
     private TreeType      tree;
     private String        name;
@@ -97,7 +97,7 @@ public abstract class RPGClass
      */
     protected RPGClass(String name, ItemStack icon, int maxLevel, String group, String parent)
     {
-        this.parent = SkillAPI.getClass(parent);
+        this.parent = parent;
         this.icon = icon;
         this.name = name;
         this.prefix = name;
@@ -203,7 +203,7 @@ public abstract class RPGClass
      */
     public boolean hasParent()
     {
-        return parent != null;
+        return getParent() != null;
     }
 
     /**
@@ -213,7 +213,7 @@ public abstract class RPGClass
      */
     public RPGClass getParent()
     {
-        return parent;
+        return SkillAPI.getClass(parent);
     }
 
     /**
@@ -313,6 +313,9 @@ public abstract class RPGClass
      */
     public ArrayList<Skill> getSkills()
     {
+        ArrayList<Skill> skills = new ArrayList<Skill>();
+        skills.addAll(this.skills);
+        if (hasParent() && !getGroupSettings().isProfessReset()) skills.addAll(getParent().getSkills());
         return skills;
     }
 
@@ -490,10 +493,7 @@ public abstract class RPGClass
         config.set(GROUP, group);
         config.set(MANA, mana);
         config.set(MAX, maxLevel);
-        if (parent != null)
-        {
-            config.set(PARENT, parent.getName());
-        }
+        config.set(PARENT, parent);
         config.set(PERM, needsPermission);
         settings.save(config.createSection(ATTR));
         config.set(REGEN, manaRegen);
@@ -533,7 +533,7 @@ public abstract class RPGClass
      */
     public void load(ConfigurationSection config)
     {
-        parent = SkillAPI.getClass(config.getString(PARENT));
+        parent = config.getString(PARENT);
         icon = Data.parseIcon(config);
         name = config.getString(NAME, name);
         prefix = TextFormatter.colorString(config.getString(PREFIX, prefix));
@@ -568,7 +568,8 @@ public abstract class RPGClass
     /**
      * Arranges the skill tree for the class
      */
-    public void arrange() {
+    public void arrange()
+    {
         try
         {
             Bukkit.getLogger().info("Arranging for \"" + name + "\" - " + skills.size() + " skills");

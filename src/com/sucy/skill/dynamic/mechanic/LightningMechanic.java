@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class LightningMechanic extends EffectComponent
 {
-    private Vector up = new Vector(0, 1, 0);
+    private static final Vector up = new Vector(0, 1, 0);
 
     private static final String FORWARD = "forward";
     private static final String RIGHT   = "right";

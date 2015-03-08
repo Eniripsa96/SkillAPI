@@ -50,8 +50,7 @@ public class Settings
     public void reload()
     {
         plugin.reloadConfig();
-        Config.trim(config);
-        Config.setDefaults(config);
+        plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
 
         loadAccountSettings();
@@ -452,12 +451,14 @@ public class Settings
     private static final String GUI_BOARD = GUI_BASE + "scoreboard-enabled";
     private static final String GUI_NAME  = GUI_BASE + "show-class-name";
     private static final String GUI_LEVEL = GUI_BASE + "show-class-level";
+    private static final String GUI_MAP   = GUI_BASE + "map-tree-enabled";
 
     private boolean oldHealth;
     private boolean useLevelBar;
     private boolean showScoreboard;
     private boolean showClassName;
     private boolean showClassLevel;
+    private boolean showMapTree;
 
     /**
      * Checks whether or not old health bars (fixed 10 hearts) are enabled
@@ -511,6 +512,16 @@ public class Settings
         return showClassLevel;
     }
 
+    /**
+     * Checks whether or not map trees are enabled on the server
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isMapTreeEnabled()
+    {
+        return showMapTree;
+    }
+
     private void loadGUISettings()
     {
         oldHealth = config.getBoolean(GUI_OLD);
@@ -518,6 +529,7 @@ public class Settings
         showScoreboard = config.getBoolean(GUI_BOARD);
         showClassName = config.getBoolean(GUI_NAME);
         showClassLevel = config.getBoolean(GUI_LEVEL);
+        showMapTree = config.getBoolean(GUI_MAP);
     }
 
     ///////////////////////////////////////////////////////

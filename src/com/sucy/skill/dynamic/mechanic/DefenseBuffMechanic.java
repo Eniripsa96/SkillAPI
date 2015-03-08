@@ -33,7 +33,7 @@ public class DefenseBuffMechanic extends EffectComponent
             return false;
         }
 
-        boolean percent = settings.getString(TYPE, "flat").toLowerCase().equals("percent");
+        boolean percent = settings.getString(TYPE, "flat").toLowerCase().equals("multiplier");
         double value = settings.getAttr(VALUE, level, 1.0);
         double seconds = settings.getAttr(SECONDS, level, 3.0);
         int ticks = (int) (seconds * 20);

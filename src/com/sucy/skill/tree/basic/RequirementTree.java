@@ -1,4 +1,4 @@
-package com.sucy.skill.tree;
+package com.sucy.skill.tree.basic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Tree implementation based on requirement chains
  */
-public class RequirementTree extends SkillTree
+public class RequirementTree extends InventoryTree
 {
     /**
      * Constructor

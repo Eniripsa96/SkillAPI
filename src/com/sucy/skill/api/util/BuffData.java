@@ -82,7 +82,7 @@ public class BuffData
      *
      * @return modified damage amount
      */
-    public double modifyTakenDefense(double damage)
+    public double modifyTakenDamage(double damage)
     {
         return modify(defenseBuffs.values(), damage);
     }

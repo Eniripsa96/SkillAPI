@@ -1,7 +1,7 @@
 package com.sucy.skill.api.classes;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.tree.*;
+import com.sucy.skill.tree.basic.*;
 
 /**
  * Types of SkillTrees that are available for classes/skills to use
@@ -19,7 +19,7 @@ public enum DefaultTreeType implements TreeType
      *
      * @return skill tree instance
      */
-    public SkillTree getTree(SkillAPI api, RPGClass parent)
+    public InventoryTree getTree(SkillAPI api, RPGClass parent)
     {
         switch (this)
         {

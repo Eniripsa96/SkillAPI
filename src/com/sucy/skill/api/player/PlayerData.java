@@ -20,6 +20,7 @@ import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.listener.TreeListener;
 import com.sucy.skill.manager.ClassBoardManager;
+import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -45,6 +46,7 @@ public final class PlayerData
     private OfflinePlayer  player;
     private PlayerSkillBar skillBar;
     private PlayerCombos   combos;
+    private String         scheme;
     private double         mana;
     private double         maxMana;
     private double         bonusHealth;
@@ -62,6 +64,7 @@ public final class PlayerData
         this.skillBar = new PlayerSkillBar(this);
         this.combos = new PlayerCombos(this);
         this.init = SkillAPI.isLoaded() && init;
+        this.scheme = "default";
         for (String group : SkillAPI.getGroups())
         {
             GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
@@ -122,6 +125,26 @@ public final class PlayerData
     public void endInit()
     {
         init = false;
+    }
+
+    /**
+     * Retrieves the name of the active map menu scheme for the player
+     *
+     * @return map menu scheme name
+     */
+    public String getScheme()
+    {
+        return scheme;
+    }
+
+    /**
+     * Sets the active scheme name for the player
+     *
+     * @param name name of the scheme
+     */
+    public void setScheme(String name)
+    {
+        scheme = name;
     }
 
     ///////////////////////////////////////////////////////
@@ -216,7 +239,7 @@ public final class PlayerData
             combos.addSkill(skill);
             skills.put(key, data);
             int lastLevel = 0;
-            while (data.getCost() == 0 && !data.isMaxed())
+            while (data.getData().canAutoLevel() && !data.isMaxed())
             {
                 upgradeSkill(skill);
                 if (lastLevel == data.getLevel())
@@ -418,7 +441,7 @@ public final class PlayerData
                 return false;
             }
 
-            player.openInventory(playerClass.getData().getSkillTree().getInventory(this));
+            player.openInventory(((InventoryTree)playerClass.getData().getSkillTree()).getInventory(this));
             return true;
         }
 

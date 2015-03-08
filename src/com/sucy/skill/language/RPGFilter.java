@@ -24,4 +24,6 @@ public class RPGFilter
     public static final CustomFilter EXP        = new CustomFilter("{exp}", "");
     public static final CustomFilter ITEM       = new CustomFilter("{item}", "");
     public static final CustomFilter ACCOUNT    = new CustomFilter("{account}", "");
+    public static final CustomFilter LIST       = new CustomFilter("{list}", "");
+    public static final CustomFilter SCHEME     = new CustomFilter("{scheme}", "");
 }

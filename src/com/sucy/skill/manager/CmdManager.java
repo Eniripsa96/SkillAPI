@@ -63,6 +63,10 @@ public class CmdManager
         {
             root.addSubCommand(new ConfigurableCommand(api, "combo", SenderType.PLAYER_ONLY, new CmdCombo(), "Sets skill combo", "<skill> <combo>", Permissions.BASIC));
         }
+        if (SkillAPI.getSettings().isMapTreeEnabled())
+        {
+            root.addSubCommand(new ConfigurableCommand(api, "scheme", SenderType.PLAYER_ONLY, new CmdScheme(), "Views/sets map schemes", "[scheme]", Permissions.BASIC));
+        }
         CommandManager.registerCommand(root);
     }
 

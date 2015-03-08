@@ -12,30 +12,28 @@ import java.io.OutputStream;
  */
 public class ResourceManager
 {
-    private static final String
+    public static final String
             QUESTS_FOLDER = "plugins" + File.separator + "Quests" + File.separator + "modules",
-            QUESTS_TARGET = QUESTS_FOLDER + File.separator + "SkillAPIModule.jar";
+            SCHEME_FOLDER = "plugins" + File.separator + "SkillAPI" + File.separator + "img" + File.separator + "default";
 
     /**
-     * <p>Places the SkillAPI module for Quests into the proper directory</p>
+     * Copies a resource embedded in the jar into the given folder
+     *
+     * @param name   name of the file
+     * @param folder folder to put the file in
      */
-    public static void copyQuestsModule()
+    public static void copyResource(String name, String folder)
     {
-
-        // Don't copy if it's already there
-        File target = new File(QUESTS_TARGET);
-
         try
         {
-
             // Prepare to copy the file
-            InputStream stream = ResourceManager.class.getResourceAsStream("/SkillAPIModule.jar");
+            InputStream stream = ResourceManager.class.getResourceAsStream("/" + name);
             OutputStream resStreamOut;
             int readBytes;
             byte[] buffer = new byte[4096];
-            File folder = new File(QUESTS_FOLDER);
-            folder.mkdirs();
-            resStreamOut = new FileOutputStream(target);
+            File dir = new File(folder);
+            dir.mkdirs();
+            resStreamOut = new FileOutputStream(new File(dir + File.separator + name));
 
             // Copy to the file
             while ((readBytes = stream.read(buffer)) > 0)
@@ -47,11 +45,17 @@ public class ResourceManager
             stream.close();
             resStreamOut.close();
         }
-
-        // An error occurred
         catch (Exception ex)
         {
-            Bukkit.getLogger().severe("Failed to copy the module for Quests");
+            Bukkit.getLogger().info("Failed to copy resource: " + name);
         }
+    }
+
+    /**
+     * <p>Places the SkillAPI module for Quests into the proper directory</p>
+     */
+    public static void copyQuestsModule()
+    {
+        copyResource("SkillAPIModule.jar", QUESTS_FOLDER);
     }
 }

@@ -36,6 +36,7 @@ GUI:
   scoreboard-enabled: true
   show-class-name: true
   show-class-level: true
+  map-tree-enabled: false
 Click Combos:
   enabled: false
   use-click-left: true

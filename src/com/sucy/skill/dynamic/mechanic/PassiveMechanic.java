@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class PassiveMechanic extends EffectComponent
 {
-    private static final String PERIOD = "period";
+    private static final String PERIOD = "seconds";
 
     /**
      * Executes the component

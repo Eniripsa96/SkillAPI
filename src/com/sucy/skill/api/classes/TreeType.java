@@ -1,7 +1,7 @@
 package com.sucy.skill.api.classes;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.tree.SkillTree;
+import com.sucy.skill.tree.basic.InventoryTree;
 
 /**
  * Interface class for extensions of the available skill
@@ -19,5 +19,5 @@ public interface TreeType
      *
      * @return skill tree instance
      */
-    public SkillTree getTree(SkillAPI api, RPGClass parent);
+    public InventoryTree getTree(SkillAPI api, RPGClass parent);
 }

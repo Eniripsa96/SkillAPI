@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -155,10 +156,22 @@ public class BlockMechanic extends EffectComponent
         }
 
         // Change blocks
-        ArrayList<BlockState> states = new ArrayList<BlockState>();
+        ArrayList<Location> states = new ArrayList<Location>();
         for (Block b : blocks)
         {
-            states.add(b.getState());
+            // Increment the counter
+            Location loc = b.getLocation();
+            if (pending.containsKey(loc))
+            {
+                pending.put(loc, pending.get(loc) + 1);
+            }
+            else
+            {
+                pending.put(loc, 1);
+                original.put(loc, b.getState());
+            }
+
+            states.add(b.getLocation());
             BlockState state = b.getState();
             state.setType(block);
             state.setData(new MaterialData(block, data));
@@ -171,24 +184,36 @@ public class BlockMechanic extends EffectComponent
         return true;
     }
 
+    private final HashMap<Location, Integer>    pending  = new HashMap<Location, Integer>();
+    private final HashMap<Location, BlockState> original = new HashMap<Location, BlockState>();
+
     /**
      * Reverts block changes after a duration
      */
     private class RevertTask extends BukkitRunnable
     {
-        private ArrayList<BlockState> states;
+        private ArrayList<Location> locs;
 
-        public RevertTask(ArrayList<BlockState> states)
+        public RevertTask(ArrayList<Location> locs)
         {
-            this.states = states;
+            this.locs = locs;
         }
 
         @Override
         public void run()
         {
-            for (BlockState state : states)
+            for (Location loc : locs)
             {
-                state.update(true, false);
+                int count = pending.remove(loc);
+
+                if (count == 1)
+                {
+                    original.remove(loc).update(true, false);
+                }
+                else
+                {
+                    pending.put(loc, count - 1);
+                }
             }
         }
     }

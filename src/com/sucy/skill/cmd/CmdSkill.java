@@ -4,9 +4,12 @@ import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.tree.map.TreeRenderer;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -17,6 +20,8 @@ public class CmdSkill implements IFunction
     private static final String CANNOT_USE = "cannot-use";
     private static final String NO_SKILLS  = "no-skills";
     private static final String DISABLED   = "world-disabled";
+    private static final String MAP_GIVEN  = "map-given";
+    private static final String MAP_OWNED  = "map-owned";
 
     /**
      * Runs the command
@@ -35,13 +40,30 @@ public class CmdSkill implements IFunction
             cmd.sendMessage(sender, DISABLED, "&4You cannot use this command in this world");
         }
 
-        // Only players have profession options
+        // Only plays have skills to view
         else if (sender instanceof Player)
         {
-            PlayerData data = SkillAPI.getPlayerData((Player) sender);
-            if (!data.showSkills((Player) sender))
+            Player p = (Player)sender;
+            if (SkillAPI.getSettings().isMapTreeEnabled())
             {
-                cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");
+                for (ItemStack i : p.getInventory().getContents())
+                {
+                    if (i != null && i.getType() == Material.MAP && i.getDurability() == TreeRenderer.RENDERER.view.getId())
+                    {
+                        cmd.sendMessage(sender, MAP_OWNED, ChatColor.RED + "You already have the skill tree map");
+                        return;
+                    }
+                }
+                p.getInventory().addItem(TreeRenderer.RENDERER.map);
+                cmd.sendMessage(sender, MAP_GIVEN, ChatColor.DARK_GREEN + "You were given the skill tree map. Hold it in your hand to view skills.");
+            }
+            else
+            {
+                PlayerData data = SkillAPI.getPlayerData(p);
+                if (!data.showSkills(p))
+                {
+                    cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");
+                }
             }
         }
 

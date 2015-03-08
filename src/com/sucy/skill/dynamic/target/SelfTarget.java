@@ -26,10 +26,10 @@ public class SelfTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
+        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+        list.add(caster);
         for (LivingEntity t : targets)
         {
-            ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-            list.add(caster);
             worked = executeChildren(caster, level, list) || worked;
 
             if (!settings.getBool(REPEATED))

@@ -29,6 +29,7 @@ public class ConfigIO extends IOManager
             SKILLS         = "skills",
             BINDS          = "binds",
             LEVEL          = "level",
+            SCHEME         = "scheme",
             TOTAL_EXP      = "total-exp",
             POINTS         = "points",
             SKILL_BAR      = "bar",
@@ -78,6 +79,9 @@ public class ConfigIO extends IOManager
         {
             ConfigurationSection account = accounts.getConfigurationSection(accountKey);
             PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")), player, true);
+
+            // Load scheme
+            acc.setScheme(account.getString(SCHEME, "default"));
 
             // Load classes
             ConfigurationSection classes = account.getConfigurationSection(CLASSES);
@@ -190,6 +194,9 @@ public class ConfigIO extends IOManager
         {
             ConfigurationSection account = accounts.createSection(ACCOUNT_PREFIX + entry.getKey());
             PlayerData acc = entry.getValue();
+
+            // Save scheme
+            account.set(SCHEME, acc.getScheme());
 
             // Save classes
             ConfigurationSection classes = account.createSection(CLASSES);

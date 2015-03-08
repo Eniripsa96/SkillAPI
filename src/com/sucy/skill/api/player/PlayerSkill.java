@@ -224,7 +224,7 @@ public final class PlayerSkill
      */
     public void addLevels(int amount)
     {
-        this.level += amount;
+        this.level = Math.min(this.level + amount, skill.getMaxLevel());
     }
 
     /**

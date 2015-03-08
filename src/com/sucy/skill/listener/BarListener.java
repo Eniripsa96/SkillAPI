@@ -9,7 +9,8 @@ import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.tree.SkillTree;
+import com.sucy.skill.tree.basic.InventoryTree;
+import com.sucy.skill.tree.map.TreeRenderer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -155,9 +156,17 @@ public class BarListener implements Listener
      * @param event event details
      */
     @EventHandler
-    public void onDowngrade(PlayerSkillDowngradeEvent event)
+    public void onDowngrade(final PlayerSkillDowngradeEvent event)
     {
-        SkillAPI.getPlayerData(event.getPlayerData().getPlayer()).getSkillBar().update(event.getPlayerData().getPlayer());
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                    SkillAPI.getPlayerData(event.getPlayerData().getPlayer()).getSkillBar().update(event.getPlayerData().getPlayer());
+            }
+        }, 1);
+
     }
 
     /**
@@ -199,7 +208,6 @@ public class BarListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAssign(InventoryClickEvent event)
     {
-
         // Players without a class aren't effected
         PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
         if (!data.hasClass())
@@ -249,9 +257,9 @@ public class BarListener implements Listener
         }
 
         // Must be a skill tree
-        if (InventoryManager.isMatching(event.getInventory(), SkillTree.INVENTORY_KEY))
+        if (InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY))
         {
-            SkillTree tree = SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
+            InventoryTree tree = (InventoryTree)SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
 
             // Must be hovering over a skill
             if (tree.isSkill(event.getWhoClicked(), event.getRawSlot()))
@@ -290,7 +298,15 @@ public class BarListener implements Listener
         if (!bar.isWeaponSlot(event.getNewSlot()) && bar.isEnabled())
         {
             event.setCancelled(true);
-            bar.apply(event.getNewSlot());
+
+            if (TreeRenderer.RENDERER.isHeld(event.getPlayer()) && SkillAPI.getSettings().isMapTreeEnabled())
+            {
+                bar.assign(TreeRenderer.RENDERER.getSkill(event.getPlayer()), event.getNewSlot());
+            }
+            else
+            {
+                bar.apply(event.getNewSlot());
+            }
         }
     }
 

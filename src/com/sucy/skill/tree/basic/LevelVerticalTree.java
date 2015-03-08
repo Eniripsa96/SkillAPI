@@ -1,4 +1,4 @@
-package com.sucy.skill.tree;
+package com.sucy.skill.tree.basic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;

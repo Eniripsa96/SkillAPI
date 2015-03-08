@@ -1,4 +1,4 @@
-package com.sucy.skill.tree;
+package com.sucy.skill.tree.basic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -11,7 +11,7 @@ import java.util.*;
  * <p>Root class for tree implementations based on levels</p>
  * <p>This is still in development to make it work as intended</p>
  */
-public abstract class LevelTree extends SkillTree
+public abstract class LevelTree extends InventoryTree
 {
     /**
      * Constructor

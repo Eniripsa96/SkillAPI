@@ -1,4 +1,4 @@
-package com.sucy.skill.tree;
+package com.sucy.skill.tree.basic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * A basic implementation of a horizontally ascending skill tree
  */
-public class BasicVerticalTree extends SkillTree
+public class BasicVerticalTree extends InventoryTree
 {
     private int width;
 

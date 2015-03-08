@@ -148,6 +148,17 @@ public abstract class Skill
     }
 
     /**
+     * Checks whether or not the skill can automatically
+     * level up to the next stage.
+     *
+     * @return true if can level up automatically, false otherwise
+     */
+    public boolean canAutoLevel()
+    {
+        return getCost(0) == 0 && !canCast() && maxLevel == 1;
+    }
+
+    /**
      * Retrieves the configuration key for the skill
      *
      * @return configuration key for the skill
@@ -225,6 +236,16 @@ public abstract class Skill
     public String getType()
     {
         return type;
+    }
+
+    /**
+     * Checks whether or not the skill requires another before leveling up
+     *
+     * @return true if requires another skill, false otherwise
+     */
+    public boolean hasSkillReq()
+    {
+        return SkillAPI.getSkill(skillReq) != null && skillReqLevel > 0;
     }
 
     /**

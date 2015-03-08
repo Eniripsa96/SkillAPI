@@ -138,7 +138,7 @@ public class BuffManager
         }
         else
         {
-            return data.modifyTakenDefense(damage);
+            return data.modifyTakenDamage(damage);
         }
     }
 }

@@ -8,6 +8,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.tree.SkillTree;
+import com.sucy.skill.tree.map.MapTree;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -558,11 +559,18 @@ public abstract class RPGClass
                 {
                     skills.add(skill);
                 }
-                else Bukkit.getLogger().warning("Invalid skill for class " + name + " - " + name);
+                else Bukkit.getLogger().warning("Invalid skill for class " + this.name + " - " + name);
             }
         }
 
-        this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
+        if (SkillAPI.getSettings().isMapTreeEnabled())
+        {
+            this.skillTree = new MapTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
+        }
+        else
+        {
+            this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
+        }
     }
 
     /**

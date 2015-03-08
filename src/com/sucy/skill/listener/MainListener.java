@@ -328,7 +328,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event)
     {
         // Damage buff application
@@ -363,7 +363,7 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPhysicalDamage(EntityDamageByEntityEvent event)
     {
         if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity))

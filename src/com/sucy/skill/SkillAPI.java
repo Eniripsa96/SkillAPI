@@ -45,6 +45,8 @@ import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.task.SaveTask;
+import com.sucy.skill.listener.MapListener;
+import com.sucy.skill.tree.map.TreeRenderer;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -141,7 +143,14 @@ public class SkillAPI extends JavaPlugin
         new MainListener(this);
         new MechanicListener(this);
         new StatusListener(this);
-        new TreeListener(this);
+        if (settings.isMapTreeEnabled())
+        {
+            new MapListener(this);
+        }
+        else
+        {
+            new TreeListener(this);
+        }
         if (settings.isCheckLore())
         {
             new ItemListener(this);
@@ -172,6 +181,9 @@ public class SkillAPI extends JavaPlugin
         {
             saveTask = new SaveTask(this);
         }
+
+        // Save map data
+        TreeRenderer.RENDERER.save(this);
 
         loaded = true;
     }

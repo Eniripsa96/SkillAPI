@@ -145,7 +145,7 @@ public class TreeRenderer extends MapRenderer
             view.addRenderer(this);
 
             worldMap = Reflection.getValue(view, "worldMap");
-            flagDirty = Reflection.getMethod(worldMap, "flagDirty");
+            flagDirty = Reflection.getMethod(worldMap, "flagDirty", int.class, int.class);
         }
         catch (Exception ex)
         {
@@ -457,7 +457,7 @@ public class TreeRenderer extends MapRenderer
         {
             try
             {
-                Reflection.setValue(view, "buffer", mapImage.getData());
+                Reflection.setValue(mapCanvas, "buffer", mapImage.getData());
                 flagDirty.invoke(worldMap, minX, minY);
                 flagDirty.invoke(worldMap, maxX, maxY);
                 fast = true;

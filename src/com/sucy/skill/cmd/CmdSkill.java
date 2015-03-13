@@ -43,7 +43,7 @@ public class CmdSkill implements IFunction
         // Only plays have skills to view
         else if (sender instanceof Player)
         {
-            Player p = (Player)sender;
+            Player p = (Player) sender;
             if (SkillAPI.getSettings().isMapTreeEnabled())
             {
                 for (ItemStack i : p.getInventory().getContents())

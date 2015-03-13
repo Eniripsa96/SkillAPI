@@ -163,7 +163,7 @@ public class BarListener implements Listener
             @Override
             public void run()
             {
-                    SkillAPI.getPlayerData(event.getPlayerData().getPlayer()).getSkillBar().update(event.getPlayerData().getPlayer());
+                SkillAPI.getPlayerData(event.getPlayerData().getPlayer()).getSkillBar().update(event.getPlayerData().getPlayer());
             }
         }, 1);
 
@@ -259,7 +259,7 @@ public class BarListener implements Listener
         // Must be a skill tree
         if (InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY))
         {
-            InventoryTree tree = (InventoryTree)SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
+            InventoryTree tree = (InventoryTree) SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
 
             // Must be hovering over a skill
             if (tree.isSkill(event.getWhoClicked(), event.getRawSlot()))

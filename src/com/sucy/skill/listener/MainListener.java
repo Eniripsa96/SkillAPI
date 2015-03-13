@@ -158,20 +158,12 @@ public class MainListener implements Listener
             // Block spawner mob experience
             if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner())
             {
-                if (SkillAPI.getSettings().isUseOrbs())
-                {
-                    event.setDroppedExp(0);
-                }
                 return;
             }
 
             // Block egg mob experience
             else if (value == EGG && SkillAPI.getSettings().isBlockEgg())
             {
-                if (SkillAPI.getSettings().isUseOrbs())
-                {
-                    event.setDroppedExp(0);
-                }
                 return;
             }
         }
@@ -182,10 +174,6 @@ public class MainListener implements Listener
             // Block creative experience
             if (k.getGameMode() == GameMode.CREATIVE && SkillAPI.getSettings().isBlockCreative())
             {
-                if (SkillAPI.getSettings().isUseOrbs())
-                {
-                    event.setDroppedExp(0);
-                }
                 return;
             }
 
@@ -195,7 +183,6 @@ public class MainListener implements Listener
             if (SkillAPI.getSettings().isUseOrbs())
             {
                 player.giveExp(event.getDroppedExp(), ExpSource.MOB);
-                event.setDroppedExp(0);
             }
 
             // Give experience based on config when not using orbs

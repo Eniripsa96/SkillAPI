@@ -3,15 +3,11 @@ package com.sucy.skill.cmd;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.tree.map.TreeRenderer;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -45,7 +41,7 @@ public class CmdScheme implements IFunction
         // Only plays have skills to view
         else if (sender instanceof Player)
         {
-            Player p = (Player)sender;
+            Player p = (Player) sender;
 
             // Scheme list
             if (args.length == 0)

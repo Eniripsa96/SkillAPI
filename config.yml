@@ -8,49 +8,129 @@
 # and look at the default configuration section  #
 # ---------------------------------------------- #
 Accounts:
+  #
+  # The main class group used for GUI displays
   main-class-group: class
+  #
+  # Currently disabled, ignore this
   one-per-class: false
+  #
+  # The max number of accounts a normal user can use
   max-accounts: 3
+  #
+  # The max number of accounts users can have with certain permissions
+  # must be in the format '<permission>:<accounts>'
   perm-accounts:
   - 'skillapi.account.admin:10'
+#
 Saving:
+  #
+  # Whether or not to auto save data periodically
   auto-save: false
+  #
+  # How often to auto-save in minutes
   minutes: 30
+#
 Classes:
+  #
+  # Whether or not to use SkillAPI's health system
   modify-health: true
+  #
+  # The default health for players without a class
   classless-hp: 20
+  #
+  # Whether or not non-castable auto-leveled skills are shown
   show-auto-skills: false
+#
 Mana:
+  #
+  # Whether or not to use SkillAPI's mana system
   enabled: true
+  #
+  # How frequently mana is gained in seconds
   freq: 1
+#
 Skills:
+  #
+  # Whether or not players are allowed to downgrade skills
   allow-downgrade: true
+  #
+  # Whether or not messages should be shown on casting a skill
   show-messages: true
+  #
+  # The radius in which to show cast messages to nearby players
   message-radius: 20
+#
 Items:
+  #
+  # Whether or not to use SkillAPI's lore requirements feature
   lore-requirements: true
+  #
+  # How many players to check for the requirements each tick
+  # This should be increased on larger servers to prevent
+  # large delays before the same player is checked again
   players-per-check: 1
+#
 GUI:
+  #
+  # Whether or not to lock the health bar to 10 hearts
+  # This does not affect total health, only the display
   old-health-bar: false
+  #
+  # Whether or not to display class level/experience in the level bar
+  # This will override enchanting experience so use with caution
   use-level-bar: false
+  #
+  # Whether or not to display class information on a scoreboard
   scoreboard-enabled: true
+  #
+  # Whether or not to add a prefix to players with their class name
   show-class-name: true
+  #
+  # Whether or not to display a player's level below their name
   show-class-level: true
+  #
+  # Whether or not to use map trees instead of the regular ones
+  # View map.yml for further customization for this option
+  # Also add more schemes by adding folders in the "img" folder
   map-tree-enabled: false
+#
 Click Combos:
+  #
+  # Whether or not to use click combinations
   enabled: false
+  #
+  # Whether or not left clicks are allowed at all
   use-click-left: true
+  #
+  # Whether or not right clicks are allowed at all
   use-click-right: true
+  #
+  # Whether or not shift clicks are allowed at all
   use-click-shift: false
+  #
+  # How many clicks are needed to perform a combo
   combo-size: 4
+  #
+  # Inactivity time in seconds before clicks for a combo are reset
   click-time: 1.0
+#
 Skill Bar:
+  #
+  # Whether or not to use skill bars
   enabled: false
+  #
+  # Whether or not to show skill cooldowns in the skill bar
   show-cooldown: true
+  #
+  # The item to use as a placeholder in the skill bar
   empty-icon:
     material: PUMPKIN_SEEDS
     data: 0
     text: '&7Unassigned'
+  #
+  # The default layout for skill bars
+  # Players can customize unlocked slots
   layout:
     1:
       skill: true
@@ -79,17 +159,42 @@ Skill Bar:
     9:
       skill: false
       locked: false
+#
 Experience:
+  #
+  # Whether or not to use vanilla exp drops for class exp
+  # Note: any dropped exp will not count towards class exp,
+  # only enabled sources will count. By default, this is only
+  # mob deaths.
   use-exp-orbs: false
+  #
+  # Whether or not to prevent gaining experience from mobs
+  # spawned via a mob spawner block
   block-mob-spawner: true
+  #
+  # Whether or not to prevent gaining experience from mobs
+  # spawned vai a mob spawn egg
   block-mob-egg: true
+  #
+  # Whether or not to prevent gaining experience while
+  # in creative mode
   block-creative: true
+  #
+  # Whether or not to display a message when gaining experience
   exp-message-enabled: true
+  #
+  # Whether or not to display a message when gaining a level
   level-message-enabled: true
+  #
+  # The formula used for calculating required experience
+  # The formula is: x*lvl*lvl + y*lvl + z
   formula:
     x: 1
     y: 8
     z: 16
+  #
+  # The experience yields from each mob type
+  # When exp orbs are enabled, these values are ignored
   yields:
     blaze: 10
     cavespider: 5
@@ -110,9 +215,21 @@ Experience:
     wither: 500
     witherskeleton: 5
     zombie: 2
+#
+# How much logging to do when loading SkillAPI
+# When testing setting up skills/classes, increase this to 1-5
 Logging: 0
+#
 Worlds:
+  #
+  # Whether or not to enable the world restriction
   enable: false
+  #
+  # Whether or not to use the list as an enabling list
+  # If true, only worlds in the list will let players use SkillAPI
+  # If false, any world not in the list will let players use SkillAPI
   use-as-enabling: true
+  #
+  # The worlds to include in the enable/disable list
   worlds:
   - world

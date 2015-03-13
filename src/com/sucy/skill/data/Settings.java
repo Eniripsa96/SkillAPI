@@ -1,6 +1,8 @@
 package com.sucy.skill.data;
 
+import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.Config;
+import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import org.bukkit.Material;
@@ -23,8 +25,8 @@ public class Settings
 
     private HashMap<String, GroupSettings> groups = new HashMap<String, GroupSettings>();
 
-    private SkillAPI             plugin;
-    private ConfigurationSection config;
+    private SkillAPI    plugin;
+    private DataSection config;
 
     /**
      * <p>Initializes a new settings manager.</p>
@@ -37,8 +39,12 @@ public class Settings
     public Settings(SkillAPI plugin)
     {
         this.plugin = plugin;
-        this.plugin.saveDefaultConfig();
-        config = plugin.getConfig();
+        CommentedConfig file = new CommentedConfig(plugin, "config");
+        file.checkDefaults();
+        file.trim();
+        file.save();
+        config = file.getConfig();
+        config.dump("plugins/SkillAPI/dump.yml");
         reload();
     }
 
@@ -49,10 +55,6 @@ public class Settings
      */
     public void reload()
     {
-        plugin.reloadConfig();
-        plugin.getConfig().options().copyDefaults(true);
-        plugin.saveConfig();
-
         loadAccountSettings();
         loadClassSettings();
         loadManaSettings();
@@ -74,13 +76,13 @@ public class Settings
 
     public void loadGroupSettings()
     {
-        Config file = new Config(plugin, "groups");
-        ConfigurationSection config = file.getConfig();
+        CommentedConfig file = new CommentedConfig(plugin, "groups");
+        DataSection config = file.getConfig();
         groups.clear();
 
-        for (String key : config.getKeys(false))
+        for (String key : config.keys())
         {
-            groups.put(key.toLowerCase(), new GroupSettings(config.getConfigurationSection(key)));
+            groups.put(key.toLowerCase(), new GroupSettings(config.getSection(key)));
         }
         for (String group : SkillAPI.getGroups())
         {
@@ -92,7 +94,7 @@ public class Settings
             }
         }
 
-        file.saveConfig();
+        file.save();
     }
 
     /**
@@ -193,7 +195,7 @@ public class Settings
         maxAccounts = config.getInt(ACCOUNT_MAX);
 
         // Permission account amounts
-        List<String> list = config.getStringList(ACCOUNT_PERM);
+        List<String> list = config.getList(ACCOUNT_PERM);
         for (String item : list)
         {
             if (!item.contains(":"))
@@ -748,15 +750,15 @@ public class Settings
         this.showExpMessages = config.getBoolean(EXP_BASE + "exp-message-enabled");
         this.showLevelMessages = config.getBoolean(EXP_BASE + "level-message-enabled");
 
-        ConfigurationSection formula = config.getConfigurationSection(EXP_BASE + "formula");
+        DataSection formula = config.getSection(EXP_BASE + "formula");
         int x = formula.getInt("x");
         int y = formula.getInt("y");
         int z = formula.getInt("z");
         expFormula = new ExpFormula(x, y, z);
 
-        ConfigurationSection yields = config.getConfigurationSection(EXP_BASE + "yields");
+        DataSection yields = config.getSection(EXP_BASE + "yields");
         this.yields.clear();
-        for (String key : yields.getKeys(false))
+        for (String key : yields.keys())
         {
             this.yields.put(key, yields.getDouble(key));
         }
@@ -826,11 +828,11 @@ public class Settings
 
     private void loadSkillBarSettings()
     {
-        ConfigurationSection bar = config.getConfigurationSection("Skill Bar");
+        DataSection bar = config.getSection("Skill Bar");
         skillBarEnabled = bar.getBoolean("enabled", false);
         skillBarCooldowns = bar.getBoolean("show-cooldown", true);
 
-        ConfigurationSection icon = bar.getConfigurationSection("empty-icon");
+        DataSection icon = bar.getSection("empty-icon");
         Material mat;
         try
         {
@@ -847,10 +849,10 @@ public class Settings
         meta.setDisplayName(TextFormatter.colorString(icon.getString("text", "&7Unassigned")));
         unassigned.setItemMeta(meta);
 
-        ConfigurationSection layout = bar.getConfigurationSection("layout");
+        DataSection layout = bar.getSection("layout");
         for (int i = 0; i < 9; i++)
         {
-            ConfigurationSection slot = layout.getConfigurationSection((i + 1) + "");
+            DataSection slot = layout.getSection((i + 1) + "");
             defaultBarLayout[i] = slot.getBoolean("skill", i <= 5);
             lockedSlots[i] = slot.getBoolean("locked", false);
         }
@@ -923,6 +925,6 @@ public class Settings
     {
         worldEnabled = config.getBoolean(WORLD_ENABLE);
         worldEnableList = config.getBoolean(WORLD_TYPE);
-        worlds = config.getStringList(WORLD_LIST);
+        worlds = config.getList(WORLD_LIST);
     }
 }

@@ -441,7 +441,7 @@ public final class PlayerData
                 return false;
             }
 
-            player.openInventory(((InventoryTree)playerClass.getData().getSkillTree()).getInventory(this));
+            player.openInventory(((InventoryTree) playerClass.getData().getSkillTree()).getInventory(this));
             return true;
         }
 

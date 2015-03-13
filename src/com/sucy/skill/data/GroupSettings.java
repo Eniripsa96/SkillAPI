@@ -1,5 +1,6 @@
 package com.sucy.skill.data;
 
+import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,7 +31,7 @@ public class GroupSettings
      *
      * @param config config to load from
      */
-    public GroupSettings(ConfigurationSection config)
+    public GroupSettings(DataSection config)
     {
         this();
 
@@ -132,7 +133,7 @@ public class GroupSettings
      *
      * @param config config to save to
      */
-    public void save(ConfigurationSection config)
+    public void save(DataSection config)
     {
         config.set(DEFAULT, defaultClass);
         config.set(PERMISSION, permission);

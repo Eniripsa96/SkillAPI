@@ -7,7 +7,6 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.tree.basic.InventoryTree;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -54,7 +53,7 @@ public class TreeListener implements Listener
                 PlayerClass c = classes.toArray(new PlayerClass[classes.size()])[event.getSlot()];
                 if (c.getData().getSkills().size() > 0)
                 {
-                    event.getWhoClicked().openInventory(((InventoryTree)c.getData().getSkillTree()).getInventory(data));
+                    event.getWhoClicked().openInventory(((InventoryTree) c.getData().getSkillTree()).getInventory(data));
                 }
                 else
                 {
@@ -66,7 +65,7 @@ public class TreeListener implements Listener
         // Make sure its a skill tree inventory
         else if (InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY))
         {
-            InventoryTree tree = (InventoryTree)SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
+            InventoryTree tree = (InventoryTree) SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
 
             // Do nothing when clicking outside the inventory
             if (event.getSlot() == -999)

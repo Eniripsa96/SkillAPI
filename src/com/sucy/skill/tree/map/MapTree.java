@@ -6,7 +6,10 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.ChatColor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Represents a Skill Tree that uses a map for its GUI

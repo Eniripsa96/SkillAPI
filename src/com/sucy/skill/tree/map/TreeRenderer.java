@@ -80,7 +80,7 @@ public class TreeRenderer extends MapRenderer
     private static final int    defaultSize2  = 9;
 
     // Buffer to draw to before applying it to the map
-    private MapImage      mapImage = new MapImage(128, 128);
+    private MapImage mapImage = new MapImage(128, 128);
 
     // Positional data for each player as they browse the tree
     private class ScrollData
@@ -114,8 +114,9 @@ public class TreeRenderer extends MapRenderer
     public  MapView   view;
     private short     viewId;
     private Object    worldMap;
-    private Method flagDirty;
-    private int minX, maxX, minY, maxY, last;
+    private Method    flagDirty;
+    private Method    flagDirty2;
+    private int       minX, maxX, minY, maxY, last;
 
     /**
      * A private constructor is used to prevent further
@@ -146,6 +147,10 @@ public class TreeRenderer extends MapRenderer
 
             worldMap = Reflection.getValue(view, "worldMap");
             flagDirty = Reflection.getMethod(worldMap, "flagDirty", int.class, int.class);
+            if (flagDirty == null)
+            {
+                flagDirty2 = Reflection.getMethod(worldMap, "flagDirty", int.class, int.class, int.class);
+            }
         }
         catch (Exception ex)
         {
@@ -312,6 +317,7 @@ public class TreeRenderer extends MapRenderer
      * instead return null.
      *
      * @param player player to get the MapTree for
+     *
      * @return the player's MapTree or null if not found
      */
     public MapTree getTree(Player player)
@@ -329,6 +335,7 @@ public class TreeRenderer extends MapRenderer
      * a valid one, this returns the default scheme instead.
      *
      * @param player player to get the scheme for
+     *
      * @return scheme of the player
      */
     public Scheme getScheme(Player player)
@@ -342,6 +349,7 @@ public class TreeRenderer extends MapRenderer
      * Gets the hovered skill for a player
      *
      * @param player player to get the hovered skill for
+     *
      * @return hovered skill
      */
     public PlayerSkill getSkill(Player player)
@@ -356,6 +364,7 @@ public class TreeRenderer extends MapRenderer
      * Checks whether or not the player is holding the skill tree map
      *
      * @param player player to check
+     *
      * @return true if held, false otherwise
      */
     public boolean isHeld(Player player)
@@ -445,24 +454,46 @@ public class TreeRenderer extends MapRenderer
         }
 
         // Refresh entire map when changing screens
-        if (id != last) {
+        if (id != last)
+        {
             last = id;
             minX = minY = 0;
             maxX = maxY = 127;
         }
 
-        // Try a slightly faster way of setting the data
+        // Try a much faster way of setting the data
         boolean fast = false;
         if (flagDirty != null)
         {
             try
             {
-                Reflection.setValue(mapCanvas, "buffer", mapImage.getData());
                 flagDirty.invoke(worldMap, minX, minY);
                 flagDirty.invoke(worldMap, maxX, maxY);
+                Reflection.setValue(mapCanvas, "buffer", mapImage.getData());
                 fast = true;
             }
-            catch (Exception ex) { /* Didn't work */ }
+            catch (Exception ex)
+            {
+                // Didn't work, use normal method instead
+                flagDirty = null;
+            }
+        }
+
+        // Fast drawing on older servers
+        else if (flagDirty2 != null)
+        {
+            try
+            {
+                flagDirty2.invoke(worldMap, 0, 0, 127);
+                flagDirty2.invoke(worldMap, 1, 0, 127);
+                Reflection.setValue(mapCanvas, "buffer", mapImage.getData());
+                fast = true;
+            }
+            catch (Exception ex)
+            {
+                // Didn't work, use normal method instead
+                flagDirty2 = null;
+            }
         }
 
         // Otherwise use the tried and true method
@@ -631,7 +662,7 @@ public class TreeRenderer extends MapRenderer
 
         SkillAPI api = (SkillAPI) Bukkit.getServer().getPluginManager().getPlugin("SkillAPI");
         ConfigurationSection config = new Config(api, "map").getConfig();
-        viewId = (short)config.getInt("VIEW_ID", viewId);
+        viewId = (short) config.getInt("VIEW_ID", viewId);
         try
         {
             // Load menu schemes

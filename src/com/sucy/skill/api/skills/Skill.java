@@ -2,7 +2,6 @@ package com.sucy.skill.api.skills;
 
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
-import com.rit.sucy.config.LanguageConfig;
 import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
@@ -359,11 +358,6 @@ public abstract class Skill
      */
     public ItemStack getIndicator(PlayerSkill skillData)
     {
-
-        LanguageConfig lang = SkillAPI.getLanguage();
-        List<String> layout = lang.getMessage(SkillNodes.LAYOUT);
-        boolean first = true;
-
         ItemStack item = indicator.clone();
         item.setAmount(Math.max(1, skillData.getLevel()));
         ItemMeta meta = item.hasItemMeta() ? item.getItemMeta() : Bukkit.getItemFactory().getItemMeta(item.getType());

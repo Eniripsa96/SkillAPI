@@ -44,7 +44,6 @@ public class Settings
         file.trim();
         file.save();
         config = file.getConfig();
-        config.dump("plugins/SkillAPI/dump.yml");
         reload();
     }
 

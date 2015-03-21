@@ -2,6 +2,7 @@ package com.sucy.skill.dynamic;
 
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.event.PlayerLandEvent;
 import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
@@ -35,12 +36,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public DynamicSkill(String name)
     {
         super(name, "Dynamic", Material.JACK_O_LANTERN, 1);
-    }
-
-    // Testing method
-    public void addComponent(Trigger trigger, EffectComponent component)
-    {
-        components.put(trigger, component);
     }
 
     /**
@@ -322,6 +317,20 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.CROUCH);
             }
+        }
+    }
+
+    /**
+     * Land trigger
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onLand(PlayerLandEvent event)
+    {
+        if (active.containsKey(event.getPlayer().getEntityId()))
+        {
+            trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.LAND);
         }
     }
 

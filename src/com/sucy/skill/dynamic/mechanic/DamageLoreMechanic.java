@@ -29,10 +29,11 @@ public class DamageLoreMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String regex = settings.getString(REGEX, "Damage: {value}");
         regex = regex.replace("{value}", "([0-9]+)");
         Pattern pattern = Pattern.compile(regex);
-        double m = settings.getAttr(MULTIPLIER, level, 1.0);
+        double m = attr(caster, MULTIPLIER, level, 1.0, isSelf);
         boolean worked = false;
         for (LivingEntity target : targets)
         {

@@ -159,7 +159,7 @@ public class RegistrationManager
                     }
                     catch (Exception ex)
                     {
-                        api.getLogger().severe("Failed to load skill: " + name);
+                        api.getLogger().severe("Failed to load skill: " + name + " - " + ex.getMessage());
                     }
                 }
             }
@@ -248,7 +248,7 @@ public class RegistrationManager
                     }
                     catch (Exception ex)
                     {
-                        api.getLogger().severe("Failed to load class file: " + file.getName() + " - Invalid format");
+                        api.getLogger().severe("Failed to load class file: " + file.getName() + " - " + ex.getMessage());
                     }
                 }
             }

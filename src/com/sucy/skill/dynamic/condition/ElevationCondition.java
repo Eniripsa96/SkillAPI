@@ -27,9 +27,10 @@ public class ElevationCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String type = settings.getString(TYPE).toLowerCase();
-        double min = settings.getAttr(MIN, level);
-        double max = settings.getAttr(MAX, level);
+        double min = attr(caster, MIN, level, 0, isSelf);
+        double max = attr(caster, MAX, level, 255, isSelf);
 
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)

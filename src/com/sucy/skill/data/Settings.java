@@ -5,6 +5,7 @@ import com.rit.sucy.config.Config;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -268,10 +269,14 @@ public class Settings
     private static final String CLASS_MODIFY = CLASS_BASE + "modify-hp";
     private static final String CLASS_HP     = CLASS_BASE + "classless-hp";
     private static final String CLASS_SHOW   = CLASS_BASE + "show-auto-skills";
+    private static final String CLASS_ATTRIB = CLASS_BASE + "attributes-enabled";
+    private static final String CLASS_REFUND = CLASS_BASE + "attributes-downgrade";
 
     private boolean modifyHealth;
     private int     defaultHealth;
     private boolean showAutoSkills;
+    private boolean attributesEnabled;
+    private boolean attributesDowngrade;
 
     /**
      * Checks whether or not SkillAPI should modify the max health of players
@@ -303,11 +308,33 @@ public class Settings
         return showAutoSkills;
     }
 
+    /**
+     * Checks whether or not attributes are enabled
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isAttributesEnabled()
+    {
+        return attributesEnabled;
+    }
+
+    /**
+     * Checks whether or not attribute points can be refunded
+     *
+     * @return true if can refund, false otherwise
+     */
+    public boolean isAttributesDowngrade()
+    {
+        return attributesDowngrade;
+    }
+
     private void loadClassSettings()
     {
         modifyHealth = config.getBoolean(CLASS_MODIFY);
         defaultHealth = config.getInt(CLASS_HP);
         showAutoSkills = config.getBoolean(CLASS_SHOW);
+        attributesEnabled = config.getBoolean(CLASS_ATTRIB);
+        attributesDowngrade = config.getBoolean(CLASS_REFUND);
     }
 
     ///////////////////////////////////////////////////////

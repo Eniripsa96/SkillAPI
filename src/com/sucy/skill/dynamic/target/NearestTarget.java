@@ -34,7 +34,8 @@ public class NearestTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double radius = settings.getAttr(RADIUS, level, 3.0);
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        double radius = attr(caster, RADIUS, level, 3.0, isSelf);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");

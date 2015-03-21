@@ -41,6 +41,12 @@ Classes:
   #
   # Whether or not non-castable auto-leveled skills are shown
   show-auto-skills: false
+  #
+  # Whether or not attributes are enabled
+  attributes-enabled: false
+  #
+  # Whether or not attributes can be refunded
+  attributes-downgrade: false
 #
 Mana:
   #

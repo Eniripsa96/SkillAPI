@@ -39,21 +39,22 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         // Get common values
-        int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        int amount = (int) attr(caster, AMOUNT, level, 1.0, isSelf);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         settings.set("level", level);
 
         // Fire from each target
         for (LivingEntity target : targets)
         {
-            Location loc = target.getLocation().add(0, 1.25, 0);
+            Location loc = target.getLocation();
 
             // Apply the spread type
             ArrayList<ParticleProjectile> list;
             if (spread.equals("rain"))
             {
-                double radius = settings.getAttr(RADIUS, level, 2.0);
-                double height = settings.getAttr(HEIGHT, level, 8.0);
+                double radius = attr(caster, RADIUS, level, 2.0, isSelf);
+                double height = attr(caster, HEIGHT, level, 8.0, isSelf);
                 list = ParticleProjectile.rain(caster, level, loc, settings, radius, height, amount, this);
             }
             else
@@ -64,8 +65,8 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = settings.getAttr(ANGLE, level, 30.0);
-                list = ParticleProjectile.spread(caster, level, dir, loc, settings, angle, amount, this);
+                double angle = attr(caster, ANGLE, level, 30.0, isSelf);
+                list = ParticleProjectile.spread(caster, level, dir, loc.add(0, 1, 0), settings, angle, amount, this);
             }
 
             // Set metadata for when the callback happens

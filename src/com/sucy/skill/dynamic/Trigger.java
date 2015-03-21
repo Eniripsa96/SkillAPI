@@ -45,6 +45,11 @@ public enum Trigger
     INITIALIZE,
 
     /**
+     * Trigger effects upon hitting the ground
+     */
+    LAND,
+
+    /**
      * Trigger effects when taking non-skill damage
      */
     TOOK_PHYSICAL_DAMAGE,

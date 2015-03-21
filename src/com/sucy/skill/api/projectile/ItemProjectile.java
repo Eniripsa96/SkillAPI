@@ -123,7 +123,8 @@ public class ItemProjectile extends CustomProjectile
         ArrayList<ItemProjectile> list = new ArrayList<ItemProjectile>();
         for (Vector dir : dirs)
         {
-            ItemProjectile p = new ItemProjectile(shooter, loc.multiply(speed), item, dir);
+            Vector vel = dir.multiply(speed);
+            ItemProjectile p = new ItemProjectile(shooter, loc, item, vel);
             p.setCallback(callback);
             list.add(p);
         }

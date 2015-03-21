@@ -54,7 +54,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
             // Invalid or missing item material
         }
         ItemStack item = new ItemStack(mat);
-        item.setData(new MaterialData(mat, (byte) settings.getInt(DATA, 0)));
+        item.setDurability((short)settings.getInt(DATA, 0));
 
         // Get other common values
         double speed = settings.getAttr(SPEED, level, 3.0);
@@ -64,7 +64,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         // Fire from each target
         for (LivingEntity target : targets)
         {
-            Location loc = target.getLocation().add(0, 1.25, 0);
+            Location loc = target.getLocation();
 
             // Apply the spread type
             ArrayList<ItemProjectile> list;
@@ -84,7 +84,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                 }
                 dir.multiply(speed);
                 double angle = settings.getAttr(ANGLE, level, 30.0);
-                list = ItemProjectile.spread(caster, dir, loc, item, angle, amount, this);
+                list = ItemProjectile.spread(caster, dir, loc.add(0, 1, 0), item, angle, amount, this);
             }
 
             // Set metadata for when the callback happens

@@ -25,8 +25,9 @@ public class DamageMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean percent = settings.getString(TYPE, "damage").toLowerCase().equals("multiplier");
-        double damage = settings.getAttr(DAMAGE, level, 1.0);
+        double damage = attr(caster, DAMAGE, level, 1.0, isSelf);
         if (damage < 0) return false;
         for (LivingEntity target : targets)
         {

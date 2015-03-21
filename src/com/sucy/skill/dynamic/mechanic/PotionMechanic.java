@@ -36,9 +36,10 @@ public class PotionMechanic extends EffectComponent
 
         try
         {
+            boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
             PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption").toUpperCase().replace(' ', '_'));
-            int tier = (int) settings.getAttr(TIER, level, 1) - 1;
-            double seconds = settings.getAttr(SECONDS, level, 3.0);
+            int tier = (int) attr(caster, TIER, level, 1, isSelf) - 1;
+            double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
             boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
             int ticks = (int) (seconds * 20);
             for (LivingEntity target : targets)

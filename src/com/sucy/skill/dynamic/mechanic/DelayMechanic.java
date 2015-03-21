@@ -29,8 +29,8 @@ public class DelayMechanic extends EffectComponent
         {
             return false;
         }
-
-        double seconds = settings.getAttr(SECONDS, level, 2.0);
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        double seconds = attr(caster, SECONDS, level, 2.0, isSelf);
         Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
         {
             @Override

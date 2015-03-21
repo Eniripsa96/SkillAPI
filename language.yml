@@ -42,9 +42,10 @@ Skill Tree:
 Stats:
   health: '&2Health'
   mana: '&2Mana'
-  points: '&2Points'
+  points: '&2SP'
   level: '&2Level'
   exp: '&2Exp'
+  attrib: '&2AP'
 Status:
   silenced: '&4You are silenced for another &6{duration} &4seconds'
   stunned: '&4You are stunned for another &6{duration} &4seconds'

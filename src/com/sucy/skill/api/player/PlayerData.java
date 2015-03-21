@@ -16,9 +16,12 @@ import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.TreeListener;
+import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
@@ -27,6 +30,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +44,10 @@ import java.util.HashMap;
  */
 public final class PlayerData
 {
-    private final HashMap<String, PlayerClass>   classes = new HashMap<String, PlayerClass>();
-    private final HashMap<String, PlayerSkill>   skills  = new HashMap<String, PlayerSkill>();
-    private final HashMap<Material, PlayerSkill> binds   = new HashMap<Material, PlayerSkill>();
+    private final HashMap<String, PlayerClass>   classes    = new HashMap<String, PlayerClass>();
+    private final HashMap<String, PlayerSkill>   skills     = new HashMap<String, PlayerSkill>();
+    private final HashMap<Material, PlayerSkill> binds      = new HashMap<Material, PlayerSkill>();
+    private final HashMap<String, Integer>       attributes = new HashMap<String, Integer>();
 
     private OfflinePlayer  player;
     private PlayerSkillBar skillBar;
@@ -52,6 +58,7 @@ public final class PlayerData
     private double         bonusHealth;
     private double         bonusMana;
     private boolean        init;
+    private int            attribPoints;
 
     /**
      * Initializes a new account data representation for a player.
@@ -145,6 +152,181 @@ public final class PlayerData
     public void setScheme(String name)
     {
         scheme = name;
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
+    //                    Attributes                     //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    /**
+     * Gets the number of attribute points invested in the
+     * given attribute
+     *
+     * @param key attribute key
+     * @return number of invested points
+     */
+    public int getAttribute(String key)
+    {
+        key = key.toLowerCase();
+        if (!attributes.containsKey(key))
+        {
+            return 0;
+        }
+        return attributes.get(key);
+    }
+
+    /**
+     * Checks whether or not the player has any
+     * points invested in a given attribute
+     *
+     * @param key attribute key
+     * @return true if any points are invested, false otherwise
+     */
+    public boolean hasAttribute(String key)
+    {
+        return getAttribute(key.toLowerCase()) > 0;
+    }
+
+    /**
+     * Invests a point in the attribute if the player
+     * has any remaining attribute points. If the player
+     * has no remaining points, this will do nothing.
+     *
+     * @param key attribute key
+     */
+    public void upAttribute(String key)
+    {
+        if (attribPoints > 0)
+        {
+            PlayerUpAttributeEvent event = new PlayerUpAttributeEvent(this, key);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) return;
+
+            key = key.toLowerCase();
+            attributes.put(key, getAttribute(key) + 1);
+            attribPoints--;
+        }
+    }
+
+    /**
+     * Refunds an attribute point from the given attribute
+     * if there are any points invested in it. If there are
+     * none, this will do nothing.
+     *
+     * @param key attribute key
+     */
+    public void refundAttribute(String key)
+    {
+        key = key.toLowerCase();
+        if (hasAttribute(key))
+        {
+            PlayerRefundAttributeEvent event = new PlayerRefundAttributeEvent(this, key);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) return;
+
+            attributes.put(key, getAttribute(key) - 1);
+            attribPoints++;
+        }
+    }
+
+    /**
+     * Retrieves the current number of attribute points the player has
+     *
+     * @return attribute point total
+     */
+    public int getAttributePoints()
+    {
+        return attribPoints;
+    }
+
+    /**
+     * Gives the player attribute points
+     *
+     * @param amount amount of attribute points
+     */
+    public void giveAttribPoints(int amount)
+    {
+        attribPoints += amount;
+    }
+
+    /**
+     * Scales a stat value using the player's attributes
+     *
+     * @param stat  stat key
+     * @param value base value
+     * @return modified value
+     */
+    public double scaleStat(String stat, double value)
+    {
+        AttributeManager manager = SkillAPI.getAttributeManager();
+        for (String key : manager.getKeys())
+        {
+            int amount = getAttribute(key);
+            if (amount > 0)
+            {
+                value = manager.getAttribute(key).modifyStat(stat, value, amount);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Scales a dynamic skill's value using global modifiers
+     *
+     * @param component component holding the value
+     * @param key       key of the value
+     * @param value     unmodified value
+     * @param self      whether or not the player is the target
+     * @return the modified value
+     */
+    public double scaleDynamic(EffectComponent component, String key, double value, boolean self)
+    {
+        AttributeManager manager = SkillAPI.getAttributeManager();
+        for (String attr : manager.getKeys())
+        {
+            int amount = getAttribute(attr);
+            if (amount > 0)
+            {
+                value = manager.getAttribute(attr).modify(component, key, self, value, amount);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Opens the attribute menu
+     */
+    public void openAttributeMenu() {
+        Player player = getPlayer();
+        if (SkillAPI.getSettings().isAttributesEnabled() && player != null)
+        {
+            AttributeManager manager = SkillAPI.getAttributeManager();
+            Inventory inv = InventoryManager.createInventory(AttributeListener.MENU_KEY, (manager.getKeys().size() + 8) / 9, "Attributes (" + attribPoints + " points)");
+            int i = 0;
+            for (String key : manager.getKeys())
+            {
+                ItemStack icon = manager.getAttribute(key).getIcon().clone();
+                ItemMeta meta = icon.getItemMeta();
+                meta.setDisplayName(meta.getDisplayName().replace("{amount}", "" + getAttribute(key)));
+                icon.setItemMeta(meta);
+                inv.setItem(i++, icon);
+            }
+            player.openInventory(inv);
+        }
+    }
+
+    /**
+     * Retrieves the player's attribute data.
+     * Modifying this will modify the player's
+     * actual data.
+     *
+     * @return the player's attribute data
+     */
+    public HashMap<String, Integer> getAttributeData()
+    {
+        return attributes;
     }
 
     ///////////////////////////////////////////////////////
@@ -890,7 +1072,6 @@ public final class PlayerData
         if (player != null)
         {
             VersionManager.setMaxHealth(player, player.getMaxHealth() + amount);
-            VersionManager.heal(player, amount);
         }
     }
 
@@ -1143,7 +1324,8 @@ public final class PlayerData
      */
     public void clearBinds(Skill skill)
     {
-        for (Material key : binds.keySet())
+        ArrayList<Material> keys = new ArrayList<Material>(binds.keySet());
+        for (Material key : keys)
         {
             PlayerSkill bound = binds.get(key);
             if (bound.getData() == skill)

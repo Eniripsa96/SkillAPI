@@ -76,6 +76,7 @@ public class SkillAPI extends JavaPlugin
     private CmdManager          cmd;
     private ComboManager        comboManager;
     private RegistrationManager registrationManager;
+    private AttributeManager    attributeManager;
 
     private ManaTask      manaTask;
     private CooldownTask  cdTask;
@@ -121,6 +122,10 @@ public class SkillAPI extends JavaPlugin
         PlayerStats.init();
         ClassBoardManager.registerText();
         ResourceManager.copyQuestsModule();
+        if (settings.isAttributesEnabled())
+        {
+            attributeManager = new AttributeManager(this);
+        }
 
         // Load classes and skills
         registrationManager.initialize();
@@ -161,6 +166,10 @@ public class SkillAPI extends JavaPlugin
         if (settings.isCombosEnabled())
         {
             new ClickListener(this);
+        }
+        if (settings.isAttributesEnabled())
+        {
+            new AttributeListener(this);
         }
 
         // Set up tasks
@@ -301,6 +310,20 @@ public class SkillAPI extends JavaPlugin
             return null;
         }
         return singleton.comboManager;
+    }
+
+    /**
+     * Retrieves the attribute manager for SkillAPI
+     *
+     * @return attribute manager
+     */
+    public static AttributeManager getAttributeManager()
+    {
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.attributeManager;
     }
 
     /**

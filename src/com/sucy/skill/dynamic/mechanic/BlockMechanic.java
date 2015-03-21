@@ -26,7 +26,7 @@ public class BlockMechanic extends EffectComponent
     private static final Vector up = new Vector(0, 1, 0);
 
     private static final String SHAPE   = "shape";
-    private static final String SOLID   = "solid";
+    private static final String TYPE    = "type";
     private static final String RADIUS  = "radius";
     private static final String WIDTH   = "width";
     private static final String HEIGHT  = "height";
@@ -62,13 +62,18 @@ public class BlockMechanic extends EffectComponent
             // Use default
         }
 
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean sphere = settings.getString(SHAPE, "sphere").toLowerCase().equals("sphere");
-        int ticks = (int) (20 * settings.getAttr(SECONDS, level, 5));
+        int ticks = (int) (20 * attr(caster, SECONDS, level, 5, isSelf));
         byte data = (byte) settings.getInt(DATA, 0);
-        boolean any = settings.getString(SOLID, "true").toLowerCase().equals("false");
-        double forward = settings.getAttr(FORWARD, level, 0);
-        double upward = settings.getAttr(UPWARD, level, 0);
-        double right = settings.getAttr(RIGHT, level, 0);
+
+        String type = settings.getString(TYPE, "solid").toLowerCase();
+        boolean solid = type.equals("solid");
+        boolean air = type.equals("air");
+
+        double forward = attr(caster, FORWARD, level, 0, isSelf);
+        double upward = attr(caster, UPWARD, level, 0, isSelf);
+        double right = attr(caster, RIGHT, level, 0, isSelf);
 
         List<Block> blocks = new ArrayList<Block>();
         World w = caster.getWorld();
@@ -76,7 +81,7 @@ public class BlockMechanic extends EffectComponent
         // Grab blocks in a sphere
         if (sphere)
         {
-            double radius = settings.getAttr(RADIUS, level, 3);
+            double radius = attr(caster, RADIUS, level, 3, isSelf);
             double x, y, z, dx, dy, dz;
             double rSq = radius * radius;
             for (LivingEntity t : targets)
@@ -105,7 +110,7 @@ public class BlockMechanic extends EffectComponent
                             if (dx * dx + dy * dy + dz * dz < rSq)
                             {
                                 Block b = w.getBlockAt(i, j, k);
-                                if (any || b.getType().isSolid())
+                                if ((!solid || b.getType().isSolid()) && (!air || b.getType() == Material.AIR))
                                 {
                                     blocks.add(b);
                                 }
@@ -120,9 +125,9 @@ public class BlockMechanic extends EffectComponent
         else
         {
             // Cuboid options
-            double width = settings.getAttr(WIDTH, level, 5) / 2;
-            double height = settings.getAttr(HEIGHT, level, 5) / 2;
-            double depth = settings.getAttr(DEPTH, level, 5) / 2;
+            double width = attr(caster, WIDTH, level, 5, isSelf) / 2;
+            double height = attr(caster, HEIGHT, level, 5, isSelf) / 2;
+            double depth = attr(caster, DEPTH, level, 5, isSelf) / 2;
             double x, y, z;
 
             for (LivingEntity t : targets)
@@ -138,14 +143,14 @@ public class BlockMechanic extends EffectComponent
                 z = loc.getZ();
 
                 // Get all blocks in the area
-                for (int i = (int) (x - width); i < x + width; i++)
+                for (double i = x - width; i < x + width - 0.01; i++)
                 {
-                    for (int j = (int) (y - height); j < y + height; j++)
+                    for (double j = y - height; j < y + height - 0.01; j++)
                     {
-                        for (int k = (int) (z - depth); k < z + depth; k++)
+                        for (double k = z - depth; k < z + depth - 0.01; k++)
                         {
-                            Block b = w.getBlockAt(i, j, k);
-                            if (any || b.getType().isSolid())
+                            Block b = w.getBlockAt((int)i, (int)j, (int)k);
+                            if ((!solid || b.getType().isSolid()) && (!air || b.getType() == Material.AIR))
                             {
                                 blocks.add(b);
                             }

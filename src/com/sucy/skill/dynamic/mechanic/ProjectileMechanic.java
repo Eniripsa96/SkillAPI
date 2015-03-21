@@ -42,8 +42,9 @@ public class ProjectileMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         // Get common values
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
-        double speed = settings.getAttr(SPEED, level, 2.0);
+        double speed = attr(caster, SPEED, level, 2.0, isSelf);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
         Class<? extends Projectile> type = PROJECTILES.get(projectile);
@@ -58,8 +59,8 @@ public class ProjectileMechanic extends EffectComponent
             // Apply the spread type
             if (spread.equals("rain"))
             {
-                double radius = settings.getAttr(RADIUS, level, 2.0);
-                double height = settings.getAttr(HEIGHT, level, 8.0);
+                double radius = attr(caster, RADIUS, level, 2.0, isSelf);
+                double height = attr(caster, HEIGHT, level, 8.0, isSelf);
 
                 ArrayList<Location> locs = CustomProjectile.calcRain(target.getLocation(), radius, height, amount);
                 for (Location loc : locs)
@@ -78,13 +79,13 @@ public class ProjectileMechanic extends EffectComponent
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = settings.getAttr(ANGLE, level, 30.0);
+                double angle = attr(caster, ANGLE, level, 30.0, isSelf);
                 ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
                 for (Vector d : dirs)
                 {
                     Projectile p = caster.launchProjectile(type);
                     p.setVelocity(d.multiply(speed));
-                    p.teleport(target.getLocation().add(0, 1.25, 0).add(p.getVelocity()));
+                    p.teleport(target.getLocation().add(0, 1, 0).add(p.getVelocity()));
                     SkillAPI api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
                     p.setMetadata(MechanicListener.P_CALL, new FixedMetadataValue(api, this));
                     p.setMetadata(LEVEL, new FixedMetadataValue(api, level));

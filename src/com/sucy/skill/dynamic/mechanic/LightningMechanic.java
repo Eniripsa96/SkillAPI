@@ -32,9 +32,9 @@ public class LightningMechanic extends EffectComponent
         {
             return false;
         }
-
-        double forward = settings.getAttr(FORWARD, level, 0);
-        double right = settings.getAttr(RIGHT, level, 0);
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        double forward = attr(caster, FORWARD, level, 0, isSelf);
+        double right = attr(caster, RIGHT, level, 0, isSelf);
         for (LivingEntity target : targets)
         {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();

@@ -17,6 +17,7 @@ public class GroupSettings
     private static final String POINTS_PER_LEVEL = "points-per-level";
     private static final String PERMISSION       = "permission";
     private static final String DEFAULT          = "default";
+    private static final String ATTRIB_PER_LEVEL = "attribs-per-level";
 
     private String  defaultClass;
     private String  permission;
@@ -24,6 +25,7 @@ public class GroupSettings
     private double  deathPenalty;
     private int     startingPoints;
     private int     pointsPerLevel;
+    private int     attribsPerLevel;
 
     /**
      * Initializes a new set of settings for a class group by
@@ -41,6 +43,7 @@ public class GroupSettings
         deathPenalty = config.getDouble(EXP_LOST, deathPenalty);
         startingPoints = config.getInt(STARTING_POINTS, startingPoints);
         pointsPerLevel = config.getInt(POINTS_PER_LEVEL, pointsPerLevel);
+        attribsPerLevel = config.getInt(ATTRIB_PER_LEVEL, attribsPerLevel);
 
         save(config);
     }
@@ -56,6 +59,7 @@ public class GroupSettings
         deathPenalty = 0;
         startingPoints = 1;
         pointsPerLevel = 1;
+        attribsPerLevel = 1;
     }
 
     /**
@@ -129,6 +133,16 @@ public class GroupSettings
     }
 
     /**
+     * Retrieves the number of attribute points gained each level
+     *
+     * @return attribute points gained each level
+     */
+    public int getAttribsPerLevel()
+    {
+        return attribsPerLevel;
+    }
+
+    /**
      * Saves the group settings to a config
      *
      * @param config config to save to
@@ -141,5 +155,6 @@ public class GroupSettings
         config.set(EXP_LOST, deathPenalty);
         config.set(STARTING_POINTS, startingPoints);
         config.set(POINTS_PER_LEVEL, pointsPerLevel);
+        config.set(ATTRIB_PER_LEVEL, attribsPerLevel);
     }
 }

@@ -318,6 +318,8 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event)
     {
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+
         // Damage buff application
         LivingEntity damager = ListenerUtil.getDamager(event);
         VersionManager.setDamage(event, BuffManager.modifyDealtDamage(damager, event.getDamage()));
@@ -353,7 +355,7 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPhysicalDamage(EntityDamageByEntityEvent event)
     {
-        if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity))
+        if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity) || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM)
         {
             return;
         }

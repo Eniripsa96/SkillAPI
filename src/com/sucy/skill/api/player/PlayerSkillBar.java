@@ -426,7 +426,7 @@ public class PlayerSkillBar
                 if (skill != null && skill.isUnlocked())
                 {
                     ItemStack item = player.getInventory().getItem(i);
-                    int amount = Math.min(Math.max(skill.getCooldown(), 1), 64);
+                    int amount = Math.max(1, skill.getCooldown());
                     if (item.getAmount() != amount)
                     {
                         item.setAmount(amount);

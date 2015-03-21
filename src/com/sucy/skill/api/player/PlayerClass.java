@@ -395,6 +395,7 @@ public final class PlayerClass
         if (amount <= 0) return;
         level += amount;
         points += classData.getGroupSettings().getPointsPerLevel() * amount;
+        getPlayerData().giveAttribPoints(classData.getGroupSettings().getAttribsPerLevel() * amount);
 
         if (SkillAPI.getSettings().isShowLevelMessages() && player.getPlayer() != null)
         {
@@ -408,6 +409,9 @@ public final class PlayerClass
                     Filter.AMOUNT.setReplacement(amount + "")
             );
         }
+
+        // Update health/mana
+        getPlayerData().updateHealthAndMana(getPlayerData().getPlayer());
 
         // Call the event
         PlayerLevelUpEvent event = new PlayerLevelUpEvent(this, amount);

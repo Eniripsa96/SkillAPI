@@ -30,7 +30,8 @@ public class RepeatMechanic extends EffectComponent
     {
         if (targets.size() > 0)
         {
-            int count = (int) settings.getAttr(REPETITIONS, level, 3.0);
+            boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+            int count = (int) attr(caster, REPETITIONS, level, 3.0, isSelf);
             if (count <= 0)
             {
                 return false;

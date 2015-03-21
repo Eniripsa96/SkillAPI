@@ -30,7 +30,8 @@ public class LocationTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double range = settings.getAttr(RANGE, level, 5.0);
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        double range = attr(caster, RANGE, level, 5.0, isSelf);
         boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
         for (LivingEntity t : targets)
         {

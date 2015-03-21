@@ -3,6 +3,7 @@ package com.sucy.skill.data;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.scoreboard.StatHolder;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -16,14 +17,14 @@ import java.util.HashMap;
 public class PlayerStats implements StatHolder
 {
 
-    private PlayerData player;
+    private PlayerClass player;
 
     /**
      * Constructor
      *
      * @param player player to show stats for
      */
-    public PlayerStats(PlayerData player)
+    public PlayerStats(PlayerClass player)
     {
         this.player = player;
     }
@@ -38,11 +39,15 @@ public class PlayerStats implements StatHolder
         stats.add(statPlayers.get(HEALTH));
         if (SkillAPI.getSettings().isManaEnabled())
         {
-            stats.add(player.getMainClass().getData().getManaPlayer());
+            stats.add(player.getData().getManaPlayer());
         }
         stats.add(statPlayers.get(POINTS));
         stats.add(statPlayers.get(LEVEL));
         stats.add(statPlayers.get(EXP));
+        if (SkillAPI.getSettings().isAttributesEnabled())
+        {
+            stats.add(statPlayers.get(ATTRIB));
+        }
 
         return stats;
     }
@@ -53,16 +58,20 @@ public class PlayerStats implements StatHolder
     @Override
     public ArrayList<Integer> getValues()
     {
-        double health = player.getPlayer().getHealth();
+        double health = player.getPlayerData().getPlayer().getHealth();
         ArrayList<Integer> values = new ArrayList<Integer>();
         values.add((int) health);
         if (SkillAPI.getSettings().isManaEnabled())
         {
-            values.add((int) player.getMana());
+            values.add((int) player.getPlayerData().getMana());
         }
-        values.add(player.getMainClass().getPoints());
-        values.add(player.getMainClass().getLevel());
-        values.add((int) player.getMainClass().getExp());
+        values.add(player.getPoints());
+        values.add(player.getLevel());
+        values.add((int) player.getExp());
+        if (SkillAPI.getSettings().isAttributesEnabled())
+        {
+            values.add(player.getPlayerData().getAttributePoints());
+        }
 
         return values;
     }
@@ -72,6 +81,7 @@ public class PlayerStats implements StatHolder
     private static final String HEALTH = "health";
     private static final String LEVEL  = "level";
     private static final String POINTS = "points";
+    private static final String ATTRIB = "attrib";
 
     private static final HashMap<String, OfflinePlayer> statPlayers = new HashMap<String, OfflinePlayer>();
 
@@ -87,6 +97,7 @@ public class PlayerStats implements StatHolder
             load(HEALTH, BASE + HEALTH);
             load(LEVEL, BASE + LEVEL);
             load(POINTS, BASE + POINTS);
+            load(ATTRIB, BASE + ATTRIB);
         }
     }
 

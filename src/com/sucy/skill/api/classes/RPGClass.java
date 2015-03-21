@@ -275,6 +275,26 @@ public abstract class RPGClass
     }
 
     /**
+     * Retrieves the base amount of health for the class
+     *
+     * @return base amount of health for the class
+     */
+    public double getBaseHealth()
+    {
+        return settings.getBase(ClassAttribute.HEALTH);
+    }
+
+    /**
+     * Retrieves the amount of health gained per level for the class
+     *
+     * @return health gained per level
+     */
+    public double getHealthScale()
+    {
+        return settings.getScale(ClassAttribute.HEALTH);
+    }
+
+    /**
      * Retrieves the amount of max mana this class provides
      *
      * @param level current level of the class
@@ -284,6 +304,26 @@ public abstract class RPGClass
     public double getMana(int level)
     {
         return settings.getAttr(ClassAttribute.MANA, level);
+    }
+
+    /**
+     * Retrieves the base amount of mana for the class
+     *
+     * @return base amount of mana for the class
+     */
+    public double getBaseMana()
+    {
+        return settings.getBase(ClassAttribute.MANA);
+    }
+
+    /**
+     * Retrieves the amount of mana gained per level for the class
+     *
+     * @return mana gained per level
+     */
+    public double getManaScale()
+    {
+        return settings.getScale(ClassAttribute.MANA);
     }
 
     /**

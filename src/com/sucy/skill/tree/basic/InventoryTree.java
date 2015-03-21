@@ -13,7 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A skill tree manager for classes
@@ -44,7 +46,7 @@ public abstract class InventoryTree extends SkillTree
      */
     public void show(Player player)
     {
-       player.openInventory(getInventory(SkillAPI.getPlayerData(player)));
+        player.openInventory(getInventory(SkillAPI.getPlayerData(player)));
     }
 
     /**

@@ -8,6 +8,7 @@ import com.rit.sucy.scoreboard.Team;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.data.PlayerStats;
 import org.bukkit.ChatColor;
@@ -73,9 +74,12 @@ public class ClassBoardManager
         // Apply new data
         if (SkillAPI.getSettings().isShowScoreboard())
         {
-            StatBoard board = new StatBoard(player.getMainClass().getData().getPrefix(), "SkillAPI");
-            board.addStats(new PlayerStats(player));
-            BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
+            for (PlayerClass c : player.getClasses())
+            {
+                StatBoard board = new StatBoard(c.getData().getPrefix(), "SkillAPI");
+                board.addStats(new PlayerStats(c));
+                BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
+            }
         }
         if (SkillAPI.getSettings().isShowClassName())
         {

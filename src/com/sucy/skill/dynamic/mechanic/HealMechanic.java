@@ -28,8 +28,9 @@ public class HealMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean percent = settings.getString(TYPE, "health").toLowerCase().equals("percent");
-        double value = settings.getAttr(VALUE, level, 1.0);
+        double value = attr(caster, VALUE, level, 1.0, isSelf);
         if (value < 0) return false;
         for (LivingEntity target : targets)
         {

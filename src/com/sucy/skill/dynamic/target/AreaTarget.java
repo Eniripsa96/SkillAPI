@@ -3,6 +3,7 @@ package com.sucy.skill.dynamic.target;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -35,7 +36,8 @@ public class AreaTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        double radius = settings.getAttr(RADIUS, level, 3.0);
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        double radius = attr(caster, RADIUS, level, 3.0, isSelf);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
@@ -46,6 +48,7 @@ public class AreaTarget extends EffectComponent
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
+            list.add(t);
             if (self)
             {
                 list.add(caster);
@@ -70,6 +73,7 @@ public class AreaTarget extends EffectComponent
                     }
                 }
             }
+
             worked = executeChildren(caster, level, list) || worked;
         }
         return worked;

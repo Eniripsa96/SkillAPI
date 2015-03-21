@@ -67,6 +67,11 @@ public class CmdManager
         {
             root.addSubCommand(new ConfigurableCommand(api, "scheme", SenderType.PLAYER_ONLY, new CmdScheme(), "Views/sets map schemes", "[scheme]", Permissions.BASIC));
         }
+        if (SkillAPI.getSettings().isAttributesEnabled())
+        {
+            root.addSubCommand(new ConfigurableCommand(api, "ap", SenderType.ANYONE, new CmdAP(), "Gives attrib points", "[player] <amount>", Permissions.ATTRIB));
+            root.addSubCommand(new ConfigurableCommand(api, "attr", SenderType.PLAYER_ONLY, new CmdAttribute(), "Opens attribute menu", "", Permissions.BASIC));
+        }
         CommandManager.registerCommand(root);
     }
 

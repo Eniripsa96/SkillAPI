@@ -2,6 +2,7 @@ package com.sucy.skill.dynamic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.condition.*;
@@ -45,6 +46,61 @@ public abstract class EffectComponent
      * Type of the component
      */
     private String type = "trigger";
+
+    /**
+     * Retrieves the config key for the component
+     *
+     * @return config key of the component
+     */
+    public String getKey()
+    {
+        return key;
+    }
+
+    /**
+     * Retrieves the type of the component
+     *
+     * @return component type
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    /**
+     * Retrieves the settings of the dynamic component
+     *
+     * @return settings of the dynamic component
+     */
+    public Settings getSettings()
+    {
+        return settings;
+    }
+
+    /**
+     * Retrieves an attribute value while applying attribute
+     * data if enabled and a player is using the skill
+     *
+     * @param caster   caster of the skill
+     * @param key      key of the value to grab
+     * @param level    level of the skill
+     * @param fallback default value for the attribute
+     * @param self     whether or not the skill is targeting the caster
+     * @return the value with attribute modifications if applicable
+     */
+    protected double attr(LivingEntity caster, String key, int level, double fallback, boolean self)
+    {
+        double value = settings.getAttr(key, level, fallback);
+
+        // Apply global modifiers
+        if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player)
+        {
+            PlayerData data = SkillAPI.getPlayerData((Player)caster);
+            value = data.scaleDynamic(this, key, value, self);
+        }
+
+        return value;
+    }
 
     /**
      * Executes the children of the component using the given targets
@@ -255,6 +311,7 @@ public abstract class EffectComponent
             put("purge", PurgeMechanic.class);
             put("push", PushMechanic.class);
             put("repeat", RepeatMechanic.class);
+            put("speed", SpeedMechanic.class);
             put("sound", SoundMechanic.class);
             put("status", StatusMechanic.class);
             put("warp", WarpMechanic.class);

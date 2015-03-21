@@ -3,13 +3,12 @@ package com.sucy.skill.tree;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.exception.SkillTreeException;
-import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Permissions;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a skill tree that contains an arrangement of a class's skills
@@ -36,6 +35,7 @@ public abstract class SkillTree
      *
      * @param player player to check for
      * @param skill  skill to check for permissions
+     *
      * @return true if can be shown, false otherwise
      */
     public boolean canShow(Player player, Skill skill)

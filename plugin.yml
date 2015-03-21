@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 3.10
+version: 3.13
 author: Eniripsa96
 depend: [MCCore]
 softdepend: [Vault]
@@ -36,6 +36,12 @@ permissions:
     default: op
   skillapi.lore:
     description: access to all lore commands
+    default: op
+  skillapi.force:
+    description: access to force commands
+    default: false
+  skillapi.attrib:
+    description: access to giving attribute points
     default: op
 
   skillapi.*:

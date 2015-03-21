@@ -30,7 +30,8 @@ public class PushMechanic extends EffectComponent
             return false;
         }
 
-        double speed = settings.getAttr(SPEED, level, 3.0);
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        double speed = attr(caster, SPEED, level, 3.0, isSelf);
         boolean worked = false;
         for (LivingEntity target : targets)
         {

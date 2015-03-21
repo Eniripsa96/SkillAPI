@@ -1,8 +1,11 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -27,19 +30,25 @@ public class CooldownMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        String skill = settings.getString(SKILL);
-        String type = settings.getString(TYPE).toLowerCase();
-        double value = settings.getAttr(VALUE, level);
-        PlayerSkill skillData = getSkillData(caster);
-        if (skill == null)
+        if (!(caster instanceof Player)) return false;
+
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        String skill = settings.getString(SKILL, "");
+        String type = settings.getString(TYPE, "all").toLowerCase();
+        double value = attr(caster, VALUE, level, 0, isSelf);
+
+        PlayerData playerData = SkillAPI.getPlayerData((Player)caster);
+
+        PlayerSkill skillData = playerData.getSkill(skill);
+        if (skillData == null && !skill.equals("all"))
         {
-            return false;
+            skillData = playerData.getSkill(this.skill.getName());
         }
 
         boolean worked = false;
         if (skill.equals("all"))
         {
-            for (PlayerSkill data : skillData.getPlayerData().getSkills())
+            for (PlayerSkill data : playerData.getSkills())
             {
                 if (data.isOnCooldown() == (value < 0))
                 {

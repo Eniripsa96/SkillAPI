@@ -31,8 +31,9 @@ public class FlagMechanic extends EffectComponent
             return false;
         }
 
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        double seconds = settings.getAttr(SECONDS, level, 3.0);
+        double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {

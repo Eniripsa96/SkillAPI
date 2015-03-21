@@ -3,29 +3,14 @@ package com.sucy.skill.listener;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.tree.map.TreeRenderer;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.server.MapInitializeEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.map.MapCanvas;
-import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
 import org.bukkit.util.Vector;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Handles controlling the map menu for skill trees
@@ -89,11 +74,12 @@ public class MapListener implements Listener
         // Forwards is a value of 1, so get close to that for up
         if (dot > 0.5) TreeRenderer.RENDERER.moveUp(event.getPlayer());
 
-        // Backwards is -1, so close to that will be down
+            // Backwards is -1, so close to that will be down
         else if (dot < -0.5) TreeRenderer.RENDERER.moveDown(event.getPlayer());
 
-        // Otherwise, check left and right
-        else {
+            // Otherwise, check left and right
+        else
+        {
 
             // Change the forward to face to the right
             facing.crossProduct(UP);
@@ -102,7 +88,7 @@ public class MapListener implements Listener
             // Positive would face to the right since that's the new forward
             if (dot > 0) TreeRenderer.RENDERER.moveRight(event.getPlayer());
 
-            // Otherwise it was left
+                // Otherwise it was left
             else TreeRenderer.RENDERER.moveLeft(event.getPlayer());
         }
     }

@@ -24,6 +24,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.awt.*;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class TreeRenderer extends MapRenderer
     private static final int    defaultSize2  = 9;
 
     // Buffer to draw to before applying it to the map
-    private MapImage      mapImage = new MapImage(128, 128);
+    private MapImage mapImage = new MapImage(128, 128);
 
     // Positional data for each player as they browse the tree
     private class ScrollData
@@ -112,10 +113,10 @@ public class TreeRenderer extends MapRenderer
     public  ItemStack map;
     public  MapView   view;
     private short     viewId;
-
-    // Reflection
-    private Class<?> packetClass;
-    private Class<?> iconClass;
+    private Object    worldMap;
+    private Method    flagDirty;
+    private Method    flagDirty2;
+    private int       minX, maxX, minY, maxY, last;
 
     /**
      * A private constructor is used to prevent further
@@ -143,8 +144,13 @@ public class TreeRenderer extends MapRenderer
                 view.removeRenderer(r);
             }
             view.addRenderer(this);
-            packetClass = Reflection.getNMSClass("PacketPlayOutMap");
-            iconClass = Reflection.getNMSClass("MapIcon");
+
+            worldMap = Reflection.getValue(view, "worldMap");
+            flagDirty = Reflection.getMethod(worldMap, "flagDirty", int.class, int.class);
+            if (flagDirty == null)
+            {
+                flagDirty2 = Reflection.getMethod(worldMap, "flagDirty", int.class, int.class, int.class);
+            }
         }
         catch (Exception ex)
         {
@@ -311,6 +317,7 @@ public class TreeRenderer extends MapRenderer
      * instead return null.
      *
      * @param player player to get the MapTree for
+     *
      * @return the player's MapTree or null if not found
      */
     public MapTree getTree(Player player)
@@ -328,6 +335,7 @@ public class TreeRenderer extends MapRenderer
      * a valid one, this returns the default scheme instead.
      *
      * @param player player to get the scheme for
+     *
      * @return scheme of the player
      */
     public Scheme getScheme(Player player)
@@ -341,6 +349,7 @@ public class TreeRenderer extends MapRenderer
      * Gets the hovered skill for a player
      *
      * @param player player to get the hovered skill for
+     *
      * @return hovered skill
      */
     public PlayerSkill getSkill(Player player)
@@ -355,6 +364,7 @@ public class TreeRenderer extends MapRenderer
      * Checks whether or not the player is holding the skill tree map
      *
      * @param player player to check
+     *
      * @return true if held, false otherwise
      */
     public boolean isHeld(Player player)
@@ -418,23 +428,6 @@ public class TreeRenderer extends MapRenderer
         if (first)
         {
             player.sendMap(mapView);
-
-            /*
-            drawFastDefault();
-            Object packet = Reflection.getInstance(
-                    packetClass,
-                   mapView.getId(),
-                   mapView.getScale().getValue(),
-                   new ArrayList(),
-                   mapImage.getData(),
-                   0,
-                   0,
-                   0,
-                   0
-            );
-
-            Reflection.sendPacket(player, packet);
-            */
             return;
         }
 
@@ -442,42 +435,97 @@ public class TreeRenderer extends MapRenderer
         init(player);
 
         // When a player shouldn't be seeing the map skill tree, draw the SkillAPI logo instead
+        int id;
         if (tree == null || !SkillAPI.getSettings().isMapTreeEnabled())
         {
-            drawDefault();
+            id = drawDefault();
         }
 
         // When looking at a specific skill, draw the details
         else if (scrollData.get(player.getName()).skill != null)
         {
-            drawDetails(player);
+            id = drawDetails(player);
         }
 
         // When not looking at a specific skill, draw the arrangement
         else
         {
-            drawSkillList(player);
+            id = drawSkillList(player);
         }
 
-        byte[] data = mapImage.getData();
-        for (int i = 0; i < data.length; i++)
+        // Refresh entire map when changing screens
+        if (id != last)
         {
-            int x = i & 127;
-            int y = i >> 7;
+            last = id;
+            minX = minY = 0;
+            maxX = maxY = 127;
+        }
 
-            mapCanvas.setPixel(x, y, data[i]);
+        // Try a much faster way of setting the data
+        boolean fast = false;
+        if (flagDirty != null)
+        {
+            try
+            {
+                flagDirty.invoke(worldMap, minX, minY);
+                flagDirty.invoke(worldMap, maxX, maxY);
+                Reflection.setValue(mapCanvas, "buffer", mapImage.getData());
+                fast = true;
+            }
+            catch (Exception ex)
+            {
+                // Didn't work, use normal method instead
+                flagDirty = null;
+            }
+        }
+
+        // Fast drawing on older servers
+        else if (flagDirty2 != null)
+        {
+            try
+            {
+                flagDirty2.invoke(worldMap, 0, 0, 127);
+                flagDirty2.invoke(worldMap, 1, 0, 127);
+                Reflection.setValue(mapCanvas, "buffer", mapImage.getData());
+                fast = true;
+            }
+            catch (Exception ex)
+            {
+                // Didn't work, use normal method instead
+                flagDirty2 = null;
+            }
+        }
+
+        // Otherwise use the tried and true method
+        if (!fast)
+        {
+            byte[] data = mapImage.getData();
+            for (int i = 0; i < data.length; i++)
+            {
+                int x = i & 127;
+                int y = i >> 7;
+
+                mapCanvas.setPixel(x, y, data[i]);
+            }
         }
     }
 
     /**
      * Draws the default screen when a player doesn't have a skill tree
      */
-    private void drawDefault()
+    private int drawDefault()
     {
         mapImage.drawImg(defaultScheme.bg, 0, 0);
         mapImage.drawImg(defaultScheme.tl, 0, 0);
         mapImage.drawString(defaultScheme.lFont, defaultScheme.c, "Developed By", 10, 50);
         mapImage.drawString(defaultScheme.lFont, defaultScheme.c, "Eniripsa96", 10, 70);
+
+        minX = 0;
+        maxX = 0;
+        minY = 1;
+        maxY = 1;
+
+        return 0;
     }
 
     /**
@@ -485,7 +533,7 @@ public class TreeRenderer extends MapRenderer
      *
      * @param player player to draw the details for
      */
-    private void drawDetails(Player player)
+    private int drawDetails(Player player)
     {
         ScrollData data = scrollData.get(player.getName());
         Scheme scheme = getScheme(player);
@@ -547,6 +595,13 @@ public class TreeRenderer extends MapRenderer
         mapImage.drawImg(data.button == 1 ? scheme.u1 : scheme.u0, x, 95);
         if (down) mapImage.drawImg(data.button == 2 ? scheme.d1 : scheme.d0, 68, 95);
         mapImage.drawImg(data.button == 3 ? scheme.m1 : scheme.m0, 90, 95);
+
+        minX = 6;
+        maxX = 127;
+        minY = 5;
+        maxY = 127;
+
+        return 1;
     }
 
     /**
@@ -554,7 +609,7 @@ public class TreeRenderer extends MapRenderer
      *
      * @param player player to draw for
      */
-    private void drawSkillList(Player player)
+    private int drawSkillList(Player player)
     {
         MapTree mapTree = getTree(player);
         ScrollData data = scrollData.get(player.getName());
@@ -577,6 +632,13 @@ public class TreeRenderer extends MapRenderer
         }
 
         mapImage.drawImg(scheme.tl, 0, 0);
+
+        minX = 0;
+        maxX = 127;
+        minY = 30;
+        maxY = 127;
+
+        return 2;
     }
 
     /**
@@ -600,7 +662,7 @@ public class TreeRenderer extends MapRenderer
 
         SkillAPI api = (SkillAPI) Bukkit.getServer().getPluginManager().getPlugin("SkillAPI");
         ConfigurationSection config = new Config(api, "map").getConfig();
-        viewId = (short)config.getInt("VIEW_ID", viewId);
+        viewId = (short) config.getInt("VIEW_ID", viewId);
         try
         {
             // Load menu schemes

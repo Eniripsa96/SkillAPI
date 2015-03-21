@@ -24,7 +24,7 @@
 
 package com.sucy.skill;
 
-import com.rit.sucy.config.LanguageConfig;
+import com.rit.sucy.config.CommentedLanguageConfig;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerAccounts;
@@ -45,7 +45,6 @@ import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.task.SaveTask;
-import com.sucy.skill.listener.MapListener;
 import com.sucy.skill.tree.map.TreeRenderer;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -70,13 +69,14 @@ public class SkillAPI extends JavaPlugin
     public final HashMap<String, PlayerAccounts> players = new HashMap<String, PlayerAccounts>();
     public final ArrayList<String>               groups  = new ArrayList<String>();
 
-    private LanguageConfig language;
-    private Settings       settings;
+    private CommentedLanguageConfig language;
+    private Settings                settings;
 
     private IOManager           io;
     private CmdManager          cmd;
     private ComboManager        comboManager;
     private RegistrationManager registrationManager;
+    private AttributeManager    attributeManager;
 
     private ManaTask      manaTask;
     private CooldownTask  cdTask;
@@ -108,7 +108,7 @@ public class SkillAPI extends JavaPlugin
         enabled = true;
 
         // Load settings
-        language = new LanguageConfig(this, "language");
+        language = new CommentedLanguageConfig(this, "language");
         settings = new Settings(this);
 
         // Hook plugins
@@ -122,6 +122,10 @@ public class SkillAPI extends JavaPlugin
         PlayerStats.init();
         ClassBoardManager.registerText();
         ResourceManager.copyQuestsModule();
+        if (settings.isAttributesEnabled())
+        {
+            attributeManager = new AttributeManager(this);
+        }
 
         // Load classes and skills
         registrationManager.initialize();
@@ -162,6 +166,10 @@ public class SkillAPI extends JavaPlugin
         if (settings.isCombosEnabled())
         {
             new ClickListener(this);
+        }
+        if (settings.isAttributesEnabled())
+        {
+            new AttributeListener(this);
         }
 
         // Set up tasks
@@ -281,7 +289,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return SkillAPI language file data
      */
-    public static LanguageConfig getLanguage()
+    public static CommentedLanguageConfig getLanguage()
     {
         if (singleton == null)
         {
@@ -302,6 +310,20 @@ public class SkillAPI extends JavaPlugin
             return null;
         }
         return singleton.comboManager;
+    }
+
+    /**
+     * Retrieves the attribute manager for SkillAPI
+     *
+     * @return attribute manager
+     */
+    public static AttributeManager getAttributeManager()
+    {
+        if (singleton == null)
+        {
+            return null;
+        }
+        return singleton.attributeManager;
     }
 
     /**

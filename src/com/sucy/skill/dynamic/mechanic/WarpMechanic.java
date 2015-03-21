@@ -39,10 +39,11 @@ public class WarpMechanic extends EffectComponent
         }
 
         // Get the world
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
-        double forward = settings.getAttr(FORWARD, level, 0.0);
-        double upward = settings.getAttr(UPWARD, level, 0.0);
-        double right = settings.getAttr(RIGHT, level, 0.0);
+        double forward = attr(caster, FORWARD, level, 0.0, isSelf);
+        double upward = attr(caster, UPWARD, level, 0.0, isSelf);
+        double right = attr(caster, RIGHT, level, 0.0, isSelf);
 
         for (LivingEntity target : targets)
         {

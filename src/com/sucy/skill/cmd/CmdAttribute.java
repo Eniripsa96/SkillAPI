@@ -15,13 +15,10 @@ import org.bukkit.plugin.Plugin;
 /**
  * A command that allows a player to view their skill tree
  */
-public class CmdSkill implements IFunction
+public class CmdAttribute implements IFunction
 {
     private static final String CANNOT_USE = "cannot-use";
-    private static final String NO_SKILLS  = "no-skills";
     private static final String DISABLED   = "world-disabled";
-    private static final String MAP_GIVEN  = "map-given";
-    private static final String MAP_OWNED  = "map-owned";
 
     /**
      * Runs the command
@@ -44,27 +41,8 @@ public class CmdSkill implements IFunction
         else if (sender instanceof Player)
         {
             Player p = (Player) sender;
-            if (SkillAPI.getSettings().isMapTreeEnabled())
-            {
-                for (ItemStack i : p.getInventory().getContents())
-                {
-                    if (i != null && i.getType() == Material.MAP && i.getDurability() == TreeRenderer.RENDERER.view.getId())
-                    {
-                        cmd.sendMessage(sender, MAP_OWNED, ChatColor.RED + "You already have the skill tree map");
-                        return;
-                    }
-                }
-                p.getInventory().addItem(TreeRenderer.RENDERER.map);
-                cmd.sendMessage(sender, MAP_GIVEN, ChatColor.DARK_GREEN + "You were given the skill tree map. Hold it in your hand to view skills.");
-            }
-            else
-            {
-                PlayerData data = SkillAPI.getPlayerData(p);
-                if (!data.showSkills(p))
-                {
-                    cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");
-                }
-            }
+            PlayerData data = SkillAPI.getPlayerData(p);
+            data.openAttributeMenu();
         }
 
         // Console doesn't have profession options

@@ -8,6 +8,7 @@ import com.sucy.skill.api.player.*;
 import com.sucy.skill.api.skills.Skill;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
@@ -36,7 +37,9 @@ public class ConfigIO extends IOManager
             ENABLED        = "enabled",
             SLOTS          = "slots",
             UNASSIGNED     = "e",
-            COMBOS         = "combos";
+            COMBOS         = "combos",
+            ATTRIBS        = "attribs",
+            ATTRIB_POINTS  = "attrib-points";
 
     /**
      * Initializes a new .yml config manager
@@ -166,6 +169,17 @@ public class ConfigIO extends IOManager
                     }
                 }
             }
+
+            // Load attributes
+            acc.giveAttribPoints(account.getInt(ATTRIB_POINTS, 0));
+            ConfigurationSection attribs = account.getConfigurationSection(ATTRIBS);
+            if (attribs != null)
+            {
+                for (String key : attribs.getKeys(false))
+                {
+                    acc.getAttributeData().put(key, attribs.getInt(key));
+                }
+            }
         }
         data.setAccount(file.getInt(ACTIVE, data.getActiveId()));
 
@@ -251,6 +265,14 @@ public class ConfigIO extends IOManager
                 {
                     combos.set(combo.getKey(), combo.getValue());
                 }
+            }
+
+            // Save attributes
+            account.set(ATTRIB_POINTS, acc.getAttributePoints());
+            ConfigurationSection attribs = account.createSection(ATTRIBS);
+            for (String key : acc.getAttributeData().keySet())
+            {
+                attribs.set(key, acc.getAttributeData().get(key));
             }
         }
         config.saveConfig();

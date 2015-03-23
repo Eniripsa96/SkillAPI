@@ -149,7 +149,7 @@ public class BlockMechanic extends EffectComponent
                     {
                         for (double k = z - depth; k < z + depth - 0.01; k++)
                         {
-                            Block b = w.getBlockAt((int)i, (int)j, (int)k);
+                            Block b = w.getBlockAt((int) i, (int) j, (int) k);
                             if ((!solid || b.getType().isSolid()) && (!air || b.getType() == Material.AIR))
                             {
                                 blocks.add(b);

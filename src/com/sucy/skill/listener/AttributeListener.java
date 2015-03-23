@@ -6,15 +6,14 @@ import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.manager.AttributeManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -24,7 +23,23 @@ public class AttributeListener implements Listener
 {
     public static final String MENU_KEY = "skillAPIAttrMenu";
 
-    private HashMap<String, Double> bonuses = new HashMap<String, Double>();
+    private static HashMap<String, Double> bonuses = new HashMap<String, Double>();
+
+    /**
+     * Clears stored bonuses for the given player
+     *
+     * @param player player to clear bonuses for
+     */
+    public static void clearBonuses(Player player) {
+        ArrayList<String> keys = new ArrayList<String>(bonuses.keySet());
+        for (String key : keys)
+        {
+            if (key.startsWith(player.getName() + ":"))
+            {
+                bonuses.remove(key);
+            }
+        }
+    }
 
     /**
      * Initializes the listener. This is automatically
@@ -41,7 +56,7 @@ public class AttributeListener implements Listener
     /**
      * Gives players bonus stats on login
      */
-    @EventHandler (priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(PlayerJoinEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
@@ -116,7 +131,7 @@ public class AttributeListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onManaRegen(PlayerManaGainEvent event)
     {
         // Bonus to regen from attributes
@@ -132,13 +147,13 @@ public class AttributeListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPhysicalDamage(PhysicalDamageEvent event)
     {
         // Physical Damage
         if (event.getDamager() instanceof Player)
         {
-            Player player = (Player)event.getDamager();
+            Player player = (Player) event.getDamager();
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
@@ -148,7 +163,7 @@ public class AttributeListener implements Listener
         // Physical Defense
         if (event.getTarget() instanceof Player)
         {
-            Player player = (Player)event.getTarget();
+            Player player = (Player) event.getTarget();
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage());
@@ -161,13 +176,13 @@ public class AttributeListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSkillDamage(SkillDamageEvent event)
     {
         // Skill Damage
         if (event.getDamager() instanceof Player)
         {
-            Player player = (Player)event.getDamager();
+            Player player = (Player) event.getDamager();
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
@@ -177,7 +192,7 @@ public class AttributeListener implements Listener
         // Skill Defense
         if (event.getTarget() instanceof Player)
         {
-            Player player = (Player)event.getTarget();
+            Player player = (Player) event.getTarget();
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage());

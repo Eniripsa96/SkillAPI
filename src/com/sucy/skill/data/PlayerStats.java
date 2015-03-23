@@ -4,7 +4,6 @@ import com.rit.sucy.config.FilterType;
 import com.rit.sucy.scoreboard.StatHolder;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
-import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 

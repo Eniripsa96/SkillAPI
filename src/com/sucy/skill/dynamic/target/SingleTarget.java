@@ -39,13 +39,13 @@ public class SingleTarget extends EffectComponent
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
-        Location wallCheckLoc = caster.getLocation().add(0, 1.5, 0);
+        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
         for (LivingEntity t : targets)
         {
             LivingEntity target = TargetHelper.getLivingTarget(t, range, tolerance);
             if (target != null)
             {
-                if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
+                if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                 {
                     continue;
                 }

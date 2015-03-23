@@ -71,7 +71,7 @@ public class Data
      *
      * @return parsed item icon or a plain Jack O' Lantern if invalid
      */
-    public static ItemStack parseIcon(ConfigurationSection config, CustomFilter ... filters)
+    public static ItemStack parseIcon(ConfigurationSection config, CustomFilter... filters)
     {
         if (config == null)
         {
@@ -137,7 +137,6 @@ public class Data
     {
         if (config == null)
         {
-            Bukkit.getLogger().info("Null config");
             return new ItemStack(Material.JACK_O_LANTERN);
         }
 

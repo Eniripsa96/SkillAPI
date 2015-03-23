@@ -17,13 +17,15 @@ public class Formula
      *
      * @param equation equation string
      */
-    public Formula(String equation) {
+    public Formula(String equation)
+    {
         equation = equation.replaceAll(" ", "");
         String[] split = equation.split("[+*/-]");
         operations = equation.split("[^+*/-]+");
 
         // When no values are provided, just return the original value
-        if (split.length == 0) {
+        if (split.length == 0)
+        {
             values = new Object[] { 'v' };
             return;
         }
@@ -66,7 +68,8 @@ public class Formula
      * Calculates the formula using the given base value and attribute
      *
      * @param value base value
-     * @param attr attribute
+     * @param attr  attribute
+     *
      * @return x - y
      */
     public double compute(double value, double attr)
@@ -75,7 +78,7 @@ public class Formula
         int i;
         for (i = 1; i < values.length && i < operations.length; i++)
         {
-            if      (operations[i].equals("+")) result += getValue(i, value, attr);
+            if (operations[i].equals("+")) result += getValue(i, value, attr);
             else if (operations[i].equals("-")) result -= getValue(i, value, attr);
             else if (operations[i].equals("*")) result *= getValue(i, value, attr);
             else if (operations[i].equals("/")) result /= getValue(i, value, attr);
@@ -87,6 +90,6 @@ public class Formula
     {
         if (values[index].toString().equals("v")) return value;
         if (values[index].toString().equals("a")) return attr;
-        return (Double)values[index];
+        return (Double) values[index];
     }
 }

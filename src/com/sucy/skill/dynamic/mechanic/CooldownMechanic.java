@@ -37,7 +37,7 @@ public class CooldownMechanic extends EffectComponent
         String type = settings.getString(TYPE, "all").toLowerCase();
         double value = attr(caster, VALUE, level, 0, isSelf);
 
-        PlayerData playerData = SkillAPI.getPlayerData((Player)caster);
+        PlayerData playerData = SkillAPI.getPlayerData((Player) caster);
 
         PlayerSkill skillData = playerData.getSkill(skill);
         if (skillData == null && !skill.equals("all"))

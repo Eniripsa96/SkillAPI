@@ -66,7 +66,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
                     dir.normalize();
                 }
                 double angle = attr(caster, ANGLE, level, 30.0, isSelf);
-                list = ParticleProjectile.spread(caster, level, dir, loc.add(0, 1, 0), settings, angle, amount, this);
+                list = ParticleProjectile.spread(caster, level, dir, loc.add(0, 0.5, 0), settings, angle, amount, this);
             }
 
             // Set metadata for when the callback happens

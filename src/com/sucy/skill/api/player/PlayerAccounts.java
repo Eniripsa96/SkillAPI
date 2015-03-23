@@ -2,6 +2,7 @@ package com.sucy.skill.api.player;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerAccountChangeEvent;
+import com.sucy.skill.listener.AttributeListener;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -174,6 +175,8 @@ public class PlayerAccounts
             }
 
             getActiveData().stopPassives(player);
+            getActiveData().clearBonuses();
+            AttributeListener.clearBonuses(player);
             if (getActiveData().hasClass())
             {
                 getActiveData().getSkillBar().clear(player);

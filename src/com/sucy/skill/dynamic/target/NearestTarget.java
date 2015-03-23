@@ -40,8 +40,8 @@ public class NearestTarget extends EffectComponent
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
-        int max = settings.getInt(MAX, 99);
-        Location wallCheckLoc = caster.getLocation().add(0, 1.5, 0);
+        double max = attr(caster, MAX, level, 99, isSelf);
+        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
         for (LivingEntity t : targets)
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
@@ -57,7 +57,7 @@ public class NearestTarget extends EffectComponent
                 if (entity instanceof LivingEntity)
                 {
                     LivingEntity target = (LivingEntity) entity;
-                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
+                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                     {
                         continue;
                     }

@@ -6,7 +6,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.Formula;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -46,6 +45,7 @@ public class AttributeManager
      * Retrieves an attribute template
      *
      * @param key attribute key
+     *
      * @return template for the attribute
      */
     public Attribute getAttribute(String key)
@@ -180,6 +180,7 @@ public class AttributeManager
          * @param self      whether or not the component is targeting the caster
          * @param value     base value
          * @param amount    amount of attribute points
+         *
          * @return modified value
          */
         public double modify(EffectComponent component, String key, boolean self, double value, int amount)
@@ -203,6 +204,7 @@ public class AttributeManager
          * @param key    key of the stat
          * @param base   base value of the stat
          * @param amount amount of attribute points
+         *
          * @return modified stat value
          */
         public double modifyStat(String key, double base, int amount)
@@ -274,6 +276,7 @@ public class AttributeManager
          * @param self      whether or not the component is targeting the caster
          * @param value     base value
          * @param amount    amount of attribute points
+         *
          * @return the modified value if the conditions passed or the base value if they failed
          */
         public double apply(EffectComponent component, boolean self, double value, int amount)

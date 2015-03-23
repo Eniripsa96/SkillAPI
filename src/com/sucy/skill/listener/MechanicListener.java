@@ -20,7 +20,6 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -55,7 +54,7 @@ public class MechanicListener implements Listener
     public void onMove(PlayerMoveEvent event)
     {
         boolean inMap = flying.contains(event.getPlayer().getEntityId());
-        if (inMap == ((Entity)event.getPlayer()).isOnGround())
+        if (inMap == ((Entity) event.getPlayer()).isOnGround())
         {
             if (inMap)
             {

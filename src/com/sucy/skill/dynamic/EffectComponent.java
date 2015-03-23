@@ -86,6 +86,7 @@ public abstract class EffectComponent
      * @param level    level of the skill
      * @param fallback default value for the attribute
      * @param self     whether or not the skill is targeting the caster
+     *
      * @return the value with attribute modifications if applicable
      */
     protected double attr(LivingEntity caster, String key, int level, double fallback, boolean self)
@@ -95,7 +96,7 @@ public abstract class EffectComponent
         // Apply global modifiers
         if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player)
         {
-            PlayerData data = SkillAPI.getPlayerData((Player)caster);
+            PlayerData data = SkillAPI.getPlayerData((Player) caster);
             value = data.scaleDynamic(this, key, value, self);
         }
 

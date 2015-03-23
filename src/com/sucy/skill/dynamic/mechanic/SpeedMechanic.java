@@ -31,7 +31,7 @@ public class SpeedMechanic extends EffectComponent
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        float multiplier = (float)attr(caster, MULTIPLIER, level, 1.2, isSelf);
+        float multiplier = (float) attr(caster, MULTIPLIER, level, 1.2, isSelf);
         double seconds = attr(caster, DURATION, level, 3.0, isSelf);
         int ticks = (int) (seconds * 20);
         boolean worked = false;
@@ -40,7 +40,7 @@ public class SpeedMechanic extends EffectComponent
             if (!(target instanceof Player)) continue;
 
             FlagManager.addFlag(target, MechanicListener.SPEED_KEY, ticks);
-            ((Player)target).setWalkSpeed(multiplier * BASE_SPEED);
+            ((Player) target).setWalkSpeed(multiplier * BASE_SPEED);
             worked = true;
         }
         return worked;

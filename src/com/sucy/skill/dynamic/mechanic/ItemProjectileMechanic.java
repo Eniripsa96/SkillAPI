@@ -10,7 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -54,7 +53,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
             // Invalid or missing item material
         }
         ItemStack item = new ItemStack(mat);
-        item.setDurability((short)settings.getInt(DATA, 0));
+        item.setDurability((short) settings.getInt(DATA, 0));
 
         // Get other common values
         double speed = settings.getAttr(SPEED, level, 3.0);
@@ -84,7 +83,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                 }
                 dir.multiply(speed);
                 double angle = settings.getAttr(ANGLE, level, 30.0);
-                list = ItemProjectile.spread(caster, dir, loc.add(0, 1, 0), item, angle, amount, this);
+                list = ItemProjectile.spread(caster, dir, loc.add(0, 0.5, 0), item, angle, amount, this);
             }
 
             // Set metadata for when the callback happens

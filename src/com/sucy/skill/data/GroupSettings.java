@@ -3,7 +3,6 @@ package com.sucy.skill.data;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
-import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * Settings for class groups

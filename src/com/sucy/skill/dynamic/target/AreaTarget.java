@@ -3,7 +3,6 @@ package com.sucy.skill.dynamic.target;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -42,13 +41,16 @@ public class AreaTarget extends EffectComponent
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
-        int max = settings.getInt(MAX, 99);
-        Location wallCheckLoc = caster.getLocation().add(0, 1.5, 0);
+        double max = attr(caster, MAX, level, 99, isSelf);
+        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
         for (LivingEntity t : targets)
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            list.add(t);
+            if (t != caster)
+            {
+                list.add(t);
+            }
             if (self)
             {
                 list.add(caster);
@@ -59,7 +61,7 @@ public class AreaTarget extends EffectComponent
                 if (entities.get(i) instanceof LivingEntity)
                 {
                     LivingEntity target = (LivingEntity) entities.get(i);
-                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
+                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                     {
                         continue;
                     }

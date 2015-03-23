@@ -42,7 +42,7 @@ public class ConeTarget extends EffectComponent
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
         int max = settings.getInt(MAX, 99);
-        Location wallCheckLoc = caster.getLocation().add(0, 1.5, 0);
+        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
         for (LivingEntity t : targets)
         {
             List<LivingEntity> list = TargetHelper.getConeTargets(caster, angle, range);
@@ -54,7 +54,7 @@ public class ConeTarget extends EffectComponent
             {
                 LivingEntity target = list.get(i);
                 if (i >= max
-                    || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
+                    || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                     || (!both && ally != Protection.isAlly(caster, target)))
                 {
                     list.remove(i);

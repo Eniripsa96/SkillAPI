@@ -8,7 +8,6 @@ import com.sucy.skill.api.player.*;
 import com.sucy.skill.api.skills.Skill;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;

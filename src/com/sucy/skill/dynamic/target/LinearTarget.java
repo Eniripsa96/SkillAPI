@@ -44,7 +44,7 @@ public class LinearTarget extends EffectComponent
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
 
         int max = settings.getInt(MAX, 999);
-        Location wallCheckLoc = caster.getLocation().add(0, 1.5, 0);
+        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
         for (LivingEntity t : targets)
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
@@ -55,7 +55,7 @@ public class LinearTarget extends EffectComponent
             List<LivingEntity> result = TargetHelper.getLivingTargets(t, range, tolerance);
             for (LivingEntity target : result)
             {
-                if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 1, 0)))
+                if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                 {
                     continue;
                 }

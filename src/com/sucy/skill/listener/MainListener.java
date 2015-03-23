@@ -90,7 +90,10 @@ public class MainListener implements Listener
 
         // Attempted workaround for weird health bug
         // TODO figure out what actually causes it
-        event.getPlayer().setHealth(health);
+        if (health > 0 && health < event.getPlayer().getMaxHealth())
+        {
+            event.getPlayer().setHealth(health);
+        }
     }
 
     /**

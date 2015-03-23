@@ -85,7 +85,7 @@ public class ProjectileMechanic extends EffectComponent
                 {
                     Projectile p = caster.launchProjectile(type);
                     p.setVelocity(d.multiply(speed));
-                    p.teleport(target.getLocation().add(0, 1, 0).add(p.getVelocity()));
+                    p.teleport(target.getLocation().add(0, 0.5, 0).add(p.getVelocity()));
                     SkillAPI api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
                     p.setMetadata(MechanicListener.P_CALL, new FixedMetadataValue(api, this));
                     p.setMetadata(LEVEL, new FixedMetadataValue(api, level));

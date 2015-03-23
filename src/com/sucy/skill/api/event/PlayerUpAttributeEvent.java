@@ -1,7 +1,6 @@
 package com.sucy.skill.api.event;
 
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.player.PlayerSkill;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -12,9 +11,9 @@ import org.bukkit.event.HandlerList;
 public class PlayerUpAttributeEvent extends Event implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
-    private PlayerData  player;
-    private String      attribute;
-    private boolean     cancelled = false;
+    private PlayerData player;
+    private String     attribute;
+    private boolean cancelled = false;
 
     /**
      * Constructor

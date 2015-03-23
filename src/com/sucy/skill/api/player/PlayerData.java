@@ -165,6 +165,7 @@ public final class PlayerData
      * given attribute
      *
      * @param key attribute key
+     *
      * @return number of invested points
      */
     public int getAttribute(String key)
@@ -182,6 +183,7 @@ public final class PlayerData
      * points invested in a given attribute
      *
      * @param key attribute key
+     *
      * @return true if any points are invested, false otherwise
      */
     public boolean hasAttribute(String key)
@@ -256,6 +258,7 @@ public final class PlayerData
      *
      * @param stat  stat key
      * @param value base value
+     *
      * @return modified value
      */
     public double scaleStat(String stat, double value)
@@ -279,6 +282,7 @@ public final class PlayerData
      * @param key       key of the value
      * @param value     unmodified value
      * @param self      whether or not the player is the target
+     *
      * @return the modified value
      */
     public double scaleDynamic(EffectComponent component, String key, double value, boolean self)
@@ -298,7 +302,8 @@ public final class PlayerData
     /**
      * Opens the attribute menu
      */
-    public void openAttributeMenu() {
+    public void openAttributeMenu()
+    {
         Player player = getPlayer();
         if (SkillAPI.getSettings().isAttributesEnabled() && player != null)
         {
@@ -1208,6 +1213,15 @@ public final class PlayerData
                 mana = 0;
             }
         }
+    }
+
+    /**
+     * Clears bonus health/mana
+     */
+    public void clearBonuses()
+    {
+        bonusMana = 0;
+        bonusHealth = 0;
     }
 
     ///////////////////////////////////////////////////////

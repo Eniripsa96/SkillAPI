@@ -1,5 +1,6 @@
 package com.sucy.skill.api.util;
 
+import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.FlagExpireEvent;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.VaultHook;
@@ -42,6 +43,10 @@ public class FlagData
      */
     public void addFlag(String flag, int ticks)
     {
+        FlagApplyEvent event = new FlagApplyEvent(entity, flag, ticks);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+
         if (flags.containsKey(flag))
         {
             long time = flags.get(flag) - System.currentTimeMillis();

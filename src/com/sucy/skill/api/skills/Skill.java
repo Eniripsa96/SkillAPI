@@ -154,7 +154,7 @@ public abstract class Skill
      */
     public boolean canAutoLevel()
     {
-        return getCost(0) == 0 && !canCast() && maxLevel == 1;
+        return getCost(0) == 0 && maxLevel == 1;
     }
 
     /**

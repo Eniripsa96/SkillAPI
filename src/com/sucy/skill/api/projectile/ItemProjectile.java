@@ -124,7 +124,7 @@ public class ItemProjectile extends CustomProjectile
         for (Vector dir : dirs)
         {
             Vector vel = dir.multiply(speed);
-            ItemProjectile p = new ItemProjectile(shooter, loc, item, vel);
+            ItemProjectile p = new ItemProjectile(shooter, loc.clone(), item, vel);
             p.setCallback(callback);
             list.add(p);
         }

@@ -20,6 +20,11 @@ public enum Trigger
     CROUCH,
 
     /**
+     * Trigger effects when the player takes environmental damage
+     */
+    ENVIRONMENT_DAMAGE,
+
+    /**
      * Trigger effects when the player inflicts non-skill damage
      */
     PHYSICAL_DAMAGE,

@@ -6,6 +6,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.Formula;
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -190,7 +191,7 @@ public class AttributeManager
             else if (component.getType().equals("mechanic")) map = mechanics;
             else map = targets;
 
-            key = component.getKey().toLowerCase() + "-" + key.toLowerCase();
+            key = component.getKey().replaceAll("-.+", "").toLowerCase() + "-" + key.toLowerCase();
             if (map.containsKey(key))
             {
                 return map.get(key).apply(component, self, value, amount);

@@ -38,6 +38,7 @@ import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
+import com.sucy.skill.gui.Menu;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
@@ -45,7 +46,6 @@ import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.task.SaveTask;
-import com.sucy.skill.tree.map.TreeRenderer;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -149,7 +149,7 @@ public class SkillAPI extends JavaPlugin
         new StatusListener(this);
         if (settings.isMapTreeEnabled())
         {
-            new MapListener(this);
+            Menu.initialize(this);
         }
         else
         {
@@ -189,9 +189,6 @@ public class SkillAPI extends JavaPlugin
         {
             saveTask = new SaveTask(this);
         }
-
-        // Save map data
-        TreeRenderer.RENDERER.save(this);
 
         loaded = true;
     }
@@ -235,9 +232,10 @@ public class SkillAPI extends JavaPlugin
         // Clear scoreboards
         ClassBoardManager.clearAll();
 
-        // Clear skill bars before disabling
+        // Clear skill bars and stop passives before disabling
         for (Player player : getServer().getOnlinePlayers())
         {
+            getPlayerData(player).stopPassives(player);
             if (player.getGameMode() != GameMode.CREATIVE && !player.isDead())
             {
                 getPlayerData(player).getSkillBar().clear(player);

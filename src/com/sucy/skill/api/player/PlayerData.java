@@ -747,10 +747,7 @@ public final class PlayerData
         // Add in missing skills
         for (Skill skill : rpgClass.getSkills())
         {
-            if (!skills.containsKey(skill.getKey()))
-            {
-                skills.put(skill.getKey(), new PlayerSkill(this, skill, classData));
-            }
+            giveSkill(skill, classData);
         }
 
         updateLevelBar();
@@ -839,6 +836,8 @@ public final class PlayerData
      */
     public void reset(String group)
     {
+        stopPassives(getPlayer());
+        clearBonuses();
         PlayerClass playerClass = classes.remove(group);
         if (playerClass != null)
         {

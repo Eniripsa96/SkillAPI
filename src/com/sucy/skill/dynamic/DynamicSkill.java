@@ -13,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
@@ -46,6 +47,16 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public boolean canCast()
     {
         return components.containsKey(Trigger.CAST);
+    }
+
+    /**
+     * Checks whether or not the caster's passives are currently active
+     *
+     * @param caster caster to check for
+     * @return true if active, false otherwise
+     */
+    public boolean isActive(LivingEntity caster) {
+        return active.containsKey(caster.getEntityId());
     }
 
     /**
@@ -181,6 +192,29 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         {
             trigger(event.getEntity(), event.getEntity(), active.get(event.getEntity().getEntityId()), Trigger.DEATH);
         }
+    }
+
+    /**
+     * Environmental damage trigger
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onEnvironmental(EntityDamageEvent event)
+    {
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+
+        EffectComponent component = components.get(Trigger.ENVIRONMENT_DAMAGE);
+        LivingEntity target = (LivingEntity)event.getEntity();
+        if (component != null && active.containsKey(target.getEntityId()))
+        {
+            String name = component.getSettings().getString("type", "").toUpperCase().replace(' ', '_');
+            if (event.getCause().name().equals(name))
+            {
+                trigger(target, target, active.get(target.getEntityId()), Trigger.ENVIRONMENT_DAMAGE);
+            }
+        }
+
     }
 
     /**

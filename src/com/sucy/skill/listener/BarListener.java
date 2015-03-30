@@ -1,5 +1,8 @@
 package com.sucy.skill.listener;
 
+import com.rit.sucy.gui.MapData;
+import com.rit.sucy.gui.MapMenu;
+import com.rit.sucy.gui.MapMenuManager;
 import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
@@ -9,8 +12,9 @@ import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.gui.SkillDetailMenu;
+import com.sucy.skill.gui.SkillListMenu;
 import com.sucy.skill.tree.basic.InventoryTree;
-import com.sucy.skill.tree.map.TreeRenderer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -299,9 +303,14 @@ public class BarListener implements Listener
         {
             event.setCancelled(true);
 
-            if (TreeRenderer.RENDERER.isHeld(event.getPlayer()) && SkillAPI.getSettings().isMapTreeEnabled())
+            MapData held = MapMenuManager.getActiveMenuData(event.getPlayer());
+            if (held != null)
             {
-                bar.assign(TreeRenderer.RENDERER.getSkill(event.getPlayer()), event.getNewSlot());
+                MapMenu menu = held.getMenu(event.getPlayer());
+                if (menu instanceof SkillListMenu || menu instanceof SkillDetailMenu)
+                {
+                    bar.assign(SkillListMenu.getSkill(event.getPlayer()), event.getNewSlot());
+                }
             }
             else
             {

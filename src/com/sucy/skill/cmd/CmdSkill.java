@@ -2,9 +2,10 @@ package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
+import com.rit.sucy.gui.MapMenuManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.tree.map.TreeRenderer;
+import com.sucy.skill.gui.Menu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -46,16 +47,17 @@ public class CmdSkill implements IFunction
             Player p = (Player) sender;
             if (SkillAPI.getSettings().isMapTreeEnabled())
             {
+                ItemStack map = MapMenuManager.getData(Menu.SKILL_TREE).getMapItem();
                 for (ItemStack i : p.getInventory().getContents())
                 {
-                    if (i != null && i.getType() == Material.MAP && i.getDurability() == TreeRenderer.RENDERER.view.getId())
+                    if (i != null && i.getType() == Material.MAP && i.getDurability() == map.getDurability())
                     {
                         cmd.sendMessage(sender, MAP_OWNED, ChatColor.RED + "You already have the skill tree map");
                         return;
                     }
                 }
-                p.getInventory().addItem(TreeRenderer.RENDERER.map);
                 cmd.sendMessage(sender, MAP_GIVEN, ChatColor.DARK_GREEN + "You were given the skill tree map. Hold it in your hand to view skills.");
+                p.getInventory().addItem(map);
             }
             else
             {

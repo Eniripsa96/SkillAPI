@@ -14,14 +14,11 @@ import java.util.List;
 /**
  * Gives an item to each player target
  */
-public class ItemMechanic extends EffectComponent
+public class ItemRemoveMechanic extends EffectComponent
 {
     private static final String MATERIAL = "material";
     private static final String AMOUNT   = "amount";
     private static final String DATA     = "data";
-    private static final String CUSTOM   = "custom";
-    private static final String NAME     = "name";
-    private static final String LORE     = "lore";
 
     /**
      * Executes the component
@@ -46,28 +43,14 @@ public class ItemMechanic extends EffectComponent
             return false;
         }
         int amount = settings.getInt(AMOUNT, 1);
-        int data = settings.getInt(DATA, 0);
-        ItemStack item = new ItemStack(material, amount, (short)data);
-
-        boolean custom = settings.getString(CUSTOM, "false").toLowerCase().equals("true");
-        if (custom)
-        {
-            ItemMeta meta = item.getItemMeta();
-            String name = TextFormatter.colorString(settings.getString(NAME, ""));
-            if (name.length() > 0)
-            {
-                meta.setDisplayName(name);
-            }
-            List<String> lore = TextFormatter.colorStringList(settings.getStringList(LORE));
-            meta.setLore(lore);
-            item.setItemMeta(meta);
-        }
+        short data = (short)settings.getInt(DATA, 0);
+        ItemStack item = new ItemStack(material, amount, data);
 
         for (LivingEntity target : targets)
         {
             if (target instanceof Player)
             {
-                ((Player) target).getInventory().addItem(item);
+                ((Player) target).getInventory().remove(item);
             }
         }
         return targets.size() > 0;

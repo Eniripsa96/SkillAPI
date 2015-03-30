@@ -2,13 +2,15 @@ package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
+import com.rit.sucy.gui.MapScheme;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.language.RPGFilter;
-import com.sucy.skill.tree.map.TreeRenderer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import java.util.ArrayList;
 
 /**
  * A command that allows a player to view their skill tree
@@ -47,10 +49,11 @@ public class CmdScheme implements IFunction
             if (args.length == 0)
             {
                 String list = "";
-                for (String name : TreeRenderer.RENDERER.schemes.keySet())
+                ArrayList<MapScheme> schemes = MapScheme.list((SkillAPI)plugin);
+                for (MapScheme scheme : schemes)
                 {
                     if (list.length() > 0) list += ", ";
-                    list += name;
+                    list += scheme.getKey();
                 }
                 cmd.sendMessage(sender, SCHEME_LIST, ChatColor.DARK_GREEN + "Available Schemes: " + ChatColor.GOLD + "{list}", RPGFilter.LIST.setReplacement(list));
             }
@@ -63,7 +66,7 @@ public class CmdScheme implements IFunction
                 {
                     name += " " + args[i];
                 }
-                Object scheme = TreeRenderer.RENDERER.schemes.get(name);
+                Object scheme = MapScheme.get((SkillAPI)plugin, name);
                 if (scheme == null)
                 {
                     cmd.sendMessage(sender, NOT_SCHEME, ChatColor.RED + "That is not a valid scheme");

@@ -56,7 +56,7 @@ public class PassiveMechanic extends EffectComponent
         @Override
         public void run()
         {
-            if (!caster.isValid() || caster.isDead())
+            if (!caster.isValid() || caster.isDead() || !skill.isActive(caster))
             {
                 cancel();
             }

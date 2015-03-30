@@ -44,7 +44,7 @@ public class PotionMechanic extends EffectComponent
             int ticks = (int) (seconds * 20);
             for (LivingEntity target : targets)
             {
-                target.addPotionEffect(new PotionEffect(potion, ticks, tier), ambient);
+                target.addPotionEffect(new PotionEffect(potion, ticks, tier, ambient), true);
             }
             return targets.size() > 0;
         }

@@ -3,6 +3,7 @@ package com.sucy.skill.dynamic.target;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -47,7 +48,7 @@ public class AreaTarget extends EffectComponent
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            if (t != caster)
+            if (t != caster && Protection.isAlly(caster, t) == ally)
             {
                 list.add(t);
             }

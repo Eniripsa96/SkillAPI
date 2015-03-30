@@ -49,7 +49,7 @@ public class SingleTarget extends EffectComponent
                 {
                     continue;
                 }
-                if (both || ally != Protection.canAttack(caster, target, true))
+                if (both || ally != Protection.canAttack(caster, target))
                 {
                     ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
                     list.add(target);

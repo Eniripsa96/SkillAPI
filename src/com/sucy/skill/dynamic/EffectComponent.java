@@ -35,7 +35,7 @@ public abstract class EffectComponent
     /**
      * Parent class of the component
      */
-    protected Skill skill;
+    protected DynamicSkill skill;
 
     /**
      * Key of the component for the config
@@ -266,6 +266,7 @@ public abstract class EffectComponent
             put("fire", FireCondition.class);
             put("flag", FlagCondition.class);
             put("health", HealthCondition.class);
+            put("inventory", InventoryCondition.class);
             put("item", ItemCondition.class);
             put("light", LightCondition.class);
             put("lore", LoreCondition.class);
@@ -298,6 +299,7 @@ public abstract class EffectComponent
             put("immunity", ImmunityMechanic.class);
             put("item", ItemMechanic.class);
             put("item projectile", ItemProjectileMechanic.class);
+            put("item remove", ItemRemoveMechanic.class);
             put("launch", LaunchMechanic.class);
             put("lightning", LightningMechanic.class);
             put("mana", ManaMechanic.class);

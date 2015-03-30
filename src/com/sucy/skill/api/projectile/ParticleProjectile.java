@@ -203,7 +203,9 @@ public class ParticleProjectile extends CustomProjectile
         ArrayList<ParticleProjectile> list = new ArrayList<ParticleProjectile>();
         for (Vector dir : dirs)
         {
-            ParticleProjectile p = new ParticleProjectile(shooter, level, loc, settings);
+            Location l = loc.clone();
+            l.setDirection(dir);
+            ParticleProjectile p = new ParticleProjectile(shooter, level, l, settings);
             p.setCallback(callback);
             list.add(p);
         }

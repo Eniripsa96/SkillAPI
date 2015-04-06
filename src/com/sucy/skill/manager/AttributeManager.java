@@ -6,7 +6,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.Formula;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;

@@ -53,9 +53,11 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * Checks whether or not the caster's passives are currently active
      *
      * @param caster caster to check for
+     *
      * @return true if active, false otherwise
      */
-    public boolean isActive(LivingEntity caster) {
+    public boolean isActive(LivingEntity caster)
+    {
         return active.containsKey(caster.getEntityId());
     }
 
@@ -205,7 +207,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         EffectComponent component = components.get(Trigger.ENVIRONMENT_DAMAGE);
-        LivingEntity target = (LivingEntity)event.getEntity();
+        LivingEntity target = (LivingEntity) event.getEntity();
         if (component != null && active.containsKey(target.getEntityId()))
         {
             String name = component.getSettings().getString("type", "").toUpperCase().replace(' ', '_');

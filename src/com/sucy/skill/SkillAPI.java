@@ -40,6 +40,7 @@ import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.gui.Menu;
 import com.sucy.skill.hook.PluginChecker;
+import com.sucy.skill.hook.beton.BetonUtil;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
 import com.sucy.skill.task.CooldownTask;
@@ -125,6 +126,12 @@ public class SkillAPI extends JavaPlugin
         if (settings.isAttributesEnabled())
         {
             attributeManager = new AttributeManager(this);
+        }
+
+        // Beton Quest hook
+        if (PluginChecker.isBetonActive())
+        {
+            BetonUtil.register();
         }
 
         // Load classes and skills

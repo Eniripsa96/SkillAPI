@@ -6,6 +6,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
 import com.sucy.skill.api.skills.Skill;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -170,7 +171,7 @@ public class ConfigIO extends IOManager
             }
 
             // Load attributes
-            acc.giveAttribPoints(account.getInt(ATTRIB_POINTS, 0));
+            acc.setAttribPoints(account.getInt(ATTRIB_POINTS, 0));
             ConfigurationSection attribs = account.getConfigurationSection(ATTRIBS);
             if (attribs != null)
             {
@@ -197,84 +198,91 @@ public class ConfigIO extends IOManager
         {
             return;
         }
-        Config config = new Config(api, "players/" + new VersionPlayer(data.getPlayer()).getIdString());
-        config.clear();
-        ConfigurationSection file = config.getConfig();
-        file.set(LIMIT, data.getAccountLimit());
-        file.set(ACTIVE, data.getActiveId());
-        ConfigurationSection accounts = file.createSection(ACCOUNTS);
-        for (Map.Entry<Integer, PlayerData> entry : data.getAllData().entrySet())
+        try
         {
-            ConfigurationSection account = accounts.createSection(ACCOUNT_PREFIX + entry.getKey());
-            PlayerData acc = entry.getValue();
-
-            // Save scheme
-            account.set(SCHEME, acc.getScheme());
-
-            // Save classes
-            ConfigurationSection classes = account.createSection(CLASSES);
-            for (PlayerClass c : acc.getClasses())
+            Config config = new Config(api, "players/" + new VersionPlayer(data.getPlayer()).getIdString());
+            config.clear();
+            ConfigurationSection file = config.getConfig();
+            file.set(LIMIT, data.getAccountLimit());
+            file.set(ACTIVE, data.getActiveId());
+            ConfigurationSection accounts = file.createSection(ACCOUNTS);
+            for (Map.Entry<Integer, PlayerData> entry : data.getAllData().entrySet())
             {
-                ConfigurationSection classSection = classes.createSection(c.getData().getName());
-                classSection.set(LEVEL, c.getLevel());
-                classSection.set(POINTS, c.getPoints());
-                classSection.set(TOTAL_EXP, c.getTotalExp());
-            }
+                ConfigurationSection account = accounts.createSection(ACCOUNT_PREFIX + entry.getKey());
+                PlayerData acc = entry.getValue();
 
-            // Save skills
-            ConfigurationSection skills = account.createSection(SKILLS);
-            for (PlayerSkill skill : acc.getSkills())
-            {
-                ConfigurationSection skillSection = skills.createSection(skill.getData().getName());
-                skillSection.set(LEVEL, skill.getLevel());
-                skillSection.set(POINTS, skill.getPoints());
-            }
+                // Save scheme
+                account.set(SCHEME, acc.getScheme());
 
-            // Save binds
-            ConfigurationSection binds = account.createSection(BINDS);
-            for (Map.Entry<Material, PlayerSkill> bind : acc.getBinds().entrySet())
-            {
-                binds.set(bind.getKey().name(), bind.getValue().getData().getName());
-            }
-
-            // Save skill bar
-            if (acc.getSkillBar() != null)
-            {
-                ConfigurationSection skillBar = account.createSection(SKILL_BAR);
-                PlayerSkillBar bar = acc.getSkillBar();
-                skillBar.set(ENABLED, bar.isEnabled());
-                skillBar.set(SLOTS, new ArrayList<Integer>(bar.getData().keySet()));
-                for (Map.Entry<Integer, String> slotEntry : bar.getData().entrySet())
+                // Save classes
+                ConfigurationSection classes = account.createSection(CLASSES);
+                for (PlayerClass c : acc.getClasses())
                 {
-                    if (slotEntry.getValue().equals(UNASSIGNED))
+                    ConfigurationSection classSection = classes.createSection(c.getData().getName());
+                    classSection.set(LEVEL, c.getLevel());
+                    classSection.set(POINTS, c.getPoints());
+                    classSection.set(TOTAL_EXP, c.getTotalExp());
+                }
+
+                // Save skills
+                ConfigurationSection skills = account.createSection(SKILLS);
+                for (PlayerSkill skill : acc.getSkills())
+                {
+                    ConfigurationSection skillSection = skills.createSection(skill.getData().getName());
+                    skillSection.set(LEVEL, skill.getLevel());
+                    skillSection.set(POINTS, skill.getPoints());
+                }
+
+                // Save binds
+                ConfigurationSection binds = account.createSection(BINDS);
+                for (Map.Entry<Material, PlayerSkill> bind : acc.getBinds().entrySet())
+                {
+                    binds.set(bind.getKey().name(), bind.getValue().getData().getName());
+                }
+
+                // Save skill bar
+                if (acc.getSkillBar() != null)
+                {
+                    ConfigurationSection skillBar = account.createSection(SKILL_BAR);
+                    PlayerSkillBar bar = acc.getSkillBar();
+                    skillBar.set(ENABLED, bar.isEnabled());
+                    skillBar.set(SLOTS, new ArrayList<Integer>(bar.getData().keySet()));
+                    for (Map.Entry<Integer, String> slotEntry : bar.getData().entrySet())
                     {
-                        continue;
+                        if (slotEntry.getValue().equals(UNASSIGNED))
+                        {
+                            continue;
+                        }
+                        skillBar.set(slotEntry.getValue(), slotEntry.getKey());
                     }
-                    skillBar.set(slotEntry.getValue(), slotEntry.getKey());
                 }
-            }
 
-            // Save combos
-            ConfigurationSection combos = account.createSection(COMBOS);
-            PlayerCombos comboData = acc.getComboData();
-            if (combos != null && comboData != null)
-            {
-                HashMap<String, Integer> comboMap = comboData.getComboData();
-                for (Map.Entry<String, Integer> combo : comboMap.entrySet())
+                // Save combos
+                ConfigurationSection combos = account.createSection(COMBOS);
+                PlayerCombos comboData = acc.getComboData();
+                if (combos != null && comboData != null)
                 {
-                    combos.set(combo.getKey(), combo.getValue());
+                    HashMap<String, Integer> comboMap = comboData.getComboData();
+                    for (Map.Entry<String, Integer> combo : comboMap.entrySet())
+                    {
+                        combos.set(combo.getKey(), combo.getValue());
+                    }
+                }
+
+                // Save attributes
+                account.set(ATTRIB_POINTS, acc.getAttributePoints());
+                ConfigurationSection attribs = account.createSection(ATTRIBS);
+                for (String key : acc.getAttributeData().keySet())
+                {
+                    attribs.set(key, acc.getAttributeData().get(key));
                 }
             }
-
-            // Save attributes
-            account.set(ATTRIB_POINTS, acc.getAttributePoints());
-            ConfigurationSection attribs = account.createSection(ATTRIBS);
-            for (String key : acc.getAttributeData().keySet())
-            {
-                attribs.set(key, acc.getAttributeData().get(key));
-            }
+            config.saveConfig();
         }
-        config.saveConfig();
+        catch (Exception ex) {
+            Bukkit.getLogger().info("Failed to save player data for " + data.getPlayer().getName());
+            ex.printStackTrace();
+        }
     }
 
     /**

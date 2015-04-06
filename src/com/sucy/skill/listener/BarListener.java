@@ -221,7 +221,7 @@ public class BarListener implements Listener
 
         // Disabled skill bars aren't affected either
         final PlayerSkillBar skillBar = data.getSkillBar();
-        if (!skillBar.isEnabled())
+        if (!skillBar.isSetup())
         {
             return;
         }
@@ -292,14 +292,16 @@ public class BarListener implements Listener
     @EventHandler
     public void onCast(PlayerItemHeldEvent event)
     {
+        // Doesn't do anything without a class
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (!data.hasClass())
         {
             return;
         }
 
+        // Must be a skill slot when the bar is set up
         PlayerSkillBar bar = data.getSkillBar();
-        if (!bar.isWeaponSlot(event.getNewSlot()) && bar.isEnabled())
+        if (!bar.isWeaponSlot(event.getNewSlot()) && bar.isSetup())
         {
             event.setCancelled(true);
 

@@ -17,4 +17,14 @@ public class PluginChecker
     {
         return Bukkit.getPluginManager().getPlugin("Vault") != null && VaultHook.isValid();
     }
+
+    /**
+     * Checks whether or not BetonQuest is active on the server
+     *
+     * @return true if active, false otherwise
+     */
+    public static boolean isBetonActive()
+    {
+        return Bukkit.getPluginManager().getPlugin("BetonQuest") != null;
+    }
 }

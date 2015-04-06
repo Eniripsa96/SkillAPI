@@ -44,6 +44,18 @@ public class SkillDetailMenu extends MapMenu
     }
 
     @Override
+    public void onUp(Player player)
+    {
+        SkillAPI.getPlayerData(player).upgradeSkill(SkillListMenu.getSkill(player).getData());
+    }
+
+    @Override
+    public void onDown(Player player)
+    {
+        SkillAPI.getPlayerData(player).downgradeSkill(SkillListMenu.getSkill(player).getData());
+    }
+
+    @Override
     public void onSelect(Player player)
     {
         Integer[] data = menuData.get(player.getName());

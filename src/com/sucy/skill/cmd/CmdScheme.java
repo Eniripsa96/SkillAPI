@@ -49,7 +49,7 @@ public class CmdScheme implements IFunction
             if (args.length == 0)
             {
                 String list = "";
-                ArrayList<MapScheme> schemes = MapScheme.list((SkillAPI)plugin);
+                ArrayList<MapScheme> schemes = MapScheme.list((SkillAPI) plugin);
                 for (MapScheme scheme : schemes)
                 {
                     if (list.length() > 0) list += ", ";
@@ -66,7 +66,7 @@ public class CmdScheme implements IFunction
                 {
                     name += " " + args[i];
                 }
-                Object scheme = MapScheme.get((SkillAPI)plugin, name);
+                Object scheme = MapScheme.get((SkillAPI) plugin, name);
                 if (scheme == null)
                 {
                     cmd.sendMessage(sender, NOT_SCHEME, ChatColor.RED + "That is not a valid scheme");

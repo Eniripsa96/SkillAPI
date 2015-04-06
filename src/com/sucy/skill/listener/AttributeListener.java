@@ -30,7 +30,8 @@ public class AttributeListener implements Listener
      *
      * @param player player to clear bonuses for
      */
-    public static void clearBonuses(Player player) {
+    public static void clearBonuses(Player player)
+    {
         ArrayList<String> keys = new ArrayList<String>(bonuses.keySet());
         for (String key : keys)
         {

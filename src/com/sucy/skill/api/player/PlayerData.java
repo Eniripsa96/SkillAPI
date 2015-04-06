@@ -254,6 +254,15 @@ public final class PlayerData
     }
 
     /**
+     * Sets the current amount of attribute points
+     *
+     * @param amount amount of points to have
+     */
+    public void setAttribPoints(int amount) {
+        attribPoints = amount;
+    }
+
+    /**
      * Scales a stat value using the player's attributes
      *
      * @param stat  stat key
@@ -730,7 +739,6 @@ public final class PlayerData
      */
     public PlayerClass setClass(RPGClass rpgClass)
     {
-
         PlayerClass c = classes.remove(rpgClass.getGroup());
         if (c != null)
         {
@@ -841,6 +849,7 @@ public final class PlayerData
         PlayerClass playerClass = classes.remove(group);
         if (playerClass != null)
         {
+            // Remove skills
             RPGClass data = playerClass.getData();
             for (Skill skill : data.getSkills())
             {
@@ -848,16 +857,20 @@ public final class PlayerData
                 combos.removeSkill(skill);
             }
 
-            Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(playerClass, data, null));
+            // Update GUI features
             updateLevelBar();
             if (getPlayer() != null)
             {
                 ClassBoardManager.clear(new VersionPlayer(getPlayer()));
             }
+
+            // Call the event
+            Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(playerClass, data, null));
         }
+
+        // Restore default class if applicable
         GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
         RPGClass rpgClass = settings.getDefault();
-
         if (rpgClass != null && settings.getPermission() == null)
         {
             setClass(rpgClass);
@@ -875,6 +888,10 @@ public final class PlayerData
         {
             reset(key);
         }
+        skills.clear();
+        binds.clear();
+        attributes.clear();
+        attribPoints = 0;
     }
 
     /**

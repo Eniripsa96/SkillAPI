@@ -7,7 +7,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class ItemMechanic extends EffectComponent
         }
         int amount = settings.getInt(AMOUNT, 1);
         int data = settings.getInt(DATA, 0);
-        ItemStack item = new ItemStack(material, amount, (short)data);
+        ItemStack item = new ItemStack(material, amount, (short) data);
 
         boolean custom = settings.getString(CUSTOM, "false").toLowerCase().equals("true");
         if (custom)

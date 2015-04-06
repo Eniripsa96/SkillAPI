@@ -4,7 +4,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;

@@ -7,7 +7,9 @@ import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -28,6 +30,7 @@ public class ProjectileMechanic extends EffectComponent
     private static final String HEIGHT     = "height";
     private static final String RADIUS     = "radius";
     private static final String SPREAD     = "spread";
+    private static final String COST       = "cost";
 
     /**
      * Executes the component
@@ -47,10 +50,28 @@ public class ProjectileMechanic extends EffectComponent
         double speed = attr(caster, SPEED, level, 2.0, isSelf);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
+        String cost = settings.getString(COST, "none").toLowerCase();
         Class<? extends Projectile> type = PROJECTILES.get(projectile);
         if (type == null)
         {
             type = Arrow.class;
+        }
+
+        // Cost to cast
+        if (cost.equals("one") || cost.equals("all")) {
+            Material mat = MATERIALS.get(settings.getString(PROJECTILE, "arrow").toLowerCase());
+            if (mat == null || !(caster instanceof Player)) return false;
+            Player player = (Player)caster;
+            if (cost.equals("one") && !player.getInventory().contains(mat, 1)) {
+                return false;
+            }
+            if (cost.equals("all") && !player.getInventory().contains(mat, amount)) {
+                return false;
+            }
+            if (cost.equals("one")) {
+                player.getInventory().removeItem(new ItemStack(mat));
+            }
+            else player.getInventory().removeItem(new ItemStack(mat, amount));
         }
 
         // Fire from each target
@@ -120,5 +141,12 @@ public class ProjectileMechanic extends EffectComponent
             put("egg", Egg.class);
             put("ghast fireball", LargeFireball.class);
             put("snowball", Snowball.class);
+        }};
+
+    private static final HashMap<String, Material> MATERIALS = new HashMap<String, Material>()
+    {{
+            put("arrow", Material.ARROW);
+            put("egg", Material.EGG);
+            put("snowball", Material.SNOW_BALL);
         }};
 }

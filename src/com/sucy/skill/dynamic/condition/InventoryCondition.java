@@ -15,8 +15,8 @@ import java.util.List;
 public class InventoryCondition extends EffectComponent
 {
     private static final String MATERIAL = "material";
-    private static final String DATA = "data";
-    private static final String AMOUNT = "amount";
+    private static final String DATA     = "data";
+    private static final String AMOUNT   = "amount";
 
     /**
      * Executes the component
@@ -32,14 +32,15 @@ public class InventoryCondition extends EffectComponent
     {
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         String item = settings.getString(MATERIAL, "").toUpperCase().replace(" ", "_");
-        short data = (short)settings.getInt(DATA, 0);
+        short data = (short) settings.getInt(DATA, 0);
         int amount = settings.getInt(AMOUNT, 1);
         ItemStack check;
         try
         {
             check = new ItemStack(Material.valueOf(item), 1, data);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             return false;
         }
 
@@ -47,7 +48,7 @@ public class InventoryCondition extends EffectComponent
         {
             if (!(target instanceof Player)) continue;
 
-            if (((Player)target).getInventory().containsAtLeast(check, amount))
+            if (((Player) target).getInventory().containsAtLeast(check, amount))
             {
                 list.add(target);
             }

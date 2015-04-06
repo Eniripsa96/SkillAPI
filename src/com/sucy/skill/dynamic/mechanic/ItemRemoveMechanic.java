@@ -1,13 +1,10 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 
 import java.util.List;
 
@@ -43,14 +40,14 @@ public class ItemRemoveMechanic extends EffectComponent
             return false;
         }
         int amount = settings.getInt(AMOUNT, 1);
-        short data = (short)settings.getInt(DATA, 0);
+        short data = (short) settings.getInt(DATA, 0);
         ItemStack item = new ItemStack(material, amount, data);
 
         for (LivingEntity target : targets)
         {
             if (target instanceof Player)
             {
-                ((Player) target).getInventory().remove(item);
+                ((Player) target).getInventory().removeItem(item);
             }
         }
         return targets.size() > 0;

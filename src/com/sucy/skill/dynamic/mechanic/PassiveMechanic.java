@@ -69,6 +69,7 @@ public class PassiveMechanic extends EffectComponent
                     return;
                 }
             }
+            level = skill.getActiveLevel(caster);
             executeChildren(caster, level, targets);
         }
     }

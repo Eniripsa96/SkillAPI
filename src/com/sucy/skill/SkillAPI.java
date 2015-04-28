@@ -36,6 +36,7 @@ import com.sucy.skill.data.PlayerStats;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
+import com.sucy.skill.data.io.SQLIO;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.gui.Menu;
@@ -119,7 +120,7 @@ public class SkillAPI extends JavaPlugin
         comboManager = new ComboManager();
         registrationManager = new RegistrationManager(this);
         cmd = new CmdManager(this);
-        io = new ConfigIO(this);
+        io = settings.isUseSql() ? new SQLIO(this) : new ConfigIO(this);
         PlayerStats.init();
         ClassBoardManager.registerText();
         ResourceManager.copyQuestsModule();
@@ -148,6 +149,7 @@ public class SkillAPI extends JavaPlugin
             data.updateLevelBar();
             data.updateScoreboard();
         }
+        if (settings.isUseSql()) ((SQLIO) io).cleanup();
 
         // Set up listeners
         new CastListener(this);

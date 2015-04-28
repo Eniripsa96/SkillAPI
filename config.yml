@@ -30,6 +30,17 @@ Saving:
   #
   # How often to auto-save in minutes
   minutes: 30
+  #
+  # Whether or not to use an SQL database to save
+  sql-database: false
+  #
+  # Details for connecting to the database
+  sql-details:
+    host: localhost
+    port: 54321
+    database: plugins
+    username: username
+    password: password
 #
 Classes:
   #

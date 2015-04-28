@@ -774,7 +774,9 @@ public final class PlayerData
      */
     public boolean isExactClass(RPGClass rpgClass)
     {
-        return rpgClass != null && classes.get(rpgClass.getGroup()).getData() == rpgClass;
+        if (rpgClass == null) return false;
+        PlayerClass c = classes.get(rpgClass.getGroup());
+        return (c != null) && (c.getData() == rpgClass);
     }
 
     /**
@@ -1292,10 +1294,10 @@ public final class PlayerData
      */
     public boolean bind(Material mat, PlayerSkill skill)
     {
-        // Make sure the skill is owned by the player
-        if (skill != null && skill.getPlayerData() != this)
+        // Special cases
+        if (mat == null || (skill != null && skill.getPlayerData() != this))
         {
-            throw new IllegalArgumentException("That skill does not belong to this player!");
+            return false;
         }
 
         PlayerSkill bound = getBoundSkill(mat);

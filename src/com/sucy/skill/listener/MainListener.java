@@ -77,7 +77,7 @@ public class MainListener implements Listener
     public void onJoin(PlayerJoinEvent event)
     {
         double health = event.getPlayer().getHealth();
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+        final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
 
         // Apply player data as long as they have a class
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
@@ -85,7 +85,15 @@ public class MainListener implements Listener
             data.updateHealthAndMana(event.getPlayer());
             data.updateLevelBar();
             data.startPassives(event.getPlayer());
-            data.updateScoreboard();
+
+            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    data.updateScoreboard();
+                }
+            }, 2);
         }
 
         // Attempted workaround for weird health bug
@@ -416,12 +424,20 @@ public class MainListener implements Listener
         }
         else if (!oldEnabled && newEnabled)
         {
-            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+            final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
             data.startPassives(event.getPlayer());
             data.getSkillBar().setup(event.getPlayer());
-            data.updateScoreboard();
             data.updateHealthAndMana(event.getPlayer());
             data.updateLevelBar();
+
+            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    data.updateScoreboard();
+                }
+            }, 1);
         }
     }
 }

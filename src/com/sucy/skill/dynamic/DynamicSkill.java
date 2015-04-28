@@ -62,6 +62,17 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     /**
+     * Retrieves the active level of the caster for the skill
+     *
+     * @param caster caster of the skill
+     * @return active level of the skill
+     */
+    public int getActiveLevel(LivingEntity caster)
+    {
+        return active.get(caster);
+    }
+
+    /**
      * Sets an attribute key for obtaining attributes used
      * in the skill indicator.
      *

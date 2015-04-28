@@ -6,6 +6,7 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -226,9 +227,18 @@ public class Settings
     private static final String SAVE_BASE = "Saving.";
     private static final String SAVE_AUTO = SAVE_BASE + "auto-save";
     private static final String SAVE_MINS = SAVE_AUTO + "minutes";
+    private static final String SAVE_SQL  = SAVE_BASE + "sql-database";
+    private static final String SAVE_SQLD = SAVE_BASE + "sql-details";
 
     private boolean auto;
+    private boolean useSql;
     private int     minutes;
+
+    private String sqlHost;
+    private String sqlPort;
+    private String sqlDatabase;
+    private String sqlUser;
+    private String sqlPass;
 
     /**
      * Checks whether or not auto saving is enabled
@@ -250,10 +260,80 @@ public class Settings
         return minutes * 60 * 20;
     }
 
+    /**
+     * Checks whether or not the plugin is using SQL Database saving
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isUseSql()
+    {
+        return useSql;
+    }
+
+    /**
+     * Retrieves the host IP for the database
+     *
+     * @return host IP for SQL database
+     */
+    public String getSQLHost()
+    {
+        return sqlHost;
+    }
+
+    /**
+     * Retrieves the host port for the database
+     *
+     * @return host port for SQL database
+     */
+    public String getSQLPort()
+    {
+        return sqlPort;
+    }
+
+    /**
+     * Retrieves the name of the SQL database
+     *
+     * @return SQL database name
+     */
+    public String getSQLDatabase()
+    {
+        return sqlDatabase;
+    }
+
+    /**
+     * Retrieves the username for the database credentials
+     *
+     * @return SQL database username
+     */
+    public String getSQLUser()
+    {
+        return sqlUser;
+    }
+
+    /**
+     * Retrieves the password for the database credentials
+     *
+     * @return SQL database password
+     */
+    public String getSQLPass()
+    {
+        return sqlPass;
+    }
+
     private void loadSaveSettings()
     {
         auto = config.getBoolean(SAVE_AUTO);
         minutes = config.getInt(SAVE_MINS);
+        useSql = config.getBoolean(SAVE_SQL);
+
+        if (useSql) {
+            DataSection details = config.getSection(SAVE_SQLD);
+            sqlHost = details.getString("host");
+            sqlPort = details.getString("port");
+            sqlDatabase = details.getString("database");
+            sqlUser = details.getString("username");
+            sqlPass = details.getString("password");
+        }
     }
 
     ///////////////////////////////////////////////////////

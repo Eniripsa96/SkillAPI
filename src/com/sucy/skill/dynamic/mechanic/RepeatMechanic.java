@@ -64,6 +64,14 @@ public class RepeatMechanic extends EffectComponent
         @Override
         public void run()
         {
+            if (!skill.isActive(caster))
+            {
+                cancel();
+                return;
+            }
+
+            level = skill.getActiveLevel(caster);
+
             executeChildren(caster, level, targets);
             if (--count <= 0)
             {

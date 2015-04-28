@@ -59,6 +59,7 @@ public class PassiveMechanic extends EffectComponent
             if (!caster.isValid() || caster.isDead() || !skill.isActive(caster))
             {
                 cancel();
+                return;
             }
             else if (caster instanceof Player)
             {

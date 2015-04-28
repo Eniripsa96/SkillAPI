@@ -106,20 +106,23 @@ public abstract class IOManager
 
             // Load classes
             DataSection classes = account.getSection(CLASSES);
-            for (String classKey : classes.keys())
+            if (classes != null)
             {
-                RPGClass rpgClass = SkillAPI.getClass(classKey);
-                if (rpgClass != null)
+                for (String classKey : classes.keys())
                 {
-                    PlayerClass c = acc.setClass(rpgClass);
-                    DataSection classData = classes.getSection(classKey);
-                    int levels = classData.getInt(LEVEL) - 1;
-                    if (levels > 0)
+                    RPGClass rpgClass = SkillAPI.getClass(classKey);
+                    if (rpgClass != null)
                     {
-                        c.giveLevels(levels);
+                        PlayerClass c = acc.setClass(rpgClass);
+                        DataSection classData = classes.getSection(classKey);
+                        int levels = classData.getInt(LEVEL) - 1;
+                        if (levels > 0)
+                        {
+                            c.giveLevels(levels);
+                        }
+                        c.setPoints(classData.getInt(POINTS));
+                        c.setTotalExp(classData.getDouble(TOTAL_EXP));
                     }
-                    c.setPoints(classData.getInt(POINTS));
-                    c.setTotalExp(classData.getDouble(TOTAL_EXP));
                 }
             }
 

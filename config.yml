@@ -83,6 +83,15 @@ Items:
   # Whether or not to use SkillAPI's lore requirements feature
   lore-requirements: true
   #
+  # The text used for class requirements in the lore
+  lore-class-text: 'Class Req: '
+  #
+  # the text used for level requirements in the lore
+  lore-level-text: 'Level Req: '
+  #
+  # The text used for excluded classes in the lore
+  lore-exclude-text: 'Excluded Class: '
+  #
   # How many players to check for the requirements each tick
   # This should be increased on larger servers to prevent
   # large delays before the same player is checked again
@@ -94,9 +103,29 @@ GUI:
   # This does not affect total health, only the display
   old-health-bar: false
   #
-  # Whether or not to display class level/experience in the level bar
-  # This will override enchanting experience so use with caution
-  use-level-bar: false
+  # This is what to display using the level bar, if anything.
+  # Options are: none, mana, level
+  level-bar: none
+  #
+  # This is what to display using the food bar, if anything.
+  # Options are: none, mana, exp
+  food-bar: none
+  #
+  # Whether or not to use the action bar
+  use-action-bar: false
+  #
+  # The text to display on the action bar.
+  # Available filters:
+  #   {combo}   - the player's current click combo
+  #   {class}   - the player's main class name
+  #   {level}   - the player's main class level
+  #   {exp}     - the player's main class exp
+  #   {expReq}  - the player's main class required experience
+  #   {expLeft} - the player's main class experience until the next level
+  #   {mana}    - the player's current mana
+  #   {maxMana} - the player's max mana
+  #   {name}    - the name of the player
+  action-bar-text: '{combo}'
   #
   # Whether or not to display class information on a scoreboard
   scoreboard-enabled: true

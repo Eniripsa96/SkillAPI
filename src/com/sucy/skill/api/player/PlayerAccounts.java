@@ -187,7 +187,6 @@ public class PlayerAccounts
             active = event.getNewID();
             getActiveData().startPassives(player);
             getActiveData().updateScoreboard();
-            getActiveData().updateLevelBar();
             if (getActiveData().hasClass())
             {
                 getActiveData().getSkillBar().setup(player);

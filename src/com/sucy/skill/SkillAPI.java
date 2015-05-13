@@ -32,6 +32,7 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.util.ActionBar;
 import com.sucy.skill.data.PlayerStats;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
@@ -44,10 +45,7 @@ import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.beton.BetonUtil;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
-import com.sucy.skill.task.CooldownTask;
-import com.sucy.skill.task.InventoryTask;
-import com.sucy.skill.task.ManaTask;
-import com.sucy.skill.task.SaveTask;
+import com.sucy.skill.task.*;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -84,6 +82,7 @@ public class SkillAPI extends JavaPlugin
     private CooldownTask  cdTask;
     private InventoryTask invTask;
     private SaveTask      saveTask;
+    private GUITask       guiTask;
 
     private boolean enabled = false;
     private boolean loaded  = false;
@@ -146,7 +145,6 @@ public class SkillAPI extends JavaPlugin
         {
             PlayerData data = loadPlayerData(player).getActiveData();
             data.updateHealthAndMana(player);
-            data.updateLevelBar();
             data.updateScoreboard();
         }
         if (settings.isUseSql()) ((SQLIO) io).cleanup();
@@ -198,6 +196,7 @@ public class SkillAPI extends JavaPlugin
         {
             saveTask = new SaveTask(this);
         }
+        guiTask = new GUITask(this);
 
         loaded = true;
     }
@@ -236,6 +235,11 @@ public class SkillAPI extends JavaPlugin
         {
             saveTask.cancel();
             saveTask = null;
+        }
+        if (guiTask.isRunning())
+        {
+            guiTask.cancel();
+            guiTask = null;
         }
 
         // Clear scoreboards

@@ -758,7 +758,6 @@ public final class PlayerData
             giveSkill(skill, classData);
         }
 
-        updateLevelBar();
         updateHealthAndMana(getPlayer());
         updateScoreboard();
         return classes.get(rpgClass.getGroup());
@@ -860,7 +859,6 @@ public final class PlayerData
             }
 
             // Update GUI features
-            updateLevelBar();
             if (getPlayer() != null)
             {
                 ClassBoardManager.clear(new VersionPlayer(getPlayer()));
@@ -965,7 +963,6 @@ public final class PlayerData
         {
             playerClass.giveExp(amount, source);
         }
-        updateLevelBar();
     }
 
     /**
@@ -981,7 +978,6 @@ public final class PlayerData
                 playerClass.loseExp(penalty);
             }
         }
-        updateLevelBar();
     }
 
     /**
@@ -1008,7 +1004,6 @@ public final class PlayerData
                 playerClass.giveExp(exp, source);
             }
         }
-        updateLevelBar();
         updateHealthAndMana(getPlayer());
     }
 
@@ -1392,33 +1387,6 @@ public final class PlayerData
         if (main != null && !init)
         {
             ClassBoardManager.update(this, main.getData().getPrefix(), main.getData().getPrefixColor());
-        }
-    }
-
-    /**
-     * Updates the level bar for the player if they're online and
-     * the setting is enabled. The level bar will be set to the
-     * level and experience progress of the main group's profession.
-     * If the main group doesn't have a profession, this will fall back
-     * to the first profession found or set the level to 0 if not
-     * professed as any class.
-     */
-    public void updateLevelBar()
-    {
-        Player player = getPlayer();
-        if (player != null && SkillAPI.getSettings().isUseLevelBar())
-        {
-            if (hasClass())
-            {
-                PlayerClass c = getMainClass();
-                player.setLevel(c.getLevel());
-                player.setExp((float) (c.getExp() / c.getRequiredExp()));
-            }
-            else
-            {
-                player.setLevel(0);
-                player.setExp(0);
-            }
         }
     }
 

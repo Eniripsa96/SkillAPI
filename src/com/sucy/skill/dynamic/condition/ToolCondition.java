@@ -27,7 +27,7 @@ public class ToolCondition extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         String material = settings.getString(MATERIAL, "").toUpperCase();
-        String tool = settings.getString(TOOL, "").toUpperCase().replace("SHOVEL", "SPADE");
+        String tool = "_" + settings.getString(TOOL, "").toUpperCase().replace("SHOVEL", "SPADE");
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
@@ -36,7 +36,7 @@ public class ToolCondition extends EffectComponent
                 continue;
             }
             String hand = target.getEquipment().getItemInHand().getType().name();
-            if ((material.equals("ANY") || hand.contains(material)) && (tool.equals("ANY") || hand.contains(tool)))
+            if ((material.equals("ANY") || hand.contains(material)) && (tool.equals("_ANY") || hand.contains(tool)))
             {
                 list.add(target);
             }

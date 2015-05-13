@@ -3,6 +3,7 @@ package com.sucy.skill.task;
 import com.rit.sucy.config.FilterType;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.ErrorNodes;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -99,9 +100,9 @@ public class InventoryTask extends BukkitRunnable
                 String colorless = ChatColor.stripColor(line);
 
                 // Level requirements
-                if (colorless.matches("Level Req: [0-9]+"))
+                if (colorless.matches(SkillAPI.getSettings().getLoreLevelText() + "[0-9]+"))
                 {
-                    int level = Integer.parseInt(colorless.substring(11));
+                    int level = Integer.parseInt(colorless.substring(SkillAPI.getSettings().getLoreLevelText().length()));
                     if (!player.hasClass() || player.getMainClass().getLevel() < level)
                     {
                         return true;
@@ -109,10 +110,10 @@ public class InventoryTask extends BukkitRunnable
                 }
 
                 // Class requirements
-                else if (colorless.matches("Class Req: .+"))
+                else if (colorless.matches(SkillAPI.getSettings().getLoreClassText() + ".+"))
                 {
                     needsRequirement = true;
-                    String name = colorless.substring(11);
+                    String name = colorless.substring(SkillAPI.getSettings().getLoreClassText().length());
                     if (name.contains(", "))
                     {
                         String[] names = name.split(", ");
@@ -134,9 +135,9 @@ public class InventoryTask extends BukkitRunnable
                 }
 
                 // Class exclusion
-                else if (colorless.matches("Excluded Class: .+"))
+                else if (colorless.matches(SkillAPI.getSettings().getLoreExcludeText() + ".+"))
                 {
-                    String name = colorless.substring(16);
+                    String name = colorless.substring(SkillAPI.getSettings().getLoreExcludeText().length());
                     if (name.contains(", "))
                     {
                         String[] names = name.split(", ");

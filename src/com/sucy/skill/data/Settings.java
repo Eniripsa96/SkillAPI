@@ -511,11 +511,17 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String ITEM_BASE  = "Items.";
-    private static final String ITEM_LORE  = ITEM_BASE + "lore-requirements";
-    private static final String ITEM_CHECK = ITEM_BASE + "players-per-check";
+    private static final String ITEM_BASE    = "Items.";
+    private static final String ITEM_LORE    = ITEM_BASE + "lore-requirements";
+    private static final String ITEM_CLASS   = ITEM_BASE + "lore-class-text";
+    private static final String ITEM_LEVEL   = ITEM_BASE + "lore-level-text";
+    private static final String ITEM_EXCLUDE = ITEM_BASE + "lore-exclude-text";
+    private static final String ITEM_CHECK   = ITEM_BASE + "players-per-check";
 
     private boolean checkLore;
+    private String  loreClassText;
+    private String  loreLevelText;
+    private String  loreExcludeText;
     private int     playersPerCheck;
 
     /**
@@ -526,6 +532,36 @@ public class Settings
     public boolean isCheckLore()
     {
         return checkLore;
+    }
+
+    /**
+     * Retrieves the text used for class requirements on items
+     *
+     * @return lore text for class requirements
+     */
+    public String getLoreClassText()
+    {
+        return loreClassText;
+    }
+
+    /**
+     * Retrieves the text used for level requirements on items
+     *
+     * @return lore text for level requirements
+     */
+    public String getLoreLevelText()
+    {
+        return loreLevelText;
+    }
+
+    /**
+     * Retrieves the text used for excluded classes on items
+     *
+     * @return lore text for excluded classes
+     */
+    public String getLoreExcludeText()
+    {
+        return loreExcludeText;
     }
 
     /**
@@ -541,6 +577,9 @@ public class Settings
     private void loadItemSettings()
     {
         checkLore = config.getBoolean(ITEM_LORE);
+        loreClassText = config.getString(ITEM_CLASS);
+        loreLevelText = config.getString(ITEM_LEVEL);
+        loreExcludeText = config.getString(ITEM_EXCLUDE);
         playersPerCheck = config.getInt(ITEM_CHECK);
     }
 
@@ -550,16 +589,22 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String GUI_BASE  = "GUI.";
-    private static final String GUI_OLD   = GUI_BASE + "old-health-bar";
-    private static final String GUI_BAR   = GUI_BASE + "use-level-bar";
-    private static final String GUI_BOARD = GUI_BASE + "scoreboard-enabled";
-    private static final String GUI_NAME  = GUI_BASE + "show-class-name";
-    private static final String GUI_LEVEL = GUI_BASE + "show-class-level";
-    private static final String GUI_MAP   = GUI_BASE + "map-tree-enabled";
+    private static final String GUI_BASE   = "GUI.";
+    private static final String GUI_OLD    = GUI_BASE + "old-health-bar";
+    private static final String GUI_LVLBAR = GUI_BASE + "level-bar";
+    private static final String GUI_FOOD   = GUI_BASE + "food-bar";
+    private static final String GUI_ACTION = GUI_BASE + "use-action-bar";
+    private static final String GUI_TEXT   = GUI_BASE + "action-bar-text";
+    private static final String GUI_BOARD  = GUI_BASE + "scoreboard-enabled";
+    private static final String GUI_NAME   = GUI_BASE + "show-class-name";
+    private static final String GUI_LEVEL  = GUI_BASE + "show-class-level";
+    private static final String GUI_MAP    = GUI_BASE + "map-tree-enabled";
 
     private boolean oldHealth;
-    private boolean useLevelBar;
+    private String  levelBar;
+    private String  foodBar;
+    private boolean useActionBar;
+    private String  actionText;
     private boolean showScoreboard;
     private boolean showClassName;
     private boolean showClassLevel;
@@ -576,13 +621,43 @@ public class Settings
     }
 
     /**
-     * Checks whether or not the level bar is to be used for class level
+     * Gets the setting for using the level bar
      *
-     * @return true if enabled, false otherwise
+     * @return level bar setting
      */
-    public boolean isUseLevelBar()
+    public String getLevelBar()
     {
-        return useLevelBar;
+        return levelBar;
+    }
+
+    /**
+     * Gets the setting for using the food bar
+     *
+     * @return food bar setting
+     */
+    public String getFoodBar()
+    {
+        return foodBar;
+    }
+
+    /**
+     * Checks whether or not the action bar is being used
+     *
+     * @return true if used, false otherwise
+     */
+    public boolean isUseActionBar()
+    {
+        return useActionBar;
+    }
+
+    /**
+     * Gets the text to display on the action bar
+     *
+     * @return action bar text
+     */
+    public String getActionText()
+    {
+        return actionText;
     }
 
     /**
@@ -630,7 +705,10 @@ public class Settings
     private void loadGUISettings()
     {
         oldHealth = config.getBoolean(GUI_OLD);
-        useLevelBar = config.getBoolean(GUI_BAR);
+        levelBar = config.getString(GUI_LVLBAR);
+        foodBar = config.getString(GUI_FOOD);
+        useActionBar = config.getBoolean(GUI_ACTION);
+        actionText = config.getString(GUI_TEXT);
         showScoreboard = config.getBoolean(GUI_BOARD);
         showClassName = config.getBoolean(GUI_NAME);
         showClassLevel = config.getBoolean(GUI_LEVEL);

@@ -2,9 +2,11 @@ package com.sucy.skill.api.player;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.util.ActionBar;
 import com.sucy.skill.data.Click;
 import com.sucy.skill.manager.ComboManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -101,16 +103,11 @@ public class PlayerCombos
         // Don't count disabled clicks
         if (!SkillAPI.getComboManager().isClickEnabled(click.getId())) return;
 
-        // Reset combo if too much time passed
-        long time = System.currentTimeMillis();
-        if (time - clickTime > SkillAPI.getSettings().getClickTime())
-        {
-            clearCombo();
-        }
+       checkExpired();
 
         // Add the click to the current combo
         clicks[clickIndex++] = click;
-        clickTime = time;
+        clickTime = System.currentTimeMillis();
 
         // Cast skill when combo is completed
         if (clickIndex == clicks.length)
@@ -122,6 +119,37 @@ public class PlayerCombos
                 player.cast(skills.get(id));
             }
         }
+    }
+
+    /**
+     * Checks for when the combo times out
+     */
+    private void checkExpired()
+    {
+        // Reset combo if too much time passed
+        long time = System.currentTimeMillis();
+        if (time - clickTime > SkillAPI.getSettings().getClickTime())
+        {
+            clearCombo();
+        }
+    }
+
+    /**
+     * Retrieves the current combo string for the player
+     *
+     * @return current combo string
+     */
+    public String getCurrentComboString()
+    {
+        if (clickIndex == 0) return "";
+
+        checkExpired();
+
+        ArrayList<Click> active = new ArrayList<Click>(clickIndex);
+        for (int i = 0; i < clickIndex; i++) {
+            active.add(clicks[i]);
+        }
+        return getComboString(active);
     }
 
     /**
@@ -241,8 +269,13 @@ public class PlayerCombos
         String key = skill.getName().toLowerCase();
         if (!combos.containsKey(key)) return "";
 
-        String result = "";
         List<Click> clicks = SkillAPI.getComboManager().convertId(combos.get(key));
+        return getComboString(clicks);
+    }
+
+    private String getComboString(List<Click> clicks)
+    {
+        String result = "";
         for (Click click : clicks)
         {
             if (result.length() > 0) result += ", ";

@@ -83,7 +83,6 @@ public class MainListener implements Listener
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             data.updateHealthAndMana(event.getPlayer());
-            data.updateLevelBar();
             data.startPassives(event.getPlayer());
 
             plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable()
@@ -265,7 +264,7 @@ public class MainListener implements Listener
     public void onExpChange(PlayerExpChangeEvent event)
     {
         // Prevent it from changing the level bar when that is being used to display class level
-        if (SkillAPI.getSettings().isUseLevelBar()
+        if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none")
             && event.getPlayer().hasPermission(Permissions.EXP)
             && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
@@ -315,6 +314,22 @@ public class MainListener implements Listener
     public void onDamage(EntityDamageEvent event)
     {
         if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity) event.getEntity(), "immune:" + event.getCause().name()))
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Cancels food damaging the player when the bar is being used
+     * for GUI features instead of normal hunger.
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onStarve(EntityDamageEvent event)
+    {
+        if (event.getCause() == EntityDamageEvent.DamageCause.STARVATION
+                && !SkillAPI.getSettings().getFoodBar().equalsIgnoreCase("none"))
         {
             event.setCancelled(true);
         }
@@ -416,10 +431,14 @@ public class MainListener implements Listener
             data.getSkillBar().clear(event.getPlayer());
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
             event.getPlayer().setHealth(20);
-            if (SkillAPI.getSettings().isUseLevelBar())
+            if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none"))
             {
                 event.getPlayer().setLevel(0);
                 event.getPlayer().setExp(0);
+            }
+            if (!SkillAPI.getSettings().getFoodBar().equalsIgnoreCase("none"))
+            {
+                event.getPlayer().setFoodLevel(20);
             }
         }
         else if (!oldEnabled && newEnabled)
@@ -428,7 +447,6 @@ public class MainListener implements Listener
             data.startPassives(event.getPlayer());
             data.getSkillBar().setup(event.getPlayer());
             data.updateHealthAndMana(event.getPlayer());
-            data.updateLevelBar();
 
             plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable()
             {

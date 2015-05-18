@@ -329,7 +329,7 @@ public class MainListener implements Listener
     public void onStarve(EntityDamageEvent event)
     {
         if (event.getCause() == EntityDamageEvent.DamageCause.STARVATION
-                && !SkillAPI.getSettings().getFoodBar().equalsIgnoreCase("none"))
+            && !SkillAPI.getSettings().getFoodBar().equalsIgnoreCase("none"))
         {
             event.setCancelled(true);
         }

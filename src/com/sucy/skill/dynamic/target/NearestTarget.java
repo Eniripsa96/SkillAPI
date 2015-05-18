@@ -1,7 +1,7 @@
 package com.sucy.skill.dynamic.target;
 
-import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -61,7 +61,7 @@ public class NearestTarget extends EffectComponent
                     {
                         continue;
                     }
-                    if (both || ally == Protection.isAlly(caster, target))
+                    if (both || ally == SkillAPI.getSettings().isAlly(caster, target))
                     {
                         list.add(target);
                         if (list.size() >= max)

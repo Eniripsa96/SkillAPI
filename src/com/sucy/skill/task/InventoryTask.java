@@ -3,7 +3,6 @@ package com.sucy.skill.task;
 import com.rit.sucy.config.FilterType;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.ErrorNodes;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

@@ -1,7 +1,7 @@
 package com.sucy.skill.dynamic.target;
 
-import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -49,7 +49,7 @@ public class SingleTarget extends EffectComponent
                 {
                     continue;
                 }
-                if (both || ally != Protection.canAttack(caster, target))
+                if (both || ally != SkillAPI.getSettings().canAttack(caster, target))
                 {
                     ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
                     list.add(target);

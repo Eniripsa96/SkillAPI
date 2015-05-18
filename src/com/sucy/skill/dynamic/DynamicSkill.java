@@ -43,7 +43,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * Checks whether or not the dynamic skill can be cast
      *
      * @return true if can cast, false otherwise
-    */
+     */
     public boolean canCast()
     {
         return components.containsKey(Trigger.CAST);
@@ -65,6 +65,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * Retrieves the active level of the caster for the skill
      *
      * @param caster caster of the skill
+     *
      * @return active level of the skill
      */
     public int getActiveLevel(LivingEntity caster)

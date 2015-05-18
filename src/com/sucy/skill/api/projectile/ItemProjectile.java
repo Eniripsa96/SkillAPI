@@ -1,6 +1,6 @@
 package com.sucy.skill.api.projectile;
 
-import com.rit.sucy.player.Protection;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.ItemProjectileHitEvent;
 import com.sucy.skill.api.event.ItemProjectileLandEvent;
 import com.sucy.skill.api.event.ItemProjectileLaunchEvent;
@@ -85,7 +85,7 @@ public class ItemProjectile extends CustomProjectile
                 if (entity instanceof LivingEntity)
                 {
                     LivingEntity target = (LivingEntity) entity;
-                    if (Protection.canAttack(thrower, target))
+                    if (SkillAPI.getSettings().canAttack(thrower, target))
                     {
                         cancel();
                         ItemProjectileHitEvent event = new ItemProjectileHitEvent(this, target);

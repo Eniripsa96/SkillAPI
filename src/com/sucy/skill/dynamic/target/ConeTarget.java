@@ -1,7 +1,7 @@
 package com.sucy.skill.dynamic.target;
 
-import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -55,7 +55,7 @@ public class ConeTarget extends EffectComponent
                 LivingEntity target = list.get(i);
                 if (i >= max
                     || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-                    || (!both && ally != Protection.isAlly(caster, target)))
+                    || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
                 {
                     list.remove(i);
                     i--;

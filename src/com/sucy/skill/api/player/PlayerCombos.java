@@ -2,7 +2,6 @@ package com.sucy.skill.api.player;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.api.util.ActionBar;
 import com.sucy.skill.data.Click;
 import com.sucy.skill.manager.ComboManager;
 
@@ -103,7 +102,7 @@ public class PlayerCombos
         // Don't count disabled clicks
         if (!SkillAPI.getComboManager().isClickEnabled(click.getId())) return;
 
-       checkExpired();
+        checkExpired();
 
         // Add the click to the current combo
         clicks[clickIndex++] = click;
@@ -146,7 +145,8 @@ public class PlayerCombos
         checkExpired();
 
         ArrayList<Click> active = new ArrayList<Click>(clickIndex);
-        for (int i = 0; i < clickIndex; i++) {
+        for (int i = 0; i < clickIndex; i++)
+        {
             active.add(clicks[i]);
         }
         return getComboString(active);

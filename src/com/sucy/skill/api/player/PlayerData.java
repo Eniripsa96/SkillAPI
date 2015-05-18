@@ -2,7 +2,6 @@ package com.sucy.skill.api.player;
 
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.items.InventoryManager;
-import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
 import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
@@ -258,7 +257,8 @@ public final class PlayerData
      *
      * @param amount amount of points to have
      */
-    public void setAttribPoints(int amount) {
+    public void setAttribPoints(int amount)
+    {
         attribPoints = amount;
     }
 
@@ -793,7 +793,10 @@ public final class PlayerData
             return false;
         }
 
-        RPGClass temp = classes.get(rpgClass.getGroup()).getData();
+        PlayerClass pc = classes.get(rpgClass.getGroup());
+        if (pc == null) return false;
+
+        RPGClass temp = pc.getData();
         while (temp != null)
         {
             if (temp == rpgClass)
@@ -1058,11 +1061,12 @@ public final class PlayerData
         {
             health = 20;
         }
-        VersionManager.setMaxHealth(player, health);
+        if (SkillAPI.getSettings().isModifyHealth())
+            VersionManager.setMaxHealth(player, health);
         mana = Math.min(mana, maxMana);
 
         // Health scaling is available starting with 1.6.2
-        if (VersionManager.isVersionAtLeast(VersionManager.V1_6_2))
+        if (SkillAPI.getSettings().isModifyHealth() && VersionManager.isVersionAtLeast(VersionManager.V1_6_2))
         {
             if (SkillAPI.getSettings().isOldHealth())
             {
@@ -1554,7 +1558,7 @@ public final class PlayerData
             {
                 try
                 {
-                    if (((TargetSkill) skill.getData()).cast(p, target, level, Protection.isAlly(p, target)))
+                    if (((TargetSkill) skill.getData()).cast(p, target, level, !SkillAPI.getSettings().canAttack(p, target)))
                     {
                         skill.startCooldown();
                         if (SkillAPI.getSettings().isShowSkillMessages())

@@ -17,13 +17,13 @@ import org.bukkit.OfflinePlayer;
  */
 public class SQLIO extends IOManager
 {
-    private static final String ID = "id";
-    private static final String KEY = "key";
+    private static final String ID   = "id";
+    private static final String KEY  = "key";
     private static final String DATA = "data";
 
-    private boolean startup;
+    private boolean     startup;
     private SQLDatabase database;
-    private SQLTable table;
+    private SQLTable    table;
 
     /**
      * Initializes the SQL IO Manager

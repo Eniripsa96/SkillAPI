@@ -1,7 +1,7 @@
 package com.sucy.skill.dynamic.target;
 
-import com.rit.sucy.player.Protection;
 import com.rit.sucy.player.TargetHelper;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
@@ -48,7 +48,7 @@ public class AreaTarget extends EffectComponent
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            if (t != caster && !(t instanceof TempEntity) && Protection.isAlly(caster, t) == ally)
+            if (t != caster && !(t instanceof TempEntity) && SkillAPI.getSettings().isAlly(caster, t) == ally)
             {
                 list.add(t);
             }
@@ -66,7 +66,7 @@ public class AreaTarget extends EffectComponent
                     {
                         continue;
                     }
-                    if (both || ally == Protection.isAlly(caster, target))
+                    if (both || ally == SkillAPI.getSettings().isAlly(caster, target))
                     {
                         list.add(target);
                         if (list.size() >= max)

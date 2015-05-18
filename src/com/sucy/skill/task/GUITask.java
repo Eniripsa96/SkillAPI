@@ -22,7 +22,7 @@ public class GUITask extends BukkitRunnable
     private final boolean foodExp;
 
     private final boolean useAction;
-    private final String actionText;
+    private final String  actionText;
 
     private boolean isRunning = false;
 
@@ -76,8 +76,8 @@ public class GUITask extends BukkitRunnable
             // Level bar options
             if (levelMana)
             {
-                player.setLevel((int)data.getMana());
-                player.setExp((float)(0.999 * data.getMana() / data.getMaxMana()));
+                player.setLevel((int) data.getMana());
+                player.setExp((float) (0.999 * data.getMana() / data.getMaxMana()));
             }
             else if (levelLevel)
             {
@@ -90,7 +90,7 @@ public class GUITask extends BukkitRunnable
                 {
                     PlayerClass main = data.getMainClass();
                     player.setLevel(main.getLevel());
-                    player.setExp((float)main.getExp() / main.getRequiredExp());
+                    player.setExp((float) main.getExp() / main.getRequiredExp());
                 }
             }
 
@@ -98,7 +98,7 @@ public class GUITask extends BukkitRunnable
             if (foodMana)
             {
                 player.setSaturation(20);
-                player.setFoodLevel((int)Math.ceil(20 * data.getMana() / data.getMaxMana()));
+                player.setFoodLevel((int) Math.ceil(20 * data.getMana() / data.getMaxMana()));
             }
             else if (foodExp)
             {
@@ -121,12 +121,14 @@ public class GUITask extends BukkitRunnable
                         .replace("{combo}", data.getComboData().getCurrentComboString())
                         .replace("{class}", main.getData().getPrefix())
                         .replace("{level}", "" + main.getLevel())
-                        .replace("{exp}", "" + (int)main.getExp())
+                        .replace("{exp}", "" + (int) main.getExp())
                         .replace("{expReq}", "" + main.getRequiredExp())
-                        .replace("{expLeft}", "" + (int)Math.ceil(main.getRequiredExp() - main.getExp()))
-                        .replace("{mana}", "" + (int)data.getMana())
-                        .replace("{maxMana}", "" + (int)data.getMaxMana())
-                        .replace("{name}", player.getName());
+                        .replace("{expLeft}", "" + (int) Math.ceil(main.getRequiredExp() - main.getExp()))
+                        .replace("{mana}", "" + (int) data.getMana())
+                        .replace("{maxMana}", "" + (int) data.getMaxMana())
+                        .replace("{name}", player.getName()
+                        .replace("{health}", "" + (int)player.getHealth())
+                        .replace("{maxHealth}", "" + (int)player.getMaxHealth()));
                 ActionBar.show(player, filtered);
             }
         }

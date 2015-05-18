@@ -1,6 +1,5 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.rit.sucy.player.Protection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
@@ -83,7 +82,7 @@ public class PotionProjectileMechanic extends EffectComponent
         LivingEntity caster = (LivingEntity) projectile.getShooter();
         for (int i = 0; i < targets.size(); i++)
         {
-            if (!both && Protection.canAttack(caster, targets.get(i)) == ally)
+            if (!both && SkillAPI.getSettings().canAttack(caster, targets.get(i)) == ally)
             {
                 targets.remove(i);
                 i--;

@@ -58,17 +58,21 @@ public class ProjectileMechanic extends EffectComponent
         }
 
         // Cost to cast
-        if (cost.equals("one") || cost.equals("all")) {
+        if (cost.equals("one") || cost.equals("all"))
+        {
             Material mat = MATERIALS.get(settings.getString(PROJECTILE, "arrow").toLowerCase());
             if (mat == null || !(caster instanceof Player)) return false;
-            Player player = (Player)caster;
-            if (cost.equals("one") && !player.getInventory().contains(mat, 1)) {
+            Player player = (Player) caster;
+            if (cost.equals("one") && !player.getInventory().contains(mat, 1))
+            {
                 return false;
             }
-            if (cost.equals("all") && !player.getInventory().contains(mat, amount)) {
+            if (cost.equals("all") && !player.getInventory().contains(mat, amount))
+            {
                 return false;
             }
-            if (cost.equals("one")) {
+            if (cost.equals("one"))
+            {
                 player.getInventory().removeItem(new ItemStack(mat));
             }
             else player.getInventory().removeItem(new ItemStack(mat, amount));

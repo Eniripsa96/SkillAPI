@@ -24,7 +24,7 @@ public class ActionBar
     private static Constructor<?> constructText;
 
     private static boolean initialized = false;
-    private static boolean supported = false;
+    private static boolean supported   = false;
 
     private static void initialize()
     {
@@ -74,7 +74,7 @@ public class ActionBar
         try
         {
             Object text = constructText.newInstance(message);
-            Object data = constructPacket.newInstance(text, (byte)2);
+            Object data = constructPacket.newInstance(text, (byte) 2);
             Object handle = getHandle.invoke(player);
             Object connection = Reflection.getValue(handle, "playerConnection");
             Method send = Reflection.getMethod(connection, "sendPacket", packet);

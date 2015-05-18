@@ -23,6 +23,25 @@ Accounts:
   perm-accounts:
   - 'skillapi.account.admin:10'
 #
+# While targeting settings aren't necessary most of the time,
+# they can help make running ally checks much faster if
+# you are able to use them.
+Targeting:
+  #
+  # Whether or not all monsters are enemies.
+  # If you are using pets that include zombies/spiders/etc,
+  # you shouldn't enable this.
+  monsters-enemy: false
+  #
+  # Whether or not all passive mobs are allies.
+  # If there are custom passive mobs that you can fight,
+  # you should not enable this.
+  passive-ally: false
+  #
+  # Whether or not all players are allies.
+  # If you have any PvP, this should not be enabled.
+  player-ally: false
+#
 Saving:
   #
   # Whether or not to auto save data periodically
@@ -58,6 +77,12 @@ Classes:
   #
   # Whether or not attributes can be refunded
   attributes-downgrade: false
+  #
+  # This casts the dynamic skill for the player when they level up,
+  # allowing you to use dynamic mechanics for level up effects. If
+  # there is no existing dynamic skill with the name, no effect
+  # will be played. For level-specific effects, use the level condition.
+  level-up-skill: 'lvlup'
 #
 Mana:
   #
@@ -116,15 +141,17 @@ GUI:
   #
   # The text to display on the action bar.
   # Available filters:
-  #   {combo}   - the player's current click combo
-  #   {class}   - the player's main class name
-  #   {level}   - the player's main class level
-  #   {exp}     - the player's main class exp
-  #   {expReq}  - the player's main class required experience
-  #   {expLeft} - the player's main class experience until the next level
-  #   {mana}    - the player's current mana
-  #   {maxMana} - the player's max mana
-  #   {name}    - the name of the player
+  #   {combo}     - the player's current click combo
+  #   {class}     - the player's main class name
+  #   {level}     - the player's main class level
+  #   {exp}       - the player's main class exp
+  #   {expReq}    - the player's main class required experience
+  #   {expLeft}   - the player's main class experience until the next level
+  #   {health}    - the player's current health
+  #   {maxHealth} - the player's max health
+  #   {mana}      - the player's current mana
+  #   {maxMana}   - the player's max mana
+  #   {name}      - the name of the player
   action-bar-text: '{combo}'
   #
   # Whether or not to display class information on a scoreboard

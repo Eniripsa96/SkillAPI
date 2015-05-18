@@ -1,8 +1,6 @@
 package com.sucy.skill.data.io;
 
-import com.rit.sucy.config.Config;
 import com.rit.sucy.config.parse.DataSection;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
@@ -10,8 +8,6 @@ import com.sucy.skill.api.skills.Skill;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,9 +86,11 @@ public abstract class IOManager
      *
      * @param player player to load for
      * @param file   DataSection containing the account info
+     *
      * @return the loaded player account data
      */
-    protected PlayerAccounts load(OfflinePlayer player, DataSection file) {
+    protected PlayerAccounts load(OfflinePlayer player, DataSection file)
+    {
         PlayerAccounts data = new PlayerAccounts(player);
         DataSection accounts = file.getSection(ACCOUNTS);
         if (accounts == null) accounts = file.createSection(ACCOUNTS);
@@ -213,7 +211,8 @@ public abstract class IOManager
         return data;
     }
 
-    protected DataSection save(PlayerAccounts data) {
+    protected DataSection save(PlayerAccounts data)
+    {
         try
         {
             DataSection file = new DataSection();
@@ -294,7 +293,8 @@ public abstract class IOManager
             }
             return file;
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             Bukkit.getLogger().info("Failed to save player data for " + data.getPlayer().getName());
             ex.printStackTrace();
             return null;

@@ -2,12 +2,14 @@ package com.sucy.skill.data;
 
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
+import com.rit.sucy.player.Protection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
@@ -64,6 +66,8 @@ public class Settings
         loadSkillBarSettings();
         loadLoggingSettings();
         loadWorldSettings();
+        loadSaveSettings();
+        loadTargetingSettings();
     }
 
     ///////////////////////////////////////////////////////
@@ -220,6 +224,72 @@ public class Settings
 
     ///////////////////////////////////////////////////////
     //                                                   //
+    //                 Targeting Settings                //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    private static final String TARGET_BASE    = "Targeting.";
+    private static final String TARGET_MONSTER = TARGET_BASE + "monsters-enemy";
+    private static final String TARGET_PASSIVE = TARGET_BASE + "passive-ally";
+    private static final String TARGET_PLAYER  = TARGET_BASE + "player-ally";
+
+    private boolean monsterEnemy;
+    private boolean passiveAlly;
+    private boolean playerAlly;
+
+    /**
+     * Checks whether or not something can be attacked
+     *
+     * @param attacker the attacking entity
+     * @param target   the target entity
+     *
+     * @return true if can be attacked, false otherwise
+     */
+    public boolean canAttack(LivingEntity attacker, LivingEntity target)
+    {
+        if (attacker instanceof Player)
+        {
+            if (target instanceof Animals)
+            {
+                if (!(target instanceof Tameable) && passiveAlly)
+                    return false;
+            }
+            else if (target instanceof Monster)
+            {
+                if (monsterEnemy)
+                    return true;
+            }
+            else if (target instanceof Player)
+            {
+                if (playerAlly)
+                    return false;
+            }
+        }
+        return Protection.canAttack(attacker, target);
+    }
+
+    /**
+     * Checks whether or not something is an ally
+     *
+     * @param attacker the attacking entity
+     * @param target   the target entity
+     *
+     * @return true if an ally, false otherwise
+     */
+    public boolean isAlly(LivingEntity attacker, LivingEntity target)
+    {
+        return !canAttack(attacker, target);
+    }
+
+    private void loadTargetingSettings()
+    {
+        monsterEnemy = config.getBoolean(TARGET_MONSTER);
+        passiveAlly = config.getBoolean(TARGET_PASSIVE);
+        playerAlly = config.getBoolean(TARGET_PLAYER);
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
     //                  Saving Settings                  //
     //                                                   //
     ///////////////////////////////////////////////////////
@@ -326,7 +396,8 @@ public class Settings
         minutes = config.getInt(SAVE_MINS);
         useSql = config.getBoolean(SAVE_SQL);
 
-        if (useSql) {
+        if (useSql)
+        {
             DataSection details = config.getSection(SAVE_SQLD);
             sqlHost = details.getString("host");
             sqlPort = details.getString("port");
@@ -348,12 +419,14 @@ public class Settings
     private static final String CLASS_SHOW   = CLASS_BASE + "show-auto-skills";
     private static final String CLASS_ATTRIB = CLASS_BASE + "attributes-enabled";
     private static final String CLASS_REFUND = CLASS_BASE + "attributes-downgrade";
+    private static final String CLASS_LEVEL  = CLASS_BASE + "level-up-skill";
 
     private boolean modifyHealth;
     private int     defaultHealth;
     private boolean showAutoSkills;
     private boolean attributesEnabled;
     private boolean attributesDowngrade;
+    private String  levelUpSkill;
 
     /**
      * Checks whether or not SkillAPI should modify the max health of players
@@ -405,6 +478,28 @@ public class Settings
         return attributesDowngrade;
     }
 
+    /**
+     * Checks whether or not the plugin has a valid skill for
+     * level up effects loaded.
+     *
+     * @return true if one is available, false otherwise
+     */
+    public boolean hasLevelUpEffect()
+    {
+        return getLevelUpSkill() != null;
+    }
+
+    /**
+     * Retrieves the skill used for level up effects
+     *
+     * @return skill for level up effects
+     */
+    public DynamicSkill getLevelUpSkill()
+    {
+        Skill skill = SkillAPI.getSkill(levelUpSkill);
+        return (skill instanceof DynamicSkill) ? (DynamicSkill)skill : null;
+    }
+
     private void loadClassSettings()
     {
         modifyHealth = config.getBoolean(CLASS_MODIFY);
@@ -412,6 +507,7 @@ public class Settings
         showAutoSkills = config.getBoolean(CLASS_SHOW);
         attributesEnabled = config.getBoolean(CLASS_ATTRIB);
         attributesDowngrade = config.getBoolean(CLASS_REFUND);
+        levelUpSkill = config.getString(CLASS_LEVEL);
     }
 
     ///////////////////////////////////////////////////////

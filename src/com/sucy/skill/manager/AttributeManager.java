@@ -74,7 +74,6 @@ public class AttributeManager
         config.saveDefaultConfig();
 
         DataSection data = config.getConfig();
-        data.dump("attr.yml");
         for (String key : data.keys())
         {
             attributes.put(key.toLowerCase(), new Attribute(data.getSection(key), key));

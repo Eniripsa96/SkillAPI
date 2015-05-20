@@ -7,6 +7,7 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicSkill;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -414,7 +415,7 @@ public class Settings
     ///////////////////////////////////////////////////////
 
     private static final String CLASS_BASE   = "Classes.";
-    private static final String CLASS_MODIFY = CLASS_BASE + "modify-hp";
+    private static final String CLASS_MODIFY = CLASS_BASE + "modify-health";
     private static final String CLASS_HP     = CLASS_BASE + "classless-hp";
     private static final String CLASS_SHOW   = CLASS_BASE + "show-auto-skills";
     private static final String CLASS_ATTRIB = CLASS_BASE + "attributes-enabled";

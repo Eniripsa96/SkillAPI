@@ -878,6 +878,7 @@ public final class PlayerData
         {
             setClass(rpgClass);
         }
+        updateHealthAndMana(player.getPlayer());
     }
 
     /**

@@ -11,6 +11,7 @@ import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.Combat;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -80,9 +81,9 @@ public class MainListener implements Listener
         final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
 
         // Apply player data as long as they have a class
+        data.updateHealthAndMana(event.getPlayer());
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
-            data.updateHealthAndMana(event.getPlayer());
             data.startPassives(event.getPlayer());
 
             plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable()

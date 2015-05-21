@@ -50,6 +50,11 @@ public enum Trigger
     INITIALIZE,
 
     /**
+     * Trigger effects upon killing something
+     */
+    KILL,
+
+    /**
      * Trigger effects upon hitting the ground
      */
     LAND,

@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -28,6 +29,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     private final HashMap<Trigger, EffectComponent> components = new HashMap<Trigger, EffectComponent>();
     private final HashMap<String, EffectComponent>  attribKeys = new HashMap<String, EffectComponent>();
     private final HashMap<Integer, Integer>         active     = new HashMap<Integer, Integer>();
+
+    private static final HashMap<Integer, HashMap<String, Object>> castData   = new HashMap<Integer, HashMap<String, Object>>();
 
     /**
      * Initializes a new dynamic skill
@@ -83,6 +86,34 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public void setAttribKey(String key, EffectComponent component)
     {
         attribKeys.put(key, component);
+    }
+
+    /**
+     * Retrieves the cast data for the caster
+     *
+     * @param caster caster to get the data for
+     * @return cast data for the caster
+     */
+    public HashMap<String, Object> getCastData(LivingEntity caster)
+    {
+        if (caster == null) return null;
+        HashMap<String, Object> map = castData.get(caster.getEntityId());
+        if (map == null) {
+            map = new HashMap<String, Object>();
+            map.put("caster", caster);
+            castData.put(caster.getEntityId(), map);
+        }
+        return map;
+    }
+
+    /**
+     * Clears any stored cast data for the entity
+     *
+     * @param entity entity to clear cast data for
+     */
+    public static void clearCastData(LivingEntity entity)
+    {
+        castData.remove(entity.getEntityId());
     }
 
     /**
@@ -195,16 +226,24 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     /**
-     * Applies the death trigger effects
+     * Applies the death/kill trigger effects
      *
      * @param event event details
      */
     @EventHandler
     public void onDeath(EntityDeathEvent event)
     {
+        // Death trigger
         if (active.containsKey(event.getEntity().getEntityId()))
         {
             trigger(event.getEntity(), event.getEntity(), active.get(event.getEntity().getEntityId()), Trigger.DEATH);
+        }
+
+        // Kill trigger
+        Player player = event.getEntity().getKiller();
+        if (player != null && active.containsKey(player.getEntityId()))
+        {
+            trigger(player, player, active.get(player.getEntityId()), Trigger.KILL);
         }
     }
 
@@ -388,6 +427,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         {
             ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
             targets.add(target);
+
             return components.get(trigger).execute(user, level, targets);
         }
         return false;

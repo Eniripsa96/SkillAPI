@@ -115,6 +115,7 @@ public class MainListener implements Listener
         FlagManager.clearFlags(event.getPlayer());
         BuffManager.clearData(event.getPlayer());
         Combat.clearData(event.getPlayer());
+        DynamicSkill.clearCastData(event.getPlayer());
 
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
@@ -134,6 +135,7 @@ public class MainListener implements Listener
     {
         FlagManager.clearFlags(event.getEntity());
         BuffManager.clearData(event.getEntity());
+        DynamicSkill.clearCastData(event.getEntity());
 
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))

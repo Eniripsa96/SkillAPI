@@ -15,12 +15,16 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * A component for dynamic skills which takes care of one effect
  */
 public abstract class EffectComponent
 {
+    protected static final Pattern NUMBER = Pattern.compile("-?[0-9]+(\\.[0-9]+)?");
+    protected static final Pattern RANGE  = Pattern.compile("-?[0-9]+(\\.[0-9]+)?-{1,2}[0-9]+(\\.[0-9]+)?");
+
     private static final String ICON_KEY   = "icon-key";
     private static final String COUNTS_KEY = "counts";
 
@@ -90,7 +94,7 @@ public abstract class EffectComponent
      */
     protected double attr(LivingEntity caster, String key, int level, double fallback, boolean self)
     {
-        double value = settings.getAttr(key, level, fallback);
+        double value = getNum(caster, key + "-base", fallback) + level * getNum(caster, key + "-scale", 0);
 
         // Apply global modifiers
         if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player)
@@ -100,6 +104,52 @@ public abstract class EffectComponent
         }
 
         return value;
+    }
+
+    /**
+     * Retrieves a numerical value while using non-numerical values as
+     * keys for the cast data. If the value doesn't exist, this will
+     * return the default value. If it is a key that doesn't have an
+     * attached value, it will return 0. Otherwise, it will return
+     * the appropriate value.
+     *
+     * @param caster   the caster of the skill
+     * @param key      key of the value
+     * @param fallback fallback value in case the settings don't have it
+     *
+     * @return the settings value or, if not a number, the cast data value
+     */
+    protected double getNum(LivingEntity caster, String key, double fallback)
+    {
+        String val = settings.getString(key);
+        if (val == null)
+        {
+            return fallback;
+        }
+        else if (NUMBER.matcher(val).matches())
+        {
+            return Double.parseDouble(val);
+        }
+        else if (RANGE.matcher(val).matches())
+        {
+            int mid = val.indexOf('-', 1);
+            double min = Double.parseDouble(val.substring(0, mid));
+            double max = Double.parseDouble(val.substring(mid + 1));
+            return Math.random() * (max - min) + min;
+        }
+        else
+        {
+            HashMap<String, Object> map = skill.getCastData(caster);
+            if (map.containsKey(val))
+            {
+                String mapVal = map.get(val).toString();
+                if (NUMBER.matcher(mapVal).matches())
+                {
+                    return Double.parseDouble(mapVal);
+                }
+            }
+            return 0;
+        }
     }
 
     /**
@@ -249,6 +299,7 @@ public abstract class EffectComponent
             put("linear", LinearTarget.class);
             put("location", LocationTarget.class);
             put("nearest", NearestTarget.class);
+            put("remember", RememberTarget.class);
             put("self", SelfTarget.class);
             put("single", SingleTarget.class);
         }};
@@ -256,6 +307,7 @@ public abstract class EffectComponent
     private static final HashMap<String, Class<? extends EffectComponent>> conditions = new HashMap<String, Class<? extends EffectComponent>>()
     {{
             put("biome", BiomeCondition.class);
+            put("block", BlockCondition.class);
             put("chance", ChanceCondition.class);
             put("class", ClassCondition.class);
             put("class level", ClassLevelCondition.class);
@@ -276,6 +328,7 @@ public abstract class EffectComponent
             put("status", StatusCondition.class);
             put("time", TimeCondition.class);
             put("tool", ToolCondition.class);
+            put("value", ValueCondition.class);
             put("water", WaterCondition.class);
         }};
 
@@ -312,10 +365,15 @@ public abstract class EffectComponent
             put("projectile", ProjectileMechanic.class);
             put("purge", PurgeMechanic.class);
             put("push", PushMechanic.class);
+            put("remember", RememberTargetsMechanic.class);
             put("repeat", RepeatMechanic.class);
             put("speed", SpeedMechanic.class);
             put("sound", SoundMechanic.class);
             put("status", StatusMechanic.class);
+            put("value add", ValueAddMechanic.class);
+            put("value lore", ValueLoreMechanic.class);
+            put("value multiply", ValueMultiplyMechanic.class);
+            put("value set", ValueSetMechanic.class);
             put("warp", WarpMechanic.class);
             put("warp location", WarpLocMechanic.class);
             put("warp random", WarpRandomMechanic.class);

@@ -359,7 +359,7 @@ public class TempEntity implements LivingEntity
     @Override
     public Location getLocation()
     {
-        return loc;
+        return loc.clone();
     }
 
     @Override

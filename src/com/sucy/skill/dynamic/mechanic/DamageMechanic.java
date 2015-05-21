@@ -3,6 +3,7 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,7 +27,10 @@ public class DamageMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        boolean percent = settings.getString(TYPE, "damage").toLowerCase().equals("multiplier");
+        String pString = settings.getString(TYPE, "damage").toLowerCase();
+        boolean percent = pString.equals("multiplier") || pString.equals("percent");
+        boolean missing = pString.equals("percent missing");
+        boolean left = pString.equals("percent left");
         double damage = attr(caster, DAMAGE, level, 1.0, isSelf);
         if (damage < 0) return false;
         for (LivingEntity target : targets)
@@ -35,6 +39,14 @@ public class DamageMechanic extends EffectComponent
             if (percent)
             {
                 amount = damage * target.getMaxHealth() / 100;
+            }
+            else if (missing)
+            {
+                amount = damage * (target.getMaxHealth() - target.getHealth()) / 100;
+            }
+            else if (left)
+            {
+                amount = damage * target.getHealth() / 100;
             }
             skill.damage(target, amount, caster);
         }

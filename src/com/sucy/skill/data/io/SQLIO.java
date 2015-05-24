@@ -17,9 +17,8 @@ import org.bukkit.OfflinePlayer;
  */
 public class SQLIO extends IOManager
 {
-    private static final String ID   = "id";
-    private static final String KEY  = "key";
-    private static final String DATA = "data";
+    private static final String ID     = "id";
+    private static final String DATA   = "data";
 
     private boolean     startup;
     private SQLDatabase database;
@@ -49,7 +48,6 @@ public class SQLIO extends IOManager
             table = database.createTable(api, "players");
 
             table.createColumn(ID, ColumnType.INCREMENT);
-            table.createColumn(KEY, ColumnType.STRING_64);
             table.createColumn(DATA, ColumnType.TEXT);
         }
     }

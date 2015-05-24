@@ -30,6 +30,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
     private static final String HEIGHT = "height";
     private static final String RADIUS = "radius";
     private static final String SPREAD = "spread";
+    private static final String ALLY   = "group";
 
     /**
      * Executes the component
@@ -59,6 +60,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         double speed = settings.getAttr(SPEED, level, 3.0);
         int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
+        boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
 
         // Fire from each target
         for (LivingEntity target : targets)
@@ -90,6 +92,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
             for (ItemProjectile p : list)
             {
                 p.setMetadata(LEVEL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), level));
+                p.setAllyEnemy(ally, !ally);
             }
         }
 

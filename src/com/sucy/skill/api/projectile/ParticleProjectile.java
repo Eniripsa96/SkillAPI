@@ -1,5 +1,6 @@
 package com.sucy.skill.api.projectile;
 
+import com.rit.sucy.player.Protection;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.ParticleProjectileExpireEvent;
 import com.sucy.skill.api.event.ParticleProjectileHitEvent;
@@ -145,6 +146,10 @@ public class ParticleProjectile extends CustomProjectile
                 }
                 if (entity.getLocation().distanceSquared(loc) < 2.25)
                 {
+                    boolean ally = Protection.isAlly(getShooter(), entity);
+                    if (ally && !this.ally) continue;
+                    if (!ally && !this.enemy) continue;
+
                     cancel();
                     Bukkit.getPluginManager().callEvent(new ParticleProjectileHitEvent(this, entity));
                     if (callback != null)

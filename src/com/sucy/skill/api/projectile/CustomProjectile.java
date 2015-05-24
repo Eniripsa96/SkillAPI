@@ -22,6 +22,8 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
 
     protected ProjectileCallback callback;
     protected LivingEntity       thrower;
+    protected boolean  enemy = true;
+    protected boolean  ally = false;
 
     /**
      * Constructs a new custom projectile and starts its timer task
@@ -32,6 +34,18 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     {
         this.thrower = thrower;
         runTaskTimer(Bukkit.getPluginManager().getPlugin("SkillAPI"), 1, 1);
+    }
+
+    /**
+     * Sets whether or not the projectile can hit allies or enemies
+     *
+     * @param ally  whether or not allies can be hit
+     * @param enemy whether or not enemies can be hit
+     */
+    public void setAllyEnemy(boolean ally, boolean enemy)
+    {
+        this.ally = ally;
+        this.enemy = enemy;
     }
 
     /**

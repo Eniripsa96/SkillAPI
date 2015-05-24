@@ -482,7 +482,11 @@ public abstract class Skill
      */
     protected Object getAttr(String key, int level)
     {
-        return settings.getObj(key, level);
+        Object result = settings.getObj(key, level);
+        if (result instanceof Double) {
+            return FORMAT.format((double)(Double)result);
+        }
+        return result;
     }
 
     /**

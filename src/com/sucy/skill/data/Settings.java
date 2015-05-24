@@ -297,7 +297,7 @@ public class Settings
 
     private static final String SAVE_BASE = "Saving.";
     private static final String SAVE_AUTO = SAVE_BASE + "auto-save";
-    private static final String SAVE_MINS = SAVE_AUTO + "minutes";
+    private static final String SAVE_MINS = SAVE_BASE + "minutes";
     private static final String SAVE_SQL  = SAVE_BASE + "sql-database";
     private static final String SAVE_SQLD = SAVE_BASE + "sql-details";
 

@@ -25,6 +25,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
     private static final String HEIGHT = "height";
     private static final String RADIUS = "radius";
     private static final String SPREAD = "spread";
+    private static final String ALLY   = "group";
 
     /**
      * Executes the component
@@ -42,6 +43,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         int amount = (int) attr(caster, AMOUNT, level, 1.0, isSelf);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
+        boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         settings.set("level", level);
 
         // Fire from each target
@@ -73,6 +75,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
             for (ParticleProjectile p : list)
             {
                 p.setMetadata(LEVEL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), level));
+                p.setAllyEnemy(ally, !ally);
             }
         }
 

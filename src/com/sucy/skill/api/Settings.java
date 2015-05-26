@@ -1,5 +1,6 @@
 package com.sucy.skill.api;
 
+import com.rit.sucy.config.parse.DataSection;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -397,7 +398,7 @@ public class Settings
      *
      * @param config configuration section to save to
      */
-    public void save(ConfigurationSection config)
+    public void save(DataSection config)
     {
         if (config == null)
         {
@@ -420,14 +421,14 @@ public class Settings
      *
      * @param config configuration section to load from
      */
-    public void load(ConfigurationSection config)
+    public void load(DataSection config)
     {
         if (config == null)
         {
             return;
         }
 
-        for (String key : config.getKeys(false))
+        for (String key : config.keys())
         {
             settings.put(key, config.get(key));
         }

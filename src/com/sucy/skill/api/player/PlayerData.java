@@ -434,16 +434,32 @@ public final class PlayerData
             PlayerSkill data = new PlayerSkill(this, skill, parent);
             combos.addSkill(skill);
             skills.put(key, data);
-            int lastLevel = 0;
-            while (data.getData().canAutoLevel() && !data.isMaxed())
+            autoLevel(skill);
+        }
+    }
+
+    /**
+     * Attempts to auto-level any skills that are able to do so
+     */
+    public void autoLevel() {
+        for (PlayerSkill skill : skills.values()) {
+            autoLevel(skill.getData());
+        }
+    }
+
+    private void autoLevel(Skill skill) {
+        PlayerSkill data = skills.get(skill.getKey());
+        if (data == null) return;
+
+        int lastLevel = data.getLevel();
+        while (data.getData().canAutoLevel() && !data.isMaxed() && data.getLevelReq() <= data.getPlayerClass().getLevel())
+        {
+            upgradeSkill(skill);
+            if (lastLevel == data.getLevel())
             {
-                upgradeSkill(skill);
-                if (lastLevel == data.getLevel())
-                {
-                    break;
-                }
-                lastLevel++;
+                break;
             }
+            lastLevel++;
         }
     }
 
@@ -517,6 +533,7 @@ public final class PlayerData
             if (data.getLevel() == 1)
             {
                 Bukkit.getPluginManager().callEvent(new PlayerSkillUnlockEvent(this, data));
+                this.autoLevel();
             }
 
             return true;

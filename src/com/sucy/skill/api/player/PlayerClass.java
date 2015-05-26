@@ -420,6 +420,7 @@ public final class PlayerClass
 
         // Update health/mana
         getPlayerData().updateHealthAndMana(getPlayerData().getPlayer());
+        getPlayerData().autoLevel();
 
         // Call the event
         PlayerLevelUpEvent event = new PlayerLevelUpEvent(this, amount);

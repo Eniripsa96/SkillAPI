@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic;
 
+import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.player.PlayerData;
@@ -209,11 +210,11 @@ public abstract class EffectComponent
      *
      * @param config config to save to
      */
-    public void save(ConfigurationSection config)
+    public void save(DataSection config)
     {
         config.set(TYPE, type);
         settings.save(config.createSection("data"));
-        ConfigurationSection children = config.createSection("children");
+        DataSection children = config.createSection("children");
         for (EffectComponent child : this.children)
         {
             child.save(children.createSection(child.key));
@@ -226,14 +227,14 @@ public abstract class EffectComponent
      * @param skill  owning skill of the component
      * @param config config data to load from
      */
-    public void load(DynamicSkill skill, ConfigurationSection config)
+    public void load(DynamicSkill skill, DataSection config)
     {
         this.skill = skill;
         if (config == null)
         {
             return;
         }
-        settings.load(config.getConfigurationSection("data"));
+        settings.load(config.getSection("data"));
         if (settings.has(ICON_KEY))
         {
             String key = settings.getString(ICON_KEY);
@@ -243,12 +244,12 @@ public abstract class EffectComponent
             }
         }
 
-        ConfigurationSection children = config.getConfigurationSection("children");
+        DataSection children = config.getSection("children");
         if (children != null)
         {
-            for (String key : children.getKeys(false))
+            for (String key : children.keys())
             {
-                String type = children.getConfigurationSection(key).getString(TYPE, "missing").toLowerCase();
+                String type = children.getSection(key).getString(TYPE, "missing").toLowerCase();
                 HashMap<String, Class<? extends EffectComponent>> map;
                 if (type.equals("target"))
                 {
@@ -275,7 +276,7 @@ public abstract class EffectComponent
                         EffectComponent child = map.get(mkey).newInstance();
                         child.key = key;
                         child.type = type;
-                        child.load(skill, children.getConfigurationSection(key));
+                        child.load(skill, children.getSection(key));
                         this.children.add(child);
                     }
                     catch (Exception ex)

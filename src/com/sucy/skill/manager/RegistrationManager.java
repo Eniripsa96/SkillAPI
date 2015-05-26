@@ -1,6 +1,8 @@
 package com.sucy.skill.manager;
 
+import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.Config;
+import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.SkillPlugin;
 import com.sucy.skill.api.classes.RPGClass;
@@ -36,8 +38,8 @@ public class RegistrationManager
 
     private final SkillAPI api;
 
-    private Config skillConfig;
-    private Config classConfig;
+    private CommentedConfig skillConfig;
+    private CommentedConfig classConfig;
 
     private Mode mode = Mode.STARTUP;
 
@@ -50,8 +52,8 @@ public class RegistrationManager
     public RegistrationManager(SkillAPI api)
     {
         this.api = api;
-        skillConfig = new Config(api, "dynamic" + File.separator + "skills");
-        classConfig = new Config(api, "dynamic" + File.separator + "classes");
+        skillConfig = new CommentedConfig(api, "dynamic" + File.separator + "skills");
+        classConfig = new CommentedConfig(api, "dynamic" + File.separator + "classes");
         new File(api.getDataFolder().getAbsolutePath() + File.separator + "dynamic" + File.separator + "skill").mkdirs();
         new File(api.getDataFolder().getAbsolutePath() + File.separator + "dynamic" + File.separator + "class").mkdirs();
     }
@@ -66,11 +68,11 @@ public class RegistrationManager
         // Make sure dynamic files are created
         if (!skillConfig.getConfigFile().exists())
         {
-            skillConfig.saveConfig();
+            skillConfig.save();
         }
         if (!classConfig.getConfigFile().exists())
         {
-            classConfig.saveConfig();
+            classConfig.save();
         }
 
         log("Loading skills...", 1);
@@ -91,9 +93,9 @@ public class RegistrationManager
         {
             log("Loading dynamic skills from skills.yml...", 1);
             skillConfig.getConfig().set("loaded", true);
-            for (String key : skillConfig.getConfig().getKeys(false))
+            for (String key : skillConfig.getConfig().keys())
             {
-                if (!skillConfig.getConfig().isConfigurationSection(key))
+                if (!skillConfig.getConfig().isSection(key))
                 {
                     log("Skipping \"" + key + "\" because it isn't a configuration section", 3);
                     continue;
@@ -103,12 +105,12 @@ public class RegistrationManager
                     DynamicSkill skill = new DynamicSkill(key);
                     api.getServer().getPluginManager().registerEvents(skill, api);
                     api.skills.put(key.toLowerCase(), skill);
-                    skill.load(skillConfig.getConfig().getConfigurationSection(key));
-                    Config sConfig = new Config(api, SKILL_DIR + key);
+                    skill.load(skillConfig.getConfig().getSection(key));
+                    CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + key);
                     sConfig.clear();
                     skill.save(sConfig.getConfig().createSection(key));
                     skill.save(skillConfig.getConfig().createSection(key));
-                    sConfig.saveConfig();
+                    sConfig.save();
                     log("Loaded the dynamic skill: " + key, 2);
                 }
                 else
@@ -137,15 +139,15 @@ public class RegistrationManager
                     {
                         if (!SkillAPI.isSkillRegistered(name))
                         {
-                            Config sConfig = new Config(api, SKILL_DIR + name);
+                            CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + name);
                             DynamicSkill skill = new DynamicSkill(name);
                             api.getServer().getPluginManager().registerEvents(skill, api);
                             api.skills.put(name.toLowerCase(), skill);
-                            skill.load(sConfig.getConfig().getConfigurationSection(name));
+                            skill.load(sConfig.getConfig().getSection(name));
                             sConfig.clear();
                             skill.save(sConfig.getConfig().createSection(name));
                             skill.save(skillConfig.getConfig().createSection(name));
-                            sConfig.saveConfig();
+                            sConfig.save();
                             log("Loaded the dynamic skill: " + name, 2);
                         }
                         else if (SkillAPI.getSkill(name) instanceof DynamicSkill)
@@ -183,7 +185,7 @@ public class RegistrationManager
         {
             log("Loading dynamic classes from classes.yml...", 1);
             classConfig.getConfig().set("loaded", true);
-            for (String key : classConfig.getConfig().getKeys(false))
+            for (String key : classConfig.getConfig().keys())
             {
                 if (key.equals("loaded"))
                 {
@@ -192,13 +194,13 @@ public class RegistrationManager
                 if (!SkillAPI.isClassRegistered(key))
                 {
                     DynamicClass tree = new DynamicClass(api, key);
-                    tree.load(classConfig.getConfig().getConfigurationSection(key));
+                    tree.load(classConfig.getConfig().getSection(key));
                     api.addDynamicClass(tree);
-                    Config cConfig = new Config(api, CLASS_DIR + key);
+                    CommentedConfig cConfig = new CommentedConfig(api, CLASS_DIR + key);
                     cConfig.clear();
                     tree.save(cConfig.getConfig().createSection(key));
                     tree.save(classConfig.getConfig().createSection(key));
-                    cConfig.saveConfig();
+                    cConfig.save();
                     log("Loaded the dynamic class: " + key, 2);
                 }
                 else
@@ -227,14 +229,14 @@ public class RegistrationManager
                         String name = file.getName().replace(".yml", "");
                         if (!SkillAPI.isClassRegistered(name))
                         {
-                            Config cConfig = new Config(api, CLASS_DIR + name);
+                            CommentedConfig cConfig = new CommentedConfig(api, CLASS_DIR + name);
                             DynamicClass tree = new DynamicClass(api, name);
-                            tree.load(cConfig.getConfig().getConfigurationSection(name));
+                            tree.load(cConfig.getConfig().getSection(name));
                             api.addDynamicClass(tree);
                             cConfig.clear();
                             tree.save(cConfig.getConfig().createSection(name));
                             tree.save(classConfig.getConfig().createSection(name));
-                            cConfig.saveConfig();
+                            cConfig.save();
                             log("Loaded the dynamic class: " + name, 2);
                         }
                         else if (SkillAPI.getClass(name) instanceof DynamicClass)
@@ -254,8 +256,8 @@ public class RegistrationManager
             }
         }
 
-        skillConfig.saveConfig();
-        classConfig.saveConfig();
+        skillConfig.save();
+        classConfig.save();
 
         mode = Mode.DONE;
 
@@ -304,8 +306,8 @@ public class RegistrationManager
         else
         {
 
-            Config singleFile = new Config(api, "skill" + File.separator + skill.getName());
-            ConfigurationSection config = singleFile.getConfig();
+            CommentedConfig singleFile = new CommentedConfig(api, "skill" + File.separator + skill.getName());
+            DataSection config = singleFile.getConfig();
 
             try
             {
@@ -317,7 +319,7 @@ public class RegistrationManager
 
                 // Finally, do a full save to make sure the config is up to date
                 skill.save(config);
-                singleFile.saveConfig();
+                singleFile.save();
 
                 // Skill is ready to be registered
                 return skill;
@@ -366,8 +368,8 @@ public class RegistrationManager
         else
         {
 
-            Config singleFile = new Config(api, "class" + File.separator + rpgClass.getName());
-            ConfigurationSection config = singleFile.getConfig();
+            CommentedConfig singleFile = new CommentedConfig(api, "class" + File.separator + rpgClass.getName());
+            DataSection config = singleFile.getConfig();
 
             try
             {
@@ -380,7 +382,7 @@ public class RegistrationManager
 
                 // Finally, do a full save to make sure the config is up to date
                 rpgClass.save(config);
-                singleFile.saveConfig();
+                singleFile.save();
 
                 // Skill is ready to be registered
                 return rpgClass;

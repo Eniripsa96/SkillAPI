@@ -541,10 +541,7 @@ public class SkillAPI extends JavaPlugin
         {
             return;
         }
-        for (int i = 0; i < singleton.players.size(); i++)
-        {
-            singleton.io.saveData(singleton.players.get(i));
-        }
+        singleton.io.saveAll();
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic;
 
+import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
@@ -439,18 +440,18 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param config config data to load from
      */
     @Override
-    public void load(ConfigurationSection config)
+    public void load(DataSection config)
     {
-        ConfigurationSection triggers = config.getConfigurationSection("components");
+        DataSection triggers = config.getSection("components");
         if (triggers != null)
         {
-            for (String key : triggers.getKeys(false))
+            for (String key : triggers.keys())
             {
                 try
                 {
                     Trigger trigger = Trigger.valueOf(key.toUpperCase().replace(' ', '_').replaceAll("-.+", ""));
                     EffectComponent component = trigger.getComponent();
-                    component.load(this, triggers.getConfigurationSection(key));
+                    component.load(this, triggers.getSection(key));
                     components.put(trigger, component);
                 }
                 catch (Exception ex)
@@ -471,10 +472,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param config config to save to
      */
     @Override
-    public void save(ConfigurationSection config)
+    public void save(DataSection config)
     {
         super.save(config);
-        ConfigurationSection triggers = config.createSection("components");
+        DataSection triggers = config.createSection("components");
         for (Trigger trigger : components.keySet())
         {
             components.get(trigger).save(triggers.createSection(TextFormatter.format(trigger.name())));

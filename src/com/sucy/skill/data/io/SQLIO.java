@@ -12,6 +12,9 @@ import com.sucy.skill.data.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Loads player data from the SQL Database
  */
@@ -102,9 +105,11 @@ public class SQLIO extends IOManager
     public void saveAll()
     {
         init();
-        for (PlayerAccounts data : SkillAPI.getPlayerAccountData().values())
+        HashMap<String, PlayerAccounts> data = SkillAPI.getPlayerAccountData();
+        ArrayList<String> keys = new ArrayList<String>(data.keySet());
+        for (String key : keys)
         {
-            saveSingle(data);
+            saveSingle(data.get(key));
         }
         cleanup();
     }

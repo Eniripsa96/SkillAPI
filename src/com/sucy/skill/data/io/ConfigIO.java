@@ -7,6 +7,8 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import org.bukkit.OfflinePlayer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -79,9 +81,11 @@ public class ConfigIO extends IOManager
     @Override
     public void saveAll()
     {
-        for (Map.Entry<String, PlayerAccounts> entry : SkillAPI.getPlayerAccountData().entrySet())
+        HashMap<String, PlayerAccounts> data = SkillAPI.getPlayerAccountData();
+        ArrayList<String> keys = new ArrayList<String>(data.keySet());
+        for (String key : keys)
         {
-            saveData(entry.getValue());
+            saveData(data.get(key));
         }
     }
 }

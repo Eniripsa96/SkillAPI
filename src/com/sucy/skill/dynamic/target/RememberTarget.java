@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class RememberTarget extends EffectComponent
 {
-    private static final String KEY     = "key";
+    private static final String KEY = "key";
 
     /**
      * Executes the component
@@ -33,16 +33,18 @@ public class RememberTarget extends EffectComponent
         Object data = skill.getCastData(caster).get(key);
         try
         {
-            List<LivingEntity> remembered = (List<LivingEntity>)data;
-            for (int i = 0; i < remembered.size(); i++) {
-                if (remembered.get(i).isDead() || !remembered.get(i).isValid()) {
+            List<LivingEntity> remembered = (List<LivingEntity>) data;
+            for (int i = 0; i < remembered.size(); i++)
+            {
+                if (remembered.get(i).isDead() || !remembered.get(i).isValid())
+                {
                     remembered.remove(i);
                     i--;
                 }
             }
             return targets.size() > 0 && executeChildren(caster, level, remembered);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return false;
         }

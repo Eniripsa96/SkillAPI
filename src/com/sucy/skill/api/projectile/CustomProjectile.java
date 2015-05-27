@@ -22,8 +22,8 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
 
     protected ProjectileCallback callback;
     protected LivingEntity       thrower;
-    protected boolean  enemy = true;
-    protected boolean  ally = false;
+    protected boolean enemy = true;
+    protected boolean ally  = false;
 
     /**
      * Constructs a new custom projectile and starts its timer task

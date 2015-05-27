@@ -441,13 +441,16 @@ public final class PlayerData
     /**
      * Attempts to auto-level any skills that are able to do so
      */
-    public void autoLevel() {
-        for (PlayerSkill skill : skills.values()) {
+    public void autoLevel()
+    {
+        for (PlayerSkill skill : skills.values())
+        {
             autoLevel(skill.getData());
         }
     }
 
-    private void autoLevel(Skill skill) {
+    private void autoLevel(Skill skill)
+    {
         PlayerSkill data = skills.get(skill.getKey());
         if (data == null) return;
 

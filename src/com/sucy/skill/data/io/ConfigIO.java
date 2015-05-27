@@ -9,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * IO manager that saves/loads to a .yml configuration file

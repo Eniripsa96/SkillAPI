@@ -1,7 +1,6 @@
 package com.sucy.skill.manager;
 
 import com.rit.sucy.config.CommentedConfig;
-import com.rit.sucy.config.Config;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.SkillPlugin;
@@ -9,7 +8,6 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;

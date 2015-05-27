@@ -1,6 +1,5 @@
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
@@ -12,9 +11,9 @@ import java.util.List;
  */
 public class ValueCondition extends EffectComponent
 {
-    private static final String KEY  = "key";
-    private static final String MIN  = "min-value";
-    private static final String MAX  = "max-value";
+    private static final String KEY = "key";
+    private static final String MIN = "min-value";
+    private static final String MAX = "max-value";
 
     /**
      * Executes the component

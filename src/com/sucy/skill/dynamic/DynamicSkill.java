@@ -10,7 +10,6 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,7 +30,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     private final HashMap<String, EffectComponent>  attribKeys = new HashMap<String, EffectComponent>();
     private final HashMap<Integer, Integer>         active     = new HashMap<Integer, Integer>();
 
-    private static final HashMap<Integer, HashMap<String, Object>> castData   = new HashMap<Integer, HashMap<String, Object>>();
+    private static final HashMap<Integer, HashMap<String, Object>> castData = new HashMap<Integer, HashMap<String, Object>>();
 
     /**
      * Initializes a new dynamic skill
@@ -93,13 +92,15 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * Retrieves the cast data for the caster
      *
      * @param caster caster to get the data for
+     *
      * @return cast data for the caster
      */
     public HashMap<String, Object> getCastData(LivingEntity caster)
     {
         if (caster == null) return null;
         HashMap<String, Object> map = castData.get(caster.getEntityId());
-        if (map == null) {
+        if (map == null)
+        {
             map = new HashMap<String, Object>();
             map.put("caster", caster);
             castData.put(caster.getEntityId(), map);
@@ -237,6 +238,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         // Death trigger
         if (active.containsKey(event.getEntity().getEntityId()))
         {
+            getCastData(event.getEntity()).put("api-killer", event.getEntity().getKiller());
             trigger(event.getEntity(), event.getEntity(), active.get(event.getEntity().getEntityId()), Trigger.DEATH);
         }
 
@@ -265,6 +267,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             String name = component.getSettings().getString("type", "").toUpperCase().replace(' ', '_');
             if (event.getCause().name().equals(name))
             {
+                getCastData(target).put("api-taken", event.getDamage());
                 trigger(target, target, active.get(target.getEntityId()), Trigger.ENVIRONMENT_DAMAGE);
             }
         }
@@ -301,6 +304,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.getDamage() >= min && event.getDamage() <= max
                 && (type.equals("both") || (type.equals("projectile") == projectile)))
             {
+                getCastData(target).put("api-taken", event.getDamage());
                 if (caster)
                 {
                     trigger(target, target, active.get(target.getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
@@ -324,6 +328,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.getDamage() >= min && event.getDamage() <= max
                 && (type.equals("both") || type.equals("projectile") == projectile))
             {
+                getCastData(damager).put("api-dealt", event.getDamage());
                 if (caster)
                 {
                     trigger(damager, damager, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
@@ -357,6 +362,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
+                getCastData(target).put("api-taken", event.getDamage());
                 if (caster)
                 {
                     trigger(target, target, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
@@ -378,6 +384,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
+                getCastData(damager).put("api-dealt", event.getDamage());
                 if (caster)
                 {
                     trigger(damager, damager, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);

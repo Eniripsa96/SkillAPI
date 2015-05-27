@@ -1,6 +1,5 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 

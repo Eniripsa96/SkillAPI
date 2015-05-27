@@ -1,6 +1,5 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
@@ -11,7 +10,7 @@ import java.util.List;
  */
 public class RememberTargetsMechanic extends EffectComponent
 {
-    private static final String KEY     = "key";
+    private static final String KEY = "key";
 
     /**
      * Executes the component

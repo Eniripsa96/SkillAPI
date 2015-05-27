@@ -7,7 +7,6 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicSkill;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -498,7 +497,7 @@ public class Settings
     public DynamicSkill getLevelUpSkill()
     {
         Skill skill = SkillAPI.getSkill(levelUpSkill);
-        return (skill instanceof DynamicSkill) ? (DynamicSkill)skill : null;
+        return (skill instanceof DynamicSkill) ? (DynamicSkill) skill : null;
     }
 
     private void loadClassSettings()

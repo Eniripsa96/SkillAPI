@@ -3,7 +3,6 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**

@@ -1,7 +1,6 @@
 package com.sucy.skill.api.projectile;
 
 import com.rit.sucy.player.Protection;
-import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.ItemProjectileHitEvent;
 import com.sucy.skill.api.event.ItemProjectileLandEvent;
 import com.sucy.skill.api.event.ItemProjectileLaunchEvent;

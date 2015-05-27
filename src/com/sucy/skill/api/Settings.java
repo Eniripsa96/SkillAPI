@@ -2,7 +2,6 @@ package com.sucy.skill.api;
 
 import com.rit.sucy.config.parse.DataSection;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.HashMap;

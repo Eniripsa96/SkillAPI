@@ -19,7 +19,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -484,8 +483,9 @@ public abstract class Skill
     protected Object getAttr(String key, int level)
     {
         Object result = settings.getObj(key, level);
-        if (result instanceof Double) {
-            return FORMAT.format((double)(Double)result);
+        if (result instanceof Double)
+        {
+            return FORMAT.format((double) (Double) result);
         }
         return result;
     }

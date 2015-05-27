@@ -39,7 +39,7 @@ public class ItemRemoveMechanic extends EffectComponent
         {
             return false;
         }
-        int amount = (int)attr(caster, AMOUNT, level, 1, true);
+        int amount = (int) attr(caster, AMOUNT, level, 1, true);
         short data = (short) settings.getInt(DATA, 0);
         ItemStack item = new ItemStack(material, amount, data);
 

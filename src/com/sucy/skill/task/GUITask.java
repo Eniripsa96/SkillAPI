@@ -126,9 +126,9 @@ public class GUITask extends BukkitRunnable
                         .replace("{expLeft}", "" + (int) Math.ceil(main.getRequiredExp() - main.getExp()))
                         .replace("{mana}", "" + (int) data.getMana())
                         .replace("{maxMana}", "" + (int) data.getMaxMana())
-                        .replace("{name}", player.getName()
-                        .replace("{health}", "" + (int)player.getHealth())
-                        .replace("{maxHealth}", "" + (int)player.getMaxHealth()));
+                        .replace("{name}", player.getName())
+                        .replace("{health}", "" + (int) player.getHealth())
+                        .replace("{maxHealth}", "" + (int) player.getMaxHealth());
                 ActionBar.show(player, filtered);
             }
         }

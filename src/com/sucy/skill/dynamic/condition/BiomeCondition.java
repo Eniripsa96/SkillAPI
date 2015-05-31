@@ -1,6 +1,7 @@
 package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.LivingEntity;
 
@@ -15,6 +16,29 @@ public class BiomeCondition extends EffectComponent
     private static final String TYPE  = "type";
     private static final String BIOME = "biome";
 
+    private static final String[] BIOMES = {
+            "BEACH",
+            "DESERT",
+            "FOREST",
+            "FROZEN",
+            "HELL",
+            "HILLS",
+            "ICE",
+            "JUNGLE",
+            "MESA",
+            "MOUNTAINS",
+            "MUSHROOM",
+            "OCEAN",
+            "PLAINS",
+            "PLATEAU",
+            "RIVER",
+            "SAVANNA",
+            "SHORE",
+            "SKY",
+            "SWAMPLAND",
+            "TAIGA"
+    };
+
     /**
      * Executes the component
      *
@@ -27,25 +51,25 @@ public class BiomeCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        Biome biome;
-        try
-        {
-            biome = Biome.valueOf(settings.getString(BIOME).toUpperCase().replace(' ', '_'));
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-
+        int biomes = settings.getInt(BIOME, 0);
         boolean inBiome = !settings.getString(TYPE, "in biome").toLowerCase().equals("not in biome");
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            if ((target.getLocation().getBlock().getBiome() == biome) == inBiome)
+            String biome = target.getLocation().getBlock().getBiome().name();
+            boolean any = false;
+            for (int i = 0; i < BIOMES.length; i++)
             {
+                if ((biomes & (1 << i)) != 0 && biome.contains(BIOMES[i])) {
+                    any = true;
+                    break;
+                }
+            }
+            if (any == inBiome) {
                 list.add(target);
             }
         }
         return list.size() > 0 && executeChildren(caster, level, list);
+
     }
 }

@@ -7,6 +7,7 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicSkill;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -559,6 +561,9 @@ public class Settings
     private static final String SKILL_DOWNGRADE = SKILL_BASE + "allow-downgrade";
     private static final String SKILL_MESSAGE   = SKILL_BASE + "show-messages";
     private static final String SKILL_RADIUS    = SKILL_BASE + "message-radius";
+    private static final String SKILL_BLOCKS    = SKILL_BASE + "block-filter";
+
+    private ArrayList<Material> filteredBlocks;
 
     private boolean allowDowngrade;
     private boolean showSkillMessages;
@@ -594,11 +599,35 @@ public class Settings
         return messageRadius;
     }
 
+    /**
+     * Retrieves the list of filtered blocks
+     *
+     * @return list of blocks
+     */
+    public List<Material> getFilteredBlocks()
+    {
+        return filteredBlocks;
+    }
+
     private void loadSkillSettings()
     {
         allowDowngrade = config.getBoolean(SKILL_DOWNGRADE);
         showSkillMessages = config.getBoolean(SKILL_MESSAGE);
         messageRadius = config.getInt(SKILL_RADIUS);
+
+        filteredBlocks = new ArrayList<Material>();
+        List<String> list = config.getList(SKILL_BLOCKS);
+        for (String item : list) {
+            try
+            {
+                Material mat = Material.valueOf(item.toUpperCase().replace(' ', '_'));
+                filteredBlocks.add(mat);
+            }
+            catch (Exception ex)
+            {
+                Bukkit.getLogger().info("Invalid block type \"" + item + "\"");
+            }
+        }
     }
 
     ///////////////////////////////////////////////////////

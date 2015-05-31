@@ -5,6 +5,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.ActionBar;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -129,6 +130,13 @@ public class GUITask extends BukkitRunnable
                         .replace("{name}", player.getName())
                         .replace("{health}", "" + (int) player.getHealth())
                         .replace("{maxHealth}", "" + (int) player.getMaxHealth());
+                while (filtered.contains("{value:")) {
+                    int index = filtered.indexOf("{value:");
+                    int end = filtered.indexOf('}', index);
+                    String key = filtered.substring(index + 7, end);
+                    Object value = DynamicSkill.getCastData(player).get(key);
+                    filtered = filtered.replace("{value:" + key + "}", (value == null ? "None" : value.toString()));
+                }
                 ActionBar.show(player, filtered);
             }
         }

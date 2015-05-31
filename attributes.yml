@@ -1,5 +1,6 @@
 vitality:
   display: 'Vitality'
+  max: 999
   icon: 'ink sack'
   icon-data: 1
   icon-lore:
@@ -15,6 +16,7 @@ vitality:
     health: 'a+v'
 spirit:
   display: 'Spirit'
+  max: 999
   icon: 'ink sack'
   icon-data: 6
   icon-lore:
@@ -32,6 +34,7 @@ spirit:
     mana-regen: 'a*0.025+1*v'
 intelligence:
   display: 'Intelligence'
+  max: 999
   icon: 'ink sack'
   icon-data: 5
   icon-lore:
@@ -47,6 +50,7 @@ intelligence:
     target: {}
 dexterity:
   display: 'Dexterity'
+  max: 999
   icon: 'ink sack'
   icon-data: 10
   icon-lore:
@@ -65,6 +69,7 @@ dexterity:
       Single-range: 'a*0.025+1*v'
 strength:
   display: 'Strength'
+  max: 999
   icon: 'ink sack'
   icon-data: 14
   icon-lore:

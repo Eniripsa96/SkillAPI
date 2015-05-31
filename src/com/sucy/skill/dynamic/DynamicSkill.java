@@ -95,7 +95,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return cast data for the caster
      */
-    public HashMap<String, Object> getCastData(LivingEntity caster)
+    public static HashMap<String, Object> getCastData(LivingEntity caster)
     {
         if (caster == null) return null;
         HashMap<String, Object> map = castData.get(caster.getEntityId());

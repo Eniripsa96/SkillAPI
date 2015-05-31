@@ -212,6 +212,7 @@ public class SkillAPI extends JavaPlugin
         {
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
         }
+        singleton = null;
 
         // Clear tasks
         WolfMechanic.removeWolves();
@@ -247,6 +248,7 @@ public class SkillAPI extends JavaPlugin
         // Clear skill bars and stop passives before disabling
         for (Player player : getServer().getOnlinePlayers())
         {
+            player.setMaxHealth(20);
             getPlayerData(player).stopPassives(player);
             if (player.getGameMode() != GameMode.CREATIVE && !player.isDead())
             {
@@ -264,7 +266,6 @@ public class SkillAPI extends JavaPlugin
         cmd.clear();
 
         enabled = false;
-        singleton = null;
 
         loaded = false;
     }

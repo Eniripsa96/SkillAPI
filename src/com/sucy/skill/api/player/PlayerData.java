@@ -199,14 +199,16 @@ public final class PlayerData
      */
     public void upAttribute(String key)
     {
-        if (attribPoints > 0)
+        int current = attributes.get(key);
+        int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
+        if (attribPoints > 0 && current < max)
         {
             PlayerUpAttributeEvent event = new PlayerUpAttributeEvent(this, key);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) return;
 
             key = key.toLowerCase();
-            attributes.put(key, getAttribute(key) + 1);
+            attributes.put(key, current + 1);
             attribPoints--;
         }
     }

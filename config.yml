@@ -102,6 +102,15 @@ Skills:
   #
   # The radius in which to show cast messages to nearby players
   message-radius: 20
+  #
+  # Blocks to ignore when using the Block mechanic in dynamic skills
+  block-filter:
+  - 'chest'
+  - 'ender chest'
+  - 'trapped chest'
+  - 'redstone*'
+  - 'wall sign'
+  - 'sign post'
 #
 Items:
   #
@@ -141,17 +150,18 @@ GUI:
   #
   # The text to display on the action bar.
   # Available filters:
-  #   {combo}     - the player's current click combo
-  #   {class}     - the player's main class name
-  #   {level}     - the player's main class level
-  #   {exp}       - the player's main class exp
-  #   {expReq}    - the player's main class required experience
-  #   {expLeft}   - the player's main class experience until the next level
-  #   {health}    - the player's current health
-  #   {maxHealth} - the player's max health
-  #   {mana}      - the player's current mana
-  #   {maxMana}   - the player's max mana
-  #   {name}      - the name of the player
+  #   {combo}       - the player's current click combo
+  #   {class}       - the player's main class name
+  #   {level}       - the player's main class level
+  #   {exp}         - the player's main class exp
+  #   {expReq}      - the player's main class required experience
+  #   {expLeft}     - the player's main class experience until the next level
+  #   {health}      - the player's current health
+  #   {maxHealth}   - the player's max health
+  #   {mana}        - the player's current mana
+  #   {maxMana}     - the player's max mana
+  #   {name}        - the name of the player
+  #   {value:<key>} - a skill value
   action-bar-text: '{combo}'
   #
   # Whether or not to display class information on a scoreboard

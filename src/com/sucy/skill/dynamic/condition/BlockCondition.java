@@ -13,6 +13,7 @@ import java.util.List;
 public class BlockCondition extends EffectComponent
 {
     private static final String MATERIAL = "material";
+    private static final String STANDING = "standing";
 
     /**
      * Executes the component
@@ -28,10 +29,11 @@ public class BlockCondition extends EffectComponent
     {
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         String block = settings.getString(MATERIAL, "").toUpperCase().replace(" ", "_");
+        boolean standing = settings.getString(STANDING, "on block").equalsIgnoreCase("not on block");
 
         for (LivingEntity target : targets)
         {
-            if (target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().name().equals(block))
+            if (target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().name().equals(block) == standing)
             {
                 list.add(target);
             }

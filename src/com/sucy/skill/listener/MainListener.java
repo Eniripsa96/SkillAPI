@@ -117,6 +117,7 @@ public class MainListener implements Listener
         Combat.clearData(event.getPlayer());
         DynamicSkill.clearCastData(event.getPlayer());
 
+        event.getPlayer().setMaxHealth(20);
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {

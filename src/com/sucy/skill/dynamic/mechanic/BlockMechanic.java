@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -112,6 +113,14 @@ public class BlockMechanic extends EffectComponent
                                 Block b = w.getBlockAt(i, j, k);
                                 if ((!solid || b.getType().isSolid()) && (!air || b.getType() == Material.AIR))
                                 {
+                                    boolean good = true;
+                                    for (Material mat : SkillAPI.getSettings().getFilteredBlocks()) {
+                                        if (mat == b.getType()) {
+                                            good = false;
+                                            break;
+                                        }
+                                    }
+                                    if (!good) continue;
                                     blocks.add(b);
                                 }
                             }

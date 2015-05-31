@@ -212,7 +212,6 @@ public class SkillAPI extends JavaPlugin
         {
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
         }
-        singleton = null;
 
         // Clear tasks
         WolfMechanic.removeWolves();
@@ -266,8 +265,8 @@ public class SkillAPI extends JavaPlugin
         cmd.clear();
 
         enabled = false;
-
         loaded = false;
+        singleton = null;
     }
 
     /**

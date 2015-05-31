@@ -573,6 +573,12 @@ public final class PlayerData
             return false;
         }
 
+        // Must not be a free skill
+        if (data.getCost() == 0)
+        {
+            return false;
+        }
+
         // Must not be required by another skill
         for (PlayerSkill s : skills.values())
         {

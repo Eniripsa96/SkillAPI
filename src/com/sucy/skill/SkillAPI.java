@@ -521,12 +521,18 @@ public class SkillAPI extends JavaPlugin
         {
             return null;
         }
+
+        // Already loaded for some reason, no need to load again
+        String id = new VersionPlayer(player).getIdString();
+        if (singleton.players.containsKey(id)) return singleton.players.get(id);
+
+        // Load the data
         PlayerAccounts data = singleton.io.loadData(player);
         for (PlayerData account : data.getAllData().values())
         {
             account.endInit();
         }
-        singleton.players.put(new VersionPlayer(player).getIdString(), data);
+        singleton.players.put(id, data);
         return data;
     }
 

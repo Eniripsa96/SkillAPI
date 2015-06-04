@@ -199,7 +199,8 @@ public final class PlayerData
      */
     public void upAttribute(String key)
     {
-        int current = attributes.get(key);
+        key = key.toLowerCase();
+        int current = getAttribute(key);
         int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
         if (attribPoints > 0 && current < max)
         {
@@ -207,9 +208,26 @@ public final class PlayerData
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) return;
 
-            key = key.toLowerCase();
             attributes.put(key, current + 1);
             attribPoints--;
+        }
+    }
+
+    /**
+     * Gives the player attribute points without costing
+     * attribute points.
+     *
+     * @param key    attribute to give points for
+     * @param amount amount to give
+     */
+    public void giveAttribute(String key, int amount)
+    {
+        key = key.toLowerCase();
+        int current = getAttribute(key);
+        int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
+        amount = Math.min(amount, max - current);
+        if (amount > 0) {
+            attributes.put(key, current + amount);
         }
     }
 
@@ -229,8 +247,34 @@ public final class PlayerData
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) return;
 
-            attributes.put(key, getAttribute(key) - 1);
-            attribPoints++;
+            int current = getAttribute(key);
+            attribPoints += 1;
+            attributes.put(key, current - 1);
+            if (current - 1 <= 0) attributes.remove(key);
+            AttributeListener.updatePlayer(this);
+        }
+    }
+
+    /**
+     * Refunds all spent attribute points for a specific attribute
+     */
+    public void refundAttributes(String key)
+    {
+        key = key.toLowerCase();
+        attribPoints += getAttribute(key);
+        attributes.remove(key);
+        AttributeListener.updatePlayer(this);
+    }
+
+    /**
+     * Refunds all spent attribute points
+     */
+    public void refundAttributes()
+    {
+        ArrayList<String> keys = new ArrayList<String>(attributes.keySet());
+        for (String key : keys)
+        {
+            refundAttributes(key);
         }
     }
 

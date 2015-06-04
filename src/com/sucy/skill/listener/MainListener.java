@@ -77,7 +77,6 @@ public class MainListener implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        double health = event.getPlayer().getHealth();
         final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
 
         // Apply player data as long as they have a class
@@ -94,13 +93,6 @@ public class MainListener implements Listener
                     data.updateScoreboard();
                 }
             }, 2);
-        }
-
-        // Attempted workaround for weird health bug
-        // TODO figure out what actually causes it
-        if (health > 0 && health < event.getPlayer().getMaxHealth())
-        {
-            event.getPlayer().setHealth(health);
         }
     }
 

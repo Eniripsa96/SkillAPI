@@ -6,12 +6,14 @@ import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.manager.AttributeManager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,14 +62,17 @@ public class AttributeListener implements Listener
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(PlayerJoinEvent event)
     {
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        Player player = event.getPlayer();
+        updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
+    }
 
-        double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth());
-        data.addMaxHealth(change);
-
-        change = updateStat(data, AttributeManager.MANA, data.getMaxMana());
-        data.addMaxMana(change);
+    /**
+     * Clears stored bonuses for a player when they quit
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        clearBonuses(event.getPlayer());
     }
 
     /**
@@ -78,15 +83,7 @@ public class AttributeListener implements Listener
     @EventHandler
     public void onLevelUp(PlayerLevelUpEvent event)
     {
-        Player player = event.getPlayerData().getPlayer();
-        if (player != null)
-        {
-            double change = updateStat(event.getPlayerData(), AttributeManager.HEALTH, player.getMaxHealth());
-            event.getPlayerData().addMaxHealth(change);
-
-            change = updateStat(event.getPlayerData(), AttributeManager.MANA, event.getPlayerData().getMaxMana());
-            event.getPlayerData().addMaxMana(change);
-        }
+        updatePlayer(event.getPlayerData());
     }
 
     /**
@@ -97,34 +94,7 @@ public class AttributeListener implements Listener
     @EventHandler
     public void onInvest(PlayerUpAttributeEvent event)
     {
-        Player player = event.getPlayerData().getPlayer();
-        if (player != null)
-        {
-            double change = updateStat(event.getPlayerData(), AttributeManager.HEALTH, player.getMaxHealth());
-            event.getPlayerData().addMaxHealth(change);
-
-            change = updateStat(event.getPlayerData(), AttributeManager.MANA, event.getPlayerData().getMaxMana());
-            event.getPlayerData().addMaxMana(change);
-        }
-    }
-
-    /**
-     * Updates health and mana attribute bonuses on refunding the attribute
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onInvest(PlayerRefundAttributeEvent event)
-    {
-        Player player = event.getPlayerData().getPlayer();
-        if (player != null)
-        {
-            double change = updateStat(event.getPlayerData(), AttributeManager.HEALTH, player.getMaxHealth());
-            event.getPlayerData().addMaxHealth(change);
-
-            change = updateStat(event.getPlayerData(), AttributeManager.MANA, event.getPlayerData().getMaxMana());
-            event.getPlayerData().addMaxMana(change);
-        }
+        updatePlayer(event.getPlayerData());
     }
 
     /**
@@ -201,7 +171,25 @@ public class AttributeListener implements Listener
         }
     }
 
-    private double updateStat(PlayerData data, String key, double value)
+    /**
+     * Updates the stats of a player based on their current attributes
+     *
+     * @param data player to update
+     */
+    public static void updatePlayer(PlayerData data)
+    {
+        Player player = data.getPlayer();
+        if (player != null)
+        {
+            double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth());
+            data.addMaxHealth(change);
+
+            change = updateStat(data, AttributeManager.MANA, data.getMaxMana());
+            data.addMaxMana(change);
+        }
+    }
+
+    private static double updateStat(PlayerData data, String key, double value)
     {
         Player player = data.getPlayer();
         if (player != null)
@@ -249,7 +237,9 @@ public class AttributeListener implements Listener
                     }
                     else if (event.isLeftClick())
                     {
-                        data.upAttribute(manager.getKeys().toArray()[event.getSlot()].toString());
+
+                        Object[] keys = manager.getKeys().toArray();
+                        data.upAttribute(keys[event.getSlot()].toString());
                     }
                     data.openAttributeMenu();
                 }

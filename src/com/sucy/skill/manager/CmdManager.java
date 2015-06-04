@@ -53,6 +53,7 @@ public class CmdManager
         );
         root.addSubCommands(
                 new ConfigurableCommand(api, "forceaccount", SenderType.CONSOLE_ONLY, new CmdForceAccount(), "Changes player's account", "<player> <accountId>", Permissions.FORCE),
+                new ConfigurableCommand(api, "forceattr", SenderType.CONSOLE_ONLY, new CmdForceAttr(), "Refunds attributes", "<player>", Permissions.FORCE),
                 new ConfigurableCommand(api, "forcecast", SenderType.CONSOLE_ONLY, new CmdForceCast(), "Player casts the skill", "<player> <skill> [level]", Permissions.FORCE),
                 new ConfigurableCommand(api, "forceprofess", SenderType.CONSOLE_ONLY, new CmdForceProfess(), "Professes a player", "<player> <class>", Permissions.FORCE)
         );

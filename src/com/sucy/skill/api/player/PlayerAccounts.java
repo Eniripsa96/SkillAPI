@@ -188,6 +188,7 @@ public class PlayerAccounts
             getActiveData().startPassives(player);
             getActiveData().updateScoreboard();
             getActiveData().updateHealthAndMana(player);
+            AttributeListener.updatePlayer(getActiveData());
             if (getActiveData().hasClass())
             {
                 getActiveData().getSkillBar().setup(player);

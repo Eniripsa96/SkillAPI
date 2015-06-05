@@ -114,8 +114,10 @@ public class BlockMechanic extends EffectComponent
                                 if ((!solid || b.getType().isSolid()) && (!air || b.getType() == Material.AIR))
                                 {
                                     boolean good = true;
-                                    for (Material mat : SkillAPI.getSettings().getFilteredBlocks()) {
-                                        if (mat == b.getType()) {
+                                    for (Material mat : SkillAPI.getSettings().getFilteredBlocks())
+                                    {
+                                        if (mat == b.getType())
+                                        {
                                             good = false;
                                             break;
                                         }

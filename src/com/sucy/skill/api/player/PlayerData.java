@@ -226,7 +226,8 @@ public final class PlayerData
         int current = getAttribute(key);
         int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
         amount = Math.min(amount, max - current);
-        if (amount > 0) {
+        if (amount > 0)
+        {
             attributes.put(key, current + amount);
         }
     }

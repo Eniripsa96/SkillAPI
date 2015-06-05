@@ -6,14 +6,11 @@ import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.RPGFilter;
-import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**

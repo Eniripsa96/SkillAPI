@@ -617,7 +617,8 @@ public class Settings
 
         filteredBlocks = new ArrayList<Material>();
         List<String> list = config.getList(SKILL_BLOCKS);
-        for (String item : list) {
+        for (String item : list)
+        {
             try
             {
                 Material mat = Material.valueOf(item.toUpperCase().replace(' ', '_'));

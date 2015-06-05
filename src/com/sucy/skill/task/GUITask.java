@@ -130,7 +130,8 @@ public class GUITask extends BukkitRunnable
                         .replace("{name}", player.getName())
                         .replace("{health}", "" + (int) player.getHealth())
                         .replace("{maxHealth}", "" + (int) player.getMaxHealth());
-                while (filtered.contains("{value:")) {
+                while (filtered.contains("{value:"))
+                {
                     int index = filtered.indexOf("{value:");
                     int end = filtered.indexOf('}', index);
                     String key = filtered.substring(index + 7, end);

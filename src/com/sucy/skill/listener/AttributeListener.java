@@ -6,7 +6,6 @@ import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.manager.AttributeManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -71,7 +70,8 @@ public class AttributeListener implements Listener
      * @param event event details
      */
     @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
+    public void onQuit(PlayerQuitEvent event)
+    {
         clearBonuses(event.getPlayer());
     }
 

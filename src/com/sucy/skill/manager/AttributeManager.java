@@ -176,7 +176,7 @@ public class AttributeManager
 
         /**
          * Retrieves the max amount the attribute can be raised to
-         * 
+         *
          * @return max attribute amount
          */
         public int getMax()

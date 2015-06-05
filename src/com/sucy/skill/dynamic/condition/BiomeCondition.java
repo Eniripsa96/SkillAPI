@@ -1,8 +1,6 @@
 package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.block.Biome;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
@@ -60,12 +58,14 @@ public class BiomeCondition extends EffectComponent
             boolean any = false;
             for (int i = 0; i < BIOMES.length; i++)
             {
-                if ((biomes & (1 << i)) != 0 && biome.contains(BIOMES[i])) {
+                if ((biomes & (1 << i)) != 0 && biome.contains(BIOMES[i]))
+                {
                     any = true;
                     break;
                 }
             }
-            if (any == inBiome) {
+            if (any == inBiome)
+            {
                 list.add(target);
             }
         }

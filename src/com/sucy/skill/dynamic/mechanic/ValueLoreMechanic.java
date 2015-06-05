@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
@@ -29,7 +30,7 @@ public class ValueLoreMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         if (targets.size() == 0 || !settings.has(KEY))
         {
@@ -38,7 +39,7 @@ public class ValueLoreMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        HashMap<String, Object> data = skill.getCastData(caster);
+        HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
 
         String regex = settings.getString(REGEX, "Damage: {value}");

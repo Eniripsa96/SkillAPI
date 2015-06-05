@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 3.30
+version: 3.31
 author: Eniripsa96
 depend: [MCCore]
 softdepend: [Vault, BetonQuest]

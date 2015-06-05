@@ -95,7 +95,6 @@ public class BarListener implements Listener
     @EventHandler
     public void onProfess(PlayerClassChangeEvent event)
     {
-
         Player p = event.getPlayerData().getPlayer();
 
         // Professing as a first class sets up the skill bar

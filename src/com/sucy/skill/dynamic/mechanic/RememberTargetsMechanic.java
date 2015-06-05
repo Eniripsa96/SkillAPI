@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
@@ -22,7 +23,7 @@ public class RememberTargetsMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         if (targets.size() == 0 || !settings.has(KEY))
         {
@@ -30,7 +31,7 @@ public class RememberTargetsMechanic extends EffectComponent
         }
 
         String key = settings.getString(KEY);
-        skill.getCastData(caster).put(key, targets);
+        DynamicSkill.getCastData(caster).put(key, targets);
         return true;
     }
 }

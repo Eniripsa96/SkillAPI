@@ -44,8 +44,7 @@ public class ActionBar
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().warning("Failed to setup Action Bar utility");
-            ex.printStackTrace();
+            Bukkit.getLogger().warning("Failed to setup Action Bar utility - not supported on pre-1.8 servers");
         }
     }
 

@@ -1,16 +1,19 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
- * Strikes lightning about each target with an offset
+ * Adds to a cast data value
  */
-public class WarpSwapMechanic extends EffectComponent
+public class ValueLocationMechanic extends EffectComponent
 {
+    private static final String KEY = "key";
+
     /**
      * Executes the component
      *
@@ -23,14 +26,14 @@ public class WarpSwapMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        if (targets.size() > 0)
+        if (!settings.has(KEY))
         {
-            Location tloc = targets.get(0).getLocation();
-            Location cloc = caster.getLocation();
-            targets.get(0).teleport(cloc);
-            caster.teleport(tloc);
-            return true;
+            return false;
         }
-        return false;
+
+        String key = settings.getString(KEY);
+        HashMap<String, Object> data = DynamicSkill.getCastData(caster);
+        data.put(key, targets.get(0).getLocation());
+        return true;
     }
 }

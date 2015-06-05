@@ -1,8 +1,10 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +12,10 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueSetMechanic extends EffectComponent
+public class ValueAttributeMechanic extends EffectComponent
 {
-    private static final String KEY   = "key";
-    private static final String VALUE = "value";
+    private static final String KEY  = "key";
+    private static final String ATTR = "attribute";
 
     /**
      * Executes the component
@@ -27,16 +29,15 @@ public class ValueSetMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        if (targets.size() == 0 || !settings.has(KEY))
+        if (!settings.has(KEY) || !settings.has(ATTR) || !(caster instanceof Player))
         {
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        double value = attr(caster, VALUE, level, 1, isSelf);
+        String attr = settings.getString(ATTR);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        data.put(key, value);
+        data.put(key, SkillAPI.getPlayerData((Player) caster).getAttribute(attr));
         return true;
     }
 }

@@ -28,7 +28,7 @@ public class SpeedMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         float multiplier = (float) attr(caster, MULTIPLIER, level, 1.2, isSelf);

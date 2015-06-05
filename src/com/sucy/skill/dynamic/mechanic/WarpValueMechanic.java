@@ -1,18 +1,19 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.api.util.FlagManager;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Applies a flag to each target
  */
-public class StatusMechanic extends EffectComponent
+public class WarpValueMechanic extends EffectComponent
 {
-    private static final String KEY      = "status";
-    private static final String DURATION = "duration";
+    private static final String KEY = "key";
 
     /**
      * Executes the component
@@ -31,14 +32,18 @@ public class StatusMechanic extends EffectComponent
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        String key = settings.getString(KEY, "stun").toLowerCase();
-        double seconds = attr(caster, DURATION, level, 3.0, isSelf);
-        int ticks = (int) (seconds * 20);
+        String key = settings.getString(KEY);
+        HashMap<String, Object> data = DynamicSkill.getCastData(caster);
+        if (!data.containsKey(key) || !(data.get(key) instanceof Location))
+        {
+            return false;
+        }
+
+        Location loc = (Location) data.get(key);
         for (LivingEntity target : targets)
         {
-            FlagManager.addFlag(target, key, ticks);
+            target.teleport(loc);
         }
-        return targets.size() > 0;
+        return true;
     }
 }

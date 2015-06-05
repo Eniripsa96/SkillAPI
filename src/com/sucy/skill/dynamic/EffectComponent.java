@@ -139,7 +139,7 @@ public abstract class EffectComponent
         }
         else
         {
-            HashMap<String, Object> map = skill.getCastData(caster);
+            HashMap<String, Object> map = DynamicSkill.getCastData(caster);
             if (map.containsKey(val))
             {
                 String mapVal = map.get(val).toString();
@@ -306,6 +306,7 @@ public abstract class EffectComponent
 
     private static final HashMap<String, Class<? extends EffectComponent>> conditions = new HashMap<String, Class<? extends EffectComponent>>()
     {{
+            put("attribute", AttributeCondition.class);
             put("biome", BiomeCondition.class);
             put("block", BlockCondition.class);
             put("chance", ChanceCondition.class);
@@ -371,6 +372,8 @@ public abstract class EffectComponent
             put("sound", SoundMechanic.class);
             put("status", StatusMechanic.class);
             put("value add", ValueAddMechanic.class);
+            put("value attribute", ValueAttributeMechanic.class);
+            put("value location", ValueLocationMechanic.class);
             put("value lore", ValueLoreMechanic.class);
             put("value multiply", ValueMultiplyMechanic.class);
             put("value set", ValueSetMechanic.class);
@@ -379,6 +382,7 @@ public abstract class EffectComponent
             put("warp random", WarpRandomMechanic.class);
             put("warp swap", WarpSwapMechanic.class);
             put("warp target", WarpTargetMechanic.class);
+            put("warp value", WarpValueMechanic.class);
             put("wolf", WolfMechanic.class);
         }};
 }

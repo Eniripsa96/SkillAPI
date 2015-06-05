@@ -340,7 +340,8 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event)
     {
-        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
+            || !(event.getEntity() instanceof LivingEntity)) return;
 
         // Damage buff application
         LivingEntity damager = ListenerUtil.getDamager(event);
@@ -377,7 +378,9 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPhysicalDamage(EntityDamageByEntityEvent event)
     {
-        if (Skill.isSkillDamage() || !(event.getEntity() instanceof LivingEntity) || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM)
+        if (Skill.isSkillDamage()
+            || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
+            || !(event.getEntity() instanceof LivingEntity) || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM)
         {
             return;
         }
@@ -396,7 +399,8 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCombat(EntityDamageByEntityEvent event)
     {
-        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) return;
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
+            || !(event.getEntity() instanceof LivingEntity)) return;
 
         if (event.getEntity() instanceof Player)
         {

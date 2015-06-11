@@ -168,7 +168,7 @@ public class PlayerSkillBar
      */
     public void toggleSlot(int slot)
     {
-        if (!isEnabled())
+        if (!isEnabled() || SkillAPI.getSettings().getLockedSlots()[slot])
         {
             return;
         }
@@ -310,7 +310,12 @@ public class PlayerSkillBar
         // Set it to a weapon slot
         if (!isWeaponSlot(player.getInventory().getHeldItemSlot()))
         {
-            player.getInventory().setHeldItemSlot(getFirstWeaponSlot());
+            int slot = getFirstWeaponSlot();
+            if (slot == -1) {
+                toggleSlot(0);
+                slot = 0;
+            }
+            player.getInventory().setHeldItemSlot(slot);
         }
 
         // Add in the skill indicators

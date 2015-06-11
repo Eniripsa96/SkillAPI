@@ -15,6 +15,7 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -109,6 +110,7 @@ public class MainListener implements Listener
         Combat.clearData(event.getPlayer());
         DynamicSkill.clearCastData(event.getPlayer());
 
+        event.getPlayer().setDisplayName(event.getPlayer().getName());
         event.getPlayer().setMaxHealth(20);
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))

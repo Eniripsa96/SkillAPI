@@ -129,7 +129,9 @@ public class GUITask extends BukkitRunnable
                         .replace("{maxMana}", "" + (int) data.getMaxMana())
                         .replace("{name}", player.getName())
                         .replace("{health}", "" + (int) player.getHealth())
-                        .replace("{maxHealth}", "" + (int) player.getMaxHealth());
+                        .replace("{maxHealth}", "" + (int) player.getMaxHealth())
+                        .replace("{attr}", "" + data.getAttributePoints())
+                        .replace("{sp}", "" + main.getPoints());
                 while (filtered.contains("{value:"))
                 {
                     int index = filtered.indexOf("{value:");

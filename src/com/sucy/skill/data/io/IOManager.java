@@ -179,6 +179,9 @@ public abstract class IOManager
                 }
                 bar.applySettings();
             }
+            if (!SkillAPI.getSettings().isSkillBarEnabled() && bar != null && bar.isEnabled()) {
+                bar.toggleEnabled();
+            }
 
             // Load combos
             DataSection combos = account.getSection(COMBOS);

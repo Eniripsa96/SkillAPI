@@ -320,6 +320,7 @@ public final class PlayerData
     public double scaleStat(String stat, double value)
     {
         AttributeManager manager = SkillAPI.getAttributeManager();
+        if (manager == null) return value;
         for (String key : manager.getKeys())
         {
             int amount = getAttribute(key);
@@ -344,6 +345,7 @@ public final class PlayerData
     public double scaleDynamic(EffectComponent component, String key, double value, boolean self)
     {
         AttributeManager manager = SkillAPI.getAttributeManager();
+        if (manager == null) return value;
         for (String attr : manager.getKeys())
         {
             int amount = getAttribute(attr);

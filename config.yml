@@ -161,6 +161,8 @@ GUI:
   #   {mana}        - the player's current mana
   #   {maxMana}     - the player's max mana
   #   {name}        - the name of the player
+  #   {attr}        - the player's attribute points
+  #   {sp}          - the player's main class skill points
   #   {value:<key>} - a skill value
   action-bar-text: '{combo}'
   #

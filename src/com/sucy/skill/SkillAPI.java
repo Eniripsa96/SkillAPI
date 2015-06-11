@@ -571,7 +571,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @param player player to unload data for
      */
-    public static void unloadPlayerData(Player player)
+    public static void unloadPlayerData(OfflinePlayer player)
     {
         if (singleton == null || player == null)
         {

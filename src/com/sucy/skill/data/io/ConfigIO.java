@@ -60,7 +60,7 @@ public class ConfigIO extends IOManager
     @Override
     public void saveData(PlayerAccounts data)
     {
-        CommentedConfig config = new CommentedConfig(api, "players/" + new VersionPlayer(data.getPlayer()).getIdString());
+        CommentedConfig config = new CommentedConfig(api, "players/" + new VersionPlayer(data.getPlayerName()).getIdString());
         config.clear();
 
         DataSection file = save(data);

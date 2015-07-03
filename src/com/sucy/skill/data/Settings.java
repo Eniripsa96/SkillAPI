@@ -259,7 +259,9 @@ public class Settings
             else if (target instanceof Monster)
             {
                 if (monsterEnemy)
+                {
                     return true;
+                }
             }
             else if (target instanceof Player)
             {

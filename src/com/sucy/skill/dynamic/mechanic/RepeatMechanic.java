@@ -64,7 +64,13 @@ public class RepeatMechanic extends EffectComponent
         @Override
         public void run()
         {
-            if (!skill.isActive(caster))
+            for (int i = 0; i < targets.size(); i++) {
+                if (targets.get(i).isDead() || !targets.get(i).isValid()) {
+                    targets.remove(i);
+                }
+            }
+
+            if (!skill.isActive(caster) || targets.size() == 0)
             {
                 cancel();
                 return;

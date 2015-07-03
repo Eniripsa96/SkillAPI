@@ -161,6 +161,7 @@ public class PlayerAccounts
         Player player = getPlayer();
         if (player == null || id == active)
         {
+            active = id;
             return;
         }
         if (id <= getAccountLimit() && id > 0 && !classData.containsKey(id))

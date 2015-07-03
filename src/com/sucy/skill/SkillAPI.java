@@ -49,6 +49,7 @@ import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -571,15 +572,23 @@ public class SkillAPI extends JavaPlugin
      *
      * @param player player to unload data for
      */
-    public static void unloadPlayerData(OfflinePlayer player)
+    public static void unloadPlayerData(final OfflinePlayer player)
     {
-        if (singleton == null || player == null)
+        if (singleton == null || player == null || !singleton.players.containsKey(new VersionPlayer(player).getIdString()))
         {
             return;
         }
-        PlayerAccounts accounts = getPlayerAccountData(player);
-        singleton.io.saveData(accounts);
-        singleton.players.remove(new VersionPlayer(player).getIdString());
+
+        singleton.getServer().getScheduler().runTaskAsynchronously(singleton, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                PlayerAccounts accounts = getPlayerAccountData(player);
+                singleton.io.saveData(accounts);
+                singleton.players.remove(new VersionPlayer(player).getIdString());
+            }
+        });
     }
 
     /**

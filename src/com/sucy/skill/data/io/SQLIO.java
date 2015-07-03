@@ -116,11 +116,6 @@ public class SQLIO extends IOManager
 
     private void saveSingle(PlayerAccounts data)
     {
-        if (data.getPlayer() == null)
-        {
-            return;
-        }
-
         DataSection file = save(data);
 
         String playerKey = new VersionPlayer(data.getPlayer()).getIdString();

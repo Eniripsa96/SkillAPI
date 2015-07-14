@@ -61,7 +61,6 @@ public class ClassBoardManager
      */
     public static void update(PlayerData player, String prefix, ChatColor braceColor)
     {
-
         // Give a chat prefix
         Chat.getPlayerData(player.getPlayerName()).setPluginPrefix(
                 new Prefix("SkillAPI", prefix, braceColor)

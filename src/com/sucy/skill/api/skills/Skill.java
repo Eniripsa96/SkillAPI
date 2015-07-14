@@ -394,6 +394,7 @@ public abstract class Skill
                     Object nextValue = getAttr(attr, Math.min(skillData.getLevel() + 1, maxLevel));
                     if (attr.equals("level") || attr.equals("cost"))
                     {
+                        nextValue = Math.floor((Float)nextValue);
                         currValue = nextValue;
                     }
 

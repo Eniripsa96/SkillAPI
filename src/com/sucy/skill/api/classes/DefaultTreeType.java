@@ -12,6 +12,7 @@ public enum DefaultTreeType implements TreeType
     BASIC_VERTICAL,
     LEVEL_HORIZONTAL,
     LEVEL_VERTICAL,
+    FLOOD,
     REQUIREMENT;
 
     /**
@@ -31,6 +32,8 @@ public enum DefaultTreeType implements TreeType
                 return new LevelHorizontalTree(api, parent);
             case LEVEL_VERTICAL:
                 return new LevelVerticalTree(api, parent);
+            case FLOOD:
+                return new FloodTree(api, parent);
             case REQUIREMENT:
                 return new RequirementTree(api, parent);
             default:

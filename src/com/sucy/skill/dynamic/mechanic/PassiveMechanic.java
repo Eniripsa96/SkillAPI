@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
@@ -50,7 +51,7 @@ public class PassiveMechanic extends EffectComponent
             this.caster = caster;
             this.level = level;
 
-            runTaskTimer(Bukkit.getPluginManager().getPlugin("SkillAPI"), 0, period);
+            SkillAPI.schedule(this, 0, period);
         }
 
         @Override

@@ -358,6 +358,7 @@ public abstract class EffectComponent
             put("mana", ManaMechanic.class);
             put("message", MessageMechanic.class);
             put("particle", ParticleMechanic.class);
+            put("particle animation", ParticleAnimationMechanic.class);
             put("particle projectile", ParticleProjectileMechanic.class);
             put("passive", PassiveMechanic.class);
             put("permission", PermissionMechanic.class);

@@ -1,5 +1,6 @@
 package com.sucy.skill.task;
 
+import com.sucy.skill.SkillAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,7 +22,7 @@ public class RemoveTask extends BukkitRunnable
     public RemoveTask(LivingEntity entity, int ticks)
     {
         this.entity = entity;
-        runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), ticks);
+        SkillAPI.schedule(this, ticks);
     }
 
     /**

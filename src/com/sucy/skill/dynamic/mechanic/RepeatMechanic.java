@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -58,7 +59,7 @@ public class RepeatMechanic extends EffectComponent
             this.level = level;
             this.count = count;
 
-            runTaskTimer(Bukkit.getPluginManager().getPlugin("SkillAPI"), delay, period);
+            SkillAPI.schedule(this, delay, period);
         }
 
         @Override

@@ -45,12 +45,14 @@ import com.sucy.skill.hook.beton.BetonUtil;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
 import com.sucy.skill.task.*;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -733,6 +735,31 @@ public class SkillAPI extends JavaPlugin
         for (RPGClass rpgClass : classes)
         {
             addClass(rpgClass);
+        }
+    }
+
+    /**
+     * Schedules a delayed task
+     *
+     * @param runnable the task to schedule
+     * @param delay    the delay in ticks
+     */
+    public static void schedule(BukkitRunnable runnable, int delay) {
+        if (singleton != null) {
+            runnable.runTaskLater(singleton, delay);
+        }
+    }
+
+    /**
+     * Schedules a repeating task
+     *
+     * @param runnable the task to schedule
+     * @param delay    the delay in ticks before the first tick
+     * @param period   how often to run in ticks
+     */
+    public static void schedule(BukkitRunnable runnable, int delay, int period) {
+        if (singleton != null) {
+            runnable.runTaskTimer(singleton, delay, period);
         }
     }
 }

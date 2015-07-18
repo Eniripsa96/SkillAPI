@@ -118,7 +118,7 @@ public class SQLIO extends IOManager
     {
         DataSection file = save(data);
 
-        String playerKey = new VersionPlayer(data.getPlayer()).getIdString();
+        String playerKey = new VersionPlayer(data.getPlayerName()).getIdString();
         table.createEntry(playerKey).set(DATA, file.toString());
     }
 }

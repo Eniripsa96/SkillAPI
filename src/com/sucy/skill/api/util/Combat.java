@@ -1,5 +1,6 @@
 package com.sucy.skill.api.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class Combat
      */
     public static boolean isInCombat(Player player, double seconds)
     {
-        return timers.containsKey(player.getName()) && System.currentTimeMillis() - timers.get(player.getName()) < seconds;
+        return timers.containsKey(player.getName()) && System.currentTimeMillis() - timers.get(player.getName()) < seconds * 1000;
     }
 
     /**

@@ -44,6 +44,7 @@ public class ClassCondition extends Condition
         Player player = PlayerConverter.getPlayer(playerID);
         PlayerData data = SkillAPI.getPlayerData(player);
         
+        
         //Return true if the player is the Class specified
         if (data.isClass(SkillAPI.getClass(classcheck))) return true;
             

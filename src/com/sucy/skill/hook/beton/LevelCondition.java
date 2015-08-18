@@ -1,44 +1,53 @@
 package com.sucy.skill.hook.beton;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.entity.Player;
 import pl.betoncraft.betonquest.api.Condition;
 import pl.betoncraft.betonquest.utils.PlayerConverter;
 
 import java.util.HashMap;
+import pl.betoncraft.betonquest.InstructionParseException;
 
 /**
- * Beton Quest condition for a player being a certain level
+ * Beton Quest condition for a player being a specific class in the format
+ * 'Class name'
+ *
+ * For example, the condition would look like is_cleric: Class Cleric
  */
-public class LevelCondition extends Condition
-{
-    private static final String LEVEL = "level";
-    private static final String GROUP = "group";
-    private static final String MIN   = "min";
+public class SkillCondition extends Condition {
 
-    String group;
-    int    level;
-    boolean min = false;
+    String skillName = "";
 
-    public LevelCondition(String playerID, String instructions)
-    {
+    public SkillCondition(String playerID, String instructions) throws InstructionParseException {
         super(playerID, instructions);
-        HashMap<String, Object> data = BetonUtil.parse(instructions, LEVEL, MIN, GROUP);
 
-        group = data.get(GROUP).toString();
-        level = Integer.parseInt(data.get(LEVEL).toString());
-        min = data.get(MIN).toString().equalsIgnoreCase("true");
+        String[] parts = instructions.split(" ");
+        if (parts.length < 2) {
+            throw new InstructionParseException("Skill Condition: Skill name name... name");
+        }
+
+        for (int i = 1; i < parts.length; i++) {
+            if (i == 1) {
+                skillName += parts[i];
+            } else {
+                skillName += " " + parts[i];
+            }
+        }
+
     }
 
     @Override
-    public boolean isMet()
-    {
+    public boolean check(String playerID) {
+
         Player player = PlayerConverter.getPlayer(playerID);
         PlayerData data = SkillAPI.getPlayerData(player);
-        PlayerClass playerClass = data.getClass(group);
-        if (playerClass == null) playerClass = data.getMainClass();
-        return playerClass != null && ((level == playerClass.getLevel()) || ((playerClass.getLevel() > level) == min));
+
+        if (data.getSkill(skillName) != null) {
+            return true;
+        }
+
+        return false;
     }
+
 }

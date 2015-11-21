@@ -9,6 +9,7 @@ import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.data.Settings;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 

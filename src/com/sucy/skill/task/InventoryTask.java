@@ -4,6 +4,7 @@ import com.rit.sucy.config.FilterType;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.ErrorNodes;
+import java.util.Collection;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -52,7 +53,9 @@ public class InventoryTask extends BukkitRunnable
     @Override
     public void run()
     {
-        Player[] players = plugin.getServer().getOnlinePlayers();
+        Collection<? extends Player> playerCollection = plugin.getServer().getOnlinePlayers();
+        Player[] players = playerCollection.toArray(new Player[playerCollection.size()]);
+        
         for (int i = 0; i < playersPerCheck; i++)
         {
             if (!getNextPlayer(players)) return;
@@ -188,7 +191,9 @@ public class InventoryTask extends BukkitRunnable
         // Limit the index
         if (index >= players.length)
         {
-            players = plugin.getServer().getOnlinePlayers();
+            Collection<? extends Player> playerCollection = plugin.getServer().getOnlinePlayers();
+            
+            players = playerCollection.toArray(new Player[playerCollection.size()]);
             index = 0;
         }
 

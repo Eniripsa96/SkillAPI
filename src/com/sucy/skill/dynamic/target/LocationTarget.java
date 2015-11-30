@@ -8,6 +8,8 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import org.bukkit.Material;
 
 /**
  * Applies child components to a location using the caster's faced direction
@@ -36,7 +38,7 @@ public class LocationTarget extends EffectComponent
         for (LivingEntity t : targets)
         {
             Location loc;
-            Block b = t.getTargetBlock(null, (int) Math.ceil(range));
+            Block b = t.getTargetBlock((Set<Material>) null, (int) Math.ceil(range));
             if (b == null && !groundOnly)
             {
                 loc = t.getLocation().add(t.getLocation().getDirection().multiply(range));

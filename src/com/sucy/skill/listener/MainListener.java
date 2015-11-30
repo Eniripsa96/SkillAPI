@@ -15,6 +15,7 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -26,7 +27,6 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * The main listener for SkillAPI  that handles general mechanics
@@ -278,21 +278,11 @@ public class MainListener implements Listener
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event)
     {
-        final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        
+        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             data.startPassives(event.getPlayer());
         }
-        
-        new BukkitRunnable()
-        {
-            @Override
-            public void run()
-            {
-                data.updateScoreboard();
-            }
-        }.runTaskLater(plugin, 2);
     }
 
     /**

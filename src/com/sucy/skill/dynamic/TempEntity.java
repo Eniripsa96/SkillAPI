@@ -13,6 +13,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 /**
  * Temporary dummy entity used for targeting a location in the dynamic system
@@ -617,5 +620,124 @@ public class TempEntity implements LivingEntity
     public <T extends Projectile> T launchProjectile(Class<? extends T> aClass, Vector vector)
     {
         return null;
+    }
+
+    @Override
+    public List<Block> getLineOfSight(Set<Material> transparent, int maxDistance) {
+        return null;
+    }
+
+    @Override
+    public Block getTargetBlock(Set<Material> transparent, int maxDistance) 
+    {
+        return null;
+    }
+
+    @Override
+    public List<Block> getLastTwoTargetBlocks(Set<Material> transparent, int maxDistance) 
+    {
+        return null;
+    }
+
+    @Override
+    public Spigot spigot() 
+    {
+        return null;
+    }
+
+    @Override
+    public void sendMessage(String message) 
+    {
+        
+    }
+
+    @Override
+    public void sendMessage(String[] messages) 
+    {
+        
+    }
+
+    @Override
+    public String getName() 
+    {
+        return "TempEntity";
+    }
+
+    @Override
+    public boolean isPermissionSet(String name) 
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isPermissionSet(Permission perm) 
+    {
+        return false;
+    }
+
+    @Override
+    public boolean hasPermission(String name) 
+    {
+        return false;
+    }
+
+    @Override
+    public boolean hasPermission(Permission perm) 
+    {
+        return false;
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value) 
+    {
+        return null;
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin) 
+    {
+        return null;
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks) 
+    {
+        return null;
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin, int ticks) 
+    {
+        return null;
+    }
+
+    @Override
+    public void removeAttachment(PermissionAttachment attachment) 
+    {
+        
+    }
+
+    @Override
+    public void recalculatePermissions() 
+    {
+    
+    }
+
+    @Override
+    public Set<PermissionAttachmentInfo> getEffectivePermissions() 
+    {
+        return null;
+    }
+
+    @Override
+    public boolean isOp() 
+    {
+        return false;
+    }
+
+    @Override
+    public void setOp(boolean value) 
+    {
+        
     }
 }

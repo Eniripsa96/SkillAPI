@@ -502,7 +502,8 @@ public final class PlayerData
     {
         PlayerSkill data = skills.get(skill.getKey());
         if (data == null) return;
-
+        if (!SkillAPI.isLoaded()) return; 
+        
         int lastLevel = data.getLevel();
         while (data.getData().canAutoLevel() && !data.isMaxed() && data.getLevelReq() <= data.getPlayerClass().getLevel())
         {

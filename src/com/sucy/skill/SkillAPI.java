@@ -24,6 +24,17 @@
 
 package com.sucy.skill;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import com.rit.sucy.config.CommentedLanguageConfig;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
@@ -41,22 +52,26 @@ import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.gui.Menu;
 import com.sucy.skill.hook.PluginChecker;
-import com.sucy.skill.hook.beton.BetonUtil;
-import com.sucy.skill.listener.*;
-import com.sucy.skill.manager.*;
-import com.sucy.skill.task.*;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.sucy.skill.listener.AttributeListener;
+import com.sucy.skill.listener.BarListener;
+import com.sucy.skill.listener.CastListener;
+import com.sucy.skill.listener.ClickListener;
+import com.sucy.skill.listener.ItemListener;
+import com.sucy.skill.listener.MainListener;
+import com.sucy.skill.listener.MechanicListener;
+import com.sucy.skill.listener.StatusListener;
+import com.sucy.skill.listener.TreeListener;
+import com.sucy.skill.manager.AttributeManager;
+import com.sucy.skill.manager.ClassBoardManager;
+import com.sucy.skill.manager.CmdManager;
+import com.sucy.skill.manager.ComboManager;
+import com.sucy.skill.manager.RegistrationManager;
+import com.sucy.skill.manager.ResourceManager;
+import com.sucy.skill.task.CooldownTask;
+import com.sucy.skill.task.GUITask;
+import com.sucy.skill.task.InventoryTask;
+import com.sucy.skill.task.ManaTask;
+import com.sucy.skill.task.SaveTask;
 
 /**
  * <p>The main class of the plugin which has the accessor methods into most of the API.</p>
@@ -128,12 +143,6 @@ public class SkillAPI extends JavaPlugin
         if (settings.isAttributesEnabled())
         {
             attributeManager = new AttributeManager(this);
-        }
-
-        // Beton Quest hook
-        if (PluginChecker.isBetonActive())
-        {
-            BetonUtil.register();
         }
 
         // Load classes and skills

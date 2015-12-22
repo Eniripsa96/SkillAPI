@@ -155,6 +155,7 @@ public class SkillAPI extends JavaPlugin
         for (Player player : getServer().getOnlinePlayers())
         {
             PlayerData data = loadPlayerData(player).getActiveData();
+            AttributeListener.updatePlayer(data);
             data.updateHealthAndMana(player);
             data.updateScoreboard();
         }

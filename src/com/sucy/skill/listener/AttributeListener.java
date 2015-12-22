@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +75,17 @@ public class AttributeListener implements Listener
     {
         clearBonuses(event.getPlayer());
     }
+    
+    /**
+     * Gives players bonus stats on respawn
+     *
+     * @param event event details
+     */
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onRespawn(PlayerRespawnEvent event)
+	{
+	    updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
+	}
 
     /**
      * Applies health and mana bonus attributes

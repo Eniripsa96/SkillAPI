@@ -73,10 +73,6 @@ import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.task.SaveTask;
 
-import be.maximvdw.tab.api.PlaceholderAPI;
-import be.maximvdw.tab.api.PlaceholderAPI.PlaceholderRequestEvent;
-import be.maximvdw.tab.api.PlaceholderAPI.PlaceholderRequestEventHandler;
-
 /**
  * <p>The main class of the plugin which has the accessor methods into most of the API.</p>
  * <p>You can retrieve a reference to this through Bukkit the same way as any other plugin.</p>
@@ -213,9 +209,6 @@ public class SkillAPI extends JavaPlugin
             saveTask = new SaveTask(this);
         }
         guiTask = new GUITask(this);
-        
-        // Register placeholders
-        this.registerPlaceholders();
 
         loaded = true;
     }
@@ -778,30 +771,6 @@ public class SkillAPI extends JavaPlugin
         if (singleton != null) {
             runnable.runTaskTimer(singleton, delay, period);
         }
-    }
-    
-    private void registerPlaceholders() {
-    	PlaceholderAPI.registerOfflinePlaceholder("skillapi_mainclass_name", true,
-                new PlaceholderRequestEventHandler() {
-                    @Override
-                    public String onPlaceholderRequest(PlaceholderRequestEvent e) {
-                    	PlayerData data = SkillAPI.getPlayerData(e.getPlayer());
-                    	if (data.hasClass())
-                    		return SkillAPI.getPlayerData(e.getPlayer()).getMainClass().getData().getName();
-                    	else return "aucune";
-                    }
-                });
-    	
-    	PlaceholderAPI.registerOfflinePlaceholder("skillapi_mainclass_level", true,
-            new PlaceholderRequestEventHandler() {
-                @Override
-                public String onPlaceholderRequest(PlaceholderRequestEvent e) {
-                	PlayerData data = SkillAPI.getPlayerData(e.getPlayer());
-                	if (data.hasClass())
-                		return Integer.toString(SkillAPI.getPlayerData(e.getPlayer()).getMainClass().getLevel());
-                	else return "-";
-                }
-            });
     }
     
 }

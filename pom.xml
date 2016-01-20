@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sucy</groupId>
   <artifactId>SkillAPI</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>3.37</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -27,6 +27,10 @@
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/groups/public</url>
     </repository>
+    <repository>
+      <id>vault-repo</id>
+      <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+    </repository>
   </repositories>
   
   <dependencies>
@@ -39,6 +43,11 @@
       <groupId>com.rit.sucy</groupId>
       <artifactId>MCCore</artifactId>
       <version>1.39</version>
+    </dependency>
+    <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>VaultAPI</artifactId>
+      <version>1.5</version>
     </dependency>
   </dependencies>
 </project>

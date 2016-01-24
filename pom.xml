@@ -22,6 +22,17 @@
     </plugins>
   </build>
   
+  <distributionManagement>
+    <repository>
+      <id>falistos-nexus</id>
+      <url>http://repo.falistos.ovh/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>falistos-nexus</id>
+      <url>http://repo.falistos.ovh/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+  
   <repositories>
     <repository>
       <id>bukkit-repo</id>

@@ -1137,6 +1137,12 @@ public final class PlayerData
         {
             health = 20;
         }
+        
+        PlayerHealthUpdateEvent event = new PlayerHealthUpdateEvent(this, health);
+        Bukkit.getPluginManager().callEvent(event);
+        
+        health = event.getHealth();
+        
         if (SkillAPI.getSettings().isModifyHealth())
             VersionManager.setMaxHealth(player, health);
         mana = Math.min(mana, maxMana);

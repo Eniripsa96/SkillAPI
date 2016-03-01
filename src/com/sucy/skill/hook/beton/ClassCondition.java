@@ -3,6 +3,7 @@ package com.sucy.skill.hook.beton;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.entity.Player;
+import pl.betoncraft.betonquest.InstructionParseException;
 import pl.betoncraft.betonquest.api.Condition;
 import pl.betoncraft.betonquest.utils.PlayerConverter;
 
@@ -19,9 +20,10 @@ public class ClassCondition extends Condition
     String[] classes;
     boolean exact = false;
 
-    public ClassCondition(String playerID, String instructions)
+    public ClassCondition(String packName, String instructions)
+            throws InstructionParseException
     {
-        super(playerID, instructions);
+        super(packName, instructions);
         HashMap<String, Object> data = BetonUtil.parse(instructions, CLASSES, EXACT);
 
         classes = BetonUtil.asArray(data, CLASSES);
@@ -29,7 +31,7 @@ public class ClassCondition extends Condition
     }
 
     @Override
-    public boolean isMet()
+    public boolean check(String playerID)
     {
         Player player = PlayerConverter.getPlayer(playerID);
         PlayerData data = SkillAPI.getPlayerData(player);

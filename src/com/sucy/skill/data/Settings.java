@@ -737,6 +737,7 @@ public class Settings
     private boolean showClassName;
     private boolean showClassLevel;
     private boolean showMapTree;
+    private boolean showTree;
 
     /**
      * Checks whether or not old health bars (fixed 10 hearts) are enabled
@@ -830,6 +831,10 @@ public class Settings
         return showMapTree;
     }
 
+    public boolean isMapTreeAvailable() {
+        return showTree;
+    }
+
     private void loadGUISettings()
     {
         oldHealth = config.getBoolean(GUI_OLD);
@@ -840,7 +845,8 @@ public class Settings
         showScoreboard = config.getBoolean(GUI_BOARD);
         showClassName = config.getBoolean(GUI_NAME);
         showClassLevel = config.getBoolean(GUI_LEVEL);
-        showMapTree = config.getBoolean(GUI_MAP);
+        showMapTree = config.getString(GUI_MAP).equalsIgnoreCase("TRUE");
+        showTree = showMapTree || config.getString(GUI_MAP).equalsIgnoreCase("PARTIAL");
     }
 
     ///////////////////////////////////////////////////////

@@ -4,7 +4,6 @@ import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.text.TextFormatter;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,7 +51,9 @@ public class CmdLore implements IFunction
             ItemMeta meta = held.getItemMeta();
             List<String> lore = meta.getLore();
             if (lore == null) lore = new ArrayList<String>();
-            lore.add(TextFormatter.colorString(StringUtils.join(args, " ")));
+            String combined = args[0];
+            for (int i = 1; i < args.length; i++) combined += " " + args[i];
+            lore.add(TextFormatter.colorString(combined));
             meta.setLore(lore);
             held.setItemMeta(meta);
 

@@ -74,6 +74,9 @@ public class CmdManager
             root.addSubCommand(new ConfigurableCommand(api, "ap", SenderType.ANYONE, new CmdAP(), "Gives attrib points", "[player] <amount>", Permissions.ATTRIB));
             root.addSubCommand(new ConfigurableCommand(api, "attr", SenderType.PLAYER_ONLY, new CmdAttribute(), "Opens attribute menu", "", Permissions.BASIC));
         }
+        if (SkillAPI.getSettings().isMapTreeAvailable() && !SkillAPI.getSettings().isMapTreeEnabled()) {
+            root.addSubCommand(new ConfigurableCommand(api, "skillmap", SenderType.PLAYER_ONLY, new CmdSkillMap(), "Alternate skill list", "", Permissions.BASIC));
+        }
         CommandManager.registerCommand(root);
     }
 

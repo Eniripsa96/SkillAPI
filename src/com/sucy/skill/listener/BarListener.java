@@ -4,6 +4,7 @@ import com.rit.sucy.gui.MapData;
 import com.rit.sucy.gui.MapMenu;
 import com.rit.sucy.gui.MapMenuManager;
 import com.rit.sucy.items.InventoryManager;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillDowngradeEvent;
@@ -47,7 +48,7 @@ public class BarListener implements Listener
     {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        for (Player player : plugin.getServer().getOnlinePlayers())
+        for (Player player : VersionManager.getOnlinePlayers())
         {
             PlayerData data = SkillAPI.getPlayerData(player);
             if (data.hasClass())

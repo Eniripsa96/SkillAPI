@@ -1,5 +1,6 @@
 package com.sucy.skill.task;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.entity.Player;
@@ -33,7 +34,7 @@ public class ManaTask extends BukkitRunnable
      */
     public void run()
     {
-        for (Player player : plugin.getServer().getOnlinePlayers())
+        for (Player player : VersionManager.getOnlinePlayers())
         {
             PlayerData data = SkillAPI.getPlayerData(player);
             data.regenMana();

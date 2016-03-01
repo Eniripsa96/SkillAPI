@@ -25,6 +25,7 @@
 package com.sucy.skill;
 
 import com.rit.sucy.config.CommentedLanguageConfig;
+import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerAccounts;
@@ -143,7 +144,7 @@ public class SkillAPI extends JavaPlugin
         settings.loadGroupSettings();
 
         // Load player data
-        for (Player player : getServer().getOnlinePlayers())
+        for (Player player : VersionManager.getOnlinePlayers())
         {
             PlayerData data = loadPlayerData(player).getActiveData();
             data.updateHealthAndMana(player);
@@ -156,11 +157,11 @@ public class SkillAPI extends JavaPlugin
         new MainListener(this);
         new MechanicListener(this);
         new StatusListener(this);
-        if (settings.isMapTreeEnabled())
+        if (settings.isMapTreeAvailable())
         {
             Menu.initialize(this);
         }
-        else
+        if (!settings.isMapTreeEnabled())
         {
             new TreeListener(this);
         }
@@ -248,7 +249,7 @@ public class SkillAPI extends JavaPlugin
         ClassBoardManager.clearAll();
 
         // Clear skill bars and stop passives before disabling
-        for (Player player : getServer().getOnlinePlayers())
+        for (Player player : VersionManager.getOnlinePlayers())
         {
             player.setMaxHealth(20);
             getPlayerData(player).stopPassives(player);

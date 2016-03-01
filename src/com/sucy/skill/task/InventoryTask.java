@@ -1,6 +1,7 @@
 package com.sucy.skill.task;
 
 import com.rit.sucy.config.FilterType;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.ErrorNodes;
@@ -52,7 +53,7 @@ public class InventoryTask extends BukkitRunnable
     @Override
     public void run()
     {
-        Player[] players = plugin.getServer().getOnlinePlayers();
+        Player[] players = VersionManager.getOnlinePlayers();
         for (int i = 0; i < playersPerCheck; i++)
         {
             if (!getNextPlayer(players)) return;
@@ -188,7 +189,7 @@ public class InventoryTask extends BukkitRunnable
         // Limit the index
         if (index >= players.length)
         {
-            players = plugin.getServer().getOnlinePlayers();
+            players = VersionManager.getOnlinePlayers();
             index = 0;
         }
 

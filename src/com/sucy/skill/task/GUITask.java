@@ -1,6 +1,7 @@
 package com.sucy.skill.task;
 
 import com.rit.sucy.text.TextFormatter;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
@@ -68,7 +69,7 @@ public class GUITask extends BukkitRunnable
     @Override
     public void run()
     {
-        for (Player player : Bukkit.getServer().getOnlinePlayers())
+        for (Player player : VersionManager.getOnlinePlayers())
         {
             if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld())) continue;
 

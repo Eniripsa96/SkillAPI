@@ -1,5 +1,6 @@
 package com.sucy.skill.task;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class CooldownTask extends BukkitRunnable
     @Override
     public void run()
     {
-        for (Player player : Bukkit.getServer().getOnlinePlayers())
+        for (Player player : VersionManager.getOnlinePlayers())
         {
             PlayerData data = SkillAPI.getPlayerData(player);
             if (data.hasClass())

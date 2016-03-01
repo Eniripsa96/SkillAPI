@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public class LocationTarget extends EffectComponent
 {
     private static final String RANGE  = "range";
     private static final String GROUND = "ground";
+
+    private static final HashSet<Byte> NULL_SET = null;
 
     /**
      * Executes the component
@@ -36,7 +39,7 @@ public class LocationTarget extends EffectComponent
         for (LivingEntity t : targets)
         {
             Location loc;
-            Block b = t.getTargetBlock(null, (int) Math.ceil(range));
+            Block b = t.getTargetBlock(NULL_SET, (int) Math.ceil(range));
             if (b == null && !groundOnly)
             {
                 loc = t.getLocation().add(t.getLocation().getDirection().multiply(range));

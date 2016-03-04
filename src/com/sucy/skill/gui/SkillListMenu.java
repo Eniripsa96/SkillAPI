@@ -1,13 +1,11 @@
 package com.sucy.skill.gui;
 
-import com.rit.sucy.gui.MapBuffer;
-import com.rit.sucy.gui.MapMenu;
-import com.rit.sucy.gui.MapMenuManager;
-import com.rit.sucy.gui.MapScheme;
+import com.rit.sucy.gui.*;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -16,12 +14,29 @@ import java.util.HashMap;
 
 public class SkillListMenu extends MapMenu
 {
-    private static HashMap<String, MenuData> menuData = new HashMap<String, MenuData>();
+    // Player data keys
+    private static final String SELECTION = "sapi_skill";
+    private static final String AVAILABLE = "sapi_available";
 
+    // Scene keys
+    private static final String PLATE = "plate";
+    private static final String NAME = "name";
+    private static final String SELECTOR = "selector";
+    private static final String TITLE = "title";
+
+    /**
+     * Gets the selected skill of a player
+     *
+     * @param player player to get the selection of
+     * @return player's selection or null if hasn't selected one
+     */
     public static PlayerSkill getSkill(Player player)
     {
-        MenuData data = menuData.get(player.getName());
-        return data == null ? null : data.skills.get(data.id);
+        Object skill = getData(player, SELECTION);
+        ArrayList<PlayerSkill> list = getSkills(player);
+
+        if (skill == null || list == null) return null;
+        return list.get((Integer) skill);
     }
 
     private SkillAPI api;
@@ -42,30 +57,52 @@ public class SkillListMenu extends MapMenu
      */
     private void move(Player player, int i)
     {
-        MenuData data = menuData.get(player.getName());
+        int id = getId(player);
+        int scroll = getScroll(player);
+        int skills = getSkills(player).size();
 
-        data.id += i;
-        if (data.id < 0)
+        id += i;
+        if (id < 0)
         {
-            data.id = 0;
-            data.scroll = 0;
+            id = 0;
+            scroll = 0;
         }
-        if (data.id >= data.skills.size())
+        if (id >= skills)
         {
-            data.id = data.skills.size() - 1;
-            data.scroll = data.id - 3;
+            id = skills - 1;
+            scroll = id - 3;
         }
 
-        while (data.id - data.scroll <= 0 && data.id > 0)
+        while (id - scroll <= 0 && id > 0)
         {
-            data.scroll--;
-            data.smooth = 20;
+            scroll--;
         }
-        while (data.id - data.scroll >= 3 && data.id < data.skills.size() - 1)
+        while (id - scroll >= 3 && id < skills - 1)
         {
-            data.scroll++;
-            data.smooth = -20;
+            scroll++;
         }
+
+        setSelection(player, id, scroll);
+        setData(player, SELECTION, id);
+    }
+
+    private static int getId(Player player) {
+        return getSelection(player) & 0xff;
+    }
+
+    private static int getScroll(Player player) {
+        return getSelection(player) >> 8;
+    }
+
+    private static void setSelection(Player player, int id, int scroll)
+    {
+        setSelection(player, id | (scroll << 8));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static ArrayList<PlayerSkill> getSkills(Player player) {
+        Object list = getData(player, AVAILABLE);
+        return list == null ? null : (ArrayList<PlayerSkill>)list;
     }
 
     /**
@@ -99,7 +136,6 @@ public class SkillListMenu extends MapMenu
     public void onLeft(Player player)
     {
         move(player, -4);
-        menuData.get(player.getName()).smooth = 0;
     }
 
     /**
@@ -111,7 +147,6 @@ public class SkillListMenu extends MapMenu
     public void onRight(Player player)
     {
         move(player, 4);
-        menuData.get(player.getName()).smooth = 0;
     }
 
     /**
@@ -122,59 +157,59 @@ public class SkillListMenu extends MapMenu
     @Override
     public void onSelect(Player player)
     {
-        SkillDetailMenu.init(player);
         MapMenuManager.sendNext(player, Menu.DETAIL_MENU);
+    }
+
+    /**
+     * Gets the player ready for the menu
+     *
+     * @param player player to prepare for the menu
+     */
+    @Override
+    public void setup(Player player)
+    {
+        MapScheme scheme = MapScheme.get(api, SkillAPI.getPlayerData(player).getScheme());
+
+        MapScene scene = getScene(player);
+        PlayerData playerData = SkillAPI.getPlayerData(player);
+        ArrayList<PlayerSkill> skills = new ArrayList<PlayerSkill>();
+        for (PlayerSkill skill : playerData.getSkills())
+        {
+            if (skill.getPlayerClass().getData().getSkillTree().canShow(player, skill.getData()))
+            {
+                int id = skills.size();
+                skills.add(skill);
+
+                scene.add(PLATE + id, new MapObject(scheme.getImage(Menu.NAMEPLATE), 0, 0));
+                scene.add(NAME + id, new MapObject(new MapString(scheme.getFont(Menu.LIST), scheme.getColor(Menu.FONT), skill.getData().getName()), 0, 0));
+            }
+        }
+        scene.add(SELECTOR, new MapObject(scheme.getImage(Menu.SELECTOR), 0, 0));
+        scene.add(TITLE, new MapObject(scheme.getImage(Menu.TITLE), 0, 0));
+
+        setSelection(player, 0);
+        setData(player, AVAILABLE, skills);
+        setData(player, SELECTION, 0);
     }
 
     @Override
     public void render(MapBuffer mapBuffer, Player player)
     {
-        if (!menuData.containsKey(player.getName()))
-        {
-            menuData.put(player.getName(), new MenuData(player, SkillAPI.getPlayerData(player)));
-        }
-        MenuData data = menuData.get(player.getName());
-        MapScheme scheme = MapScheme.get(api, SkillAPI.getPlayerData(player).getScheme());
+        MapScene scene = getScene(player);
 
-        // Clear the buffer
-        mapBuffer.clear();
-
-        if (data.smooth < 0) data.smooth += 2;
-        if (data.smooth > 0) data.smooth -= 2;
+        int id = getId(player);
+        int scroll = getScroll(player);
+        ArrayList<PlayerSkill> skills = getSkills(player);
 
         // Draw skill list
-        for (int i = Math.max(0, data.scroll - 1); i < data.scroll + 5 && i < data.skills.size(); i++)
+        for (int i = Math.max(0, scroll - 1); i < scroll + 5 && i < skills.size(); i++)
         {
-            Skill skill = data.skills.get(i).getData();
-            int y = (i - data.scroll) * 20 + 36 - data.smooth;
-            mapBuffer.drawImg(scheme.getImage(Menu.NAMEPLATE), 0, y);
-            if (data.id == i) mapBuffer.drawImg(scheme.getImage(Menu.SELECTOR), 6, y + 5);
-            mapBuffer.drawString(scheme.getFont(Menu.LIST), scheme.getColor(Menu.FONT), skill.getName(), 30, y + 14);
+            int y = (i - scroll) * 20 + 36;
+            scene.get(PLATE + i).moveTo(0, y);
+            if (id == i) scene.get(SELECTOR).moveTo(6, y + 5);
+            scene.get(NAME + i).moveTo(30, y + 14);
         }
 
-        mapBuffer.drawImg(scheme.getImage(Menu.TITLE), 0, 0);
-    }
-
-    private class MenuData
-    {
-        public ArrayList<PlayerSkill> skills = new ArrayList<PlayerSkill>();
-        public int scroll, smooth, id;
-
-        public MenuData(Player player, PlayerData data)
-        {
-            update(player, data);
-        }
-
-        public void update(Player player, PlayerData data)
-        {
-            scroll = smooth = id = 0;
-            for (PlayerSkill skill : data.getSkills())
-            {
-                if (skill.getPlayerClass().getData().getSkillTree().canShow(player, skill.getData()))
-                {
-                    skills.add(skill);
-                }
-            }
-        }
+        scene.apply(mapBuffer);
     }
 }

@@ -11,13 +11,6 @@ import java.util.List;
 
 public class SkillDetailMenu extends MapMenu
 {
-    private static HashMap<String, Integer[]> menuData = new HashMap<String, Integer[]>();
-
-    public static void init(Player player)
-    {
-        menuData.put(player.getName(), new Integer[] { 0, 0 });
-    }
-
     private SkillAPI api;
 
     public SkillDetailMenu(SkillAPI api)
@@ -25,22 +18,57 @@ public class SkillDetailMenu extends MapMenu
         this.api = api;
     }
 
+    private int getButton(Player player) {
+        return getSelection(player) & 0xff;
+    }
+
+    private int getPage(Player player) {
+        return (getSelection(player) >> 8) & 0xff;
+    }
+
+    private int getPages(Player player) {
+        return getSelection(player) >> 16;
+    }
+
+    private void setButton(Player player, int button) {
+        setSelection(player, button, getPage(player), getPages(player));
+    }
+
+    private void setPage(Player player, int page) {
+        setSelection(player, getButton(player), page, getPages(player));
+    }
+
+    private void setPages(Player player, int pages) {
+        setSelection(player, getButton(player), getPage(player), pages);
+    }
+
+    private void setSelection(Player player, int button, int page, int pages) {
+        setSelection(player, button | (page << 8) | (pages << 16));
+    }
+
     @Override
     public void onLeft(Player player)
     {
-        Integer[] data = menuData.get(player.getName());
-        data[0] = Math.max(0, data[0] - 1);
+        int button = getButton(player);
+
+        button = Math.max(0, button - 1);
         boolean down = SkillAPI.getSettings().isAllowDowngrade();
-        if (data[0] == 2 && !down) data[0]--;
+        if (button == 2 && !down) button--;
+
+        setButton(player, button);
     }
 
     @Override
     public void onRight(Player player)
     {
-        Integer[] data = menuData.get(player.getName());
-        data[0] = Math.min(3, data[0] + 1);
+        int button = getButton(player);
+        int page = getPage(player);
+
+        button = Math.min(3, button + 1);
         boolean down = SkillAPI.getSettings().isAllowDowngrade();
-        if (data[0] == 2 && !down) data[0]++;
+        if (button == 2 && !down) button++;
+
+        setButton(player, button);
     }
 
     @Override
@@ -58,22 +86,23 @@ public class SkillDetailMenu extends MapMenu
     @Override
     public void onSelect(Player player)
     {
-        Integer[] data = menuData.get(player.getName());
+        int button = getButton(player);
+        int page = getPage(player);
 
         // Back button
-        if (data[0] == 0)
+        if (button == 0)
         {
             MapMenuManager.sendBack(player);
         }
 
         // Upgrade button
-        else if (data[0] == 1)
+        else if (button == 1)
         {
             SkillAPI.getPlayerData(player).upgradeSkill(SkillListMenu.getSkill(player).getData());
         }
 
         // Downgrade button
-        else if (data[0] == 2)
+        else if (button == 2)
         {
             SkillAPI.getPlayerData(player).downgradeSkill(SkillListMenu.getSkill(player).getData());
         }
@@ -81,21 +110,31 @@ public class SkillDetailMenu extends MapMenu
         // More info button
         else
         {
-            data[1]++;
+            page = (page + 1) % getPages(player);
+            setPage(player, page);
+            setup(player);
         }
     }
 
+    private static final String BACKGROUND = "background";
+    private static final String DETAIL = "detail";
+    private static final String BACK_ON = "back1";
+    private static final String UP_ON = "up1";
+    private static final String DOWN_ON = "down1";
+    private static final String MORE_ON = "more1";
+    private static final String BACK_OFF = "back0";
+    private static final String UP_OFF = "up0";
+    private static final String DOWN_OFF = "down0";
+    private static final String MORE_OFF = "more0";
+
     @Override
-    public void render(MapBuffer mapBuffer, Player player)
+    public void setup(Player player)
     {
-        Integer[] data = menuData.get(player.getName());
-        int button = data[0];
-        int page = data[1];
-
         MapScheme scheme = MapScheme.get(api, SkillAPI.getPlayerData(player).getScheme());
+        MapScene scene = getScene(player);
+        int page = getPage(player);
 
-        // Background
-        mapBuffer.drawImg(scheme.getImage(Menu.BACKGROUND), 0, 0);
+        scene.add(BACKGROUND, new MapObject(scheme.getImage(Menu.BACKGROUND), 0, 0));
 
         // Get text to draw
         PlayerSkill skill = SkillListMenu.getSkill(player);
@@ -107,19 +146,14 @@ public class SkillDetailMenu extends MapMenu
         MapFont font = scheme.getFont(Menu.DETAIL);
         int linesPerPage = 90 / (font.getFont().getSize() + 3);
         int pages = (lore.size() + linesPerPage - 1) / linesPerPage;
-        if (page >= pages)
-        {
-            data[1] -= pages;
-            page -= pages;
-        }
 
-        // Draw the text
+        // Add the text
         int y = font.getFont().getSize() + 5;
         int start = linesPerPage * page;
         for (int i = start; i < start + linesPerPage && i < lore.size(); i++)
         {
             String line = lore.get(i);
-            mapBuffer.drawColorString(font, scheme.getColor(Menu.FONT), line, 7, y, '&');
+            scene.add(DETAIL + i, new MapObject(new MapString(font, scheme.getColor(Menu.FONT), line), 7, y));
             y += font.getFont().getSize() + 3;
         }
 
@@ -129,10 +163,42 @@ public class SkillDetailMenu extends MapMenu
         if (down) x = 42;
         else x = 56;
 
+        // Add buttons
+
+        scene.add(BACK_ON, new MapObject(scheme.getImage(Menu.BACK_1), 6, 95));
+        scene.add(BACK_OFF, new MapObject(scheme.getImage(Menu.BACK_0), 6, 95));
+
+        scene.add(UP_ON, new MapObject(scheme.getImage(Menu.UP_1), x, 95));
+        scene.add(UP_OFF, new MapObject(scheme.getImage(Menu.UP_0), x, 95));
+
+        scene.add(DOWN_ON, new MapObject(scheme.getImage(Menu.DOWN_1), 68, 95));
+        scene.add(DOWN_OFF, new MapObject(scheme.getImage(Menu.DOWN_0), 68, 95));
+
+        scene.add(MORE_ON, new MapObject(scheme.getImage(Menu.MORE_1), 90, 95));
+        scene.add(MORE_OFF, new MapObject(scheme.getImage(Menu.MORE_0), 90, 95));
+
+        setPages(player, pages);
+    }
+
+    @Override
+    public void render(MapBuffer mapBuffer, Player player)
+    {
+        int button = getButton(player);
+        MapScene scene = getScene(player);
+
         // Draw buttons
-        mapBuffer.drawImg(button == 0 ? scheme.getImage(Menu.BACK_1) : scheme.getImage(Menu.BACK_0), 6, 95);
-        mapBuffer.drawImg(button == 1 ? scheme.getImage(Menu.UP_1) : scheme.getImage(Menu.UP_0), x, 95);
-        if (down) mapBuffer.drawImg(button == 2 ? scheme.getImage(Menu.DOWN_1) : scheme.getImage(Menu.DOWN_0), 68, 95);
-        mapBuffer.drawImg(button == 3 ? scheme.getImage(Menu.MORE_1) : scheme.getImage(Menu.MORE_0), 90, 95);
+        scene.get(BACK_ON).setVisible(button == 0);
+        scene.get(BACK_OFF).setVisible(button != 0);
+
+        scene.get(UP_ON).setVisible(button == 1);
+        scene.get(UP_OFF).setVisible(button != 1);
+
+        scene.get(DOWN_ON).setVisible(button == 2);
+        scene.get(DOWN_OFF).setVisible(button != 2);
+
+        scene.get(MORE_ON).setVisible(button == 3);
+        scene.get(MORE_OFF).setVisible(button != 3);
+
+        scene.apply(mapBuffer);
     }
 }

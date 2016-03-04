@@ -178,6 +178,8 @@ GUI:
   # Whether or not to use map trees instead of the regular ones
   # View map.yml for further customization for this option
   # Also add more schemes by adding folders in the "img" folder
+  # Allow for both map skill trees and regular ones by setting
+  # this to "partial"
   map-tree-enabled: false
 #
 Click Combos:
@@ -258,7 +260,7 @@ Experience:
   block-mob-spawner: true
   #
   # Whether or not to prevent gaining experience from mobs
-  # spawned vai a mob spawn egg
+  # spawned via a mob spawn egg
   block-mob-egg: true
   #
   # Whether or not to prevent gaining experience while

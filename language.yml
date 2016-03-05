@@ -52,4 +52,5 @@ Status:
   rooted: '&4You are rooted for another &6{duration} &4seconds'
   disarmed: '&4You are disarmed for another &6{duration} &4seconds'
   invincible: '&4That target is invincible for another &6{duration} &4seconds'
+  absorbed: '&4That target is absorbing attacks to gain health for another &6{duration} &4seconds'
 

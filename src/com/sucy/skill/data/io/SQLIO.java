@@ -22,6 +22,7 @@ public class SQLIO extends IOManager
 {
     private static final String ID   = "id";
     private static final String DATA = "data";
+    private static final char STRING = '√';
 
     private boolean     startup;
     private SQLDatabase database;
@@ -80,7 +81,7 @@ public class SQLIO extends IOManager
         try
         {
             String playerKey = new VersionPlayer(player).getIdString();
-            DataSection file = YAMLParser.parseText(table.createEntry(playerKey).getString(DATA));
+            DataSection file = YAMLParser.parseText(table.createEntry(playerKey).getString(DATA), STRING);
             result = load(player, file);
         }
         catch (Exception ex)
@@ -119,6 +120,6 @@ public class SQLIO extends IOManager
         DataSection file = save(data);
 
         String playerKey = new VersionPlayer(data.getPlayerName()).getIdString();
-        table.createEntry(playerKey).set(DATA, file.toString());
+        table.createEntry(playerKey).set(DATA, file.toString(STRING));
     }
 }

@@ -1,36 +1,31 @@
 package com.sucy.skill.hook.beton;
 
 import pl.betoncraft.betonquest.BetonQuest;
+import pl.betoncraft.betonquest.InstructionParseException;
 
 import java.util.HashMap;
 
 public class BetonUtil
 {
     public static HashMap<String, Object> parse(String data, String... keys)
+            throws InstructionParseException
     {
+        String[] parts = data.split(" ");
+        if (keys.length != parts.length)
+            throw new InstructionParseException("Missing arguments for the condition");
+
         HashMap<String, Object> parsed = new HashMap<String, Object>();
-        for (String part : data.split(" "))
+
+        int i = 0;
+        for (String part : parts)
         {
-            for (String key : keys)
+            if (part.contains(","))
             {
-                if (part.startsWith(keys + ":"))
-                {
-                    if (part.contains(","))
-                    {
-                        parsed.put(key, part.substring(key.length() + 1).split(","));
-                    }
-                    else
-                    {
-                        parsed.put(key, part.substring(key.length() + 1));
-                    }
-                }
+                parsed.put(keys[i], part.split(","));
             }
-        }
-        for (String key : keys)
-        {
-            if (!parsed.containsKey(key))
+            else
             {
-                parsed.put(key, "");
+                parsed.put(keys[i], part);
             }
         }
         return parsed;

@@ -72,6 +72,16 @@ public class PlayerAccounts
     }
 
     /**
+     * Gets the Bukkit offline player object for the owner of the data
+     *
+     * @return Bukkit offline player object
+     */
+    public OfflinePlayer getOfflinePlayer()
+    {
+        return player;
+    }
+
+    /**
      * Gets the name of the owner of the data
      *
      * @return owner's name

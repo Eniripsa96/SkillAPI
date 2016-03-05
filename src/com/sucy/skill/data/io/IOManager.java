@@ -93,7 +93,10 @@ public abstract class IOManager
     {
         PlayerAccounts data = new PlayerAccounts(player);
         DataSection accounts = file.getSection(ACCOUNTS);
-        if (accounts == null) accounts = file.createSection(ACCOUNTS);
+        if (accounts == null) {
+            data.getActiveData().endInit();
+            return data;
+        }
         for (String accountKey : accounts.keys())
         {
             DataSection account = accounts.getSection(accountKey);
@@ -208,6 +211,9 @@ public abstract class IOManager
                     acc.getAttributeData().put(key, attribs.getInt(key));
                 }
             }
+
+            acc.endInit();
+            acc.autoLevel();
         }
         data.setAccount(file.getInt(ACTIVE, data.getActiveId()));
 

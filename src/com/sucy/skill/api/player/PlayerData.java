@@ -22,6 +22,7 @@ import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.TreeListener;
 import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.manager.ClassBoardManager;
+import com.sucy.skill.task.ScoreboardTask;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -31,6 +32,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -204,12 +206,15 @@ public final class PlayerData
         int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
         if (attribPoints > 0 && current < max)
         {
-            PlayerUpAttributeEvent event = new PlayerUpAttributeEvent(this, key);
-            Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled()) return;
-
             attributes.put(key, current + 1);
             attribPoints--;
+
+            PlayerUpAttributeEvent event = new PlayerUpAttributeEvent(this, key);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                attributes.put(key, current);
+                attribPoints++;
+            }
         }
     }
 
@@ -492,6 +497,8 @@ public final class PlayerData
      */
     public void autoLevel()
     {
+        if (init) return;
+
         for (PlayerSkill skill : skills.values())
         {
             autoLevel(skill.getData());
@@ -1466,11 +1473,7 @@ public final class PlayerData
      */
     public void updateScoreboard()
     {
-        PlayerClass main = getMainClass();
-        if (main != null && !init)
-        {
-            ClassBoardManager.update(this, main.getData().getPrefix(), main.getData().getPrefixColor());
-        }
+        SkillAPI.schedule(new ScoreboardTask(this), 2);
     }
 
     /**

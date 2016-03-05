@@ -119,7 +119,14 @@ public class SQLIO extends IOManager
     {
         DataSection file = save(data);
 
-        String playerKey = new VersionPlayer(data.getPlayerName()).getIdString();
-        table.createEntry(playerKey).set(DATA, file.toString(STRING));
+        try
+        {
+            String playerKey = new VersionPlayer(data.getOfflinePlayer()).getIdString();
+            table.createEntry(playerKey).set(DATA, file.toString(STRING));
+        }
+        catch (Exception ex)
+        {
+            Bukkit.getLogger().warning("Failed to save data for invalid player");
+        }
     }
 }

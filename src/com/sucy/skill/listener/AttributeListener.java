@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +61,17 @@ public class AttributeListener implements Listener
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(PlayerJoinEvent event)
+    {
+        updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
+    }
+
+    /**
+     * Updates attributes on respawn
+     *
+     * @param event event details
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onRespawn(PlayerRespawnEvent event)
     {
         updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
     }

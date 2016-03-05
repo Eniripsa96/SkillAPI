@@ -87,7 +87,6 @@ public class SkillAPI extends JavaPlugin
     private SaveTask      saveTask;
     private GUITask       guiTask;
 
-    private boolean enabled = false;
     private boolean loaded  = false;
 
     /**
@@ -103,13 +102,6 @@ public class SkillAPI extends JavaPlugin
             throw new IllegalStateException("Cannot enable SkillAPI twice!");
         }
         singleton = this;
-
-        // Ensure only one enable at a time
-        if (enabled)
-        {
-            throw new IllegalStateException("Cannot enable SkillAPI when already enabled!");
-        }
-        enabled = true;
 
         // Load settings
         language = new CommentedLanguageConfig(this, "language");
@@ -268,7 +260,6 @@ public class SkillAPI extends JavaPlugin
         HandlerList.unregisterAll(this);
         cmd.clear();
 
-        enabled = false;
         loaded = false;
         singleton = null;
     }
@@ -532,10 +523,6 @@ public class SkillAPI extends JavaPlugin
 
         // Load the data
         PlayerAccounts data = singleton.io.loadData(player);
-        for (PlayerData account : data.getAllData().values())
-        {
-            account.endInit();
-        }
         singleton.players.put(id, data);
         return data;
     }

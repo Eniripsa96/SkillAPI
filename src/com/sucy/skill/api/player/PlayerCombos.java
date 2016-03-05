@@ -111,7 +111,6 @@ public class PlayerCombos
         // Cast skill when combo is completed
         if (clickIndex == clicks.length)
         {
-            clearCombo();
             int id = SkillAPI.getComboManager().convertCombo(clicks);
             if (skills.containsKey(id))
             {
@@ -126,8 +125,8 @@ public class PlayerCombos
     private void checkExpired()
     {
         // Reset combo if too much time passed
-        long time = System.currentTimeMillis();
-        if (time - clickTime > SkillAPI.getSettings().getClickTime())
+        if (clickIndex == clicks.length
+            || System.currentTimeMillis() - clickTime > SkillAPI.getSettings().getClickTime())
         {
             clearCombo();
         }
@@ -141,6 +140,13 @@ public class PlayerCombos
     public String getCurrentComboString()
     {
         if (clickIndex == 0) return "";
+        else if (clickIndex == clicks.length) {
+            int id = SkillAPI.getComboManager().convertCombo(clicks);
+            if (skills.containsKey(id)) {
+                return skills.get(id);
+            }
+            else return "";
+        }
 
         checkExpired();
 

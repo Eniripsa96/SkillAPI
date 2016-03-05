@@ -78,22 +78,14 @@ public class MainListener implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
 
         // Apply player data as long as they have a class
         data.updateHealthAndMana(event.getPlayer());
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             data.startPassives(event.getPlayer());
-
-            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    data.updateScoreboard();
-                }
-            }, 2);
+            data.updateScoreboard();
         }
     }
 
@@ -282,6 +274,7 @@ public class MainListener implements Listener
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             data.startPassives(event.getPlayer());
+            data.updateScoreboard();
         }
     }
 
@@ -342,7 +335,8 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event)
     {
-        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
+        if (Skill.isSkillDamage()
+            || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
             || !(event.getEntity() instanceof LivingEntity)) return;
 
         // Damage buff application
@@ -445,19 +439,11 @@ public class MainListener implements Listener
         }
         else if (!oldEnabled && newEnabled)
         {
-            final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
             data.startPassives(event.getPlayer());
             data.getSkillBar().setup(event.getPlayer());
             data.updateHealthAndMana(event.getPlayer());
-
-            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    data.updateScoreboard();
-                }
-            }, 1);
+            data.updateScoreboard();
         }
     }
 }

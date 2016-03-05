@@ -5,6 +5,7 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
@@ -60,13 +61,20 @@ public class ConfigIO extends IOManager
     @Override
     public void saveData(PlayerAccounts data)
     {
-        CommentedConfig config = new CommentedConfig(api, "players/" + new VersionPlayer(data.getPlayerName()).getIdString());
-        config.clear();
+        try
+        {
+            CommentedConfig config = new CommentedConfig(api, "players/" + new VersionPlayer(data.getOfflinePlayer()).getIdString());
+            config.clear();
 
-        DataSection file = save(data);
-        config.getConfig().applyDefaults(file);
+            DataSection file = save(data);
+            config.getConfig().applyDefaults(file);
 
-        config.save();
+            config.save();
+        }
+        catch (Exception ex)
+        {
+            Bukkit.getLogger().warning("Failed to save data for invalid player");
+        }
     }
 
     /**

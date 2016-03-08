@@ -3,13 +3,11 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.ParticleHelper;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -107,7 +105,8 @@ public class ParticleAnimationMechanic extends EffectComponent
             this.sin = Math.sin(angle * Math.PI / (180 * duration));
 
             rots = new double[targets.size() * 2];
-            for (int i = 0; i < targets.size(); i++) {
+            for (int i = 0; i < targets.size(); i++)
+            {
                 Vector dir = targets.get(i).getLocation().getDirection().setY(0).normalize();
                 rots[i * 2] = dir.getX();
                 rots[i * 2 + 1] = dir.getZ();
@@ -160,15 +159,18 @@ public class ParticleAnimationMechanic extends EffectComponent
             }
         }
 
-        private double heightAt(int step) {
+        private double heightAt(int step)
+        {
             return vt * (vl - Math.abs(vl - step % (2 * vl))) / vl;
         }
 
-        private double radAt(int step) {
+        private double radAt(int step)
+        {
             return ht * (hl - Math.abs(hl - step % (2 * hl))) / hl;
         }
 
-        private void rotate(Vector vec, double cos, double sin) {
+        private void rotate(Vector vec, double cos, double sin)
+        {
             double x = vec.getX() * cos - vec.getZ() * sin;
             vec.setZ(vec.getX() * sin + vec.getZ() * cos);
             vec.setX(x);

@@ -140,9 +140,11 @@ public class PlayerCombos
     public String getCurrentComboString()
     {
         if (clickIndex == 0) return "";
-        else if (clickIndex == clicks.length) {
+        else if (clickIndex == clicks.length)
+        {
             int id = SkillAPI.getComboManager().convertCombo(clicks);
-            if (skills.containsKey(id)) {
+            if (skills.containsKey(id))
+            {
                 return skills.get(id);
             }
             else return "";

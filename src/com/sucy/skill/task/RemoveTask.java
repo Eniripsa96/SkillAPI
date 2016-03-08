@@ -1,7 +1,6 @@
 package com.sucy.skill.task;
 
 import com.sucy.skill.SkillAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
@@ -31,10 +30,12 @@ public class RemoveTask extends BukkitRunnable
      * Checks if the owner of the tameable entity is the given player
      *
      * @param player player to compare against
+     *
      * @return true if owned by the player, false otherwise
      */
-    public boolean isOwnedBy(Player player) {
-        return ((Tameable)entity).getOwner() == player;
+    public boolean isOwnedBy(Player player)
+    {
+        return ((Tameable) entity).getOwner() == player;
     }
 
     /**

@@ -93,7 +93,8 @@ public abstract class IOManager
     {
         PlayerAccounts data = new PlayerAccounts(player);
         DataSection accounts = file.getSection(ACCOUNTS);
-        if (accounts == null) {
+        if (accounts == null)
+        {
             data.getActiveData().endInit();
             return data;
         }
@@ -182,7 +183,8 @@ public abstract class IOManager
                 }
                 bar.applySettings();
             }
-            if (!SkillAPI.getSettings().isSkillBarEnabled() && bar != null && bar.isEnabled()) {
+            if (!SkillAPI.getSettings().isSkillBarEnabled() && bar != null && bar.isEnabled())
+            {
                 bar.toggleEnabled();
             }
 

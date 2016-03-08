@@ -63,7 +63,8 @@ public class FloodTree extends InventoryTree
     protected void arrange(List<Skill> skills) throws SkillTreeException
     {
         Collections.sort(skills, levelComparator);
-        for (int i = 0; i < skills.size(); i++) {
+        for (int i = 0; i < skills.size(); i++)
+        {
             skillSlots.put(i, skills.get(i));
         }
         height = (skills.size() + 8) / 9;

@@ -32,7 +32,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -211,7 +210,8 @@ public final class PlayerData
 
             PlayerUpAttributeEvent event = new PlayerUpAttributeEvent(this, key);
             Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
+            if (event.isCancelled())
+            {
                 attributes.put(key, current);
                 attribPoints++;
             }
@@ -637,9 +637,9 @@ public final class PlayerData
         for (PlayerSkill s : skills.values())
         {
             if (s.getData().getSkillReq() != null
-                    && s.getData().getSkillReq().equalsIgnoreCase(skill.getName())
-                    && data.getLevel() <= s.getData().getSkillReqLevel()
-                    && s.getLevel() > 0)
+                && s.getData().getSkillReq().equalsIgnoreCase(skill.getName())
+                && data.getLevel() <= s.getData().getSkillReqLevel()
+                && s.getLevel() > 0)
             {
                 return false;
             }

@@ -33,14 +33,15 @@ public class StatusListener implements Listener
 {
     private static final HashMap<String, Long> messageTimers = new HashMap<String, Long>();
 
-    private static final HashMap<String, String> messageMap = new HashMap<String, String>() {{
-        put("stun", "stunned");
-        put("root", "rooted");
-        put("invincible", "invincible");
-        put("absorb", "absorbed");
-        put("disarm", "disarmed");
-        put("silence", "silenced");
-    }};
+    private static final HashMap<String, String> messageMap = new HashMap<String, String>()
+    {{
+            put("stun", "stunned");
+            put("root", "rooted");
+            put("invincible", "invincible");
+            put("absorb", "absorbed");
+            put("disarm", "disarmed");
+            put("silence", "silenced");
+        }};
 
     private final Vector ZERO = new Vector(0, 0, 0);
 
@@ -172,12 +173,13 @@ public class StatusListener implements Listener
      * Checks for the delay between sending status messages
      *
      * @param player player to check for
+     *
      * @return true if can send a message, false otherwise
      */
     private boolean checkTime(Player player)
     {
         if (!messageTimers.containsKey(player.getName())
-                || System.currentTimeMillis() - messageTimers.get(player.getName()) > 1000)
+            || System.currentTimeMillis() - messageTimers.get(player.getName()) > 1000)
         {
             messageTimers.put(player.getName(), System.currentTimeMillis());
             return true;
@@ -201,9 +203,11 @@ public class StatusListener implements Listener
         {
             if (FlagManager.hasFlag(entity, flag))
             {
-                if (receiver instanceof Player) {
-                    Player player = (Player)receiver;
-                    if (checkTime(player)) {
+                if (receiver instanceof Player)
+                {
+                    Player player = (Player) receiver;
+                    if (checkTime(player))
+                    {
                         SkillAPI.getLanguage().sendMessage(
                                 "Status." + messageMap.get(flag),
                                 player,

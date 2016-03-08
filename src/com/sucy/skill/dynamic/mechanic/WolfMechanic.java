@@ -119,7 +119,8 @@ public class WolfMechanic extends EffectComponent
     {
         for (RemoveTask task : tasks)
         {
-            if (task.isOwnedBy(player)) {
+            if (task.isOwnedBy(player))
+            {
                 task.run();
                 task.cancel();
                 tasks.remove(task);

@@ -4,12 +4,9 @@ import com.rit.sucy.gui.*;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.skills.Skill;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class SkillListMenu extends MapMenu
@@ -19,15 +16,16 @@ public class SkillListMenu extends MapMenu
     private static final String AVAILABLE = "sapi_available";
 
     // Scene keys
-    private static final String PLATE = "plate";
-    private static final String NAME = "name";
+    private static final String PLATE    = "plate";
+    private static final String NAME     = "name";
     private static final String SELECTOR = "selector";
-    private static final String TITLE = "title";
+    private static final String TITLE    = "title";
 
     /**
      * Gets the selected skill of a player
      *
      * @param player player to get the selection of
+     *
      * @return player's selection or null if hasn't selected one
      */
     public static PlayerSkill getSkill(Player player)
@@ -86,11 +84,13 @@ public class SkillListMenu extends MapMenu
         setData(player, SELECTION, id);
     }
 
-    private static int getId(Player player) {
+    private static int getId(Player player)
+    {
         return getSelection(player) & 0xff;
     }
 
-    private static int getScroll(Player player) {
+    private static int getScroll(Player player)
+    {
         return getSelection(player) >> 8;
     }
 
@@ -100,9 +100,10 @@ public class SkillListMenu extends MapMenu
     }
 
     @SuppressWarnings("unchecked")
-    private static ArrayList<PlayerSkill> getSkills(Player player) {
+    private static ArrayList<PlayerSkill> getSkills(Player player)
+    {
         Object list = getData(player, AVAILABLE);
-        return list == null ? null : (ArrayList<PlayerSkill>)list;
+        return list == null ? null : (ArrayList<PlayerSkill>) list;
     }
 
     /**

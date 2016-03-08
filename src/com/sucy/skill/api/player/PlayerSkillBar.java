@@ -311,7 +311,8 @@ public class PlayerSkillBar
         if (!isWeaponSlot(player.getInventory().getHeldItemSlot()))
         {
             int slot = getFirstWeaponSlot();
-            if (slot == -1) {
+            if (slot == -1)
+            {
                 toggleSlot(0);
                 slot = 0;
             }

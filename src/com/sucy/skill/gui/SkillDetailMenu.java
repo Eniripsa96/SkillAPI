@@ -6,7 +6,6 @@ import com.sucy.skill.api.player.PlayerSkill;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class SkillDetailMenu extends MapMenu
@@ -18,31 +17,38 @@ public class SkillDetailMenu extends MapMenu
         this.api = api;
     }
 
-    private int getButton(Player player) {
+    private int getButton(Player player)
+    {
         return getSelection(player) & 0xff;
     }
 
-    private int getPage(Player player) {
+    private int getPage(Player player)
+    {
         return (getSelection(player) >> 8) & 0xff;
     }
 
-    private int getPages(Player player) {
+    private int getPages(Player player)
+    {
         return getSelection(player) >> 16;
     }
 
-    private void setButton(Player player, int button) {
+    private void setButton(Player player, int button)
+    {
         setSelection(player, button, getPage(player), getPages(player));
     }
 
-    private void setPage(Player player, int page) {
+    private void setPage(Player player, int page)
+    {
         setSelection(player, getButton(player), page, getPages(player));
     }
 
-    private void setPages(Player player, int pages) {
+    private void setPages(Player player, int pages)
+    {
         setSelection(player, getButton(player), getPage(player), pages);
     }
 
-    private void setSelection(Player player, int button, int page, int pages) {
+    private void setSelection(Player player, int button, int page, int pages)
+    {
         setSelection(player, button | (page << 8) | (pages << 16));
     }
 
@@ -117,15 +123,15 @@ public class SkillDetailMenu extends MapMenu
     }
 
     private static final String BACKGROUND = "background";
-    private static final String DETAIL = "detail";
-    private static final String BACK_ON = "back1";
-    private static final String UP_ON = "up1";
-    private static final String DOWN_ON = "down1";
-    private static final String MORE_ON = "more1";
-    private static final String BACK_OFF = "back0";
-    private static final String UP_OFF = "up0";
-    private static final String DOWN_OFF = "down0";
-    private static final String MORE_OFF = "more0";
+    private static final String DETAIL     = "detail";
+    private static final String BACK_ON    = "back1";
+    private static final String UP_ON      = "up1";
+    private static final String DOWN_ON    = "down1";
+    private static final String MORE_ON    = "more1";
+    private static final String BACK_OFF   = "back0";
+    private static final String UP_OFF     = "up0";
+    private static final String DOWN_OFF   = "down0";
+    private static final String MORE_OFF   = "more0";
 
     @Override
     public void setup(Player player)

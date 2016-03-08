@@ -20,9 +20,9 @@ import java.util.HashMap;
  */
 public class SQLIO extends IOManager
 {
-    private static final String ID   = "id";
-    private static final String DATA = "data";
-    private static final char STRING = '√';
+    private static final String ID     = "id";
+    private static final String DATA   = "data";
+    private static final char   STRING = '√';
 
     private boolean     startup;
     private SQLDatabase database;

@@ -831,7 +831,8 @@ public class Settings
         return showMapTree;
     }
 
-    public boolean isMapTreeAvailable() {
+    public boolean isMapTreeAvailable()
+    {
         return showTree;
     }
 
@@ -1171,11 +1172,13 @@ public class Settings
             DataSection slot = layout.getSection((i + 1) + "");
             defaultBarLayout[i] = slot.getBoolean("skill", i <= 5);
             lockedSlots[i] = slot.getBoolean("locked", false);
-            if (defaultBarLayout[i]) {
+            if (defaultBarLayout[i])
+            {
                 skillCount++;
             }
         }
-        if (skillCount == 9) {
+        if (skillCount == 9)
+        {
             Bukkit.getLogger().severe("Invalid Skill Bar Setup - Cannot have all 9 skill slots!");
             Bukkit.getLogger().severe("  -> Setting last slot to be a weapon slot");
             defaultBarLayout[8] = false;

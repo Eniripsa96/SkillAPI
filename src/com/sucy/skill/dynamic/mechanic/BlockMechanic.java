@@ -195,13 +195,47 @@ public class BlockMechanic extends EffectComponent
         }
 
         // Revert after duration
-        new RevertTask(states).runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), ticks);
+        RevertTask task = new RevertTask(states);
+        task.runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), ticks);
+        tasks.add(task);
 
         return true;
     }
 
-    private final HashMap<Location, Integer>    pending  = new HashMap<Location, Integer>();
-    private final HashMap<Location, BlockState> original = new HashMap<Location, BlockState>();
+    private static final HashMap<Location, Integer>    pending  = new HashMap<Location, Integer>();
+    private static final HashMap<Location, BlockState> original = new HashMap<Location, BlockState>();
+
+    private static final ArrayList<RevertTask> tasks = new ArrayList<RevertTask>();
+
+    /**
+     * Reverts all block changes
+     */
+    public static void revertAll()
+    {
+        for (Location loc : pending.keySet())
+        {
+            original.get(loc).update(true, false);
+        }
+        for (RevertTask task : tasks)
+        {
+            task.cancel();
+        }
+        pending.clear();
+        original.clear();
+        tasks.clear();
+    }
+
+    /**
+     * Checks whether or not the location is modified by a block mechanic
+     *
+     * @param loc location to check
+     *
+     * @return true if modified, false otherwise
+     */
+    public static boolean isPending(Location loc)
+    {
+        return pending.containsKey(loc);
+    }
 
     /**
      * Reverts block changes after a duration
@@ -231,6 +265,7 @@ public class BlockMechanic extends EffectComponent
                     pending.put(loc, count - 1);
                 }
             }
+            tasks.remove(this);
         }
     }
 }

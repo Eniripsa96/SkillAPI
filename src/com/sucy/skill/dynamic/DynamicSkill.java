@@ -8,6 +8,8 @@ import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
+import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
+import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -153,7 +155,11 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public void stopEffects(LivingEntity user, int level)
     {
+        RepeatMechanic.stopTasks(user, getName());
+        PassiveMechanic.stopTasks(user, getName());
         active.remove(user.getEntityId());
+
+        trigger(user, user, 1, Trigger.CLEANUP);
     }
 
     /**
@@ -292,8 +298,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             return;
         }
 
+        EffectComponent component;
+
         // Physical receieved
-        EffectComponent component = components.get(Trigger.TOOK_PHYSICAL_DAMAGE);
+        component = components.get(Trigger.TOOK_PHYSICAL_DAMAGE);
         if (component != null && active.containsKey(target.getEntityId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();

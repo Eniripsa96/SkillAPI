@@ -51,7 +51,10 @@ public class ScoreboardTask extends BukkitRunnable
     @Override
     public void run()
     {
-        PlayerClass main = data.getMainClass();
-        ClassBoardManager.update(data, main.getData().getPrefix(), main.getData().getPrefixColor());
+        if (data.getPlayer() != null)
+        {
+            PlayerClass main = data.getMainClass();
+            ClassBoardManager.update(data, main.getData().getPrefix(), main.getData().getPrefixColor());
+        }
     }
 }

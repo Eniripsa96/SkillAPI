@@ -57,8 +57,8 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         item.setDurability((short) settings.getInt(DATA, 0));
 
         // Get other common values
-        double speed = settings.getAttr(SPEED, level, 3.0);
-        int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
+        double speed = attr(caster, SPEED, level, 3.0, true);
+        int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
 
@@ -71,8 +71,8 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
             ArrayList<ItemProjectile> list;
             if (spread.equals("rain"))
             {
-                double radius = settings.getAttr(RADIUS, level, 2.0);
-                double height = settings.getAttr(HEIGHT, level, 8.0);
+                double radius = attr(caster, RADIUS, level, 2.0, true);
+                double height = attr(caster, HEIGHT, level, 8.0, true);
                 list = ItemProjectile.rain(caster, loc, item, radius, height, speed, amount, this);
             }
             else
@@ -84,7 +84,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                     dir.normalize();
                 }
                 dir.multiply(speed);
-                double angle = settings.getAttr(ANGLE, level, 30.0);
+                double angle = attr(caster, ANGLE, level, 30.0, true);
                 list = ItemProjectile.spread(caster, dir, loc.add(0, 0.5, 0), item, angle, amount, this);
             }
 

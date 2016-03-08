@@ -4,6 +4,7 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.FlagExpireEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
+import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PotionProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
@@ -101,7 +103,8 @@ public class MechanicListener implements Listener
      * @param event event details
      */
     @EventHandler
-    public void onDeath(PlayerDeathEvent event) {
+    public void onDeath(PlayerDeathEvent event)
+    {
         WolfMechanic.removeWolves(event.getEntity());
     }
 
@@ -180,6 +183,20 @@ public class MechanicListener implements Listener
             PotionProjectileMechanic mechanic = (PotionProjectileMechanic) event.getEntity().getMetadata(POTION_PROJECTILE).get(0).value();
             mechanic.callback(event.getEntity(), event.getAffectedEntities());
             event.getAffectedEntities().clear();
+        }
+    }
+
+    /**
+     * Can't break blocks from block mechanics
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onBreak(BlockBreakEvent event)
+    {
+        if (BlockMechanic.isPending(event.getBlock().getLocation()))
+        {
+            event.setCancelled(true);
         }
     }
 }

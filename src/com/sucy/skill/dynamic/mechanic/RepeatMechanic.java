@@ -2,10 +2,11 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public class RepeatMechanic extends EffectComponent
     private static final String REPETITIONS = "repetitions";
     private static final String DELAY       = "delay";
     private static final String PERIOD      = "period";
+
+    private static final HashMap<String, ArrayList<RepeatTask>> TASKS = new HashMap<String, ArrayList<RepeatTask>>();
 
     /**
      * Executes the component
@@ -39,10 +42,35 @@ public class RepeatMechanic extends EffectComponent
             }
             int delay = (int) (settings.getDouble(DELAY, 0.0) * 20);
             int period = (int) (settings.getDouble(PERIOD, 1.0) * 20);
-            new RepeatTask(caster, level, targets, count, delay, period);
+            RepeatTask task = new RepeatTask(caster, level, targets, count, delay, period);
+
+            if (!TASKS.containsKey(skill.getName())) TASKS.put(skill.getName(), new ArrayList<RepeatTask>());
+            TASKS.get(skill.getName()).add(task);
+
             return true;
         }
         return false;
+    }
+
+    /**
+     * Stops all repeat tasks for the player
+     *
+     * @param player player to cancel tasks for
+     * @param skill  skill to cancel
+     */
+    public static void stopTasks(LivingEntity player, String skill)
+    {
+        ArrayList<RepeatTask> tasks = TASKS.get(skill);
+        if (tasks == null) return;
+        for (int i = 0; i < tasks.size(); i++)
+        {
+            if (tasks.get(i).caster == player)
+            {
+                tasks.get(i).cancel();
+                tasks.remove(i);
+                i--;
+            }
+        }
     }
 
     private class RepeatTask extends BukkitRunnable
@@ -65,8 +93,10 @@ public class RepeatMechanic extends EffectComponent
         @Override
         public void run()
         {
-            for (int i = 0; i < targets.size(); i++) {
-                if (targets.get(i).isDead() || !targets.get(i).isValid()) {
+            for (int i = 0; i < targets.size(); i++)
+            {
+                if (targets.get(i).isDead() || !targets.get(i).isValid())
+                {
                     targets.remove(i);
                 }
             }
@@ -74,6 +104,7 @@ public class RepeatMechanic extends EffectComponent
             if (!skill.isActive(caster) || targets.size() == 0)
             {
                 cancel();
+                TASKS.get(skill.getName()).remove(this);
                 return;
             }
 
@@ -83,6 +114,7 @@ public class RepeatMechanic extends EffectComponent
             if (--count <= 0)
             {
                 cancel();
+                TASKS.get(skill.getName()).remove(this);
             }
         }
     }

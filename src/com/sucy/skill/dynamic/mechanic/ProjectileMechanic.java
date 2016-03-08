@@ -45,9 +45,8 @@ public class ProjectileMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         // Get common values
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        int amount = (int) settings.getAttr(AMOUNT, level, 1.0);
-        double speed = attr(caster, SPEED, level, 2.0, isSelf);
+        int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
+        double speed = attr(caster, SPEED, level, 2.0, true);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
         String cost = settings.getString(COST, "none").toLowerCase();
@@ -84,8 +83,8 @@ public class ProjectileMechanic extends EffectComponent
             // Apply the spread type
             if (spread.equals("rain"))
             {
-                double radius = attr(caster, RADIUS, level, 2.0, isSelf);
-                double height = attr(caster, HEIGHT, level, 8.0, isSelf);
+                double radius = attr(caster, RADIUS, level, 2.0, true);
+                double height = attr(caster, HEIGHT, level, 8.0, true);
 
                 ArrayList<Location> locs = CustomProjectile.calcRain(target.getLocation(), radius, height, amount);
                 for (Location loc : locs)
@@ -104,7 +103,7 @@ public class ProjectileMechanic extends EffectComponent
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = attr(caster, ANGLE, level, 30.0, isSelf);
+                double angle = attr(caster, ANGLE, level, 30.0, true);
                 ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
                 for (Vector d : dirs)
                 {

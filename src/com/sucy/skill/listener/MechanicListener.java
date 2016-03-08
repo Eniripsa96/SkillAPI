@@ -6,6 +6,7 @@ import com.sucy.skill.api.event.FlagExpireEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
 import com.sucy.skill.dynamic.mechanic.PotionProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
+import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -15,8 +16,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -76,8 +79,30 @@ public class MechanicListener implements Listener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
+        WolfMechanic.removeWolves(event.getPlayer());
         flying.remove(event.getPlayer().getEntityId());
         event.getPlayer().setWalkSpeed(0.2f);
+    }
+
+    /**
+     * Remove wolves of a player upon changing worlds
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onChangeWorld(PlayerChangedWorldEvent event)
+    {
+        WolfMechanic.removeWolves(event.getPlayer());
+    }
+
+    /**
+     * Remove wolves of a dead player
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        WolfMechanic.removeWolves(event.getEntity());
     }
 
     /**

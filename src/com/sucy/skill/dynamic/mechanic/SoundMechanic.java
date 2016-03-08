@@ -1,6 +1,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 
@@ -32,11 +33,12 @@ public class SoundMechanic extends EffectComponent
             return false;
         }
 
+        String type = settings.getString(SOUND, "").toUpperCase().replace(" ", "_");
         try
         {
-            Sound sound = Sound.valueOf(settings.getString(SOUND, "").toUpperCase().replace(" ", "_"));
-            float volume = (float) settings.getDouble(VOLUME, 100.0) / 100;
-            float pitch = (float) settings.getDouble(PITCH, 0.0);
+            Sound sound = Sound.valueOf(type);
+            float volume = (float) settings.getAttr(VOLUME, level, 100.0) / 100;
+            float pitch = (float) settings.getAttr(PITCH, level, 0.0);
             for (LivingEntity target : targets)
             {
                 target.getWorld().playSound(target.getLocation(), sound, volume, pitch);
@@ -45,6 +47,7 @@ public class SoundMechanic extends EffectComponent
         }
         catch (Exception ex)
         {
+            Bukkit.getLogger().info("Invalid sound type: " + type);
             return false;
         }
     }

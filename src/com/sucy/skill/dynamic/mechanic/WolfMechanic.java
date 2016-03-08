@@ -109,4 +109,21 @@ public class WolfMechanic extends EffectComponent
         }
         tasks.clear();
     }
+
+    /**
+     * Removes any wolves summoned by the given player
+     *
+     * @param player player to desummon wolves for
+     */
+    public static void removeWolves(Player player)
+    {
+        for (RemoveTask task : tasks)
+        {
+            if (task.isOwnedBy(player)) {
+                task.run();
+                task.cancel();
+                tasks.remove(task);
+            }
+        }
+    }
 }

@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.Permissions
+ * com.sucy.skill.hook.NoCheatHook
  *
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -24,24 +24,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data;
+package com.sucy.skill.hook;
+
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import org.bukkit.entity.Player;
 
 /**
- * Permission nodes used by the plugin
+ * Handles plugin calls to NoCheatPlus to get around it blocking skill effects
  */
-public class Permissions
+public class NoCheatHook
 {
-    private static final String ROOT = "skillapi.";
+    /**
+     * Exempts the player from NCP functionality
+     *
+     * @param player player to exempt
+     */
+    public static void exempt(Player player) {
+        NCPExemptionManager.exemptPermanently(player);
+    }
 
-    public static final String BASIC  = ROOT + "basic";
-    public static final String EXP    = ROOT + "exp";
-    public static final String LVL    = ROOT + "level";
-    public static final String MANA   = ROOT + "mana";
-    public static final String POINTS = ROOT + "points";
-    public static final String SKILL  = ROOT + "skill";
-    public static final String CLASS  = ROOT + "class";
-    public static final String RELOAD = ROOT + "reload";
-    public static final String FORCE  = ROOT + "force";
-    public static final String LORE   = ROOT + "lore";
-    public static final String ATTRIB = ROOT + "attrib";
+    /**
+     * Unexempts the player from NCP functionality
+     *
+     * @param player player to unexempt
+     */
+    public static void unexempt(Player player) {
+        NCPExemptionManager.unexempt(player);
+    }
 }

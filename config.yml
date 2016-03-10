@@ -31,15 +31,30 @@ Targeting:
   # Whether or not all monsters are enemies.
   # If you are using pets that include zombies/spiders/etc,
   # you shouldn't enable this.
+  # If you want to enable it for specific worlds, list out the
+  # worlds it should apply to in a list format such as:
+  # monsters-enemy:
+  # - world1
+  # - world2
   monsters-enemy: false
   #
   # Whether or not all passive mobs are allies.
   # If there are custom passive mobs that you can fight,
   # you should not enable this.
+  # If you want to enable it for specific worlds, list out the
+  # worlds it should apply to in a list format such as:
+  # passive-ally:
+  # - world1
+  # - world2
   passive-ally: false
   #
   # Whether or not all players are allies.
   # If you have any PvP, this should not be enabled.
+  # If you want to enable it for specific worlds, list out the
+  # worlds it should apply to in a list format such as:
+  # player-ally:
+  # - world1
+  # - world2
   player-ally: false
 #
 Saving:
@@ -253,7 +268,7 @@ Experience:
   # Note: any dropped exp will not count towards class exp,
   # only enabled sources will count. By default, this is only
   # mob deaths.
-  use-exp-orbs: false
+  use-exp-orbs: true
   #
   # Whether or not to prevent gaining experience from mobs
   # spawned via a mob spawner block
@@ -286,14 +301,18 @@ Experience:
     blaze: 10
     cavespider: 5
     creeper: 3
+    elderguardian: 10
     enderdragon: 400
     enderman: 5
+    endermite: 3
     ghast: 5
     giant: 20
+    guardian: 10
     irongolem: 10
     magmacube: 1
     pigzombie: 5
     player: 5
+    shulker: 5
     silverfish: 2
     skeleton: 3
     slime: 1

@@ -26,10 +26,8 @@
  */
 package com.sucy.skill.listener;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Skeleton;
+import com.rit.sucy.reflect.Reflection;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 /**
@@ -73,12 +71,28 @@ public class ListenerUtil
     public static String getName(Entity entity)
     {
         String name = entity.getClass().getSimpleName().toLowerCase().replace("craft", "");
-        if (entity instanceof Skeleton)
+        if (entity.getType().name().equals("SKELETON"))
         {
-            if (((Skeleton) entity).getSkeletonType() == Skeleton.SkeletonType.WITHER)
+            try
             {
-                name = "wither" + name;
+                Object type = Reflection.getMethod(entity, "getSkeletonType").invoke(entity);
+                if (Reflection.getMethod(type, "name").invoke(type).equals("WITHER"))
+                {
+                    name = "wither" + name;
+                }
             }
+            catch (Exception ex) { /* Wither skeletons don't exist */ }
+        }
+        else if (entity.getType().name().equals("GUARDIAN"))
+        {
+            try
+            {
+                if ((Boolean) Reflection.getMethod(entity, "isElder").invoke(entity))
+                {
+                    name = "elder" + name;
+                }
+            }
+            catch (Exception ex) { /* Shouldn't error out */ }
         }
         return name;
     }

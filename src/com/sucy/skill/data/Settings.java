@@ -261,6 +261,10 @@ public class Settings
     private static final String TARGET_PASSIVE = TARGET_BASE + "passive-ally";
     private static final String TARGET_PLAYER  = TARGET_BASE + "player-ally";
 
+    private ArrayList<String> monsterWorlds = new ArrayList<String>();
+    private ArrayList<String> passiveWorlds = new ArrayList<String>();
+    private ArrayList<String> playerWorlds = new ArrayList<String>();
+
     private boolean monsterEnemy;
     private boolean passiveAlly;
     private boolean playerAlly;
@@ -277,21 +281,19 @@ public class Settings
     {
         if (attacker instanceof Player)
         {
-            if (target instanceof Animals)
+            if (target instanceof Animals && !(target instanceof Tameable))
             {
-                if (!(target instanceof Tameable) && passiveAlly)
+                if (passiveAlly || passiveWorlds.contains(attacker.getWorld().getName()))
                     return false;
             }
             else if (target instanceof Monster)
             {
-                if (monsterEnemy)
-                {
+                if (monsterEnemy || monsterWorlds.contains(attacker.getWorld().getName()))
                     return true;
-                }
             }
             else if (target instanceof Player)
             {
-                if (playerAlly)
+                if (playerAlly || playerWorlds.contains(attacker.getWorld().getName()))
                     return false;
             }
         }
@@ -313,9 +315,23 @@ public class Settings
 
     private void loadTargetingSettings()
     {
-        monsterEnemy = config.getBoolean(TARGET_MONSTER);
-        passiveAlly = config.getBoolean(TARGET_PASSIVE);
-        playerAlly = config.getBoolean(TARGET_PLAYER);
+        if (config.isList(TARGET_MONSTER)) {
+            monsterWorlds.addAll(config.getList(TARGET_MONSTER));
+            monsterEnemy = false;
+        }
+        else monsterEnemy = config.getBoolean(TARGET_MONSTER);
+
+        if (config.isList(TARGET_PASSIVE)) {
+            passiveWorlds.addAll(config.getList(TARGET_PASSIVE));
+            passiveAlly = false;
+        }
+        else passiveAlly = config.getBoolean(TARGET_PASSIVE);
+
+        if (config.isList(TARGET_PLAYER)) {
+            playerWorlds.addAll(config.getList(TARGET_PLAYER));
+            playerAlly = false;
+        }
+        else playerAlly = config.getBoolean(TARGET_PLAYER);
     }
 
     ///////////////////////////////////////////////////////

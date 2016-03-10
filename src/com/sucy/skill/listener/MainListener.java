@@ -364,9 +364,15 @@ public class MainListener implements Listener
             || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
             || !(event.getEntity() instanceof LivingEntity)) return;
 
+        // Ignore no-damage events (for CrackShot)
+        if (event.getDamage() == 0)
+        {
+            return;
+        }
+
         // Damage buff application
         LivingEntity damager = ListenerUtil.getDamager(event);
-        VersionManager.setDamage(event, BuffManager.modifyDealtDamage(damager, event.getDamage()));
+        event.setDamage(BuffManager.modifyDealtDamage(damager, event.getDamage()));
 
         // Cancel event if no damage
         if (event.getDamage() <= 0)
@@ -382,7 +388,7 @@ public class MainListener implements Listener
 
         // Defense buff application
         LivingEntity damaged = (LivingEntity) event.getEntity();
-        VersionManager.setDamage(event, BuffManager.modifyTakenDefense(damaged, event.getDamage()));
+        event.setDamage(BuffManager.modifyTakenDefense(damaged, event.getDamage()));
 
         // Cancel event if no damage
         if (event.getDamage() <= 0)

@@ -454,10 +454,14 @@ public class PlayerSkillBar
         {
             if (!isWeaponSlot(i))
             {
+                ItemStack item = player.getInventory().getItem(i);
+                if (item == null) {
+                    update(player);
+                    item = player.getInventory().getItem(i);
+                }
                 PlayerSkill skill = this.player.getSkill(slots.get(i + 1));
                 if (skill != null && skill.isUnlocked())
                 {
-                    ItemStack item = player.getInventory().getItem(i);
                     int amount = Math.max(1, skill.getCooldown());
                     if (item.getAmount() != amount)
                     {

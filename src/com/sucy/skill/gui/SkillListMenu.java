@@ -229,7 +229,7 @@ public class SkillListMenu extends MapMenu
         ArrayList<PlayerSkill> skills = getSkills(player);
 
         // Draw skill list
-        for (int i = Math.max(0, scroll - 1); i < scroll + 5 && i < skills.size(); i++)
+        for (int i = Math.max(0, scroll - 1); i < scroll + 6 && i < skills.size(); i++)
         {
             int y = (i - scroll) * 20 + 36;
             scene.get(PLATE + i).moveTo(0, y);

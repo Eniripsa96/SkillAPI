@@ -68,7 +68,7 @@ public enum Trigger
     /**
      * Trigger effects when the player falls to a certain health percentage
      */
-    HEALTH,
+    //HEALTH,
 
     /**
      * Trigger effects when the skill is available

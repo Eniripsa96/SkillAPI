@@ -45,7 +45,7 @@ public class Formula
      */
     public Formula(String equation)
     {
-        equation = equation.replaceAll(" ", "");
+        equation = equation.replaceAll("[ '\"]", "");
         String[] split = equation.split("[+*/-]");
         operations = equation.split("[^+*/-]+");
 

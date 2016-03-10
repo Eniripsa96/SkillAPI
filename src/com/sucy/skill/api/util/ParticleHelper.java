@@ -29,10 +29,7 @@ package com.sucy.skill.api.util;
 import com.rit.sucy.reflect.Particle;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.Direction;
-import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Wolf;
 import org.bukkit.potion.PotionEffect;
@@ -60,6 +57,16 @@ public class ParticleHelper
      * Settings key for the type of particle
      */
     public static final String PARTICLE_KEY = "particle";
+
+    /**
+     * Settings key for the material used by the particle (for block crack, icon crack, and block dust)
+     */
+    public static final String MATERIAL_KEY = "material";
+
+    /**
+     * Settings key for the material data used by the particle (for block crack, icon crack, and block dust)
+     */
+    public static final String TYPE_KEY = "type";
 
     /**
      * Settings key for the radius of the particle arrangement
@@ -199,6 +206,32 @@ public class ParticleHelper
         else if (REFLECT_PARTICLES.containsKey(particle))
         {
             Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), 1);
+        }
+
+        // Block break particle
+        else if (particle.equals("block crack"))
+        {
+            try
+            {
+                Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
+                Particle.playBlockCrack(mat, (short)settings.getInt(TYPE_KEY, 0), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float)settings.getDouble(SPEED_KEY, 1.0));
+            }
+            catch (Exception ex) {
+                Bukkit.getLogger().warning(ex.getCause().getMessage());
+            }
+        }
+
+        // Icon break particle
+        else if (particle.equals("icon crack"))
+        {
+            try
+            {
+                Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
+                Particle.playIconCrack(mat, (short)settings.getInt(TYPE_KEY, 0), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float)settings.getDouble(SPEED_KEY, 1.0));
+            }
+            catch (Exception ex) {
+                Bukkit.getLogger().warning(ex.getCause().getMessage());
+            }
         }
 
         else Bukkit.getLogger().info("\"" + particle + "\" not a valid particle");

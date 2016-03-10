@@ -39,6 +39,7 @@ import java.util.List;
 public class SoundMechanic extends EffectComponent
 {
     private static final String SOUND  = "sound";
+    private static final String SOUND2 = "newsound";
     private static final String VOLUME = "volume";
     private static final String PITCH  = "pitch";
 
@@ -59,7 +60,7 @@ public class SoundMechanic extends EffectComponent
             return false;
         }
 
-        String type = settings.getString(SOUND, "").toUpperCase().replace(" ", "_");
+        String type = settings.getString(SOUND, settings.getString(SOUND2, "")).toUpperCase().replace(" ", "_");
         try
         {
             Sound sound = Sound.valueOf(type);

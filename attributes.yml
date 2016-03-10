@@ -1,3 +1,16 @@
+# Attributes.yml
+#
+# For full details, visit
+# http://dev.bukkit.org/bukkit-plugins/skillapi/pages/attributes/
+#
+# List of available stats to modify:
+#   health           - the max health of the player
+#   mana             - the amount of mana the player has
+#   mana-regen       - how much mana the player regenerates over time
+#   physical-damage  - damage dealt without using skills
+#   physical-defense - damage taken from non-skill attacks
+#   skill-damage     - damage dealt with skills
+#   skill-defense    - damage taken from skills
 vitality:
   display: 'Vitality'
   max: 999

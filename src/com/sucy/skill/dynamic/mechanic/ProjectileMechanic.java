@@ -118,7 +118,7 @@ public class ProjectileMechanic extends EffectComponent
                     Projectile p = caster.launchProjectile(type);
                     p.teleport(loc);
                     p.setVelocity(new Vector(0, speed, 0));
-                    p.setMetadata(LEVEL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), level));
+                    SkillAPI.setMeta(p, LEVEL, level);
                 }
             }
             else
@@ -139,9 +139,8 @@ public class ProjectileMechanic extends EffectComponent
                         p.teleport(target.getLocation().add(0, 0.5, 0).add(p.getVelocity()).setDirection(d));
                     }
                     p.setVelocity(d.multiply(speed));
-                    SkillAPI api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
-                    p.setMetadata(MechanicListener.P_CALL, new FixedMetadataValue(api, this));
-                    p.setMetadata(LEVEL, new FixedMetadataValue(api, level));
+                    SkillAPI.setMeta(p, MechanicListener.P_CALL, this);
+                    SkillAPI.setMeta(p, LEVEL, level);
                 }
             }
         }
@@ -163,7 +162,7 @@ public class ProjectileMechanic extends EffectComponent
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
-        executeChildren((LivingEntity) projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
+        executeChildren((LivingEntity)projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
         projectile.remove();
     }
 

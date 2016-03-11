@@ -130,7 +130,8 @@ public abstract class IOManager
             PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")), player, true);
 
             // Load scheme
-            acc.setScheme(account.getString(SCHEME, "default"));
+            if (SkillAPI.getSettings().isMapTreeAvailable())
+                acc.setScheme(account.getString(SCHEME, "default"));
 
             // Load classes
             DataSection classes = account.getSection(CLASSES);
@@ -181,62 +182,67 @@ public abstract class IOManager
             }
 
             // Load skill bar
-            DataSection skillBar = account.getSection(SKILL_BAR);
-            PlayerSkillBar bar = acc.getSkillBar();
-            if (skillBar != null && bar != null)
+            if (SkillAPI.getSettings().isSkillBarEnabled())
             {
-                for (String key : skillBar.keys())
+                DataSection skillBar = account.getSection(SKILL_BAR);
+                PlayerSkillBar bar = acc.getSkillBar();
+                if (skillBar != null && bar != null)
                 {
-                    if (key.equals(ENABLED))
+                    for (String key : skillBar.keys())
                     {
-                        if (bar.isEnabled() != skillBar.getBoolean(key))
+                        if (key.equals(ENABLED))
                         {
-                            bar.toggleEnabled();
+                            if (bar.isEnabled() != skillBar.getBoolean(key))
+                            {
+                                bar.toggleEnabled();
+                            }
+                        }
+                        else if (key.equals(SLOTS))
+                        {
+                            List<String> slots = skillBar.getList(SLOTS);
+                            for (String i : slots)
+                            {
+                                bar.getData().put(Integer.parseInt(i), UNASSIGNED);
+                            }
+                        }
+                        else if (SkillAPI.getSkill(key) != null)
+                        {
+                            bar.getData().put(skillBar.getInt(key), key);
                         }
                     }
-                    else if (key.equals(SLOTS))
-                    {
-                        List<String> slots = skillBar.getList(SLOTS);
-                        for (String i : slots)
-                        {
-                            bar.getData().put(Integer.parseInt(i), UNASSIGNED);
-                        }
-                    }
-                    else if (SkillAPI.getSkill(key) != null)
-                    {
-                        bar.getData().put(skillBar.getInt(key), key);
-                    }
+                    bar.applySettings();
                 }
-                bar.applySettings();
-            }
-            if (!SkillAPI.getSettings().isSkillBarEnabled() && bar != null && bar.isEnabled())
-            {
-                bar.toggleEnabled();
             }
 
             // Load combos
-            DataSection combos = account.getSection(COMBOS);
-            PlayerCombos comboData = acc.getComboData();
-            if (combos != null && comboData != null)
+            if (SkillAPI.getSettings().isCombosEnabled())
             {
-                for (String key : combos.keys())
+                DataSection combos = account.getSection(COMBOS);
+                PlayerCombos comboData = acc.getComboData();
+                if (combos != null && comboData != null)
                 {
-                    Skill skill = SkillAPI.getSkill(key);
-                    if (acc.hasSkill(key) && skill != null && skill.canCast())
+                    for (String key : combos.keys())
                     {
-                        comboData.setSkill(skill, combos.getInt(key));
+                        Skill skill = SkillAPI.getSkill(key);
+                        if (acc.hasSkill(key) && skill != null && skill.canCast())
+                        {
+                            comboData.setSkill(skill, combos.getInt(key));
+                        }
                     }
                 }
             }
 
             // Load attributes
-            acc.setAttribPoints(account.getInt(ATTRIB_POINTS, 0));
-            DataSection attribs = account.getSection(ATTRIBS);
-            if (attribs != null)
+            if (SkillAPI.getSettings().isAttributesEnabled())
             {
-                for (String key : attribs.keys())
+                acc.setAttribPoints(account.getInt(ATTRIB_POINTS, 0));
+                DataSection attribs = account.getSection(ATTRIBS);
+                if (attribs != null)
                 {
-                    acc.getAttributeData().put(key, attribs.getInt(key));
+                    for (String key : attribs.keys())
+                    {
+                        acc.getAttributeData().put(key, attribs.getInt(key));
+                    }
                 }
             }
 
@@ -262,7 +268,8 @@ public abstract class IOManager
                 PlayerData acc = entry.getValue();
 
                 // Save scheme
-                account.set(SCHEME, acc.getScheme());
+                if (SkillAPI.getSettings().isMapTreeAvailable())
+                    account.set(SCHEME, acc.getScheme());
 
                 // Save classes
                 DataSection classes = account.createSection(CLASSES);
@@ -292,7 +299,7 @@ public abstract class IOManager
                 }
 
                 // Save skill bar
-                if (acc.getSkillBar() != null)
+                if (SkillAPI.getSettings().isSkillBarEnabled() && acc.getSkillBar() != null)
                 {
                     DataSection skillBar = account.createSection(SKILL_BAR);
                     PlayerSkillBar bar = acc.getSkillBar();
@@ -309,23 +316,29 @@ public abstract class IOManager
                 }
 
                 // Save combos
-                DataSection combos = account.createSection(COMBOS);
-                PlayerCombos comboData = acc.getComboData();
-                if (combos != null && comboData != null)
+                if (SkillAPI.getSettings().isCombosEnabled())
                 {
-                    HashMap<String, Integer> comboMap = comboData.getComboData();
-                    for (Map.Entry<String, Integer> combo : comboMap.entrySet())
+                    DataSection combos = account.createSection(COMBOS);
+                    PlayerCombos comboData = acc.getComboData();
+                    if (combos != null && comboData != null)
                     {
-                        combos.set(combo.getKey(), combo.getValue());
+                        HashMap<String, Integer> comboMap = comboData.getComboData();
+                        for (Map.Entry<String, Integer> combo : comboMap.entrySet())
+                        {
+                            combos.set(combo.getKey(), combo.getValue());
+                        }
                     }
                 }
 
                 // Save attributes
-                account.set(ATTRIB_POINTS, acc.getAttributePoints());
-                DataSection attribs = account.createSection(ATTRIBS);
-                for (String key : acc.getAttributeData().keySet())
+                if (SkillAPI.getSettings().isAttributesEnabled())
                 {
-                    attribs.set(key, acc.getAttributeData().get(key));
+                    account.set(ATTRIB_POINTS, acc.getAttributePoints());
+                    DataSection attribs = account.createSection(ATTRIBS);
+                    for (String key : acc.getAttributeData().keySet())
+                    {
+                        attribs.set(key, acc.getAttributeData().get(key));
+                    }
                 }
             }
             return file;

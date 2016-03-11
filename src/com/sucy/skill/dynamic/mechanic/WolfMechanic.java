@@ -27,6 +27,9 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.skills.PassiveSkill;
+import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
@@ -45,6 +48,9 @@ import java.util.List;
  */
 public class WolfMechanic extends EffectComponent
 {
+    public static final String SKILL_META = "sapi_wolf_skills";
+    public static final String LEVEL      = "sapi_wolf_level";
+
     private static final ArrayList<RemoveTask> tasks = new ArrayList<RemoveTask>();
 
     private static final String COLOR   = "color";
@@ -52,6 +58,7 @@ public class WolfMechanic extends EffectComponent
     private static final String SECONDS = "seconds";
     private static final String NAME    = "name";
     private static final String DAMAGE  = "damage";
+    private static final String SKILLS  = "skills";
 
     /**
      * Executes the component
@@ -75,6 +82,7 @@ public class WolfMechanic extends EffectComponent
         double health = attr(caster, HEALTH, level, 10.0, isSelf);
         String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", ((Player) caster).getName()));
         double damage = attr(caster, DAMAGE, level, 3.0, isSelf);
+        List<String> skills = settings.getStringList(SKILLS);
 
         DyeColor dye = null;
         if (color != null)
@@ -96,7 +104,7 @@ public class WolfMechanic extends EffectComponent
             wolf.setOwner((Player) caster);
             wolf.setMaxHealth(health);
             wolf.setHealth(health);
-            wolf.setMetadata(MechanicListener.SUMMON_DAMAGE, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), damage));
+            SkillAPI.setMeta(wolf, MechanicListener.SUMMON_DAMAGE, damage);
 
             if (dye != null)
             {
@@ -107,6 +115,17 @@ public class WolfMechanic extends EffectComponent
                 wolf.setCustomName(name);
                 wolf.setCustomNameVisible(true);
             }
+
+            // Setup skills
+            for (String skillName : skills)
+            {
+                Skill skill = SkillAPI.getSkill(skillName);
+                if (skill instanceof PassiveSkill) {
+                    ((PassiveSkill) skill).initialize(wolf, level);
+                }
+            }
+            SkillAPI.setMeta(wolf, SKILL_META, skills);
+            SkillAPI.setMeta(wolf, LEVEL, level);
 
             RemoveTask task = new RemoveTask(wolf, ticks);
             tasks.add(task);

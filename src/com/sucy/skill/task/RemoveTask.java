@@ -27,10 +27,15 @@
 package com.sucy.skill.task;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.skills.PassiveSkill;
+import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.List;
 
 /**
  * A simple task for removing an entity after a duration
@@ -68,8 +73,24 @@ public class RemoveTask extends BukkitRunnable
      * Removes the entity once the time is up
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void run()
     {
+        // Clear skill setup
+        if (entity.hasMetadata(WolfMechanic.SKILL_META))
+        {
+            List<String> skills = (List<String>)SkillAPI.getMeta(entity, WolfMechanic.SKILL_META);
+            int level = SkillAPI.getMetaInt(entity, WolfMechanic.LEVEL);
+            for (String skillName : skills)
+            {
+                Skill skill = SkillAPI.getSkill(skillName);
+                if (skill instanceof PassiveSkill) {
+                    ((PassiveSkill) skill).stopEffects(entity, level);
+                }
+            }
+        }
+
+        // Remove wolf
         if (entity.isValid() && !entity.isDead())
         {
             entity.remove();

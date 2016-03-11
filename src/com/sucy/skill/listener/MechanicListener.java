@@ -158,7 +158,7 @@ public class MechanicListener implements Listener
     {
         if (event.getEntity().hasMetadata(P_CALL))
         {
-            ((ProjectileMechanic) event.getEntity().getMetadata(P_CALL).get(0).value()).callback(event.getEntity(), null);
+            ((ProjectileMechanic) SkillAPI.getMeta(event.getEntity(), P_CALL)).callback(event.getEntity(), null);
         }
     }
 
@@ -175,7 +175,8 @@ public class MechanicListener implements Listener
             Projectile p = (Projectile) event.getDamager();
             if (p.hasMetadata(P_CALL) && event.getEntity() instanceof LivingEntity)
             {
-                ((ProjectileMechanic) p.getMetadata(P_CALL).get(0).value()).callback(p, (LivingEntity) event.getEntity());
+                ((ProjectileMechanic) SkillAPI.getMeta(p, P_CALL))
+                        .callback(p, (LivingEntity) event.getEntity());
                 event.setCancelled(true);
             }
         }
@@ -191,7 +192,7 @@ public class MechanicListener implements Listener
     {
         if (event.getDamager().hasMetadata(SUMMON_DAMAGE))
         {
-            VersionManager.setDamage(event, event.getDamager().getMetadata(SUMMON_DAMAGE).get(0).asDouble());
+            VersionManager.setDamage(event, SkillAPI.getMetaDouble(event.getDamager(), SUMMON_DAMAGE));
         }
     }
 
@@ -206,8 +207,8 @@ public class MechanicListener implements Listener
         if (event.getEntity().hasMetadata(POTION_PROJECTILE))
         {
             event.setCancelled(true);
-            PotionProjectileMechanic mechanic = (PotionProjectileMechanic) event.getEntity().getMetadata(POTION_PROJECTILE).get(0).value();
-            mechanic.callback(event.getEntity(), event.getAffectedEntities());
+            ((PotionProjectileMechanic) SkillAPI.getMeta(event.getEntity(), POTION_PROJECTILE))
+                    .callback(event.getEntity(), event.getAffectedEntities());
             event.getAffectedEntities().clear();
         }
     }

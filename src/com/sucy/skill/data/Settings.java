@@ -297,6 +297,14 @@ public class Settings
                     return false;
             }
         }
+        else if (attacker instanceof Tameable)
+        {
+            Tameable tameable = (Tameable)attacker;
+            if (tameable.isTamed() && (tameable.getOwner() instanceof LivingEntity)) {
+                return (tameable.getOwner() != target)
+                    && canAttack((LivingEntity)tameable.getOwner(), target);
+            }
+        }
         return Protection.canAttack(attacker, target);
     }
 

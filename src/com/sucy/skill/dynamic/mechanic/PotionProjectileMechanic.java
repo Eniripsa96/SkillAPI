@@ -84,9 +84,8 @@ public class PotionProjectileMechanic extends EffectComponent
         for (LivingEntity target : targets)
         {
             ThrownPotion thrown = caster.launchProjectile(ThrownPotion.class);
-            SkillAPI api = (SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI");
-            thrown.setMetadata(LEVEL, new FixedMetadataValue(api, level));
-            thrown.setMetadata(MechanicListener.POTION_PROJECTILE, new FixedMetadataValue(api, this));
+            SkillAPI.setMeta(thrown, LEVEL, level);
+            SkillAPI.setMeta(thrown, MechanicListener.POTION_PROJECTILE, this);
             thrown.setItem(item);
         }
 
@@ -119,6 +118,6 @@ public class PotionProjectileMechanic extends EffectComponent
             LivingEntity loc = new TempEntity(projectile.getLocation());
             targets.add(loc);
         }
-        executeChildren((LivingEntity) projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
+        executeChildren((LivingEntity)projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
     }
 }

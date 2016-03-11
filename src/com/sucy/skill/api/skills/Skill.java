@@ -413,7 +413,7 @@ public abstract class Skill
                         .replace("{type}", type);
 
                 // Attributes
-                if (line.contains("{attr:"))
+                while (line.contains("{attr:"))
                 {
                     int start = line.indexOf("{attr:");
                     int end = line.indexOf("}", start);
@@ -437,7 +437,7 @@ public abstract class Skill
                 }
 
                 // Full description
-                else if (line.contains("{desc}"))
+                if (line.contains("{desc}"))
                 {
                     for (String descLine : description)
                     {
@@ -447,7 +447,7 @@ public abstract class Skill
                 }
 
                 // Description segments
-                else if (line.contains("{desc:"))
+                if (line.contains("{desc:"))
                 {
                     int start = line.indexOf("{desc:");
                     int end = line.indexOf("}", start);

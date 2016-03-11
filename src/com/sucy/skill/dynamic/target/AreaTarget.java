@@ -64,8 +64,9 @@ public class AreaTarget extends EffectComponent
         boolean worked = false;
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double radius = attr(caster, RADIUS, level, 3.0, isSelf);
-        boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
-        boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
+        String group = settings.getString(ALLY, "enemy").toLowerCase();
+        boolean both = group.equals("both");
+        boolean ally = group.equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
         double max = attr(caster, MAX, level, 99, isSelf);
@@ -74,7 +75,7 @@ public class AreaTarget extends EffectComponent
         {
             ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            if (t != caster && !(t instanceof TempEntity) && SkillAPI.getSettings().isAlly(caster, t) == ally)
+            if (t != caster && !(t instanceof TempEntity) && (both || SkillAPI.getSettings().isAlly(caster, t) == ally))
             {
                 list.add(t);
             }

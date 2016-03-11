@@ -403,6 +403,7 @@ public abstract class EffectComponent
             put("value location", ValueLocationMechanic.class);
             put("value lore", ValueLoreMechanic.class);
             put("value multiply", ValueMultiplyMechanic.class);
+            put("value random", ValueRandomMechanic.class);
             put("value set", ValueSetMechanic.class);
             put("warp", WarpMechanic.class);
             put("warp location", WarpLocMechanic.class);

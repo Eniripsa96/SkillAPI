@@ -260,6 +260,7 @@ public class Settings
      *
      * @return string list or empty list if not found
      */
+    @SuppressWarnings("unchecked")
     public List<String> getStringList(String key)
     {
         if (settings.containsKey(key) && settings.get(key) instanceof List<?>)

@@ -178,7 +178,7 @@ public class MainListener implements Listener
         // Cancel experience when applicable
         if (event.getEntity().hasMetadata(S_TYPE))
         {
-            int value = event.getEntity().getMetadata(S_TYPE).get(0).asInt();
+            int value = SkillAPI.getMetaInt(event.getEntity(), S_TYPE);
 
             // Block spawner mob experience
             if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner())
@@ -313,11 +313,11 @@ public class MainListener implements Listener
     {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER)
         {
-            event.getEntity().setMetadata(S_TYPE, new FixedMetadataValue(plugin, SPAWNER));
+            SkillAPI.setMeta(event.getEntity(), S_TYPE, SPAWNER);
         }
         else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
         {
-            event.getEntity().setMetadata(S_TYPE, new FixedMetadataValue(plugin, EGG));
+            SkillAPI.setMeta(event.getEntity(), S_TYPE, EGG);
         }
     }
 
@@ -455,7 +455,8 @@ public class MainListener implements Listener
         {
             PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
             data.stopPassives(event.getPlayer());
-            data.getSkillBar().clear(event.getPlayer());
+            if (SkillAPI.getSettings().isSkillBarEnabled())
+                data.getSkillBar().clear(event.getPlayer());
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
             event.getPlayer().setHealth(20);
             if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none"))
@@ -472,7 +473,8 @@ public class MainListener implements Listener
         {
             PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
             data.startPassives(event.getPlayer());
-            data.getSkillBar().setup(event.getPlayer());
+            if (SkillAPI.getSettings().isSkillBarEnabled())
+                data.getSkillBar().setup(event.getPlayer());
             data.updateHealthAndMana(event.getPlayer());
             data.updateScoreboard();
         }

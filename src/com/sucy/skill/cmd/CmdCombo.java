@@ -110,7 +110,7 @@ public class CmdCombo implements IFunction
                 int id = SkillAPI.getComboManager().convertCombo(clicks);
                 if (player.getComboData().setSkill(skill.getData(), id))
                 {
-                    if (player.getSkillBar().isSetup())
+                    if (SkillAPI.getSettings().isSkillBarEnabled() && player.getSkillBar().isSetup())
                     {
                         player.getSkillBar().update(player.getPlayer());
                     }

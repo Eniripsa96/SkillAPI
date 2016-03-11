@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.api.projectile.ParticleProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
@@ -100,7 +101,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
             // Set metadata for when the callback happens
             for (ParticleProjectile p : list)
             {
-                p.setMetadata(LEVEL, new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillAPI"), level));
+                SkillAPI.setMeta(p, LEVEL, level);
                 p.setAllyEnemy(ally, !ally);
             }
         }
@@ -123,6 +124,6 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
-        executeChildren(projectile.getShooter(), projectile.getMetadata(LEVEL).get(0).asInt(), targets);
+        executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
     }
 }

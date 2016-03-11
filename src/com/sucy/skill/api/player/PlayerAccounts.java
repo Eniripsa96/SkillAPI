@@ -217,7 +217,7 @@ public class PlayerAccounts
             getActiveData().stopPassives(player);
             getActiveData().clearBonuses();
             AttributeListener.clearBonuses(player);
-            if (getActiveData().hasClass())
+            if (getActiveData().hasClass() && SkillAPI.getSettings().isSkillBarEnabled())
             {
                 getActiveData().getSkillBar().clear(player);
             }
@@ -226,7 +226,7 @@ public class PlayerAccounts
             getActiveData().updateScoreboard();
             getActiveData().updateHealthAndMana(player);
             AttributeListener.updatePlayer(getActiveData());
-            if (getActiveData().hasClass())
+            if (getActiveData().hasClass() && SkillAPI.getSettings().isSkillBarEnabled())
             {
                 getActiveData().getSkillBar().setup(player);
             }

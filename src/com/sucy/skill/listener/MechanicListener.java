@@ -51,6 +51,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -63,7 +64,7 @@ public class MechanicListener implements Listener
     public static final String POTION_PROJECTILE = "potionProjectile";
     public static final String SPEED_KEY         = "sapiSpeedKey";
 
-    private HashSet<Integer> flying = new HashSet<Integer>();
+    private HashMap<Integer, Double> flying = new HashMap<Integer, Double>();
 
     /**
      * Initializes a new listener for dynamic mechanic related events.
@@ -84,18 +85,22 @@ public class MechanicListener implements Listener
     @EventHandler
     public void onMove(PlayerMoveEvent event)
     {
-        boolean inMap = flying.contains(event.getPlayer().getEntityId());
+        boolean inMap = flying.containsKey(event.getPlayer().getEntityId());
         if (inMap == ((Entity) event.getPlayer()).isOnGround())
         {
             if (inMap)
             {
-                flying.remove(event.getPlayer().getEntityId());
-                Bukkit.getPluginManager().callEvent(new PlayerLandEvent(event.getPlayer()));
+                double maxHeight = flying.remove(event.getPlayer().getEntityId());
+                Bukkit.getPluginManager().callEvent(new PlayerLandEvent(event.getPlayer(), maxHeight - event.getPlayer().getLocation().getY()));
             }
             else
             {
-                flying.add(event.getPlayer().getEntityId());
+                flying.put(event.getPlayer().getEntityId(), event.getPlayer().getLocation().getY());
             }
+        }
+        else if (inMap) {
+            double y = flying.get(event.getPlayer().getEntityId());
+            flying.put(event.getPlayer().getEntityId(), Math.max(y, event.getPlayer().getLocation().getY()));
         }
     }
 

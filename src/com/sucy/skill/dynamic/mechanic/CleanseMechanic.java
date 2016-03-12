@@ -92,7 +92,7 @@ public class CleanseMechanic extends EffectComponent
                 worked = true;
             }
 
-            if (potion.equals("all"))
+            if (potion.equals("ALL"))
             {
                 for (PotionEffectType p : POTIONS)
                 {

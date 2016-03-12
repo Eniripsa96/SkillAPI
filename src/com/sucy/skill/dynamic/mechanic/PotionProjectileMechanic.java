@@ -51,6 +51,7 @@ public class PotionProjectileMechanic extends EffectComponent
     private static final String POTION = "type";
     private static final String ALLY   = "group";
     private static final String LEVEL  = "skill_level";
+    private static final String LINGER = "linger";
 
     /**
      * Executes the component
@@ -66,7 +67,8 @@ public class PotionProjectileMechanic extends EffectComponent
     {
         // Get common values
         String potion = settings.getString(POTION, "slowness").toUpperCase().replace(" ", "_");
-        PotionType type;
+        boolean linger = settings.getString(LINGER, "false").toLowerCase().equals("true");
+                PotionType type;
         try
         {
             type = PotionType.valueOf(potion);
@@ -77,7 +79,14 @@ public class PotionProjectileMechanic extends EffectComponent
         }
 
         Potion p = new Potion(type, 1);
-        ItemStack item = new ItemStack(Material.POTION);
+        ItemStack item;
+        try
+        {
+            item = new ItemStack(Material.valueOf(linger ? "LINGERING_POTION" : "POTION"));
+        }
+        catch (Exception ex) {
+            item = new ItemStack(Material.POTION);
+        }
         p.apply(item);
 
         // Fire from each target

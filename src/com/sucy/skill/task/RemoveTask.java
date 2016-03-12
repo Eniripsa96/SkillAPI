@@ -30,6 +30,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
@@ -42,7 +43,7 @@ import java.util.List;
  */
 public class RemoveTask extends BukkitRunnable
 {
-    private LivingEntity entity;
+    private Entity entity;
 
     /**
      * Initializes a new task to remove the entity after the
@@ -51,7 +52,7 @@ public class RemoveTask extends BukkitRunnable
      * @param entity entity to remove
      * @param ticks  ticks to wait before removing the entity
      */
-    public RemoveTask(LivingEntity entity, int ticks)
+    public RemoveTask(Entity entity, int ticks)
     {
         this.entity = entity;
         SkillAPI.schedule(this, ticks);
@@ -85,13 +86,13 @@ public class RemoveTask extends BukkitRunnable
             {
                 Skill skill = SkillAPI.getSkill(skillName);
                 if (skill instanceof PassiveSkill) {
-                    ((PassiveSkill) skill).stopEffects(entity, level);
+                    ((PassiveSkill) skill).stopEffects((LivingEntity)entity, level);
                 }
             }
         }
 
-        // Remove wolf
-        if (entity.isValid() && !entity.isDead())
+        // Remove entity
+        if (entity.isValid())
         {
             entity.remove();
         }

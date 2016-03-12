@@ -85,7 +85,7 @@ public class ParticleProjectile extends CustomProjectile
         this.settings = settings;
         this.vel = loc.getDirection().multiply(settings.getAttr(SPEED, level, 1.0));
         this.freq = (int) (20 * settings.getDouble(FREQUENCY, 0.5));
-        this.life = (int) (settings.getDouble(LIFESPAN, 10.0) * 20);
+        this.life = (int) (settings.getDouble(LIFESPAN, 2) * 20);
 
         steps = (int) Math.ceil(vel.length() * 2);
         vel.multiply(1.0 / steps);

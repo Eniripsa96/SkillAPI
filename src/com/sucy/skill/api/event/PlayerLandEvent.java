@@ -37,15 +37,18 @@ public class PlayerLandEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
     private Player player;
+    private double distance;
 
     /**
      * Constructor
      *
-     * @param player the player who landed on the ground
+     * @param player   the player who landed on the ground
+     * @param distance how far they fell
      */
-    public PlayerLandEvent(Player player)
+    public PlayerLandEvent(Player player, double distance)
     {
         this.player = player;
+        this.distance = distance;
     }
 
     /**
@@ -54,6 +57,14 @@ public class PlayerLandEvent extends Event
     public Player getPlayer()
     {
         return player;
+    }
+
+    /**
+     * @return the distance the player fell
+     */
+    public double getDistance()
+    {
+        return distance;
     }
 
     /**

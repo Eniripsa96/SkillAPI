@@ -457,9 +457,14 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @EventHandler
     public void onLand(PlayerLandEvent event)
     {
-        if (active.containsKey(event.getPlayer().getEntityId()))
+        EffectComponent component = components.get(Trigger.LAND);
+        if (active.containsKey(event.getPlayer().getEntityId()) && component != null)
         {
-            trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.LAND);
+            double minDistance = component.settings.getDouble("min-distance", 0);
+            if (event.getDistance() >= minDistance)
+            {
+                trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.LAND);
+            }
         }
     }
 

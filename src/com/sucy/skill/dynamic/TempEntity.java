@@ -26,7 +26,10 @@
  */
 package com.sucy.skill.dynamic;
 
+import com.sucy.skill.api.util.Nearby;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -111,24 +114,6 @@ public class TempEntity implements LivingEntity
 
     @Override
     public List<Block> getLastTwoTargetBlocks(Set<Material> set, int i)
-    {
-        return null;
-    }
-
-    @Override
-    public Egg throwEgg()
-    {
-        return null;
-    }
-
-    @Override
-    public Snowball throwSnowball()
-    {
-        return null;
-    }
-
-    @Override
-    public Arrow shootArrow()
     {
         return null;
     }
@@ -308,6 +293,24 @@ public class TempEntity implements LivingEntity
     }
 
     @Override
+    public void setGlowing(boolean b)
+    {
+
+    }
+
+    @Override
+    public boolean isGlowing()
+    {
+        return false;
+    }
+
+    @Override
+    public Spigot spigot()
+    {
+        return null;
+    }
+
+    @Override
     public boolean isLeashed()
     {
         return false;
@@ -476,15 +479,7 @@ public class TempEntity implements LivingEntity
     @Override
     public List<Entity> getNearbyEntities(double x, double y, double z)
     {
-        ArrayList<Entity> list = new ArrayList<Entity>();
-        for (Entity entity : loc.getWorld().getEntities())
-        {
-            if (entity.getLocation().distanceSquared(loc) < x * x)
-            {
-                list.add(entity);
-            }
-        }
-        return list;
+        return Nearby.getNearbyEntities(loc, x, y, z);
     }
 
     @Override
@@ -760,5 +755,11 @@ public class TempEntity implements LivingEntity
     public void setOp(boolean b)
     {
 
+    }
+
+    @Override
+    public AttributeInstance getAttribute(Attribute attribute)
+    {
+        return null;
     }
 }

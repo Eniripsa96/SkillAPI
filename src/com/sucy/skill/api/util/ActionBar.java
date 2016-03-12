@@ -47,7 +47,6 @@ public class ActionBar
     private static Method getHandle;
 
     private static Constructor<?> constructPacket;
-    private static Constructor<?> constructText;
 
     private static boolean initialized = false;
     private static boolean supported   = false;
@@ -62,7 +61,6 @@ public class ActionBar
             packet = Reflection.getNMSClass("Packet");
             chatBase = Reflection.getNMSClass("IChatBaseComponent");
             chatText = Reflection.getNMSClass("ChatComponentText");
-            constructText = chatText.getConstructor(String.class);
             constructPacket = chatPacket.getConstructor(chatBase, byte.class);
             getHandle = craftPlayer.getDeclaredMethod("getHandle");
 
@@ -98,8 +96,7 @@ public class ActionBar
 
         try
         {
-            Object text = constructText.newInstance(message);
-            Object data = constructPacket.newInstance(text, (byte) 2);
+            Object data = constructPacket.newInstance(message, (byte) 2);
             Object handle = getHandle.invoke(player);
             Object connection = Reflection.getValue(handle, "playerConnection");
             Method send = Reflection.getMethod(connection, "sendPacket", packet);

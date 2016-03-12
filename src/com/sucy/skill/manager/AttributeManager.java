@@ -51,6 +51,7 @@ public class AttributeManager
     public static final String PHYSICAL_DEFENSE = "physical-defense";
     public static final String SKILL_DAMAGE     = "skill-damage";
     public static final String SKILL_DEFENSE    = "skill-defense";
+    public static final String MOVE_SPEED       = "move-speed";
 
     private HashMap<String, Attribute> attributes = new HashMap<String, Attribute>();
 
@@ -167,6 +168,7 @@ public class AttributeManager
                 loadStatModifier(stats, PHYSICAL_DEFENSE);
                 loadStatModifier(stats, SKILL_DAMAGE);
                 loadStatModifier(stats, SKILL_DEFENSE);
+                loadStatModifier(stats, MOVE_SPEED);
             }
         }
 

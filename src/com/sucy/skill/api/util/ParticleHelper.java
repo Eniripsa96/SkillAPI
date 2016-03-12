@@ -49,6 +49,11 @@ public class ParticleHelper
     public static final String ARRANGEMENT_KEY = "arrangement";
 
     /**
+     * Number of particles
+     */
+    public static final String PARTICLES_KEY = "particles";
+
+    /**
      * The level to use for scaling values
      */
     public static final String LEVEL = "level";
@@ -142,7 +147,7 @@ public class ParticleHelper
         {
             int level = settings.getInt(LEVEL, 1);
             double radius = settings.getAttr(RADIUS_KEY, level, 3.0);
-            int amount = (int) settings.getAttr(AMOUNT_KEY, level, 10);
+            int amount = (int) settings.getAttr(PARTICLES_KEY, level, settings.getAttr(AMOUNT_KEY, level, 10));
 
             String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
             if (arrangement.equals("circle"))
@@ -234,7 +239,10 @@ public class ParticleHelper
             }
         }
 
-        else Bukkit.getLogger().info("\"" + particle + "\" not a valid particle");
+        // 1.9+ particles
+        else {
+            Particle.play(particle, loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), 1);
+        }
     }
 
     /**

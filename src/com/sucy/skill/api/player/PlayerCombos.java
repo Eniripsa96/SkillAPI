@@ -27,9 +27,11 @@
 package com.sucy.skill.api.player;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerComboFinishEvent;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Click;
 import com.sucy.skill.manager.ComboManager;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -138,7 +140,11 @@ public class PlayerCombos
         if (clickIndex == clicks.length)
         {
             int id = SkillAPI.getComboManager().convertCombo(clicks);
-            if (skills.containsKey(id))
+
+            PlayerComboFinishEvent event = new PlayerComboFinishEvent(player, id, skills.get(id));
+            Bukkit.getPluginManager().callEvent(event);
+
+            if (skills.containsKey(id) && !event.isCancelled())
             {
                 player.cast(skills.get(id));
             }

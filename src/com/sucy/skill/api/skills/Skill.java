@@ -468,7 +468,7 @@ public abstract class Skill
             // Lines with invalid filters are ignored
             catch (Exception ex)
             {
-                Bukkit.getLogger().warning("Skill icon filter for the skill \"" + name + "\" is invalid (Line = \"" + line + "\"");
+                Bukkit.getLogger().warning("Skill icon filter for the skill \"" + name + "\" is invalid (Line = \"" + line + "\") - " + ex.getMessage());
             }
         }
 

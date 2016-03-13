@@ -11,6 +11,7 @@
 #   physical-defense - damage taken from non-skill attacks
 #   skill-damage     - damage dealt with skills
 #   skill-defense    - damage taken from skills
+#   move-speed       - movement speed of the player
 vitality:
   display: 'Vitality'
   max: 999

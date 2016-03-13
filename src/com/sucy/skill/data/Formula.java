@@ -27,6 +27,11 @@
 package com.sucy.skill.data;
 
 import org.bukkit.Bukkit;
+import org.omg.CORBA.TypeCodePackage.BadKind;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a basic math equation read from left to right, ignoring
@@ -35,8 +40,13 @@ import org.bukkit.Bukkit;
  */
 public class Formula
 {
-    private Object[] values;
-    private String[] operations;
+    private static final List<Character> OPS = Arrays.asList('+', '-', '*', '/', '^');
+
+    private Object[]    values;
+    private Character[] operations;
+    private boolean valid;
+    private boolean negative;
+    private String equation;
 
     /**
      * Creates a new formula from a config string
@@ -45,36 +55,159 @@ public class Formula
      */
     public Formula(String equation)
     {
-        equation = equation.replaceAll("[ '\"]", "");
-        String[] split = equation.split("[+*/-]");
-        operations = equation.split("[^+*/-]+");
+        negative = false;
 
-        // When no values are provided, just return the original value
-        if (split.length == 0)
+        // Empty formulas
+        if (equation == null || equation.length() == 0)
         {
             values = new Object[] { 'v' };
+            operations = new Character[0];
+            this.equation = "v";
             return;
         }
-        else
+
+        // Clear out unused tokens
+        equation = equation.replaceAll("[ '\"]", "");
+        this.equation = equation;
+
+        // Parse the formula
+        ArrayList<Object> vals = new ArrayList<Object>();
+        ArrayList<Character> ops = new ArrayList<Character>();
+        int parens = 0, l = equation.length(), valStart = 0, lastOp = -1;
+        for (int i = 0; i < l; i++)
         {
-            values = new Object[split.length];
-            System.arraycopy(split, 0, values, 0, split.length);
+            char c = equation.charAt(i);
+
+            // Open parenthesis
+            if (c == '(')
+            {
+                if (parens == 0)
+                {
+                    if (valStart != i) {
+                        vals.add(makeVal(equation.substring(valStart, i)));
+                        ops.add('*');
+                    }
+                    valStart = i + 1;
+                }
+                parens++;
+            }
+
+            // Close parenthesis
+            else if (c == ')')
+            {
+                parens--;
+                if (parens == 0)
+                {
+                    vals.add(makeVal(new Formula(equation.substring(valStart, i))));
+                    valStart = i + 1;
+                }
+            }
+
+            // Operators
+            else if (parens == 0 && OPS.contains(c))
+            {
+                if (c == '-' && lastOp == i - 1) {
+                    negative = !negative;
+                    valStart++;
+                    lastOp++;
+                }
+                else
+                {
+                    if (valStart != i)
+                    {
+                        vals.add(makeVal(equation.substring(valStart, i)));
+                    }
+                    ops.add(c);
+                    lastOp = i;
+                    valStart = i + 1;
+                }
+            }
+        }
+
+        // End any lingering values
+        if (valStart != l) {
+            vals.add(makeVal(equation.substring(valStart, equation.length())));
+        }
+
+        negative = false;
+
+        // Convert to arrays
+        values = vals.toArray();
+        operations = ops.toArray(new Character[ops.size()]);
+
+        if (!validate())
+        {
+            Bukkit.getLogger().severe("Invalid equation: " + equation);
+            values = new Object[] { 'v' };
+            operations = new Character[0];
+            valid = false;
+        }
+        else {
+            valid = true;
+        }
+    }
+
+    private Object makeVal(String val) {
+        if (negative) {
+            negative = false;
+            return new Formula(val).negate();
+        }
+        else return val;
+    }
+
+    private Object makeVal(Formula val) {
+        if (negative) {
+            val.negate();
+            negative = false;
+        }
+        return val;
+    }
+
+    /**
+     * Whether or not the equation was valid when parsed.
+     *
+     * @return whether or not the equation was valid
+     */
+    public boolean isValid() {
+        return valid;
+    }
+
+    /**
+     * Negates the output of the formula for future computations
+     *
+     * @return the negated Formula
+     */
+    public Formula negate() {
+        negative = !negative;
+        return this;
+    }
+
+    /**
+     * Tries to validate the equation, making sure values are all valid values
+     *
+     * @return true if valid, false otherwise
+     */
+    private boolean validate()
+    {
+        // Operators between values means there should
+        // always be one more value than operators
+        if (values.length != operations.length + 1) {
+            return false;
         }
 
         // Parse each value to make sure it's a valid equation
         for (int i = 0; i < values.length; i++)
         {
-            // Numbers
-            if (!values[i].toString().equals("v") && !values[i].toString().equals("a"))
+            // Sub-equations
+            if (values[i] instanceof Formula)
             {
-                // Negative notation
-                int m = 1;
-                if (values[i].toString().indexOf(0) == 'n')
-                {
-                    m = -1;
-                    values[i] = values[i].toString().substring(1);
-                }
+                if (!((Formula)values[i]).validate())
+                    return false;
+            }
 
+            // Numbers
+            else if (!values[i].toString().equals("v") && !values[i].toString().equals("a"))
+            {
                 // Parse the number
                 try
                 {
@@ -82,40 +215,71 @@ public class Formula
                 }
                 catch (NumberFormatException ex)
                 {
-                    Bukkit.getLogger().severe("Invalid equation: " + equation);
-                    values = new Object[] { 'v' };
-                    return;
+                    return false;
                 }
             }
         }
+
+        // Nothing went wrong
+        return true;
     }
 
     /**
-     * Calculates the formula using the given base value and attribute
+     * Calculates the formula using the given base value and attribute.
+     * If the formula is invalid, this returns the value.
      *
      * @param value base value
      * @param attr  attribute
      *
-     * @return x - y
+     * @return computed value
      */
     public double compute(double value, double attr)
     {
         double result = getValue(0, value, attr);
         int i;
-        for (i = 1; i < values.length && i < operations.length; i++)
+        for (i = 1; i < values.length; i++)
         {
-            if (operations[i].equals("+")) result += getValue(i, value, attr);
-            else if (operations[i].equals("-")) result -= getValue(i, value, attr);
-            else if (operations[i].equals("*")) result *= getValue(i, value, attr);
-            else if (operations[i].equals("/")) result /= getValue(i, value, attr);
+            double val = getValue(i, value, attr);
+            switch (operations[i - 1])
+            {
+                case '+':
+                    result += val;
+                    break;
+                case '-':
+                    result -= val;
+                    break;
+                case '*':
+                    result *= val;
+                    break;
+                case '/':
+                    result /= val;
+                    break;
+                case '^':
+                    result = Math.pow(result, val);
+                    break;
+            }
         }
+
+        if (negative) result = -result;
         return result;
     }
 
     private double getValue(int index, double value, double attr)
     {
+        if (values[index] instanceof Formula) return ((Formula)values[index]).compute(value, attr);
         if (values[index].toString().equals("v")) return value;
         if (values[index].toString().equals("a")) return attr;
         return (Double) values[index];
+    }
+
+    /**
+     * Returns the equation string for toString
+     *
+     * @return the equation string
+     */
+    @Override
+    public String toString()
+    {
+        return equation;
     }
 }

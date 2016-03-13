@@ -1000,6 +1000,8 @@ public class Settings
     private final HashMap<String, Double> yields = new HashMap<String, Double>();
 
     private ExpFormula expFormula;
+    private Formula    expCustom;
+    private boolean    useCustomExp;
     private boolean    useOrbs;
     private boolean    blockSpawner;
     private boolean    blockEgg;
@@ -1016,7 +1018,8 @@ public class Settings
      */
     public int getRequiredExp(int level)
     {
-        return expFormula.calculate(level);
+        if (useCustomExp) return (int)expCustom.compute(level, 0);
+        else return expFormula.calculate(level);
     }
 
     /**
@@ -1121,6 +1124,9 @@ public class Settings
         int y = formula.getInt("y");
         int z = formula.getInt("z");
         expFormula = new ExpFormula(x, y, z);
+
+        expCustom = new Formula(config.getString(EXP_BASE + "custom-formula").replace("lvl", "v"));
+        useCustomExp = config.getBoolean(EXP_BASE + "use-custom") && expCustom.isValid();
 
         DataSection yields = config.getSection(EXP_BASE + "yields");
         this.yields.clear();

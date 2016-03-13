@@ -521,7 +521,7 @@ public class TempEntity implements LivingEntity
     @Override
     public boolean isValid()
     {
-        return false;
+        return true;
     }
 
     @Override

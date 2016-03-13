@@ -295,6 +295,12 @@ Experience:
     y: 8
     z: 16
   #
+  # Whether or not to use a custom equation
+  use-custom: false
+  #
+  # The custom formula to use with 'lvl' being the current player level
+  custom-formula: '25(1.1^(lvl-1))'
+  #
   # The experience yields from each mob type
   # When exp orbs are enabled, these values are ignored
   yields:

@@ -27,10 +27,13 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
+import com.sucy.skill.api.util.Data;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -58,6 +61,21 @@ public class MessageMechanic extends EffectComponent
         }
 
         String message = TextFormatter.colorString(settings.getString(MESSAGE));
+        if (message == null) return false;
+
+        // Grab values
+        HashMap<String, Object> data = DynamicSkill.getCastData(caster);
+        int i = message.indexOf('{');
+        while (i >= 0) {
+            int j = message.indexOf('}', i);
+            String key = message.substring(i + 1, j);
+            if (data.containsKey(key)) {
+                message = message.substring(0, i) + data.get(key) + message.substring(j + 1);
+            }
+            i = message.indexOf('{', j);
+        }
+
+        // Display message
         boolean worked = false;
         for (LivingEntity target : targets)
         {

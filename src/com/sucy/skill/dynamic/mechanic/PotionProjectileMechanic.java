@@ -30,12 +30,10 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
@@ -68,7 +66,7 @@ public class PotionProjectileMechanic extends EffectComponent
         // Get common values
         String potion = settings.getString(POTION, "slowness").toUpperCase().replace(" ", "_");
         boolean linger = settings.getString(LINGER, "false").toLowerCase().equals("true");
-                PotionType type;
+        PotionType type;
         try
         {
             type = PotionType.valueOf(potion);
@@ -84,7 +82,8 @@ public class PotionProjectileMechanic extends EffectComponent
         {
             item = new ItemStack(Material.valueOf(linger ? "LINGERING_POTION" : "POTION"));
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             item = new ItemStack(Material.POTION);
         }
         p.apply(item);
@@ -127,6 +126,6 @@ public class PotionProjectileMechanic extends EffectComponent
             LivingEntity loc = new TempEntity(projectile.getLocation());
             targets.add(loc);
         }
-        executeChildren((LivingEntity)projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
+        executeChildren((LivingEntity) projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
     }
 }

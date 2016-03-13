@@ -263,7 +263,7 @@ public class Settings
 
     private ArrayList<String> monsterWorlds = new ArrayList<String>();
     private ArrayList<String> passiveWorlds = new ArrayList<String>();
-    private ArrayList<String> playerWorlds = new ArrayList<String>();
+    private ArrayList<String> playerWorlds  = new ArrayList<String>();
 
     private boolean monsterEnemy;
     private boolean passiveAlly;
@@ -299,10 +299,11 @@ public class Settings
         }
         else if (attacker instanceof Tameable)
         {
-            Tameable tameable = (Tameable)attacker;
-            if (tameable.isTamed() && (tameable.getOwner() instanceof LivingEntity)) {
+            Tameable tameable = (Tameable) attacker;
+            if (tameable.isTamed() && (tameable.getOwner() instanceof LivingEntity))
+            {
                 return (tameable.getOwner() != target)
-                    && canAttack((LivingEntity)tameable.getOwner(), target);
+                       && canAttack((LivingEntity) tameable.getOwner(), target);
             }
         }
         return Protection.canAttack(attacker, target);
@@ -323,19 +324,22 @@ public class Settings
 
     private void loadTargetingSettings()
     {
-        if (config.isList(TARGET_MONSTER)) {
+        if (config.isList(TARGET_MONSTER))
+        {
             monsterWorlds.addAll(config.getList(TARGET_MONSTER));
             monsterEnemy = false;
         }
         else monsterEnemy = config.getBoolean(TARGET_MONSTER);
 
-        if (config.isList(TARGET_PASSIVE)) {
+        if (config.isList(TARGET_PASSIVE))
+        {
             passiveWorlds.addAll(config.getList(TARGET_PASSIVE));
             passiveAlly = false;
         }
         else passiveAlly = config.getBoolean(TARGET_PASSIVE);
 
-        if (config.isList(TARGET_PLAYER)) {
+        if (config.isList(TARGET_PLAYER))
+        {
             playerWorlds.addAll(config.getList(TARGET_PLAYER));
             playerAlly = false;
         }
@@ -1018,7 +1022,7 @@ public class Settings
      */
     public int getRequiredExp(int level)
     {
-        if (useCustomExp) return (int)expCustom.compute(level, 0);
+        if (useCustomExp) return (int) expCustom.compute(level, 0);
         else return expFormula.calculate(level);
     }
 

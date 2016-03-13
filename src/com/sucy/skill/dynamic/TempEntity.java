@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic;
 
-import com.sucy.skill.api.util.Nearby;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -479,7 +478,15 @@ public class TempEntity implements LivingEntity
     @Override
     public List<Entity> getNearbyEntities(double x, double y, double z)
     {
-        return Nearby.getNearbyEntities(loc, x, y, z);
+        ArrayList<Entity> list = new ArrayList<Entity>();
+        for (Entity entity : loc.getWorld().getEntities())
+        {
+            if (entity.getLocation().distanceSquared(loc) < x * x)
+            {
+                list.add(entity);
+            }
+        }
+        return list;
     }
 
     @Override

@@ -52,7 +52,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * The listener for handling events related to dynamic mechanics
@@ -98,7 +97,8 @@ public class MechanicListener implements Listener
                 flying.put(event.getPlayer().getEntityId(), event.getPlayer().getLocation().getY());
             }
         }
-        else if (inMap) {
+        else if (inMap)
+        {
             double y = flying.get(event.getPlayer().getEntityId());
             flying.put(event.getPlayer().getEntityId(), Math.max(y, event.getPlayer().getLocation().getY()));
         }

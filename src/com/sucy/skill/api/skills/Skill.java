@@ -574,8 +574,9 @@ public abstract class Skill
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled())
         {
-            if (source instanceof Player) {
-                Player player = (Player)source;
+            if (source instanceof Player)
+            {
+                Player player = (Player) source;
                 if (PluginChecker.isNoCheatActive()) NoCheatHook.exempt(player);
                 skillDamage = true;
                 VersionManager.damage(target, source, event.getDamage());

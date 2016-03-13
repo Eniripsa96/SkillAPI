@@ -80,13 +80,14 @@ public class RemoveTask extends BukkitRunnable
         // Clear skill setup
         if (entity.hasMetadata(WolfMechanic.SKILL_META))
         {
-            List<String> skills = (List<String>)SkillAPI.getMeta(entity, WolfMechanic.SKILL_META);
+            List<String> skills = (List<String>) SkillAPI.getMeta(entity, WolfMechanic.SKILL_META);
             int level = SkillAPI.getMetaInt(entity, WolfMechanic.LEVEL);
             for (String skillName : skills)
             {
                 Skill skill = SkillAPI.getSkill(skillName);
-                if (skill instanceof PassiveSkill) {
-                    ((PassiveSkill) skill).stopEffects((LivingEntity)entity, level);
+                if (skill instanceof PassiveSkill)
+                {
+                    ((PassiveSkill) skill).stopEffects((LivingEntity) entity, level);
                 }
             }
         }

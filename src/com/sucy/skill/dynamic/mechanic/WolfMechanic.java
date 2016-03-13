@@ -33,12 +33,10 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +118,8 @@ public class WolfMechanic extends EffectComponent
             for (String skillName : skills)
             {
                 Skill skill = SkillAPI.getSkill(skillName);
-                if (skill instanceof PassiveSkill) {
+                if (skill instanceof PassiveSkill)
+                {
                     ((PassiveSkill) skill).initialize(wolf, level);
                 }
             }

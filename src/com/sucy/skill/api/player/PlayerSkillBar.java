@@ -455,7 +455,8 @@ public class PlayerSkillBar
             if (!isWeaponSlot(i))
             {
                 ItemStack item = player.getInventory().getItem(i);
-                if (item == null) {
+                if (item == null)
+                {
                     update(player);
                     item = player.getInventory().getItem(i);
                 }

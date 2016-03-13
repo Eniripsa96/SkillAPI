@@ -226,7 +226,7 @@ public class AttributeListener implements Listener
             data.addMaxMana(change);
 
             change = updateStat(data, AttributeManager.MOVE_SPEED, player.getWalkSpeed());
-            player.setWalkSpeed(player.getWalkSpeed() + (float)change);
+            player.setWalkSpeed(player.getWalkSpeed() + (float) change);
         }
     }
 

@@ -51,7 +51,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * The main listener for SkillAPI  that handles general mechanics

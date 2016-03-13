@@ -27,7 +27,6 @@
 package com.sucy.skill.api.event;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import org.bukkit.entity.Player;
@@ -43,7 +42,7 @@ public class PlayerComboFinishEvent extends Event implements Cancellable
     private static final HandlerList handlers = new HandlerList();
     private PlayerData player;
     private boolean cancelled = false;
-    private int combo;
+    private int    combo;
     private String skill;
 
     /**
@@ -60,35 +59,40 @@ public class PlayerComboFinishEvent extends Event implements Cancellable
     /**
      * @return data of the player performing the combo
      */
-    public PlayerData getPlayerData() {
+    public PlayerData getPlayerData()
+    {
         return player;
     }
 
     /**
      * @return player performing the combo
      */
-    public Player getPlayer() {
+    public Player getPlayer()
+    {
         return player.getPlayer();
     }
 
     /**
      * @return the combo performed
      */
-    public int getCombo() {
+    public int getCombo()
+    {
         return combo;
     }
 
     /**
      * @return skill to cast from the combo
      */
-    public Skill getSkill() {
+    public Skill getSkill()
+    {
         return SkillAPI.getSkill(skill);
     }
 
     /**
      * @return name of the skill to cast from the combo
      */
-    public String getSkillName() {
+    public String getSkillName()
+    {
         return skill;
     }
 

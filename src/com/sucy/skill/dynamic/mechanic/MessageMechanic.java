@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
-import com.sucy.skill.api.util.Data;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
@@ -66,10 +65,12 @@ public class MessageMechanic extends EffectComponent
         // Grab values
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         int i = message.indexOf('{');
-        while (i >= 0) {
+        while (i >= 0)
+        {
             int j = message.indexOf('}', i);
             String key = message.substring(i + 1, j);
-            if (data.containsKey(key)) {
+            if (data.containsKey(key))
+            {
                 message = message.substring(0, i) + data.get(key) + message.substring(j + 1);
             }
             i = message.indexOf('{', j);

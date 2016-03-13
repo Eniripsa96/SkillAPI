@@ -219,9 +219,10 @@ public class ParticleHelper
             try
             {
                 Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
-                Particle.playBlockCrack(mat, (short)settings.getInt(TYPE_KEY, 0), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float)settings.getDouble(SPEED_KEY, 1.0));
+                Particle.playBlockCrack(mat, (short) settings.getInt(TYPE_KEY, 0), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(SPEED_KEY, 1.0));
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Bukkit.getLogger().warning(ex.getCause().getMessage());
             }
         }
@@ -232,15 +233,17 @@ public class ParticleHelper
             try
             {
                 Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
-                Particle.playIconCrack(mat, (short)settings.getInt(TYPE_KEY, 0), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float)settings.getDouble(SPEED_KEY, 1.0));
+                Particle.playIconCrack(mat, (short) settings.getInt(TYPE_KEY, 0), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(SPEED_KEY, 1.0));
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Bukkit.getLogger().warning(ex.getCause().getMessage());
             }
         }
 
         // 1.9+ particles
-        else {
+        else
+        {
             Particle.play(particle, loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), 1);
         }
     }

@@ -27,7 +27,9 @@
 package com.sucy.skill.listener;
 
 import com.rit.sucy.reflect.Reflection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 /**
@@ -81,7 +83,8 @@ public class ListenerUtil
                     name = "wither" + name;
                 }
             }
-            catch (Exception ex) { /* Wither skeletons don't exist */ }
+            catch (Exception ex)
+            { /* Wither skeletons don't exist */ }
         }
         else if (entity.getType().name().equals("GUARDIAN"))
         {
@@ -92,7 +95,8 @@ public class ListenerUtil
                     name = "elder" + name;
                 }
             }
-            catch (Exception ex) { /* Shouldn't error out */ }
+            catch (Exception ex)
+            { /* Shouldn't error out */ }
         }
         return name;
     }

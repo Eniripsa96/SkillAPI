@@ -27,7 +27,6 @@
 package com.sucy.skill.data;
 
 import org.bukkit.Bukkit;
-import org.omg.CORBA.TypeCodePackage.BadKind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,9 +43,9 @@ public class Formula
 
     private Object[]    values;
     private Character[] operations;
-    private boolean valid;
-    private boolean negative;
-    private String equation;
+    private boolean     valid;
+    private boolean     negative;
+    private String      equation;
 
     /**
      * Creates a new formula from a config string
@@ -83,7 +82,8 @@ public class Formula
             {
                 if (parens == 0)
                 {
-                    if (valStart != i) {
+                    if (valStart != i)
+                    {
                         vals.add(makeVal(equation.substring(valStart, i)));
                         ops.add('*');
                     }
@@ -106,7 +106,8 @@ public class Formula
             // Operators
             else if (parens == 0 && OPS.contains(c))
             {
-                if (c == '-' && lastOp == i - 1) {
+                if (c == '-' && lastOp == i - 1)
+                {
                     negative = !negative;
                     valStart++;
                     lastOp++;
@@ -125,7 +126,8 @@ public class Formula
         }
 
         // End any lingering values
-        if (valStart != l) {
+        if (valStart != l)
+        {
             vals.add(makeVal(equation.substring(valStart, equation.length())));
         }
 
@@ -142,21 +144,26 @@ public class Formula
             operations = new Character[0];
             valid = false;
         }
-        else {
+        else
+        {
             valid = true;
         }
     }
 
-    private Object makeVal(String val) {
-        if (negative) {
+    private Object makeVal(String val)
+    {
+        if (negative)
+        {
             negative = false;
             return new Formula(val).negate();
         }
         else return val;
     }
 
-    private Object makeVal(Formula val) {
-        if (negative) {
+    private Object makeVal(Formula val)
+    {
+        if (negative)
+        {
             val.negate();
             negative = false;
         }
@@ -168,7 +175,8 @@ public class Formula
      *
      * @return whether or not the equation was valid
      */
-    public boolean isValid() {
+    public boolean isValid()
+    {
         return valid;
     }
 
@@ -177,7 +185,8 @@ public class Formula
      *
      * @return the negated Formula
      */
-    public Formula negate() {
+    public Formula negate()
+    {
         negative = !negative;
         return this;
     }
@@ -191,7 +200,8 @@ public class Formula
     {
         // Operators between values means there should
         // always be one more value than operators
-        if (values.length != operations.length + 1) {
+        if (values.length != operations.length + 1)
+        {
             return false;
         }
 
@@ -201,7 +211,7 @@ public class Formula
             // Sub-equations
             if (values[i] instanceof Formula)
             {
-                if (!((Formula)values[i]).validate())
+                if (!((Formula) values[i]).validate())
                     return false;
             }
 
@@ -266,7 +276,7 @@ public class Formula
 
     private double getValue(int index, double value, double attr)
     {
-        if (values[index] instanceof Formula) return ((Formula)values[index]).compute(value, attr);
+        if (values[index] instanceof Formula) return ((Formula) values[index]).compute(value, attr);
         if (values[index].toString().equals("v")) return value;
         if (values[index].toString().equals("a")) return attr;
         return (Double) values[index];

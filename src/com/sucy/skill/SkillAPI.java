@@ -52,7 +52,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -776,6 +775,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @param target entity to retrieve from
      * @param key    key the value was stored under
+     *
      * @return the stored value
      */
     public static Object getMeta(Metadatable target, String key)
@@ -788,6 +788,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @param target entity to retrieve from
      * @param key    key the value was stored under
+     *
      * @return the stored value
      */
     public static int getMetaInt(Metadatable target, String key)
@@ -800,6 +801,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @param target entity to retrieve from
      * @param key    key the value was stored under
+     *
      * @return the stored value
      */
     public static double getMetaDouble(Metadatable target, String key)

@@ -698,12 +698,14 @@ public class Settings
     private static final String ITEM_CLASS   = ITEM_BASE + "lore-class-text";
     private static final String ITEM_LEVEL   = ITEM_BASE + "lore-level-text";
     private static final String ITEM_EXCLUDE = ITEM_BASE + "lore-exclude-text";
+    private static final String ITEM_ATTR    = ITEM_BASE + "lore-attribute-text";
     private static final String ITEM_CHECK   = ITEM_BASE + "players-per-check";
 
     private boolean checkLore;
     private String  loreClassText;
     private String  loreLevelText;
     private String  loreExcludeText;
+    private String loreAttrText;
     private int     playersPerCheck;
 
     /**
@@ -747,6 +749,16 @@ public class Settings
     }
 
     /**
+     * Retrieves the text used for attribute requirements on items
+     *
+     * @return lore text for attributes
+     */
+    public String getLoreAttrText()
+    {
+        return loreAttrText;
+    }
+
+    /**
      * Retrieves the number of players checked each update
      *
      * @return number of players checked each update
@@ -762,6 +774,7 @@ public class Settings
         loreClassText = config.getString(ITEM_CLASS);
         loreLevelText = config.getString(ITEM_LEVEL);
         loreExcludeText = config.getString(ITEM_EXCLUDE);
+        loreAttrText = config.getString(ITEM_ATTR);
         playersPerCheck = config.getInt(ITEM_CHECK);
     }
 

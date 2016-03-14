@@ -27,10 +27,12 @@
 package com.sucy.skill.task;
 
 import com.rit.sucy.config.FilterType;
+import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.ErrorNodes;
+import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -38,12 +40,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Repeating task to check for equipment requirements
  */
 public class InventoryTask extends BukkitRunnable
 {
+    private static Pattern levelRegex;
+    private static Pattern classRegex;
+    private static Pattern excludeRegex;
 
     private static SkillAPI plugin;
     private        int      playersPerCheck;
@@ -61,6 +68,10 @@ public class InventoryTask extends BukkitRunnable
         if (plugin != null) return;
         plugin = p;
         runTaskTimer(plugin, 1, 1);
+
+        levelRegex = Pattern.compile(SkillAPI.getSettings().getLoreLevelText() + "[0-9]+");
+        classRegex = Pattern.compile(SkillAPI.getSettings().getLoreClassText() + ".+");
+        excludeRegex = Pattern.compile(SkillAPI.getSettings().getLoreExcludeText() + ".+");
     }
 
     /**
@@ -116,6 +127,7 @@ public class InventoryTask extends BukkitRunnable
         if (item == null) return false;
         boolean hasRequirement = false;
         boolean needsRequirement = false;
+        boolean attributes = SkillAPI.getSettings().isAttributesEnabled();
         if (item.hasItemMeta() && item.getItemMeta().hasLore())
         {
             List<String> lore = item.getItemMeta().getLore();
@@ -126,7 +138,7 @@ public class InventoryTask extends BukkitRunnable
                 String colorless = ChatColor.stripColor(line);
 
                 // Level requirements
-                if (colorless.matches(SkillAPI.getSettings().getLoreLevelText() + "[0-9]+"))
+                if (levelRegex.matcher(colorless).matches())
                 {
                     int level = Integer.parseInt(colorless.substring(SkillAPI.getSettings().getLoreLevelText().length()));
                     if (!player.hasClass() || player.getMainClass().getLevel() < level)
@@ -135,8 +147,24 @@ public class InventoryTask extends BukkitRunnable
                     }
                 }
 
+                // Attribute requirements
+                else if (attributes) {
+                    for (String key : SkillAPI.getAttributeManager().getKeys()) {
+                        AttributeManager.Attribute attr = SkillAPI.getAttributeManager().getAttribute(key);
+                        String name = TextFormatter.format(attr.getName());
+                        String check = SkillAPI.getSettings().getLoreAttrText().replace("{attr}", name);
+                        if (colorless.matches(check))
+                        {
+                            int amount = Integer.parseInt(colorless.substring(check.length()));
+                            if (player.getAttribute(attr.getKey()) < amount) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
                 // Class requirements
-                else if (colorless.matches(SkillAPI.getSettings().getLoreClassText() + ".+"))
+                else if (classRegex.matcher(colorless).matches())
                 {
                     needsRequirement = true;
                     String name = colorless.substring(SkillAPI.getSettings().getLoreClassText().length());
@@ -161,7 +189,7 @@ public class InventoryTask extends BukkitRunnable
                 }
 
                 // Class exclusion
-                else if (colorless.matches(SkillAPI.getSettings().getLoreExcludeText() + ".+"))
+                else if (excludeRegex.matcher(colorless).matches())
                 {
                     String name = colorless.substring(SkillAPI.getSettings().getLoreExcludeText().length());
                     if (name.contains(", "))

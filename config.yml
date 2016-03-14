@@ -141,6 +141,9 @@ Items:
   # The text used for excluded classes in the lore
   lore-exclude-text: 'Excluded Class: '
   #
+  # The text
+  lore-attribute-text: '{attr} Req: '
+  #
   # How many players to check for the requirements each tick
   # This should be increased on larger servers to prevent
   # large delays before the same player is checked again

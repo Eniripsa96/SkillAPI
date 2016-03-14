@@ -27,6 +27,7 @@
 package com.sucy.skill.api.util;
 
 import com.rit.sucy.reflect.Reflection;
+import com.rit.sucy.text.TextFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -47,6 +48,7 @@ public class ActionBar
     private static Method getHandle;
 
     private static Constructor<?> constructPacket;
+    private static Constructor<?> constructText;
 
     private static boolean initialized = false;
     private static boolean supported   = false;
@@ -62,6 +64,7 @@ public class ActionBar
             chatBase = Reflection.getNMSClass("IChatBaseComponent");
             chatText = Reflection.getNMSClass("ChatComponentText");
             constructPacket = chatPacket.getConstructor(chatBase, byte.class);
+            constructText = chatText.getConstructor(String.class);
             getHandle = craftPlayer.getDeclaredMethod("getHandle");
 
             supported = true;
@@ -96,7 +99,8 @@ public class ActionBar
 
         try
         {
-            Object data = constructPacket.newInstance(message, (byte) 2);
+            Object text = constructText.newInstance(TextFormatter.colorString(message));
+            Object data = constructPacket.newInstance(text, (byte) 2);
             Object handle = getHandle.invoke(player);
             Object connection = Reflection.getValue(handle, "playerConnection");
             Method send = Reflection.getMethod(connection, "sendPacket", packet);
@@ -104,6 +108,7 @@ public class ActionBar
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
             // Failed to send
             supported = false;
         }

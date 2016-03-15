@@ -27,7 +27,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 
@@ -78,7 +78,7 @@ public class SoundMechanic extends EffectComponent
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().info("Invalid sound type: " + type);
+            Logger.invalid("Invalid sound type: " + type);
             return false;
         }
     }

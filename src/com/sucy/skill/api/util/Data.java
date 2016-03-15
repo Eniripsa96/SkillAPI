@@ -29,7 +29,7 @@ package com.sucy.skill.api.util;
 import com.rit.sucy.config.CustomFilter;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -62,7 +62,7 @@ public class Data
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().info("Failed to parse " + name);
+            Logger.invalid("Failed to parse " + name);
             return null;
         }
     }

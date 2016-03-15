@@ -33,6 +33,8 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.ActionBar;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -101,13 +103,16 @@ public class GUITask extends BukkitRunnable
             PlayerData data = SkillAPI.getPlayerData(player);
 
             // Level bar options
+            Logger.log(LogType.GUI, 1, "Updating GUI...");
             if (levelMana)
             {
+                Logger.log(LogType.GUI, 2, "Updating level bar with mana");
                 player.setLevel((int) data.getMana());
                 player.setExp((float) (0.999 * data.getMana() / data.getMaxMana()));
             }
             else if (levelLevel)
             {
+                Logger.log(LogType.GUI, 2, "Updating level bar with class level/exp");
                 if (!data.hasClass())
                 {
                     player.setLevel(0);
@@ -124,11 +129,13 @@ public class GUITask extends BukkitRunnable
             // Food bar options
             if (foodMana)
             {
+                Logger.log(LogType.GUI, 2, "Updating food bar with mana");
                 player.setSaturation(20);
                 player.setFoodLevel((int) Math.ceil(20 * data.getMana() / data.getMaxMana()));
             }
             else if (foodExp)
             {
+                Logger.log(LogType.GUI, 2, "Updating food bar with class level/exp");
                 if (!data.hasClass())
                 {
                     player.setFoodLevel(0);
@@ -143,6 +150,7 @@ public class GUITask extends BukkitRunnable
             // Action bar options
             if (useAction && data.hasClass())
             {
+                Logger.log(LogType.GUI, 2, "Updating action bar (Working=" + ActionBar.isSupported() + ")");
                 PlayerClass main = data.getMainClass();
                 String filtered = actionText
                         .replace("{combo}", data.getComboData().getCurrentComboString())

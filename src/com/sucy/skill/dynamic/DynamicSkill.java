@@ -36,7 +36,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -503,7 +503,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 catch (Exception ex)
                 {
                     // Invalid trigger
-                    Bukkit.getLogger().warning("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
+                    Logger.invalid("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
                 }
             }
         }

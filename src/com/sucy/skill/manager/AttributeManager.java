@@ -32,6 +32,8 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.Formula;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -101,8 +103,10 @@ public class AttributeManager
         config.saveDefaultConfig();
 
         DataSection data = config.getConfig();
+        Logger.log(LogType.ATTRIBUTE_LOAD, 1, "Loading attributes...");
         for (String key : data.keys())
         {
+            Logger.log(LogType.ATTRIBUTE_LOAD, 2, "  - " + key);
             attributes.put(key.toLowerCase(), new Attribute(data.getSection(key), key));
         }
     }
@@ -267,6 +271,7 @@ public class AttributeManager
             if (data == null) return;
             for (String key : data.keys())
             {
+                Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    SkillMod: " + key);
                 target.put(key.toLowerCase(), new AttributeValue(data.getString(key)));
             }
         }
@@ -279,7 +284,11 @@ public class AttributeManager
          */
         private void loadStatModifier(DataSection data, String key)
         {
-            statModifiers.put(key, new Formula(data.getString(key, "v")));
+            if (data.has(key))
+            {
+                Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    StatMod: " + key);
+                statModifiers.put(key, new Formula(data.getString(key, "v")));
+            }
         }
     }
 

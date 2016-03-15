@@ -34,6 +34,8 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -99,7 +101,7 @@ public class RegistrationManager
             classConfig.save();
         }
 
-        log("Loading skills...", 1);
+        Logger.log(LogType.REGISTRATION, 1, "Loading skills...");
 
         // Request plugin skills
         mode = Mode.SKILL;
@@ -107,7 +109,7 @@ public class RegistrationManager
         {
             if (plugin instanceof SkillPlugin)
             {
-                log(" - " + plugin.getName(), 2);
+                Logger.log(LogType.REGISTRATION, 2, " - " + plugin.getName());
                 ((SkillPlugin) plugin).registerSkills(api);
             }
         }
@@ -115,13 +117,13 @@ public class RegistrationManager
         // Load dynamic skills from skills.yml
         if (!skillConfig.getConfig().getBoolean("loaded", false))
         {
-            log("Loading dynamic skills from skills.yml...", 1);
+            Logger.log(LogType.REGISTRATION, 1, "Loading dynamic skills from skills.yml...");
             skillConfig.getConfig().set("loaded", true);
             for (String key : skillConfig.getConfig().keys())
             {
                 if (!skillConfig.getConfig().isSection(key))
                 {
-                    log("Skipping \"" + key + "\" because it isn't a configuration section", 3);
+                    Logger.log(LogType.REGISTRATION, 3, "Skipping \"" + key + "\" because it isn't a configuration section");
                     continue;
                 }
                 if (!SkillAPI.isSkillRegistered(key))
@@ -135,21 +137,21 @@ public class RegistrationManager
                     skill.save(sConfig.getConfig().createSection(key));
                     skill.save(skillConfig.getConfig().createSection(key));
                     sConfig.save();
-                    log("Loaded the dynamic skill: " + key, 2);
+                    Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + key);
                 }
                 else
                 {
-                    api.getLogger().severe("Duplicate skill detected: " + key);
+                    Logger.invalid("Duplicate skill detected: " + key);
                 }
             }
         }
         else
         {
-            log("skills.yml doesn't have any changes, skipping it", 1);
+            Logger.log(LogType.REGISTRATION, 1, "skills.yml doesn't have any changes, skipping it");
         }
 
         // Load individual dynamic skills
-        log("Loading individual dynamic skill files...", 1);
+        Logger.log(LogType.REGISTRATION, 1, "Loading individual dynamic skill files...");
         File skillRoot = new File(api.getDataFolder().getPath() + File.separator + SKILL_FOLDER);
         if (skillRoot.exists())
         {
@@ -172,26 +174,26 @@ public class RegistrationManager
                             skill.save(sConfig.getConfig().createSection(name));
                             skill.save(skillConfig.getConfig().createSection(name));
                             sConfig.save();
-                            log("Loaded the dynamic skill: " + name, 2);
+                            Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + name);
                         }
                         else if (SkillAPI.getSkill(name) instanceof DynamicSkill)
                         {
-                            log(name + " is already loaded, skipping it", 3);
+                            Logger.log(LogType.REGISTRATION, 3, name + " is already loaded, skipping it");
                         }
                         else
                         {
-                            api.getLogger().severe("Duplicate skill detected: " + name);
+                            Logger.invalid("Duplicate skill detected: " + name);
                         }
                     }
                     catch (Exception ex)
                     {
-                        api.getLogger().severe("Failed to load skill: " + name + " - " + ex.getMessage());
+                        Logger.invalid("Failed to load skill: " + name + " - " + ex.getMessage());
                     }
                 }
             }
         }
 
-        log("Loading classes...", 1);
+        Logger.log(LogType.REGISTRATION, 1, "Loading classes...");
 
         // Request plugin classes
         mode = Mode.CLASS;
@@ -199,7 +201,7 @@ public class RegistrationManager
         {
             if (plugin instanceof SkillPlugin)
             {
-                log(" - " + plugin.getName(), 2);
+                Logger.log(LogType.REGISTRATION, 2, " - " + plugin.getName());
                 ((SkillPlugin) plugin).registerClasses(api);
             }
         }
@@ -207,7 +209,7 @@ public class RegistrationManager
         // Load dynamic classes from classes.yml
         if (!classConfig.getConfig().getBoolean("loaded", false))
         {
-            log("Loading dynamic classes from classes.yml...", 1);
+            Logger.log(LogType.REGISTRATION, 1, "Loading dynamic classes from classes.yml...");
             classConfig.getConfig().set("loaded", true);
             for (String key : classConfig.getConfig().keys())
             {
@@ -225,21 +227,21 @@ public class RegistrationManager
                     tree.save(cConfig.getConfig().createSection(key));
                     tree.save(classConfig.getConfig().createSection(key));
                     cConfig.save();
-                    log("Loaded the dynamic class: " + key, 2);
+                    Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic class: " + key);
                 }
                 else
                 {
-                    api.getLogger().severe("Duplicate class detected: " + key);
+                    Logger.invalid("Duplicate class detected: " + key);
                 }
             }
         }
         else
         {
-            log("classes.yml doesn't have any changes, skipping it", 1);
+            Logger.log(LogType.REGISTRATION, 1, "classes.yml doesn't have any changes, skipping it");
         }
 
         // Load individual dynamic classes
-        log("Loading individual dynamic class files...", 1);
+        Logger.log(LogType.REGISTRATION, 1, "Loading individual dynamic class files...");
         File classRoot = new File(api.getDataFolder().getPath() + File.separator + CLASS_FOLDER);
         if (classRoot.exists())
         {
@@ -261,20 +263,20 @@ public class RegistrationManager
                             tree.save(cConfig.getConfig().createSection(name));
                             tree.save(classConfig.getConfig().createSection(name));
                             cConfig.save();
-                            log("Loaded the dynamic class: " + name, 2);
+                            Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic class: " + name);
                         }
                         else if (SkillAPI.getClass(name) instanceof DynamicClass)
                         {
-                            log(name + " is already loaded, skipping it", 3);
+                            Logger.log(LogType.REGISTRATION, 3, name + " is already loaded, skipping it");
                         }
                         else
                         {
-                            api.getLogger().severe("Duplicate class detected: " + name);
+                            Logger.invalid("Duplicate class detected: " + name);
                         }
                     }
                     catch (Exception ex)
                     {
-                        api.getLogger().severe("Failed to load class file: " + file.getName() + " - " + ex.getMessage());
+                        Logger.invalid("Failed to load class file: " + file.getName() + " - " + ex.getMessage());
                     }
                 }
             }
@@ -291,9 +293,9 @@ public class RegistrationManager
             c.arrange();
         }
 
-        log("Registration complete", 0);
-        log(" - " + SkillAPI.getSkills().size() + " skills", 0);
-        log(" - " + SkillAPI.getClasses().size() + " classes", 0);
+        Logger.log(LogType.REGISTRATION, 0, "Registration complete");
+        Logger.log(LogType.REGISTRATION, 0, " - " + SkillAPI.getSkills().size() + " skills");
+        Logger.log(LogType.REGISTRATION, 0, " - " + SkillAPI.getClasses().size() + " classes");
     }
 
     /**
@@ -323,7 +325,7 @@ public class RegistrationManager
         // Cannot have multiple skills with the same name
         else if (SkillAPI.isSkillRegistered(skill.getName()))
         {
-            api.getLogger().warning("Duplicate skill name: \"" + skill.getName() + "\" - skipping the duplicate");
+            Logger.invalid("Duplicate skill name: \"" + skill.getName() + "\" - skipping the duplicate");
         }
 
         // Save new data to config
@@ -350,7 +352,7 @@ public class RegistrationManager
             }
             catch (Exception ex)
             {
-                api.getLogger().severe("Failed to save skill data to config for \"" + skill.getName() + "\" - skipping registration");
+                Logger.bug("Failed to save skill data to config for \"" + skill.getName() + "\" - skipping registration");
                 ex.printStackTrace();
             }
         }
@@ -385,7 +387,7 @@ public class RegistrationManager
         // Cannot have multiple skills with the same name
         else if (SkillAPI.isClassRegistered(rpgClass.getName()))
         {
-            api.getLogger().warning("Duplicate class name: \"" + rpgClass.getName() + "\" - skipping the duplicate");
+            Logger.invalid("Duplicate class name: \"" + rpgClass.getName() + "\" - skipping the duplicate");
         }
 
         // Save new data to config
@@ -413,25 +415,11 @@ public class RegistrationManager
             }
             catch (Exception ex)
             {
-                api.getLogger().severe("Failed to save class data to config for \"" + rpgClass.getName() + "\" - skipping registration");
+                Logger.bug("Failed to save class data to config for \"" + rpgClass.getName() + "\" - skipping registration");
                 ex.printStackTrace();
             }
         }
 
         return null;
-    }
-
-    /**
-     * Logs a message if the logging level is at least the specified value
-     *
-     * @param message message to log
-     * @param level   required logging level
-     */
-    private void log(String message, int level)
-    {
-        if (SkillAPI.getSettings().getLoadLogLevel() >= level)
-        {
-            api.getLogger().info(message);
-        }
     }
 }

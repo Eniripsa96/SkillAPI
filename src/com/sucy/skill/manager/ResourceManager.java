@@ -26,7 +26,7 @@
  */
 package com.sucy.skill.manager;
 
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -73,7 +73,7 @@ public class ResourceManager
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().info("Failed to copy resource: " + name);
+            Logger.bug("Failed to copy resource: " + name);
         }
     }
 

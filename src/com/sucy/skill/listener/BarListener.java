@@ -53,7 +53,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 
 /**
@@ -252,6 +251,8 @@ public class BarListener implements Listener
             return;
         }
 
+        boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
+
         // Prevent moving skill icons
         if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
         {
@@ -260,7 +261,7 @@ public class BarListener implements Listener
                 event.setCancelled(true);
             }
         }
-        else if (event.getSlotType() == InventoryType.SlotType.QUICKBAR)
+        else if (!top && event.getSlot() < 9)
         {
             int slot = event.getSlot();
             if (slot < 9 && slot >= 0)

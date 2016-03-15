@@ -43,6 +43,7 @@ import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.language.SkillNodes;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -468,7 +469,7 @@ public abstract class Skill
             // Lines with invalid filters are ignored
             catch (Exception ex)
             {
-                Bukkit.getLogger().warning("Skill icon filter for the skill \"" + name + "\" is invalid (Line = \"" + line + "\") - " + ex.getMessage());
+                Logger.invalid("Skill icon filter for the skill \"" + name + "\" is invalid (Line = \"" + line + "\") - " + ex.getMessage());
             }
         }
 

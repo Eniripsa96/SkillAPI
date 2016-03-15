@@ -40,7 +40,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -148,15 +147,18 @@ public class InventoryTask extends BukkitRunnable
                 }
 
                 // Attribute requirements
-                else if (attributes) {
-                    for (String key : SkillAPI.getAttributeManager().getKeys()) {
+                else if (attributes)
+                {
+                    for (String key : SkillAPI.getAttributeManager().getKeys())
+                    {
                         AttributeManager.Attribute attr = SkillAPI.getAttributeManager().getAttribute(key);
                         String name = TextFormatter.format(attr.getName());
                         String check = SkillAPI.getSettings().getLoreAttrText().replace("{attr}", name);
                         if (colorless.matches(check))
                         {
                             int amount = Integer.parseInt(colorless.substring(check.length()));
-                            if (player.getAttribute(attr.getKey()) < amount) {
+                            if (player.getAttribute(attr.getKey()) < amount)
+                            {
                                 return true;
                             }
                         }

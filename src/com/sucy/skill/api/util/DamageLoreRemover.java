@@ -27,7 +27,7 @@
 package com.sucy.skill.api.util;
 
 import com.rit.sucy.reflect.Reflection;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -105,7 +105,7 @@ public class DamageLoreRemover
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().severe("Failed to set up reflection for removing damage lores.");
+            Logger.bug("Failed to set up reflection for removing damage lores.");
         }
     }
 

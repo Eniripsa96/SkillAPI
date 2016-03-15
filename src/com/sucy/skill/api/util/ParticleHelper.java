@@ -29,7 +29,11 @@ package com.sucy.skill.api.util;
 import com.rit.sucy.reflect.Particle;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.Direction;
-import org.bukkit.*;
+import com.sucy.skill.log.Logger;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Wolf;
 import org.bukkit.potion.PotionEffect;
@@ -223,7 +227,7 @@ public class ParticleHelper
             }
             catch (Exception ex)
             {
-                Bukkit.getLogger().warning(ex.getCause().getMessage());
+                Logger.invalid(ex.getCause().getMessage());
             }
         }
 
@@ -237,7 +241,7 @@ public class ParticleHelper
             }
             catch (Exception ex)
             {
-                Bukkit.getLogger().warning(ex.getCause().getMessage());
+                Logger.invalid(ex.getCause().getMessage());
             }
         }
 

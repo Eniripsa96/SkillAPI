@@ -31,7 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
 import com.sucy.skill.api.skills.Skill;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
@@ -345,7 +345,7 @@ public abstract class IOManager
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().info("Failed to save player data for " + data.getPlayer().getName());
+            Logger.bug("Failed to save player data for " + data.getPlayer().getName());
             ex.printStackTrace();
             return null;
         }

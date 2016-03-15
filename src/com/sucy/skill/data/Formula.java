@@ -26,7 +26,7 @@
  */
 package com.sucy.skill.data;
 
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,7 +139,7 @@ public class Formula
 
         if (!validate())
         {
-            Bukkit.getLogger().severe("Invalid equation: " + equation);
+            Logger.invalid("Invalid equation: " + equation);
             values = new Object[] { 'v' };
             operations = new Character[0];
             valid = false;

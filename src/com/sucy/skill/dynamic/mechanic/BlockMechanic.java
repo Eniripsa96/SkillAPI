@@ -35,7 +35,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -138,18 +137,10 @@ public class BlockMechanic extends EffectComponent
                             if (dx * dx + dy * dy + dz * dz < rSq)
                             {
                                 Block b = w.getBlockAt(i, j, k);
-                                if ((!solid || b.getType().isSolid()) && (!air || b.getType() == Material.AIR))
+                                if ((!solid || b.getType().isSolid())
+                                    && (!air || b.getType() == Material.AIR)
+                                    && !SkillAPI.getSettings().getFilteredBlocks().contains(b.getType()))
                                 {
-                                    boolean good = true;
-                                    for (Material mat : SkillAPI.getSettings().getFilteredBlocks())
-                                    {
-                                        if (mat == b.getType())
-                                        {
-                                            good = false;
-                                            break;
-                                        }
-                                    }
-                                    if (!good) continue;
                                     blocks.add(b);
                                 }
                             }
@@ -188,7 +179,9 @@ public class BlockMechanic extends EffectComponent
                         for (double k = z - depth; k < z + depth - 0.01; k++)
                         {
                             Block b = w.getBlockAt((int) i, (int) j, (int) k);
-                            if ((!solid || b.getType().isSolid()) && (!air || b.getType() == Material.AIR) && !(b.getState() instanceof InventoryHolder))
+                            if ((!solid || b.getType().isSolid())
+                                && (!air || b.getType() == Material.AIR)
+                                && !SkillAPI.getSettings().getFilteredBlocks().contains(b.getType()))
                             {
                                 blocks.add(b);
                             }

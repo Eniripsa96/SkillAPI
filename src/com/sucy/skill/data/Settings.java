@@ -33,7 +33,7 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicSkill;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -618,11 +618,13 @@ public class Settings
     private static final String SKILL_MESSAGE   = SKILL_BASE + "show-messages";
     private static final String SKILL_RADIUS    = SKILL_BASE + "message-radius";
     private static final String SKILL_BLOCKS    = SKILL_BASE + "block-filter";
+    private static final String SKILL_KNOCKBACK = SKILL_BASE + "knockback-no-damage";
 
     private ArrayList<Material> filteredBlocks;
 
     private boolean allowDowngrade;
     private boolean showSkillMessages;
+    private boolean knockback;
     private int     messageRadius;
 
     /**
@@ -643,6 +645,14 @@ public class Settings
     public boolean isShowSkillMessages()
     {
         return showSkillMessages;
+    }
+
+    /**
+     * @return whether or not knockback should be applied when dealing 0 damage
+     */
+    public boolean isKnockback()
+    {
+        return knockback;
     }
 
     /**
@@ -670,19 +680,35 @@ public class Settings
         allowDowngrade = config.getBoolean(SKILL_DOWNGRADE);
         showSkillMessages = config.getBoolean(SKILL_MESSAGE);
         messageRadius = config.getInt(SKILL_RADIUS);
+        knockback = config.getBoolean(SKILL_KNOCKBACK);
 
         filteredBlocks = new ArrayList<Material>();
         List<String> list = config.getList(SKILL_BLOCKS);
         for (String item : list)
         {
-            try
+            item = item.toUpperCase().replace(' ', '_');
+            if (item.endsWith("*"))
             {
-                Material mat = Material.valueOf(item.toUpperCase().replace(' ', '_'));
-                filteredBlocks.add(mat);
+                item = item.substring(0, item.length() - 1);
+                for (Material mat : Material.values())
+                {
+                    if (mat.name().contains(item))
+                    {
+                        filteredBlocks.add(mat);
+                    }
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Bukkit.getLogger().info("Invalid block type \"" + item + "\"");
+                try
+                {
+                    Material mat = Material.valueOf(item);
+                    filteredBlocks.add(mat);
+                }
+                catch (Exception ex)
+                {
+                    Logger.invalid("Invalid block type \"" + item + "\"");
+                }
             }
         }
     }
@@ -705,7 +731,7 @@ public class Settings
     private String  loreClassText;
     private String  loreLevelText;
     private String  loreExcludeText;
-    private String loreAttrText;
+    private String  loreAttrText;
     private int     playersPerCheck;
 
     /**
@@ -1252,8 +1278,8 @@ public class Settings
         }
         if (skillCount == 9)
         {
-            Bukkit.getLogger().severe("Invalid Skill Bar Setup - Cannot have all 9 skill slots!");
-            Bukkit.getLogger().severe("  -> Setting last slot to be a weapon slot");
+            Logger.invalid("Invalid Skill Bar Setup - Cannot have all 9 skill slots!");
+            Logger.invalid("  -> Setting last slot to be a weapon slot");
             defaultBarLayout[8] = false;
         }
     }
@@ -1264,21 +1290,9 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private int loadLogLevel;
-
-    /**
-     * Gets the logging level
-     *
-     * @return logging level
-     */
-    public int getLoadLogLevel()
-    {
-        return loadLogLevel;
-    }
-
     private void loadLoggingSettings()
     {
-        loadLogLevel = config.getInt("Logging");
+        Logger.loadLevels(config.getSection("Logging"));
     }
 
     ///////////////////////////////////////////////////////

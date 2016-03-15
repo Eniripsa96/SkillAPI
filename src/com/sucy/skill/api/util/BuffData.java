@@ -26,6 +26,8 @@
  */
 package com.sucy.skill.api.util;
 
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.Plugin;
@@ -121,17 +123,21 @@ public class BuffData
         }
         double multiplier = 1;
         double bonus = 0;
+        Logger.log(LogType.BUFF, 1, "Buffs:");
         for (Buff buff : buffs)
         {
             if (buff.isPercent())
             {
+                Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
                 multiplier *= buff.getValue();
             }
             else
             {
+                Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
                 bonus += buff.getValue();
             }
         }
+        Logger.log(LogType.BUFF, 1, "Result: x" + multiplier + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * multiplier + bonus));
         if (multiplier <= 0)
         {
             return 0;

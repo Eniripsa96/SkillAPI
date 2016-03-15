@@ -35,7 +35,7 @@ import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.data.Settings;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
@@ -112,7 +112,7 @@ public class SQLIO extends IOManager
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().info("Failed to load data from the SQL Database - " + ex.getMessage());
+            Logger.bug("Failed to load data from the SQL Database - " + ex.getMessage());
         }
 
         if (!startup) cleanup();
@@ -152,7 +152,7 @@ public class SQLIO extends IOManager
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().warning("Failed to save data for invalid player");
+            Logger.bug("Failed to save data for invalid player");
         }
     }
 }

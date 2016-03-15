@@ -46,6 +46,7 @@ import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.TreeListener;
+import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.task.ScoreboardTask;
@@ -1639,7 +1640,7 @@ public final class PlayerData
                 }
                 catch (Exception ex)
                 {
-                    Bukkit.getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
+                    Logger.bug("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
                     ex.printStackTrace();
                 }
             }
@@ -1682,7 +1683,7 @@ public final class PlayerData
                 }
                 catch (Exception ex)
                 {
-                    Bukkit.getLogger().severe("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
+                    Logger.bug("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
                     ex.printStackTrace();
                 }
             }

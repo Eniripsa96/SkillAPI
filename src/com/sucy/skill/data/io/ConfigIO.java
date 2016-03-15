@@ -31,7 +31,7 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class ConfigIO extends IOManager
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().warning("Failed to save data for invalid player");
+            Logger.bug("Failed to save data for invalid player");
         }
     }
 

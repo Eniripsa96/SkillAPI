@@ -34,6 +34,8 @@ import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import com.sucy.skill.tree.SkillTree;
 import com.sucy.skill.tree.map.MapTree;
 import org.bukkit.Bukkit;
@@ -446,7 +448,7 @@ public abstract class RPGClass
         }
         else
         {
-            Bukkit.getLogger().severe("Class \"" + this.name + "\" tried to add an invalid skill - \"" + name + "\"");
+            Logger.invalid("Class \"" + this.name + "\" tried to add an invalid skill - \"" + name + "\"");
         }
     }
 
@@ -624,7 +626,7 @@ public abstract class RPGClass
                 {
                     skills.add(skill);
                 }
-                else Bukkit.getLogger().warning("Invalid skill for class " + this.name + " - " + name);
+                else Logger.invalid("Invalid skill for class " + this.name + " - " + name);
             }
         }
 
@@ -645,12 +647,12 @@ public abstract class RPGClass
     {
         try
         {
-            Bukkit.getLogger().info("Arranging for \"" + name + "\" - " + skills.size() + " skills");
+            Logger.log(LogType.REGISTRATION, 2, "Arranging for \"" + name + "\" - " + skills.size() + " skills");
             this.skillTree.arrange();
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().info("Failed to arrange skill tree for class \"" + name + "\" - " + ex.getMessage());
+            Logger.invalid("Failed to arrange skill tree for class \"" + name + "\" - " + ex.getMessage());
         }
     }
 }

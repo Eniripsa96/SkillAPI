@@ -376,7 +376,8 @@ public class MainListener implements Listener
         // Cancel event if no damage
         if (event.getDamage() <= 0)
         {
-            event.setCancelled(true);
+            if (!SkillAPI.getSettings().isKnockback())
+                event.setCancelled(true);
             return;
         }
 
@@ -392,7 +393,8 @@ public class MainListener implements Listener
         // Cancel event if no damage
         if (event.getDamage() <= 0)
         {
-            event.setCancelled(true);
+            if (!SkillAPI.getSettings().isKnockback())
+                event.setCancelled(true);
         }
     }
 

@@ -31,6 +31,7 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.exception.SkillTreeException;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.log.Logger;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public abstract class SkillTree
         {
             if (!SkillAPI.isSkillRegistered(skill))
             {
-                api.getLogger().severe("Failed to add skill to tree - " + skill + ": Skill does not exist");
+                Logger.invalid("Failed to add skill to tree - " + skill + ": Skill does not exist");
                 continue;
             }
             if (SkillAPI.getSettings().isShowingAutoSkills() || skill.canCast() || !skill.canAutoLevel())

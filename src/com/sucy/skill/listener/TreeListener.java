@@ -104,7 +104,8 @@ public class TreeListener implements Listener
             // Interact with the skill tree when clicking in the top region
             if (top)
             {
-                event.setCancelled(tree.checkClick(event.getSlot()));
+                if (tree.checkClick(event.getSlot()))
+                    event.setCancelled(true);
 
                 // If they clicked on a skill, try upgrading it
                 if (tree.isSkill(event.getWhoClicked(), event.getSlot()))

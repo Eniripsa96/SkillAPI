@@ -28,7 +28,7 @@ package com.sucy.skill.api.util;
 
 import com.rit.sucy.reflect.Reflection;
 import com.rit.sucy.text.TextFormatter;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
@@ -71,7 +71,7 @@ public class ActionBar
         }
         catch (Exception ex)
         {
-            Bukkit.getLogger().warning("Failed to setup Action Bar utility - not supported on pre-1.8 servers");
+            Logger.invalid("Failed to setup Action Bar utility - not supported on pre-1.8 servers");
         }
     }
 
@@ -108,6 +108,7 @@ public class ActionBar
         }
         catch (Exception ex)
         {
+            Logger.bug("Failed to apply Action Bar");
             ex.printStackTrace();
             // Failed to send
             supported = false;

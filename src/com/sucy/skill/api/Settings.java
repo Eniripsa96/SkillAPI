@@ -27,7 +27,7 @@
 package com.sucy.skill.api;
 
 import com.rit.sucy.config.parse.DataSection;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -465,10 +465,10 @@ public class Settings
      */
     public void dumpToConsole()
     {
-        Bukkit.getLogger().info("Settings:");
+        Logger.log("Settings:");
         for (String key : settings.keySet())
         {
-            Bukkit.getLogger().info("- " + key + ": " + settings.get(key).toString());
+            Logger.log("- " + key + ": " + settings.get(key).toString());
         }
     }
 }

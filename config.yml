@@ -118,7 +118,12 @@ Skills:
   # The radius in which to show cast messages to nearby players
   message-radius: 20
   #
+  # Whether or not to apply damage knockback when damage is blocked
+  # by defensive or offesnive buffs and debuffs
+  knockback-no-damage: false
+  #
   # Blocks to ignore when using the Block mechanic in dynamic skills
+  # End values in an * to do all materials containing the value
   block-filter:
   - 'chest'
   - 'ender chest'
@@ -333,7 +338,19 @@ Experience:
 #
 # How much logging to do when loading SkillAPI
 # When testing setting up skills/classes, increase this to 1-5
-Logging: 0
+Logging:
+  #
+  # Logs for loading attributes
+  attribute-load: 0
+  #
+  # Logs for attack/defense buffs applying
+  buff: 0
+  #
+  # Logs for registration of skills and classes
+  registration: 0
+  #
+  # Logs for GUI updates
+  gui: 0
 #
 Worlds:
   #

@@ -34,7 +34,7 @@ import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
-import org.bukkit.Bukkit;
+import com.sucy.skill.log.Logger;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -290,7 +290,7 @@ public abstract class EffectComponent
                 }
                 else
                 {
-                    Bukkit.getLogger().warning("Invalid component type - " + type);
+                    Logger.invalid("Invalid component type - " + type);
                     continue;
                 }
                 String mkey = key.toLowerCase().replaceAll("-.+", "");
@@ -307,12 +307,12 @@ public abstract class EffectComponent
                     catch (Exception ex)
                     {
                         // Failed to create the component, just don't add it
-                        Bukkit.getLogger().warning("Failed to create " + type + " component: " + key);
+                        Logger.bug("Failed to create " + type + " component: " + key);
                     }
                 }
                 else
                 {
-                    Bukkit.getLogger().warning("Invalid " + type + " component: " + key);
+                    Logger.invalid("Invalid " + type + " component: " + key);
                 }
             }
         }

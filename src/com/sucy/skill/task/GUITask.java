@@ -153,19 +153,19 @@ public class GUITask extends BukkitRunnable
                 Logger.log(LogType.GUI, 2, "Updating action bar (Working=" + ActionBar.isSupported() + ")");
                 PlayerClass main = data.getMainClass();
                 String filtered = actionText
-                        .replace("{combo}", data.getComboData().getCurrentComboString())
-                        .replace("{class}", main.getData().getPrefix())
-                        .replace("{level}", "" + main.getLevel())
-                        .replace("{exp}", "" + (int) main.getExp())
-                        .replace("{expReq}", "" + main.getRequiredExp())
-                        .replace("{expLeft}", "" + (int) Math.ceil(main.getRequiredExp() - main.getExp()))
-                        .replace("{mana}", "" + (int) data.getMana())
-                        .replace("{maxMana}", "" + (int) data.getMaxMana())
-                        .replace("{name}", player.getName())
-                        .replace("{health}", "" + (int) player.getHealth())
-                        .replace("{maxHealth}", "" + (int) player.getMaxHealth())
-                        .replace("{attr}", "" + data.getAttributePoints())
-                        .replace("{sp}", "" + main.getPoints());
+                    .replace("{combo}", data.getComboData().getCurrentComboString())
+                    .replace("{class}", main.getData().getPrefix())
+                    .replace("{level}", "" + main.getLevel())
+                    .replace("{exp}", "" + (int) main.getExp())
+                    .replace("{expReq}", "" + main.getRequiredExp())
+                    .replace("{expLeft}", "" + (int) Math.ceil(main.getRequiredExp() - main.getExp()))
+                    .replace("{mana}", "" + (int) data.getMana())
+                    .replace("{maxMana}", "" + (int) data.getMaxMana())
+                    .replace("{name}", player.getName())
+                    .replace("{health}", "" + (int) player.getHealth())
+                    .replace("{maxHealth}", "" + (int) player.getMaxHealth())
+                    .replace("{attr}", "" + data.getAttributePoints())
+                    .replace("{sp}", "" + main.getPoints());
                 while (filtered.contains("{value:"))
                 {
                     int index = filtered.indexOf("{value:");

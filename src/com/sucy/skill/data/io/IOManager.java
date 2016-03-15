@@ -32,6 +32,7 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.manager.ComboManager;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
@@ -46,24 +47,24 @@ import java.util.Map;
 public abstract class IOManager
 {
     private static final String
-            LIMIT          = "limit",
-            ACTIVE         = "active",
-            ACCOUNTS       = "accounts",
-            ACCOUNT_PREFIX = "acc",
-            CLASSES        = "classes",
-            SKILLS         = "skills",
-            BINDS          = "binds",
-            LEVEL          = "level",
-            SCHEME         = "scheme",
-            TOTAL_EXP      = "total-exp",
-            POINTS         = "points",
-            SKILL_BAR      = "bar",
-            ENABLED        = "enabled",
-            SLOTS          = "slots",
-            UNASSIGNED     = "e",
-            COMBOS         = "combos",
-            ATTRIBS        = "attribs",
-            ATTRIB_POINTS  = "attrib-points";
+        LIMIT          = "limit",
+        ACTIVE         = "active",
+        ACCOUNTS       = "accounts",
+        ACCOUNT_PREFIX = "acc",
+        CLASSES        = "classes",
+        SKILLS         = "skills",
+        BINDS          = "binds",
+        LEVEL          = "level",
+        SCHEME         = "scheme",
+        TOTAL_EXP      = "total-exp",
+        POINTS         = "points",
+        SKILL_BAR      = "bar",
+        ENABLED        = "enabled",
+        SLOTS          = "slots",
+        UNASSIGNED     = "e",
+        COMBOS         = "combos",
+        ATTRIBS        = "attribs",
+        ATTRIB_POINTS  = "attrib-points";
 
     /**
      * API reference
@@ -215,10 +216,11 @@ public abstract class IOManager
             }
 
             // Load combos
-            if (SkillAPI.getSettings().isCombosEnabled())
+            if (SkillAPI.getSettings().isCustomCombosAllowed())
             {
                 DataSection combos = account.getSection(COMBOS);
                 PlayerCombos comboData = acc.getComboData();
+                ComboManager cm = SkillAPI.getComboManager();
                 if (combos != null && comboData != null)
                 {
                     for (String key : combos.keys())
@@ -226,7 +228,9 @@ public abstract class IOManager
                         Skill skill = SkillAPI.getSkill(key);
                         if (acc.hasSkill(key) && skill != null && skill.canCast())
                         {
-                            comboData.setSkill(skill, combos.getInt(key));
+                            int combo = cm.parseCombo(combos.getString(key));
+                            if (combo == -1) Logger.invalid("Invalid skill combo: " + combos.getString(key));
+                            else comboData.setSkill(skill, combo);
                         }
                     }
                 }
@@ -316,16 +320,17 @@ public abstract class IOManager
                 }
 
                 // Save combos
-                if (SkillAPI.getSettings().isCombosEnabled())
+                if (SkillAPI.getSettings().isCustomCombosAllowed())
                 {
                     DataSection combos = account.createSection(COMBOS);
                     PlayerCombos comboData = acc.getComboData();
+                    ComboManager cm = SkillAPI.getComboManager();
                     if (combos != null && comboData != null)
                     {
-                        HashMap<String, Integer> comboMap = comboData.getComboData();
-                        for (Map.Entry<String, Integer> combo : comboMap.entrySet())
+                        HashMap<Integer, String> comboMap = comboData.getSkillMap();
+                        for (Map.Entry<Integer, String> combo : comboMap.entrySet())
                         {
-                            combos.set(combo.getKey(), combo.getValue());
+                            combos.set(combo.getValue(), cm.getSaveString(combo.getKey()));
                         }
                     }
                 }

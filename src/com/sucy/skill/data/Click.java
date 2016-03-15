@@ -27,6 +27,7 @@
 package com.sucy.skill.data;
 
 import com.rit.sucy.text.TextFormatter;
+import com.sucy.skill.SkillAPI;
 
 /**
  * Represents a single click in a click combination
@@ -43,13 +44,11 @@ public enum Click
 
     private static final Click[] CLICKS = new Click[] { LEFT, RIGHT, SHIFT };
 
-    private String name;
-    private int    id;
+    private int id;
 
     private Click(int id)
     {
         this.id = id;
-        this.name = TextFormatter.format(this.toString());
     }
 
     /**
@@ -69,7 +68,7 @@ public enum Click
      */
     public String getName()
     {
-        return name;
+        return TextFormatter.colorString(SkillAPI.getLanguage().getMessage("Combo." + name().toLowerCase()).get(0));
     }
 
     /**
@@ -98,17 +97,10 @@ public enum Click
     {
         if (name == null) return null;
         name = name.toLowerCase();
-        if (name.equals("left"))
+        for (Click click : values())
         {
-            return LEFT;
-        }
-        else if (name.equals("right"))
-        {
-            return RIGHT;
-        }
-        else if (name.equals("shift"))
-        {
-            return SHIFT;
+            if (name.equals(click.getName().toLowerCase()))
+                return click;
         }
         return null;
     }

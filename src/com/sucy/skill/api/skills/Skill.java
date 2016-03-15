@@ -77,6 +77,7 @@ public abstract class Skill
     private int          maxLevel;
     private int          skillReqLevel;
     private boolean      needsPermission;
+    private int          combo;
 
     /**
      * The settings for the skill which include configurable stats
@@ -176,6 +177,17 @@ public abstract class Skill
     }
 
     /**
+     * Checks whether or not the skill has been assigned
+     * a click combination.
+     *
+     * @return true if has a combo, false otherwise
+     */
+    public boolean hasCombo()
+    {
+        return combo >= 0;
+    }
+
+    /**
      * Checks whether or not the skill can automatically
      * level up to the next stage.
      *
@@ -224,6 +236,35 @@ public abstract class Skill
     public boolean hasMessage()
     {
         return message != null && message.length() > 0;
+    }
+
+    /**
+     * Retrieves the ID of the skill's combo
+     *
+     * @return combo ID
+     */
+    public int getCombo()
+    {
+        return combo;
+    }
+
+    /**
+     * Sets the click combo for the skill
+     *
+     * @param combo new combo
+     */
+    public void setCombo(int combo)
+    {
+        this.combo = combo;
+    }
+
+    /**
+     * Clears the set combo for the skill.
+     * Only the API should call this.
+     */
+    public void clearCombo()
+    {
+        combo = -1;
     }
 
     /**
@@ -406,12 +447,12 @@ public abstract class Skill
             {
                 // General data
                 line = line.replace("{level}", "" + skillData.getLevel())
-                        .replace("{req:lvl}", lvlReq)
-                        .replace("{req:level}", lvlReq)
-                        .replace("{req:cost}", costReq)
-                        .replace("{max}", "" + maxLevel)
-                        .replace("{name}", name)
-                        .replace("{type}", type);
+                    .replace("{req:lvl}", lvlReq)
+                    .replace("{req:level}", lvlReq)
+                    .replace("{req:cost}", costReq)
+                    .replace("{max}", "" + maxLevel)
+                    .replace("{name}", name)
+                    .replace("{type}", type);
 
                 // Attributes
                 while (line.contains("{attr:"))
@@ -477,7 +518,7 @@ public abstract class Skill
         if (SkillAPI.getSettings().isCombosEnabled() && canCast())
         {
             lore.add("");
-            lore.add(ChatColor.GOLD + skillData.getPlayerData().getComboData().getComboString(this));
+            lore.add(skillData.getPlayerData().getComboData().getComboString(this));
         }
 
         if (lore.size() > 0)
@@ -618,6 +659,7 @@ public abstract class Skill
     private static final String DESC      = "desc";
     private static final String ATTR      = "attributes";
     private static final String ATTR_INFO = "attribute-info";
+    private static final String COMBO     = "combo";
 
     /**
      * Saves the skill data to the configuration, overwriting all previous data
@@ -632,6 +674,8 @@ public abstract class Skill
         config.set(REQ, skillReq);
         config.set(REQLVL, skillReqLevel);
         config.set(PERM, needsPermission);
+        if (combo >= 0 && canCast())
+            config.set(COMBO, SkillAPI.getComboManager().getSaveString(combo));
         settings.save(config.createSection(ATTR));
         if (hasMessage())
         {
@@ -673,6 +717,7 @@ public abstract class Skill
         skillReqLevel = config.getInt(REQLVL, skillReqLevel);
         message = TextFormatter.colorString(config.getString(MSG, message));
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
+        combo = SkillAPI.getComboManager().parseCombo(config.getString(COMBO));
 
         if (config.isList(DESC))
         {

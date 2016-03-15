@@ -36,10 +36,10 @@ public class SkillNodes
 
     public static final String
 
-            /**
-             * Base node of the skill tree nodes
-             */
-            BASE = "Skill Tree.",
+        /**
+         * Base node of the skill tree nodes
+         */
+        BASE = "Skill Tree.",
 
     /**
      * Title for a skill display

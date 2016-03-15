@@ -35,7 +35,6 @@ import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Represents the click combos available for a player to use along
@@ -43,8 +42,8 @@ import java.util.List;
  */
 public class PlayerCombos
 {
-    private HashMap<String, Integer> combos = new HashMap<String, Integer>();
-    private HashMap<Integer, String> skills = new HashMap<Integer, String>();
+    private HashMap<Integer, String> skills  = new HashMap<Integer, String>();
+    private HashMap<String, Integer> reverse = new HashMap<String, Integer>();
 
     private PlayerData player;
     private Click[]    clicks;
@@ -77,6 +76,16 @@ public class PlayerCombos
     }
 
     /**
+     * Retrieves the map of combo IDs to skills.
+     *
+     * @return map of combo IDs to skills
+     */
+    public HashMap<Integer, String> getSkillMap()
+    {
+        return skills;
+    }
+
+    /**
      * Retrieves the data of the owning player
      *
      * @return owning player's data
@@ -84,16 +93,6 @@ public class PlayerCombos
     public PlayerData getPlayerData()
     {
         return player;
-    }
-
-    /**
-     * Retrieves the combo data for the player
-     *
-     * @return player's combo data
-     */
-    public HashMap<String, Integer> getComboData()
-    {
-        return combos;
     }
 
     /**
@@ -189,7 +188,7 @@ public class PlayerCombos
         {
             active.add(clicks[i]);
         }
-        return getComboString(active);
+        return SkillAPI.getComboManager().getComboString(active);
     }
 
     /**
@@ -201,25 +200,26 @@ public class PlayerCombos
     public void addSkill(Skill skill)
     {
         if (skill == null || !skill.canCast()) return;
-        String key = skill.getName().toLowerCase();
 
         // Can't already be added
-        if (combos.containsKey(key))
+        if (skill.hasCombo())
         {
+            setSkill(skill, skill.getCombo());
             return;
         }
 
         // Get next available combo
         ComboManager cm = SkillAPI.getComboManager();
-        int combo;
+        int combo = 0;
         int max = (1 << (Click.BITS * cm.getComboSize())) - 1;
-        for (combo = 0; combo <= max && (skills.containsKey(combo) || !cm.isValidCombo(combo)); combo++) ;
+        while (combo <= max && (skills.containsKey(combo) || !cm.isValidCombo(combo)))
+            combo++;
 
         // Add it if valid
         if (combo <= max)
         {
-            combos.put(skill.getName().toLowerCase(), combo);
             skills.put(combo, skill.getName().toLowerCase());
+            reverse.put(skill.getName(), combo);
         }
     }
 
@@ -230,11 +230,8 @@ public class PlayerCombos
      */
     public void removeSkill(Skill skill)
     {
-        if (skill == null) return;
-        if (combos.containsKey(skill.getName().toLowerCase()))
-        {
-            skills.remove(combos.remove(skill.getName().toLowerCase()));
-        }
+        if (skill == null || !skill.hasCombo()) return;
+        skills.remove(skill.getCombo());
     }
 
     /**
@@ -281,46 +278,28 @@ public class PlayerCombos
         if (skills.containsKey(id))
         {
             Skill old = SkillAPI.getSkill(skills.remove(id));
-            combos.remove(old.getName().toLowerCase());
             skills.put(id, skill.getName().toLowerCase());
-            combos.put(skill.getName().toLowerCase(), id);
+            reverse.put(skill.getName(), id);
             addSkill(old);
         }
         else
         {
             skills.put(id, skill.getName().toLowerCase());
-            combos.put(skill.getName().toLowerCase(), id);
+            reverse.put(skill.getName(), id);
         }
         return true;
     }
 
     /**
-     * Retrieves the legible string representing the combo. If
-     * the skill is not added to the combo data, this will
-     * instead return an empty string
+     * Retrieves the combo string for the skill
+     * according to the player's personal settings.
      *
      * @param skill skill to get the string for
      *
-     * @return string representation fo the skill's combo
+     * @return combo string
      */
     public String getComboString(Skill skill)
     {
-        if (skill == null) return "";
-        String key = skill.getName().toLowerCase();
-        if (!combos.containsKey(key)) return "";
-
-        List<Click> clicks = SkillAPI.getComboManager().convertId(combos.get(key));
-        return getComboString(clicks);
-    }
-
-    private String getComboString(List<Click> clicks)
-    {
-        String result = "";
-        for (Click click : clicks)
-        {
-            if (result.length() > 0) result += ", ";
-            result += click.getName();
-        }
-        return result;
+        return SkillAPI.getComboManager().getComboString(reverse.get(skill.getName()));
     }
 }

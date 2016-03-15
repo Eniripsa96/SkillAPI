@@ -189,6 +189,29 @@ GUI:
   #   {value:<key>} - a skill value
   action-bar-text: '{combo}'
   #
+  # Whether or not to use title messages
+  title-enabled: false
+  #
+  # Duration for title messages in seconds
+  title-duration: 3
+  #
+  # Fade in time for title messages in seconds
+  title-fade-in: 0.5
+  #
+  # Fade out time for title messages in seconds
+  title-fade-out: 0.5
+  #
+  # Messages to display using the Title bar
+  # Second lines of messages will be displayed in the subtitle
+  # Ones you can use include:
+  #   level_up
+  #   exp_gained
+  #   exp_lost
+  #   status
+  title-messages:
+  - level_up
+  - exp_lost
+  #
   # Whether or not to display class information on a scoreboard
   scoreboard-enabled: true
   #
@@ -209,6 +232,9 @@ Click Combos:
   #
   # Whether or not to use click combinations
   enabled: false
+  #
+  # Whether or not players can customize their combos
+  allow-custom: false
   #
   # Whether or not left clicks are allowed at all
   use-click-left: true
@@ -295,6 +321,9 @@ Experience:
   #
   # Whether or not to display a message when gaining a level
   level-message-enabled: true
+  #
+  # Whether or not to show a message when losing exp de to dying
+  lose-exp-message: true
   #
   # The formula used for calculating required experience
   # The formula is: x*lvl*lvl + y*lvl + z

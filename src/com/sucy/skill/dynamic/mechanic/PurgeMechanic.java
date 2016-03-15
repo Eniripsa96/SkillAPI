@@ -40,11 +40,11 @@ import java.util.List;
 public class PurgeMechanic extends EffectComponent
 {
     private static final PotionEffectType[] POTIONS = new PotionEffectType[] {
-            PotionEffectType.ABSORPTION, PotionEffectType.DAMAGE_RESISTANCE, PotionEffectType.FAST_DIGGING,
-            PotionEffectType.FIRE_RESISTANCE, PotionEffectType.HEALTH_BOOST, PotionEffectType.INCREASE_DAMAGE,
-            PotionEffectType.INVISIBILITY, PotionEffectType.JUMP, PotionEffectType.NIGHT_VISION,
-            PotionEffectType.REGENERATION, PotionEffectType.SATURATION, PotionEffectType.SPEED,
-            PotionEffectType.WATER_BREATHING
+        PotionEffectType.ABSORPTION, PotionEffectType.DAMAGE_RESISTANCE, PotionEffectType.FAST_DIGGING,
+        PotionEffectType.FIRE_RESISTANCE, PotionEffectType.HEALTH_BOOST, PotionEffectType.INCREASE_DAMAGE,
+        PotionEffectType.INVISIBILITY, PotionEffectType.JUMP, PotionEffectType.NIGHT_VISION,
+        PotionEffectType.REGENERATION, PotionEffectType.SATURATION, PotionEffectType.SPEED,
+        PotionEffectType.WATER_BREATHING
     };
 
     private static final String STATUS = "status";
@@ -94,7 +94,7 @@ public class PurgeMechanic extends EffectComponent
                 worked = true;
             }
 
-            if (potion.equals("all"))
+            if (potion.equals("ALL"))
             {
                 for (PotionEffectType p : POTIONS)
                 {

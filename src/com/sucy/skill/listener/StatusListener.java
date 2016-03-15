@@ -26,14 +26,15 @@
  */
 package com.sucy.skill.listener;
 
-import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
+import com.sucy.skill.data.TitleType;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.manager.TitleManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -234,11 +235,11 @@ public class StatusListener implements Listener
                     Player player = (Player) receiver;
                     if (checkTime(player))
                     {
-                        SkillAPI.getLanguage().sendMessage(
-                                "Status." + messageMap.get(flag),
-                                player,
-                                FilterType.COLOR,
-                                RPGFilter.DURATION.setReplacement("" + FlagManager.getTimeLeft(entity, flag))
+                        TitleManager.show(
+                            player,
+                            TitleType.STATUS,
+                            "Status." + messageMap.get(flag),
+                            RPGFilter.DURATION.setReplacement("" + FlagManager.getTimeLeft(entity, flag))
                         );
                     }
                 }

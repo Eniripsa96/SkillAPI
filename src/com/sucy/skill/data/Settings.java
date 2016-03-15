@@ -810,16 +810,24 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String GUI_BASE   = "GUI.";
-    private static final String GUI_OLD    = GUI_BASE + "old-health-bar";
-    private static final String GUI_LVLBAR = GUI_BASE + "level-bar";
-    private static final String GUI_FOOD   = GUI_BASE + "food-bar";
-    private static final String GUI_ACTION = GUI_BASE + "use-action-bar";
-    private static final String GUI_TEXT   = GUI_BASE + "action-bar-text";
-    private static final String GUI_BOARD  = GUI_BASE + "scoreboard-enabled";
-    private static final String GUI_NAME   = GUI_BASE + "show-class-name";
-    private static final String GUI_LEVEL  = GUI_BASE + "show-class-level";
-    private static final String GUI_MAP    = GUI_BASE + "map-tree-enabled";
+    private static final String
+        GUI_BASE   = "GUI.",
+        GUI_OLD    = GUI_BASE + "old-health-bar",
+        GUI_LVLBAR = GUI_BASE + "level-bar",
+        GUI_FOOD   = GUI_BASE + "food-bar",
+        GUI_ACTION = GUI_BASE + "use-action-bar",
+        GUI_TEXT   = GUI_BASE + "action-bar-text",
+        GUI_BOARD  = GUI_BASE + "scoreboard-enabled",
+        GUI_NAME   = GUI_BASE + "show-class-name",
+        GUI_LEVEL  = GUI_BASE + "show-class-level",
+        GUI_MAP    = GUI_BASE + "map-tree-enabled",
+        GUI_TITLE  = GUI_BASE + "title-enabled",
+        GUI_DUR    = GUI_BASE + "title-duration",
+        GUI_FADEI  = GUI_BASE + "title-fade-in",
+        GUI_FADEO  = GUI_BASE + "title-fade-out",
+        GUI_LIST   = GUI_BASE + "title-messages";
+
+    private List<String> titleMessages;
 
     private boolean oldHealth;
     private String  levelBar;
@@ -831,6 +839,10 @@ public class Settings
     private boolean showClassLevel;
     private boolean showMapTree;
     private boolean showTree;
+    private boolean useTitle;
+    private int     titleDuration;
+    private int     titleFadeIn;
+    private int     titleFadeOut;
 
     /**
      * Checks whether or not old health bars (fixed 10 hearts) are enabled
@@ -924,9 +936,51 @@ public class Settings
         return showMapTree;
     }
 
+    /**
+     * Checks whether or not the map tree is available in some way
+     *
+     * @return true if available
+     */
     public boolean isMapTreeAvailable()
     {
         return showTree;
+    }
+
+    /**
+     * Check whether or not to use the title display
+     * on the given message type
+     *
+     * @param type type of message to check for
+     *
+     * @return true if should use title display, false otherwise
+     */
+    public boolean useTitle(TitleType type)
+    {
+        return useTitle && type != null && titleMessages.contains(type.name().toLowerCase());
+    }
+
+    /**
+     * @return duration of the title display in ticks
+     */
+    public int getTitleDuration()
+    {
+        return titleDuration;
+    }
+
+    /**
+     * @return fade in time of the title display in ticks
+     */
+    public int getTitleFadeIn()
+    {
+        return titleFadeIn;
+    }
+
+    /**
+     * @return fade out time of the title display in ticks
+     */
+    public int getTitleFadeOut()
+    {
+        return titleFadeOut;
     }
 
     private void loadGUISettings()
@@ -941,6 +995,11 @@ public class Settings
         showClassLevel = config.getBoolean(GUI_LEVEL);
         showMapTree = config.getString(GUI_MAP).equalsIgnoreCase("TRUE");
         showTree = showMapTree || config.getString(GUI_MAP).equalsIgnoreCase("PARTIAL");
+        useTitle = config.getBoolean(GUI_TITLE);
+        titleDuration = (int) (20 * config.getFloat(GUI_DUR));
+        titleFadeIn = (int) (20 * config.getFloat(GUI_FADEI));
+        titleFadeOut = (int) (20 * config.getFloat(GUI_FADEO));
+        titleMessages = config.getList(GUI_LIST);
     }
 
     ///////////////////////////////////////////////////////
@@ -951,6 +1010,7 @@ public class Settings
 
     private static final String COMBO_BASE    = "Click Combos.";
     private static final String COMBO_ENABLED = COMBO_BASE + "enabled";
+    private static final String COMBO_CUSTOM  = COMBO_BASE + "custom";
     private static final String COMBO_LEFT    = COMBO_BASE + "use-click-left";
     private static final String COMBO_RIGHT   = COMBO_BASE + "use-click-right";
     private static final String COMBO_SHIFT   = COMBO_BASE + "use-click-shift";
@@ -958,6 +1018,7 @@ public class Settings
     private static final String COMBO_TIME    = COMBO_BASE + "click-time";
 
     private boolean combosEnabled;
+    private boolean customCombos;
     private boolean comboLeft;
     private boolean comboRight;
     private boolean comboShift;
@@ -972,6 +1033,16 @@ public class Settings
     public boolean isCombosEnabled()
     {
         return combosEnabled;
+    }
+
+    /**
+     * Checks whether or not players can customize their click combos
+     *
+     * @return true if can customize them, false otherwise
+     */
+    public boolean isCustomCombosAllowed()
+    {
+        return customCombos;
     }
 
     /**
@@ -1027,6 +1098,7 @@ public class Settings
     private void loadComboSettings()
     {
         combosEnabled = config.getBoolean(COMBO_ENABLED);
+        customCombos = combosEnabled && config.getBoolean(COMBO_CUSTOM);
         comboLeft = config.getBoolean(COMBO_LEFT);
         comboRight = config.getBoolean(COMBO_RIGHT);
         comboShift = config.getBoolean(COMBO_SHIFT);
@@ -1051,6 +1123,7 @@ public class Settings
     private boolean    blockCreative;
     private boolean    showExpMessages;
     private boolean    showLevelMessages;
+    private boolean    showLossMessages;
 
     /**
      * Gets the required amount of experience at a given level
@@ -1151,6 +1224,17 @@ public class Settings
         return showLevelMessages;
     }
 
+    /**
+     * Checks whether or not messages should be displayed
+     * when a player dies and loses experience
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean isShowLossMessages()
+    {
+        return showLossMessages;
+    }
+
     private static final String EXP_BASE = "Experience.";
 
     private void loadExpSettings()
@@ -1161,6 +1245,7 @@ public class Settings
         this.blockCreative = config.getBoolean(EXP_BASE + "block-creative");
         this.showExpMessages = config.getBoolean(EXP_BASE + "exp-message-enabled");
         this.showLevelMessages = config.getBoolean(EXP_BASE + "level-message-enabled");
+        this.showLossMessages = config.getBoolean(EXP_BASE + "lose-exp-message");
 
         DataSection formula = config.getSection(EXP_BASE + "formula");
         int x = formula.getInt("x");

@@ -32,8 +32,9 @@ package com.sucy.skill.language;
 public class NotificationNodes
 {
     public static final String
-            BASE = "Notifications.",
-            CAST = BASE + "cast",
-            EXP  = BASE + "gain-exp",
-            LVL  = BASE + "gain-lvl";
+        BASE = "Notifications.",
+        CAST = BASE + "cast",
+        EXP  = BASE + "gain-exp",
+        LVL  = BASE + "gain-lvl",
+        LOSE = BASE + "lose-exp";
 }

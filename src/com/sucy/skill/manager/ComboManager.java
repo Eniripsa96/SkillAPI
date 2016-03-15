@@ -52,9 +52,9 @@ public class ComboManager
     {
         comboSize = Math.min(SkillAPI.getSettings().getComboSize(), Click.MAX_COMBO_SIZE);
         clicks = new boolean[] {
-                SkillAPI.getSettings().isComboLeft(),
-                SkillAPI.getSettings().isComboRight(),
-                SkillAPI.getSettings().isComboShift()
+            SkillAPI.getSettings().isComboLeft(),
+            SkillAPI.getSettings().isComboRight(),
+            SkillAPI.getSettings().isComboShift()
         };
         buffer = new Click[comboSize];
     }
@@ -147,5 +147,106 @@ public class ComboManager
     public int convertCombo(Collection<Click> clicks)
     {
         return convertCombo(clicks.toArray(buffer));
+    }
+
+    /**
+     * Retrieves a formatted display of the combo
+     * based on the language config
+     *
+     * @param combo the ID of the combo
+     *
+     * @return formatted string for the combo
+     */
+    public String getComboString(int combo)
+    {
+        if (combo == -1) return "";
+        return getComboString(convertId(combo));
+    }
+
+    /**
+     * Retrieves a formatted display of the combo
+     * based on the language config
+     *
+     * @param clicks clicks of the combo
+     *
+     * @return formatted string for the combo
+     */
+    public String getComboString(List<Click> clicks)
+    {
+        if (clicks == null)
+            return "";
+
+        String result = "";
+        for (Click click : clicks)
+        {
+            if (result.length() > 0) result += ", ";
+            result += click.getName();
+        }
+        return result;
+    }
+
+    /**
+     * Retrieves a formatted display of the combo
+     * used to save the combo to disk
+     *
+     * @param combo the ID of the combo
+     *
+     * @return formatted string for the combo
+     */
+    public String getSaveString(int combo)
+    {
+        return getSaveString(convertId(combo));
+    }
+
+    /**
+     * Retrieves a formatted display of the combo
+     * used to save the combo to disk
+     *
+     * @param clicks clicks of the combo
+     *
+     * @return formatted string for the combo
+     */
+    public String getSaveString(List<Click> clicks)
+    {
+        String result = "";
+        for (Click click : clicks)
+        {
+            if (result.length() > 0) result += ", ";
+            result += click.name().charAt(0);
+        }
+        return result;
+    }
+
+    /**
+     * Parses a combo from a string using spaces as breaks
+     *
+     * @param combo combo string
+     *
+     * @return ID of the combo or -1 if invalid
+     */
+    public int parseCombo(String combo)
+    {
+        if (combo == null || !combo.contains(" "))
+            return -1;
+
+        String[] parts = combo.toLowerCase().split(" ");
+        if (parts.length != comboSize)
+            return -1;
+
+        Click[] clicks = new Click[comboSize];
+        int i = 0;
+        for (String part : parts)
+        {
+            if (part.contains("l"))
+                clicks[i++] = Click.LEFT;
+            else if (part.contains("r"))
+                clicks[i++] = Click.RIGHT;
+            else if (part.contains("s"))
+                clicks[i++] = Click.SHIFT;
+            else
+                return -1;
+        }
+
+        return convertCombo(clicks);
     }
 }

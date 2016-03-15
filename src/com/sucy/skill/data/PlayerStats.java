@@ -41,7 +41,6 @@ import java.util.HashMap;
  */
 public class PlayerStats implements StatHolder
 {
-
     private PlayerClass player;
 
     /**

@@ -1590,11 +1590,11 @@ public final class PlayerData
         if (status == SkillStatus.ON_COOLDOWN)
         {
             SkillAPI.getLanguage().sendMessage(
-                    ErrorNodes.COOLDOWN,
-                    getPlayer(),
-                    FilterType.COLOR,
-                    RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
-                    RPGFilter.SKILL.setReplacement(skill.getData().getName())
+                ErrorNodes.COOLDOWN,
+                getPlayer(),
+                FilterType.COLOR,
+                RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
+                RPGFilter.SKILL.setReplacement(skill.getData().getName())
             );
         }
 
@@ -1602,13 +1602,13 @@ public final class PlayerData
         else if (status == SkillStatus.MISSING_MANA)
         {
             SkillAPI.getLanguage().sendMessage(
-                    ErrorNodes.MANA,
-                    getPlayer(),
-                    FilterType.COLOR,
-                    RPGFilter.SKILL.setReplacement(skill.getData().getName()),
-                    RPGFilter.MANA.setReplacement(getMana() + ""),
-                    RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
-                    RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + "")
+                ErrorNodes.MANA,
+                getPlayer(),
+                FilterType.COLOR,
+                RPGFilter.SKILL.setReplacement(skill.getData().getName()),
+                RPGFilter.MANA.setReplacement(getMana() + ""),
+                RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
+                RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + "")
             );
         }
 

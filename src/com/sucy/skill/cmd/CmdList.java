@@ -90,10 +90,11 @@ public class CmdList implements IFunction
                     PlayerClass cData = data == null ? null : data.getMainClass();
                     String name = cData == null ? ChatColor.GRAY + "Not Professed" : cData.getData().getPrefix();
                     String level = cData == null ? "0" : cData.getLevel() + "";
-                    sender.sendMessage(line
-                                               .replace("{id}", i + "")
-                                               .replace("{level}", level)
-                                               .replace("{class}", name)
+                    sender.sendMessage(
+                        line
+                            .replace("{id}", i + "")
+                            .replace("{level}", level)
+                            .replace("{class}", name)
                     );
                 }
             }

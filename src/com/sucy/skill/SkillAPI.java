@@ -104,8 +104,11 @@ public class SkillAPI extends JavaPlugin
         singleton = this;
 
         // Load settings
-        language = new CommentedLanguageConfig(this, "language");
         settings = new Settings(this);
+        language = new CommentedLanguageConfig(this, "language");
+        language.checkDefaults();
+        language.trim();
+        language.save();
 
         // Hook plugins
         PluginChecker.isVaultActive();
@@ -564,16 +567,18 @@ public class SkillAPI extends JavaPlugin
             return;
         }
 
-        singleton.getServer().getScheduler().runTaskAsynchronously(singleton, new Runnable()
-        {
-            @Override
-            public void run()
+        singleton.getServer().getScheduler().runTaskAsynchronously(
+            singleton, new Runnable()
             {
-                PlayerAccounts accounts = getPlayerAccountData(player);
-                singleton.io.saveData(accounts);
-                singleton.players.remove(new VersionPlayer(player).getIdString());
+                @Override
+                public void run()
+                {
+                    PlayerAccounts accounts = getPlayerAccountData(player);
+                    singleton.io.saveData(accounts);
+                    singleton.players.remove(new VersionPlayer(player).getIdString());
+                }
             }
-        });
+        );
     }
 
     /**

@@ -57,14 +57,16 @@ public class DelayMechanic extends EffectComponent
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double seconds = attr(caster, SECONDS, level, 2.0, isSelf);
-        Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
-        {
-            @Override
-            public void run()
+        Bukkit.getScheduler().runTaskLater(
+            Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
             {
-                executeChildren(caster, level, targets);
-            }
-        }, (long) (seconds * 20));
+                @Override
+                public void run()
+                {
+                    executeChildren(caster, level, targets);
+                }
+            }, (long) (seconds * 20)
+        );
         return true;
     }
 }

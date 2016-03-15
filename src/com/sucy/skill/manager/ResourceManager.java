@@ -39,8 +39,8 @@ import java.io.OutputStream;
 public class ResourceManager
 {
     public static final String
-            QUESTS_FOLDER = "plugins" + File.separator + "Quests" + File.separator + "modules",
-            SCHEME_FOLDER = "plugins" + File.separator + "SkillAPI" + File.separator + "img" + File.separator + "default";
+        QUESTS_FOLDER = "plugins" + File.separator + "Quests" + File.separator + "modules",
+        SCHEME_FOLDER = "plugins" + File.separator + "SkillAPI" + File.separator + "img" + File.separator + "default";
 
     /**
      * Copies a resource embedded in the jar into the given folder

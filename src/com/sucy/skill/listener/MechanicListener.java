@@ -181,7 +181,7 @@ public class MechanicListener implements Listener
             if (p.hasMetadata(P_CALL) && event.getEntity() instanceof LivingEntity)
             {
                 ((ProjectileMechanic) SkillAPI.getMeta(p, P_CALL))
-                        .callback(p, (LivingEntity) event.getEntity());
+                    .callback(p, (LivingEntity) event.getEntity());
                 event.setCancelled(true);
             }
         }
@@ -213,7 +213,7 @@ public class MechanicListener implements Listener
         {
             event.setCancelled(true);
             ((PotionProjectileMechanic) SkillAPI.getMeta(event.getEntity(), POTION_PROJECTILE))
-                    .callback(event.getEntity(), event.getAffectedEntities());
+                .callback(event.getEntity(), event.getAffectedEntities());
             event.getAffectedEntities().clear();
         }
     }

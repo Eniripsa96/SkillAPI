@@ -89,7 +89,7 @@ public class ClassBoardManager
     {
         // Give a chat prefix
         Chat.getPlayerData(player.getPlayerName()).setPluginPrefix(
-                new Prefix("SkillAPI", prefix, braceColor)
+            new Prefix("SkillAPI", prefix, braceColor)
         );
 
         // Clear previous data

@@ -43,7 +43,7 @@ import java.util.Map;
 public class PlayerSkillBar
 {
     private static final String
-            UNASSIGNED = "e";
+        UNASSIGNED = "e";
 
     private final HashMap<Integer, String> slots = new HashMap<Integer, String>();
     private final PlayerData player;

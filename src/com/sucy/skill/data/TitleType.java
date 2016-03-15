@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.language.ErrorNodes
+ * com.sucy.skill.data.TitleMessageType
  *
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -24,17 +24,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.language;
+package com.sucy.skill.data;
 
 /**
- * Error message language nodes
+ * Supported message types for the Title display
  */
-public class ErrorNodes
+public enum TitleType
 {
-    public static final String
-        BASE       = "Errors.",
-        COOLDOWN   = BASE + "on-cooldown",
-        MANA       = BASE + "no-mana",
-        NO_SKILLS  = BASE + "no-skills",
-        CANNOT_USE = BASE + "cannot-use";
+    EXP_GAINED,
+    EXP_LOST,
+    LEVEL_UP,
+    STATUS,
 }

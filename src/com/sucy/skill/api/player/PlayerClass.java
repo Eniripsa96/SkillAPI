@@ -27,7 +27,6 @@
 package com.sucy.skill.api.player;
 
 import com.rit.sucy.config.Filter;
-import com.rit.sucy.config.FilterType;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
@@ -37,9 +36,11 @@ import com.sucy.skill.api.event.PlayerExperienceLostEvent;
 import com.sucy.skill.api.event.PlayerGainSkillPointsEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.data.TitleType;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.manager.TitleManager;
 import org.bukkit.Bukkit;
 
 /**
@@ -323,13 +324,13 @@ public final class PlayerClass
         {
             if (SkillAPI.getSettings().isShowExpMessages() && player.getPlayer() != null)
             {
-                SkillAPI.getLanguage().sendMessage(
-                        NotificationNodes.EXP,
-                        player.getPlayer(),
-                        FilterType.COLOR,
-                        RPGFilter.EXP.setReplacement(amount + ""),
-                        RPGFilter.CLASS.setReplacement(classData.getName()),
-                        Filter.AMOUNT.setReplacement(amount + "")
+                TitleManager.show(
+                    player.getPlayer(),
+                    TitleType.EXP_GAINED,
+                    NotificationNodes.EXP,
+                    RPGFilter.EXP.setReplacement(amount + ""),
+                    RPGFilter.CLASS.setReplacement(classData.getName()),
+                    Filter.AMOUNT.setReplacement(amount + "")
                 );
             }
 
@@ -357,7 +358,21 @@ public final class PlayerClass
         // Subtract the experience
         if (!event.isCancelled())
         {
-            exp = Math.max(0, exp - event.getExp());
+            amount = Math.min(event.getExp(), exp);
+            exp = exp - amount;
+
+            // Exp loss message
+            if (SkillAPI.getSettings().isShowLossMessages())
+            {
+                TitleManager.show(
+                    player.getPlayer(),
+                    TitleType.EXP_LOST,
+                    NotificationNodes.LOSE,
+                    RPGFilter.EXP.setReplacement(amount + ""),
+                    RPGFilter.CLASS.setReplacement(classData.getName()),
+                    Filter.AMOUNT.setReplacement(amount + "")
+                );
+            }
         }
     }
 
@@ -404,6 +419,18 @@ public final class PlayerClass
                 DynamicSkill skill = SkillAPI.getSettings().getLevelUpSkill();
                 skill.cast(player.getPlayer(), level);
             }
+            if (SkillAPI.getSettings().isShowLevelMessages())
+            {
+                TitleManager.show(
+                    player.getPlayer(),
+                    TitleType.LEVEL_UP,
+                    NotificationNodes.LVL,
+                    RPGFilter.LEVEL.setReplacement(level + ""),
+                    RPGFilter.CLASS.setReplacement(classData.getName()),
+                    RPGFilter.POINTS.setReplacement(points + ""),
+                    Filter.AMOUNT.setReplacement(levels + "")
+                );
+            }
         }
     }
 
@@ -430,19 +457,6 @@ public final class PlayerClass
         level += amount;
         points += classData.getGroupSettings().getPointsPerLevel() * amount;
         getPlayerData().giveAttribPoints(classData.getGroupSettings().getAttribsPerLevel() * amount);
-
-        if (SkillAPI.getSettings().isShowLevelMessages() && player.getPlayer() != null)
-        {
-            SkillAPI.getLanguage().sendMessage(
-                    NotificationNodes.LVL,
-                    player.getPlayer(),
-                    FilterType.COLOR,
-                    RPGFilter.LEVEL.setReplacement(level + ""),
-                    RPGFilter.CLASS.setReplacement(classData.getName()),
-                    RPGFilter.POINTS.setReplacement(points + ""),
-                    Filter.AMOUNT.setReplacement(amount + "")
-            );
-        }
 
         // Update health/mana
         getPlayerData().updateHealthAndMana(getPlayerData().getPlayer());

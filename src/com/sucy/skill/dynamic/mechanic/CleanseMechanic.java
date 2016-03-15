@@ -40,9 +40,9 @@ import java.util.List;
 public class CleanseMechanic extends EffectComponent
 {
     private static final PotionEffectType[] POTIONS = new PotionEffectType[] {
-            PotionEffectType.BLINDNESS, PotionEffectType.CONFUSION, PotionEffectType.HUNGER,
-            PotionEffectType.POISON, PotionEffectType.SLOW, PotionEffectType.SLOW_DIGGING,
-            PotionEffectType.WEAKNESS, PotionEffectType.WITHER
+        PotionEffectType.BLINDNESS, PotionEffectType.CONFUSION, PotionEffectType.HUNGER,
+        PotionEffectType.POISON, PotionEffectType.SLOW, PotionEffectType.SLOW_DIGGING,
+        PotionEffectType.WEAKNESS, PotionEffectType.WITHER
     };
 
     private static final String STATUS = "status";

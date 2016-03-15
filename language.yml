@@ -11,7 +11,8 @@
 Notifications:
   cast: '&6{player} &2has cast &6{skill}'
   gain-exp: '&2You have gained &6{exp} experience'
-  gain-lvl: '&6Level Up! &2You are now &6level {level}'
+  gain-lvl: '&6Level Up! &2You are now a &6level {level} {class}'
+  lose-exp: '&4You have lost &6{exp} {class} &4experience'
 Errors:
   on-cooldown: '&6{skill} &4cooldown - &6{cooldown} &4seconds left'
   no-mana: '&4You need &6{missing} &4more mana'
@@ -41,7 +42,6 @@ Skill Tree:
   - '&7{desc:2-x}'
 Stats:
   health: '&2Health'
-  mana: '&2Mana'
   points: '&2SP'
   level: '&2Level'
   exp: '&2Exp'
@@ -53,4 +53,7 @@ Status:
   disarmed: '&4You are disarmed for another &6{duration} &4seconds'
   invincible: '&4That target is invincible for another &6{duration} &4seconds'
   absorbed: '&4That target is absorbing attacks to gain health for another &6{duration} &4seconds'
-
+Combo:
+  left: '&6Left'
+  right: '&6Right'
+  shift: '&6Shift'

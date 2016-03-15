@@ -28,60 +28,28 @@ package com.sucy.skill.api.util;
 
 import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.log.Logger;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
 
 /**
  * <p>Utility class for removing vanilla damage lore lines from items.</p>
  */
 public class DamageLoreRemover
 {
-
-    private static final HashSet<Material> TOOLS = new HashSet<Material>()
-    {{
-            add(Material.WOOD_AXE);
-            add(Material.WOOD_HOE);
-            add(Material.WOOD_SPADE);
-            add(Material.WOOD_SWORD);
-            add(Material.WOOD_PICKAXE);
-            add(Material.STONE_AXE);
-            add(Material.STONE_HOE);
-            add(Material.STONE_SPADE);
-            add(Material.STONE_SWORD);
-            add(Material.STONE_PICKAXE);
-            add(Material.IRON_AXE);
-            add(Material.IRON_HOE);
-            add(Material.IRON_SPADE);
-            add(Material.IRON_SWORD);
-            add(Material.IRON_PICKAXE);
-            add(Material.GOLD_AXE);
-            add(Material.GOLD_HOE);
-            add(Material.GOLD_SPADE);
-            add(Material.GOLD_SWORD);
-            add(Material.GOLD_PICKAXE);
-            add(Material.DIAMOND_AXE);
-            add(Material.DIAMOND_HOE);
-            add(Material.DIAMOND_SPADE);
-            add(Material.DIAMOND_SWORD);
-            add(Material.DIAMOND_PICKAXE);
-        }};
-
     private static Class<?>
-            NBT_BASE,
-            NBT_COMPOUND,
-            NBT_LIST,
-            NMS_ITEM,
-            CRAFT_ITEM;
+        NBT_BASE,
+        NBT_COMPOUND,
+        NBT_LIST,
+        NMS_ITEM,
+        CRAFT_ITEM;
 
     private static Method
-            SET,
-            SET_TAG,
-            GET_TAG,
-            AS_CRAFT,
-            AS_NMS;
+        SET,
+        SET_TAG,
+        GET_TAG,
+        AS_CRAFT,
+        AS_NMS;
 
     /**
      * <p>Sets up reflection methods/classes ahead of time so that they don't need to constantly be fetched.</p>
@@ -121,7 +89,7 @@ public class DamageLoreRemover
      */
     public static ItemStack removeAttackDmg(ItemStack item)
     {
-        if (item == null || !TOOLS.contains(item.getType()))
+        if (item == null)
         {
             return item;
         }

@@ -89,10 +89,10 @@ public class FloodTree extends InventoryTree
         public int compare(Skill skill1, Skill skill2)
         {
             return skill1.getLevelReq(0) > skill2.getLevelReq(0) ? 1
-                    : skill1.getLevelReq(0) < skill2.getLevelReq(0) ? -1
-                    : skill1.getCost(0) > skill2.getCost(0) ? 1
-                    : skill1.getCost(0) < skill2.getCost(0) ? -1
-                    : skill1.getName().compareTo(skill2.getName());
+                : skill1.getLevelReq(0) < skill2.getLevelReq(0) ? -1
+                : skill1.getCost(0) > skill2.getCost(0) ? 1
+                : skill1.getCost(0) < skill2.getCost(0) ? -1
+                : skill1.getName().compareTo(skill2.getName());
         }
     };
 }

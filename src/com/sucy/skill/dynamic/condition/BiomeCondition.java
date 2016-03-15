@@ -41,26 +41,26 @@ public class BiomeCondition extends EffectComponent
     private static final String BIOME = "biome";
 
     private static final String[] BIOMES = {
-            "BEACH",
-            "DESERT",
-            "FOREST",
-            "FROZEN",
-            "HELL",
-            "HILLS",
-            "ICE",
-            "JUNGLE",
-            "MESA",
-            "MOUNTAINS",
-            "MUSHROOM",
-            "OCEAN",
-            "PLAINS",
-            "PLATEAU",
-            "RIVER",
-            "SAVANNA",
-            "SHORE",
-            "SKY",
-            "SWAMPLAND",
-            "TAIGA"
+        "BEACH",
+        "DESERT",
+        "FOREST",
+        "FROZEN",
+        "HELL",
+        "HILLS",
+        "ICE",
+        "JUNGLE",
+        "MESA",
+        "MOUNTAINS",
+        "MUSHROOM",
+        "OCEAN",
+        "PLAINS",
+        "PLATEAU",
+        "RIVER",
+        "SAVANNA",
+        "SHORE",
+        "SKY",
+        "SWAMPLAND",
+        "TAIGA"
     };
 
     /**

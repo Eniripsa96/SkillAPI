@@ -351,6 +351,22 @@ public class MainListener implements Listener
     }
 
     /**
+     * Cancels saturation heal
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onSaturationHeal(EntityRegainHealthEvent event)
+    {
+        String foodBar = SkillAPI.getSettings().getFoodBar().toLowerCase();
+        if ((foodBar.equals("mana") || foodBar.equals("exp"))
+            && event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED)
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
      * Applies damage and defense buffs when something takes or deals
      * damage to something else.
      *

@@ -428,6 +428,8 @@ public abstract class Skill
      */
     public ItemStack getIndicator(PlayerSkill skillData)
     {
+        Player player = skillData.getPlayerData().getPlayer();
+
         ItemStack item = indicator.clone();
         item.setAmount(Math.max(1, skillData.getLevel()));
         ItemMeta meta = item.hasItemMeta() ? item.getItemMeta() : Bukkit.getItemFactory().getItemMeta(item.getType());
@@ -460,8 +462,8 @@ public abstract class Skill
                     int start = line.indexOf("{attr:");
                     int end = line.indexOf("}", start);
                     String attr = line.substring(start + 6, end);
-                    Object currValue = getAttr(attr, Math.max(1, skillData.getLevel()));
-                    Object nextValue = getAttr(attr, Math.min(skillData.getLevel() + 1, maxLevel));
+                    Object currValue = getAttr(player, attr, Math.max(1, skillData.getLevel()));
+                    Object nextValue = getAttr(player, attr, Math.min(skillData.getLevel() + 1, maxLevel));
                     if (attr.equals("level") || attr.equals("cost"))
                     {
                         nextValue = (int) Math.floor(Float.parseFloat(nextValue.toString()));
@@ -546,12 +548,13 @@ public abstract class Skill
     /**
      * Retrieves an attribute value for using in the icon lore
      *
-     * @param key   attribute key
-     * @param level skill level
+     * @param caster owner of the skill
+     * @param key    attribute key
+     * @param level  skill level
      *
      * @return attribute value
      */
-    protected Object getAttr(String key, int level)
+    protected Object getAttr(LivingEntity caster, String key, int level)
     {
         Object result = settings.getObj(key, level);
         if (result instanceof Double)

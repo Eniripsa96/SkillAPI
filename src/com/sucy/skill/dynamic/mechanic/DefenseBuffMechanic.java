@@ -29,6 +29,7 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.api.util.Buff;
 import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -66,7 +67,7 @@ public class DefenseBuffMechanic extends EffectComponent
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
-            BuffManager.addDefenseBuff(target, new Buff(value, percent), ticks);
+            BuffManager.addDefenseBuff(target, new Buff(skill.getName(), value, percent), ticks);
         }
         return targets.size() > 0;
     }

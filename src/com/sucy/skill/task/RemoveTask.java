@@ -36,6 +36,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ import java.util.List;
  */
 public class RemoveTask extends BukkitRunnable
 {
-    private Entity entity;
+    private List<Entity> entities;
 
     /**
      * Initializes a new task to remove the entity after the
@@ -54,7 +55,21 @@ public class RemoveTask extends BukkitRunnable
      */
     public RemoveTask(Entity entity, int ticks)
     {
-        this.entity = entity;
+        this.entities = new ArrayList<Entity>();
+        this.entities.add(entity);
+        SkillAPI.schedule(this, ticks);
+    }
+
+    /**
+     * Initializes a new task to remove the entity after the
+     * given number of ticks.
+     *
+     * @param entities entities to remove
+     * @param ticks    ticks to wait before removing the entity
+     */
+    public RemoveTask(List<Entity> entities, int ticks)
+    {
+        this.entities = entities;
         SkillAPI.schedule(this, ticks);
     }
 
@@ -67,7 +82,7 @@ public class RemoveTask extends BukkitRunnable
      */
     public boolean isOwnedBy(Player player)
     {
-        return ((Tameable) entity).getOwner() == player;
+        return entities.size() == 1 && ((Tameable) entities.get(0)).getOwner() == player;
     }
 
     /**
@@ -78,24 +93,27 @@ public class RemoveTask extends BukkitRunnable
     public void run()
     {
         // Clear skill setup
-        if (entity.hasMetadata(WolfMechanic.SKILL_META))
+        for (Entity entity : entities)
         {
-            List<String> skills = (List<String>) SkillAPI.getMeta(entity, WolfMechanic.SKILL_META);
-            int level = SkillAPI.getMetaInt(entity, WolfMechanic.LEVEL);
-            for (String skillName : skills)
+            if (entity.hasMetadata(WolfMechanic.SKILL_META))
             {
-                Skill skill = SkillAPI.getSkill(skillName);
-                if (skill instanceof PassiveSkill)
+                List<String> skills = (List<String>) SkillAPI.getMeta(entity, WolfMechanic.SKILL_META);
+                int level = SkillAPI.getMetaInt(entity, WolfMechanic.LEVEL);
+                for (String skillName : skills)
                 {
-                    ((PassiveSkill) skill).stopEffects((LivingEntity) entity, level);
+                    Skill skill = SkillAPI.getSkill(skillName);
+                    if (skill instanceof PassiveSkill)
+                    {
+                        ((PassiveSkill) skill).stopEffects((LivingEntity) entity, level);
+                    }
                 }
             }
-        }
 
-        // Remove entity
-        if (entity.isValid())
-        {
-            entity.remove();
+            // Remove entity
+            if (entity.isValid())
+            {
+                entity.remove();
+            }
         }
     }
 }

@@ -31,6 +31,7 @@ import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
+import com.sucy.skill.task.RemoveTask;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -55,6 +56,7 @@ public class ProjectileMechanic extends EffectComponent
     private static final String RADIUS     = "radius";
     private static final String SPREAD     = "spread";
     private static final String COST       = "cost";
+    private static final String RANGE      = "range";
 
     /**
      * Executes the component
@@ -71,6 +73,7 @@ public class ProjectileMechanic extends EffectComponent
         // Get common values
         int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
         double speed = attr(caster, SPEED, level, 2.0, true);
+        double range = attr(caster, RANGE, level, 999, true);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
         String cost = settings.getString(COST, "none").toLowerCase();
@@ -102,6 +105,7 @@ public class ProjectileMechanic extends EffectComponent
         }
 
         // Fire from each target
+        ArrayList<Entity> projectiles = new ArrayList<Entity>();
         for (LivingEntity target : targets)
         {
             // Apply the spread type
@@ -117,6 +121,7 @@ public class ProjectileMechanic extends EffectComponent
                     p.teleport(loc);
                     p.setVelocity(new Vector(0, speed, 0));
                     SkillAPI.setMeta(p, LEVEL, level);
+                    projectiles.add(p);
                 }
             }
             else
@@ -139,9 +144,11 @@ public class ProjectileMechanic extends EffectComponent
                     p.setVelocity(d.multiply(speed));
                     SkillAPI.setMeta(p, MechanicListener.P_CALL, this);
                     SkillAPI.setMeta(p, LEVEL, level);
+                    projectiles.add(p);
                 }
             }
         }
+        new RemoveTask(projectiles, (int)Math.ceil(range / speed));
 
         return targets.size() > 0;
     }

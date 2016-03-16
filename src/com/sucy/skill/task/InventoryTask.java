@@ -32,6 +32,7 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.ErrorNodes;
+import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -135,6 +136,7 @@ public class InventoryTask extends BukkitRunnable
             for (String line : lore)
             {
                 String colorless = ChatColor.stripColor(line);
+                String lower = colorless.toLowerCase();
 
                 // Level requirements
                 if (levelRegex.matcher(colorless).matches())
@@ -152,9 +154,9 @@ public class InventoryTask extends BukkitRunnable
                     for (String key : SkillAPI.getAttributeManager().getKeys())
                     {
                         AttributeManager.Attribute attr = SkillAPI.getAttributeManager().getAttribute(key);
-                        String name = TextFormatter.format(attr.getName());
-                        String check = SkillAPI.getSettings().getLoreAttrText().replace("{attr}", name);
-                        if (colorless.matches(check))
+                        String name = attr.getName();
+                        String check = SkillAPI.getSettings().getLoreAttrText().replace("{attr}", name).toLowerCase();
+                        if (lower.startsWith(check))
                         {
                             int amount = Integer.parseInt(colorless.substring(check.length()));
                             if (player.getAttribute(attr.getKey()) < amount)

@@ -71,9 +71,17 @@ public class BuffData
      */
     public void addDamageBuff(Buff buff, int ticks)
     {
-        damageBuffs.put(nextId, buff);
-        tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
-        nextId = (nextId + 1) % MAX_ID;
+        int id = check(buff, damageBuffs);
+        if (id == -1)
+        {
+            damageBuffs.put(nextId, buff);
+            tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
+            nextId = (nextId + 1) % MAX_ID;
+        }
+        else {
+            tasks.remove(id).cancel();
+            tasks.put(id, new BuffTask(id).runTaskLater(plugin, ticks));
+        }
     }
 
     /**
@@ -84,9 +92,36 @@ public class BuffData
      */
     public void addDefenseBuff(Buff buff, int ticks)
     {
-        defenseBuffs.put(nextId, buff);
-        tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
-        nextId = (nextId + 1) % MAX_ID;
+        int id = check(buff, defenseBuffs);
+        if (id == -1)
+        {
+            defenseBuffs.put(nextId, buff);
+            tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
+            nextId = (nextId + 1) % MAX_ID;
+        }
+        else {
+            tasks.remove(id).cancel();
+            tasks.put(id, new BuffTask(id).runTaskLater(plugin, ticks));
+        }
+    }
+
+    /**
+     * Checks for buffs with overlapping keys
+     *
+     * @param buff new buff to check against
+     * @param map  map to look through
+     * @return ID of overlapping buff or -1 if no conflict
+     */
+    private int check(Buff buff, HashMap<Integer, Buff> map)
+    {
+        for (Buff active : map.values())
+        {
+            if (active.getKey().equals(buff.getKey()))
+            {
+                return active.getId();
+            }
+        }
+        return -1;
     }
 
     /**

@@ -33,6 +33,8 @@ public class Buff
 {
     private double  value;
     private boolean percent;
+    private String  key;
+    private int     id;
 
     /**
      * Constructs a new buff
@@ -40,10 +42,28 @@ public class Buff
      * @param value      value of the buff
      * @param multiplier whether the value is a multiplier or a flat bonus
      */
+    @Deprecated
     public Buff(double value, boolean multiplier)
     {
+        this("Default", value, multiplier);
+    }
+
+    /**
+     * Constructs a new buff
+     *
+     * @param key        unique identifier for the buff to prevent overlap
+     * @param value      value of the buff
+     * @param multiplier whether the value is a multiplier or a flat bonus
+     */
+    public Buff(String key, double value, boolean multiplier)
+    {
+        this.key = key;
         this.value = value;
         this.percent = multiplier;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public double getValue()
@@ -54,5 +74,14 @@ public class Buff
     public boolean isPercent()
     {
         return percent;
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id) {
+        id = id;
     }
 }

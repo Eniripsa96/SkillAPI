@@ -120,7 +120,7 @@ public abstract class EffectComponent
      */
     protected double attr(LivingEntity caster, String key, int level, double fallback, boolean self)
     {
-        double value = getNum(caster, key + "-base", fallback) + level * getNum(caster, key + "-scale", 0);
+        double value = getNum(caster, key + "-base", fallback) + (level - 1) * getNum(caster, key + "-scale", 0);
 
         // Apply global modifiers
         if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player)

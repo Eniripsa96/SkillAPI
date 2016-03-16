@@ -66,7 +66,7 @@ public class DamageBuffMechanic extends EffectComponent
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
-            BuffManager.addDamageBuff(target, new Buff(value, percent), ticks);
+            BuffManager.addDamageBuff(target, new Buff(skill.getName(), value, percent), ticks);
         }
         return targets.size() > 0;
     }

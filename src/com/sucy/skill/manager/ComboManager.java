@@ -28,6 +28,8 @@ package com.sucy.skill.manager;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.data.Click;
+import com.sucy.skill.log.Logger;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +43,6 @@ import java.util.List;
 public class ComboManager
 {
     private int       comboSize;
-    private Click[]   buffer;
     private boolean[] clicks;
 
     /**
@@ -52,11 +53,11 @@ public class ComboManager
     {
         comboSize = Math.min(SkillAPI.getSettings().getComboSize(), Click.MAX_COMBO_SIZE);
         clicks = new boolean[] {
+            false,
             SkillAPI.getSettings().isComboLeft(),
             SkillAPI.getSettings().isComboRight(),
             SkillAPI.getSettings().isComboShift()
         };
-        buffer = new Click[comboSize];
     }
 
     /**
@@ -90,14 +91,28 @@ public class ComboManager
      */
     public boolean isValidCombo(int id)
     {
-        for (int i = 0; i < comboSize; i++)
+        if (id <= 0) return false;
+        while (id > 0)
         {
-            if (!isClickEnabled(Click.BIT_MASK & (id >> (i * Click.BITS))))
+            if (!isClickEnabled(Click.BIT_MASK & id))
             {
                 return false;
             }
+            id >>= Click.BITS;
         }
-        return id > 0 && id < (1 << (Click.BITS * comboSize));
+        return true;
+    }
+
+    /**
+     * Checks whether or not the combo is a valid one
+     *
+     * @param id ID of the combo
+     *
+     * @return true if valid, false otherwise
+     */
+    public boolean isValidDefaultCombo(int id)
+    {
+        return isValidCombo(id) && id < (1 << (Click.BITS * comboSize)) && id >= (1 << (Click.BITS * (comboSize - 1)));
     }
 
     /**
@@ -105,18 +120,61 @@ public class ComboManager
      *
      * @param id combo ID
      *
-     * @return click combination
+     * @return click combination or null if invalid
      */
     public List<Click> convertId(int id)
     {
-        List<Click> clicks = new ArrayList<Click>(comboSize);
-        for (int i = 0; i < comboSize; i++)
+        ArrayList<Click> clicks = new ArrayList<Click>();
+        while (id > 0)
         {
-            clicks.add(Click.getById(id & Click.BIT_MASK));
+            Click click = Click.getById(id & Click.BIT_MASK);
+            if (click == null) return null;
+            clicks.add(click);
             id >>= Click.BITS;
         }
         Collections.reverse(clicks);
         return clicks;
+    }
+
+    /**
+     * Compares two combo IDs to see if they conflict
+     *
+     * @param c1 first combo ID
+     * @param c2 second combo ID
+     * @return true if conflicts, false otherwise
+     */
+    public boolean conflicts(int c1, int c2)
+    {
+        c1 = reverse(c1);
+        c2 = reverse(c2);
+        while (c1 > 0 && c2 > 0)
+        {
+            if ((c1 & Click.BIT_MASK) != (c2 & Click.BIT_MASK))
+            {
+                return false;
+            }
+            c1 >>= Click.BITS;
+            c2 >>= Click.BITS;
+        }
+        return true;
+    }
+
+    /**
+     * Reverses a combo order
+     *
+     * @param id combo ID
+     * @return reversed combo ID
+     */
+    public int reverse(int id)
+    {
+        int result = 0;
+        while (id > 0)
+        {
+            result <<= Click.BITS;
+            result += id & Click.BIT_MASK;
+            id >>= Click.BITS;
+        }
+        return result;
     }
 
     /**
@@ -146,7 +204,7 @@ public class ComboManager
      */
     public int convertCombo(Collection<Click> clicks)
     {
-        return convertCombo(clicks.toArray(buffer));
+        return convertCombo(clicks.toArray(new Click[clicks.size()]));
     }
 
     /**
@@ -226,25 +284,25 @@ public class ComboManager
      */
     public int parseCombo(String combo)
     {
-        if (combo == null || !combo.contains(" "))
+        if (combo == null)
             return -1;
 
         String[] parts = combo.toLowerCase().split(" ");
-        if (parts.length != comboSize)
-            return -1;
-
-        Click[] clicks = new Click[comboSize];
+        Click[] clicks = new Click[parts.length];
         int i = 0;
         for (String part : parts)
         {
-            if (part.contains("l"))
+            if (part.equals("l"))
                 clicks[i++] = Click.LEFT;
-            else if (part.contains("r"))
+            else if (part.equals("r"))
                 clicks[i++] = Click.RIGHT;
-            else if (part.contains("s"))
+            else if (part.equals("s"))
                 clicks[i++] = Click.SHIFT;
             else
+            {
+                Logger.invalid("Invalid combo click type: " + part);
                 return -1;
+            }
         }
 
         return convertCombo(clicks);

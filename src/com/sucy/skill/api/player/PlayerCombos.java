@@ -30,11 +30,13 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerComboFinishEvent;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Click;
+import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.ComboManager;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Represents the click combos available for a player to use along
@@ -192,6 +194,37 @@ public class PlayerCombos
     }
 
     /**
+     * Checks whether or not there would be a conflict with the given combo ID
+     * if it were to be added
+     *
+     * @param id combo ID
+     * @return true if conflict, false otherwise
+     */
+    public boolean hasConflict(int id)
+    {
+        return getConflicts(id).size() > 0;
+    }
+
+    /**
+     * Checks whether or not there would be a conflict with the given combo ID
+     * if it were to be added
+     *
+     * @param id combo ID
+     * @return ID of conflict or -1 if no conflict
+     */
+    public List<Integer> getConflicts(int id)
+    {
+        ComboManager cm = SkillAPI.getComboManager();
+        List<Integer> conflicts = new ArrayList<Integer>();
+        for (int taken : skills.keySet())
+        {
+            if (cm.conflicts(id, taken))
+                conflicts.add(taken);
+        }
+        return conflicts;
+    }
+
+    /**
      * Adds a skill to the available combos. This will not
      * do anything if the skill is already added.
      *
@@ -210,9 +243,9 @@ public class PlayerCombos
 
         // Get next available combo
         ComboManager cm = SkillAPI.getComboManager();
-        int combo = 0;
+        int combo = 1 << (Click.BITS * (cm.getComboSize() - 1));
         int max = (1 << (Click.BITS * cm.getComboSize())) - 1;
-        while (combo <= max && (skills.containsKey(combo) || !cm.isValidCombo(combo)))
+        while (combo <= max && (!cm.isValidDefaultCombo(combo) || hasConflict(combo)))
             combo++;
 
         // Add it if valid
@@ -221,6 +254,7 @@ public class PlayerCombos
             skills.put(combo, skill.getName().toLowerCase());
             reverse.put(skill.getName(), combo);
         }
+        else Logger.invalid("Failed to assign combo for " + skill.getName() + " - no remaining combos");
     }
 
     /**
@@ -230,8 +264,8 @@ public class PlayerCombos
      */
     public void removeSkill(Skill skill)
     {
-        if (skill == null || !skill.hasCombo()) return;
-        skills.remove(skill.getCombo());
+        if (skill == null || !reverse.containsKey(skill.getName())) return;
+        skills.remove(reverse.remove(skill.getName()));
     }
 
     /**
@@ -260,6 +294,18 @@ public class PlayerCombos
     }
 
     /**
+     * Checks whether or not the skill has a combo associated with it
+     *
+     * @param skill the skill to check
+     *
+     * @return true if has a combo, false otherwise
+     */
+    public boolean hasCombo(Skill skill)
+    {
+        return reverse.containsKey(skill.getName());
+    }
+
+    /**
      * Sets the combo for a skill, overriding any previous combo
      * for the skill. If the skill didn't have a combo before, this
      * will add it anyway. If the combo ID is already in use, it will
@@ -275,12 +321,30 @@ public class PlayerCombos
         if (skill == null || !skill.canCast() || !isValidCombo(id)) return false;
 
         removeSkill(skill);
-        if (skills.containsKey(id))
+        List<Integer> conflicts = getConflicts(id);
+        if (conflicts.size() > 0)
         {
-            Skill old = SkillAPI.getSkill(skills.remove(id));
+            for (int conflict : conflicts)
+            {
+                if (conflict == id)
+                {
+                    Skill old = SkillAPI.getSkill(skills.get(conflict));
+                    old.clearCombo();
+                    addSkill(old);
+                }
+            }
             skills.put(id, skill.getName().toLowerCase());
             reverse.put(skill.getName(), id);
-            addSkill(old);
+            for (int conflict : conflicts)
+            {
+                if (conflict != id)
+                {
+                    Skill old = SkillAPI.getSkill(skills.get(conflict));
+                    old.clearCombo();
+                    addSkill(old);
+                    reverse.remove(skills.remove(conflict));
+                }
+            }
         }
         else
         {
@@ -300,6 +364,7 @@ public class PlayerCombos
      */
     public String getComboString(Skill skill)
     {
-        return SkillAPI.getComboManager().getComboString(reverse.get(skill.getName()));
+        int combo = reverse.get(skill.getName());
+        return SkillAPI.getComboManager().getComboString(combo);
     }
 }

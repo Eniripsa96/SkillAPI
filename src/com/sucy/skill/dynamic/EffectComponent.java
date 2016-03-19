@@ -362,6 +362,8 @@ public abstract class EffectComponent
     private static final HashMap<String, Class<? extends EffectComponent>> mechanics = new HashMap<String, Class<? extends EffectComponent>>()
     {{
             put("block", BlockMechanic.class);
+            put("cancel", CancelMechanic.class);
+            put("channel", ChannelMechanic.class);
             put("cleanse", CleanseMechanic.class);
             put("command", CommandMechanic.class);
             put("cooldown", CooldownMechanic.class);
@@ -376,6 +378,7 @@ public abstract class EffectComponent
             put("flag toggle", FlagToggleMechanic.class);
             put("heal", HealMechanic.class);
             put("immunity", ImmunityMechanic.class);
+            put("interrupt", InterruptMechanic.class);
             put("item", ItemMechanic.class);
             put("item projectile", ItemProjectileMechanic.class);
             put("item remove", ItemRemoveMechanic.class);

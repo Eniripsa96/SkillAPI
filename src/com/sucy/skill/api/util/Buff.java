@@ -62,7 +62,8 @@ public class Buff
         this.percent = multiplier;
     }
 
-    public String getKey() {
+    public String getKey()
+    {
         return key;
     }
 
@@ -81,7 +82,8 @@ public class Buff
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id)
+    {
         id = id;
     }
 }

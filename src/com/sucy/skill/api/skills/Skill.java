@@ -32,8 +32,10 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
+import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.DamageLoreRemover;
 import com.sucy.skill.api.util.Data;
@@ -84,7 +86,8 @@ public abstract class Skill
      * for your mechanics and the defaults such as mana cost, level
      * requirement, skill point cost, and cooldown.
      */
-    protected final Settings settings = new Settings();
+    protected final Settings         settings         = new Settings();
+    private final   ReadOnlySettings readOnlySettings = new ReadOnlySettings(settings);
 
     /**
      * Initializes a new skill that doesn't require any other skill.
@@ -409,6 +412,16 @@ public abstract class Skill
     }
 
     /**
+     * Retrieves the settings for the skill in a read-only format
+     *
+     * @return settings for the skill in a read-only format
+     */
+    public ReadOnlySettings getSettings()
+    {
+        return readOnlySettings;
+    }
+
+    /**
      * Checks whether or not this skill can be cast by players
      *
      * @return true if can be cast, false otherwise
@@ -519,8 +532,12 @@ public abstract class Skill
         // Click string at the bottom
         if (SkillAPI.getSettings().isCombosEnabled() && canCast())
         {
-            lore.add("");
-            lore.add(skillData.getPlayerData().getComboData().getComboString(this));
+            PlayerCombos combos = skillData.getPlayerData().getComboData();
+            if (combos.hasCombo(this))
+            {
+                lore.add("");
+                lore.add(combos.getComboString(this));
+            }
         }
 
         if (lore.size() > 0)

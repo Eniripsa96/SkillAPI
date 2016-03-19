@@ -34,6 +34,7 @@ import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
+import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.log.Logger;
@@ -41,13 +42,16 @@ import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A skill implementation for the Dynamic system
@@ -59,6 +63,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     private final HashMap<Integer, Integer>         active     = new HashMap<Integer, Integer>();
 
     private static final HashMap<Integer, HashMap<String, Object>> castData = new HashMap<Integer, HashMap<String, Object>>();
+
+    private boolean cancel = false;
 
     /**
      * Initializes a new dynamic skill
@@ -114,6 +120,13 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public void setAttribKey(String key, EffectComponent component)
     {
         attribKeys.put(key, component);
+    }
+
+    /**
+     * Cancels the event causing a trigger to go off
+     */
+    public void cancelTrigger() {
+        cancel = true;
     }
 
     /**
@@ -261,6 +274,32 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     /**
+     * Cancels firing projectiles when the launcher is stunned or disarmed.
+     *
+     * @param event event details
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onLaunch(ProjectileLaunchEvent event)
+    {
+        EffectComponent component = components.get(Trigger.LAUNCH);
+        if (component != null && event.getEntity().getShooter() instanceof LivingEntity)
+        {
+            LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
+            String type = component.getSettings().getString("type", "any").toUpperCase().replace(" ", "_");
+            int level = active.get(shooter.getEntityId());
+            if (active.containsKey(shooter.getEntityId())
+                && (type.equals("ANY") || type.equals(event.getEntity().getType().name())))
+            {
+                trigger(shooter, shooter, level, Trigger.LAUNCH);
+                if (cancel) {
+                    event.setCancelled(true);
+                    cancel = false;
+                }
+            }
+        }
+    }
+
+    /**
      * Applies the death/kill trigger effects
      *
      * @param event event details
@@ -269,10 +308,15 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public void onDeath(EntityDeathEvent event)
     {
         // Death trigger
+        EffectComponent component = components.get(Trigger.DEATH);
         if (active.containsKey(event.getEntity().getEntityId()))
         {
-            getCastData(event.getEntity()).put("api-killer", event.getEntity().getKiller());
-            trigger(event.getEntity(), event.getEntity(), active.get(event.getEntity().getEntityId()), Trigger.DEATH);
+            boolean killer = component.getSettings().getString("killer", "false").equalsIgnoreCase("true");
+            if (!killer || event.getEntity().getKiller() != null)
+            {
+                trigger(event.getEntity(), killer ? event.getEntity().getKiller() : event.getEntity(), active.get(event.getEntity().getEntityId()), Trigger.DEATH);
+                cancel = false;
+            }
         }
 
         // Kill trigger
@@ -280,6 +324,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         if (player != null && active.containsKey(player.getEntityId()))
         {
             trigger(player, player, active.get(player.getEntityId()), Trigger.KILL);
+            cancel = false;
         }
     }
 
@@ -302,6 +347,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 getCastData(target).put("api-taken", event.getDamage());
                 trigger(target, target, active.get(target.getEntityId()), Trigger.ENVIRONMENT_DAMAGE);
+                if (cancel) {
+                    event.setCancelled(true);
+                    cancel = false;
+                }
             }
         }
 
@@ -340,13 +389,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 && (type.equals("both") || (type.equals("projectile") == projectile)))
             {
                 getCastData(target).put("api-taken", event.getDamage());
-                if (caster)
-                {
-                    trigger(target, target, active.get(target.getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
-                }
-                else
-                {
-                    trigger(target, damager, active.get(target.getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
+                trigger(target, caster ? target : damager, active.get(target.getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
+                if (cancel) {
+                    event.setCancelled(true);
+                    cancel = false;
                 }
             }
         }
@@ -364,13 +410,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 && (type.equals("both") || type.equals("projectile") == projectile))
             {
                 getCastData(damager).put("api-dealt", event.getDamage());
-                if (caster)
-                {
-                    trigger(damager, damager, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
-                }
-                else
-                {
-                    trigger(damager, target, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
+                trigger(damager, caster ? damager : target, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
+                if (cancel) {
+                    event.setCancelled(true);
+                    cancel = false;
                 }
             }
         }
@@ -398,13 +441,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
                 getCastData(target).put("api-taken", event.getDamage());
-                if (caster)
-                {
-                    trigger(target, target, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
-                }
-                else
-                {
-                    trigger(target, damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
+                trigger(target, caster ? target : damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
+                if (cancel) {
+                    event.setCancelled(true);
+                    cancel = false;
                 }
             }
         }
@@ -420,13 +460,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.getDamage() >= min && event.getDamage() <= max)
             {
                 getCastData(damager).put("api-dealt", event.getDamage());
-                if (caster)
-                {
-                    trigger(damager, damager, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);
-                }
-                else
-                {
-                    trigger(damager, target, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);
+                trigger(damager, caster ? damager : target, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);
+                if (cancel) {
+                    event.setCancelled(true);
+                    cancel = false;
                 }
             }
         }
@@ -446,6 +483,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.isSneaking() != component.settings.getString("type", "start crouching").toLowerCase().equals("stop crouching"))
             {
                 trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.CROUCH);
+                cancel = false;
             }
         }
     }
@@ -465,6 +503,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (event.getDistance() >= minDistance)
             {
                 trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.LAND);
+                cancel = false;
             }
         }
     }

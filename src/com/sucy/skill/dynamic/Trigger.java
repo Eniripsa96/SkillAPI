@@ -71,6 +71,11 @@ public enum Trigger
     //HEALTH,
 
     /**
+     * Trigger effects when launching a projectile
+     */
+    LAUNCH,
+
+    /**
      * Trigger effects when the skill is available
      */
     INITIALIZE,

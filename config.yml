@@ -380,6 +380,9 @@ Logging:
   #
   # Logs for GUI updates
   gui: 0
+  #
+  # Logs for mana updates
+  mana: 0
 #
 Worlds:
   #

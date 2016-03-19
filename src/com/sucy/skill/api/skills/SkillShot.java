@@ -35,7 +35,6 @@ import org.bukkit.entity.LivingEntity;
  */
 public interface SkillShot
 {
-
     /**
      * Casts the skill
      *

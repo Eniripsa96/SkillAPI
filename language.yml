@@ -53,6 +53,7 @@ Status:
   disarmed: '&4You are disarmed for another &6{duration} &4seconds'
   invincible: '&4That target is invincible for another &6{duration} &4seconds'
   absorbed: '&4That target is absorbing attacks to gain health for another &6{duration} &4seconds'
+  channeling: '&4You are still channeling for another &6{duration} &4seconds'
 Combo:
   left: '&6Left'
   right: '&6Right'

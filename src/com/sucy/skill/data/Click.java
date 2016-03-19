@@ -34,15 +34,15 @@ import com.sucy.skill.SkillAPI;
  */
 public enum Click
 {
-    LEFT(0),
-    RIGHT(1),
-    SHIFT(2),;
+    LEFT(1),
+    RIGHT(2),
+    SHIFT(3),;
 
     public static final int BITS           = 2;
     public static final int BIT_MASK       = (1 << BITS) - 1;
     public static final int MAX_COMBO_SIZE = 30 / BITS;
 
-    private static final Click[] CLICKS = new Click[] { LEFT, RIGHT, SHIFT };
+    private static final Click[] CLICKS = new Click[] { null, LEFT, RIGHT, SHIFT };
 
     private int id;
 

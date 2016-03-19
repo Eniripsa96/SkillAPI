@@ -34,6 +34,7 @@ public enum LogType
     ATTRIBUTE_LOAD,
     BUFF,
     GUI,
+    MANA,
     REGISTRATION,;
 
     /**

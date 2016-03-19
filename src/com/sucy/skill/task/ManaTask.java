@@ -29,6 +29,8 @@ package com.sucy.skill.task;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -60,6 +62,7 @@ public class ManaTask extends BukkitRunnable
      */
     public void run()
     {
+        Logger.log(LogType.MANA, 1, "Applying mana regen");
         for (Player player : VersionManager.getOnlinePlayers())
         {
             PlayerData data = SkillAPI.getPlayerData(player);

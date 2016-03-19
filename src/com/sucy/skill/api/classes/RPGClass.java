@@ -29,6 +29,7 @@ package com.sucy.skill.api.classes;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.skills.Skill;
@@ -72,7 +73,8 @@ public abstract class RPGClass
      * The settings for your class. This will include the
      * health and mana scaling for the class.
      */
-    protected final Settings settings = new Settings();
+    protected final Settings         settings         = new Settings();
+    private final   ReadOnlySettings readOnlySettings = new ReadOnlySettings(settings);
 
     ///////////////////////////////////////////////////////
     //                                                   //
@@ -352,6 +354,16 @@ public abstract class RPGClass
     public double getManaScale()
     {
         return settings.getScale(ClassAttribute.MANA);
+    }
+
+    /**
+     * Retrieves the settings for the class in a read-only format
+     *
+     * @return settings for the class in a read-only format
+     */
+    public ReadOnlySettings getSettings()
+    {
+        return readOnlySettings;
     }
 
     /**

@@ -57,6 +57,7 @@ public class ProjectileMechanic extends EffectComponent
     private static final String SPREAD     = "spread";
     private static final String COST       = "cost";
     private static final String RANGE      = "range";
+    private static final String FLAMING    = "flaming";
 
     /**
      * Executes the component
@@ -74,6 +75,7 @@ public class ProjectileMechanic extends EffectComponent
         int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
         double speed = attr(caster, SPEED, level, 2.0, true);
         double range = attr(caster, RANGE, level, 999, true);
+        boolean flaming = settings.getString(FLAMING, "false").equalsIgnoreCase("true");
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
         String cost = settings.getString(COST, "none").toLowerCase();
@@ -121,6 +123,7 @@ public class ProjectileMechanic extends EffectComponent
                     p.teleport(loc);
                     p.setVelocity(new Vector(0, speed, 0));
                     SkillAPI.setMeta(p, LEVEL, level);
+                    if (flaming) p.setFireTicks(9999);
                     projectiles.add(p);
                 }
             }
@@ -144,11 +147,12 @@ public class ProjectileMechanic extends EffectComponent
                     p.setVelocity(d.multiply(speed));
                     SkillAPI.setMeta(p, MechanicListener.P_CALL, this);
                     SkillAPI.setMeta(p, LEVEL, level);
+                    if (flaming) p.setFireTicks(9999);
                     projectiles.add(p);
                 }
             }
         }
-        new RemoveTask(projectiles, (int)Math.ceil(range / speed));
+        new RemoveTask(projectiles, (int) Math.ceil(range / speed));
 
         return targets.size() > 0;
     }

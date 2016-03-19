@@ -51,6 +51,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Listener for applying default status flags for the API. You should
@@ -60,14 +61,20 @@ public class StatusListener implements Listener
 {
     private static final HashMap<String, Long> messageTimers = new HashMap<String, Long>();
 
+    private static final HashSet<String> interrupts = new HashSet<String>() {{
+        add(StatusFlag.STUN);
+        add(StatusFlag.SILENCE);
+    }};
+
     private static final HashMap<String, String> messageMap = new HashMap<String, String>()
     {{
-            put("stun", "stunned");
-            put("root", "rooted");
-            put("invincible", "invincible");
-            put("absorb", "absorbed");
-            put("disarm", "disarmed");
-            put("silence", "silenced");
+            put(StatusFlag.STUN, "stunned");
+            put(StatusFlag.ROOT, "rooted");
+            put(StatusFlag.INVINCIBLE, "invincible");
+            put(StatusFlag.ABSORB, "absorbed");
+            put(StatusFlag.DISARM, "disarmed");
+            put(StatusFlag.SILENCE, "silenced");
+            put(StatusFlag.CHANNELING, "channeling");
         }};
 
     private final Vector ZERO = new Vector(0, 0, 0);
@@ -102,9 +109,23 @@ public class StatusListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMove(PlayerMoveEvent event)
     {
-        if (((LivingEntity) event.getPlayer()).isOnGround() && check(event, event.getPlayer(), event.getPlayer(), StatusFlag.STUN, StatusFlag.ROOT))
+        if (((LivingEntity) event.getPlayer()).isOnGround() && check(event, event.getPlayer(), event.getPlayer(), StatusFlag.STUN, StatusFlag.ROOT, StatusFlag.CHANNELING))
         {
             event.getPlayer().setVelocity(ZERO);
+        }
+    }
+
+    /**
+     * Applies interrupt effects, stopping channeling.
+     *
+     * @param event event details
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onInterrupt(FlagApplyEvent event)
+    {
+        if (interrupts.contains(event.getFlag()) && FlagManager.hasFlag(event.getEntity(), StatusFlag.CHANNELING))
+        {
+            FlagManager.removeFlag(event.getEntity(), StatusFlag.CHANNELING);
         }
     }
 
@@ -114,10 +135,12 @@ public class StatusListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onFlag(FlagApplyEvent event)
     {
-        if (event.getFlag().equals(StatusFlag.STUN) || event.getFlag().equals(StatusFlag.ROOT))
+        if (event.getFlag().equals(StatusFlag.STUN)
+            || event.getFlag().equals(StatusFlag.ROOT)
+            || event.getFlag().equals(StatusFlag.CHANNELING))
         {
             if (!(event.getEntity() instanceof Player))
             {
@@ -131,7 +154,7 @@ public class StatusListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event)
     {
         if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM)
@@ -140,7 +163,7 @@ public class StatusListener implements Listener
         }
 
         LivingEntity damager = ListenerUtil.getDamager(event);
-        check(event, damager, damager, StatusFlag.STUN, StatusFlag.DISARM);
+        check(event, damager, damager, StatusFlag.STUN, StatusFlag.DISARM, StatusFlag.CHANNELING);
     }
 
     /**
@@ -148,7 +171,7 @@ public class StatusListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDamaged(EntityDamageEvent event)
     {
         if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM)
@@ -175,13 +198,13 @@ public class StatusListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onLaunch(ProjectileLaunchEvent event)
     {
         if (event.getEntity().getShooter() instanceof LivingEntity)
         {
             LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
-            check(event, shooter, shooter, StatusFlag.STUN, StatusFlag.DISARM);
+            check(event, shooter, shooter, StatusFlag.STUN, StatusFlag.DISARM, StatusFlag.CHANNELING);
         }
     }
 
@@ -190,10 +213,10 @@ public class StatusListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onCast(PlayerCastSkillEvent event)
     {
-        check(event, event.getPlayer(), event.getPlayer(), StatusFlag.SILENCE, StatusFlag.STUN);
+        check(event, event.getPlayer(), event.getPlayer(), StatusFlag.SILENCE, StatusFlag.STUN, StatusFlag.CHANNELING);
     }
 
     /**

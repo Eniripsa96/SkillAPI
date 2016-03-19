@@ -78,7 +78,8 @@ public class BuffData
             tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
             nextId = (nextId + 1) % MAX_ID;
         }
-        else {
+        else
+        {
             tasks.remove(id).cancel();
             tasks.put(id, new BuffTask(id).runTaskLater(plugin, ticks));
         }
@@ -99,7 +100,8 @@ public class BuffData
             tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
             nextId = (nextId + 1) % MAX_ID;
         }
-        else {
+        else
+        {
             tasks.remove(id).cancel();
             tasks.put(id, new BuffTask(id).runTaskLater(plugin, ticks));
         }
@@ -110,6 +112,7 @@ public class BuffData
      *
      * @param buff new buff to check against
      * @param map  map to look through
+     *
      * @return ID of overlapping buff or -1 if no conflict
      */
     private int check(Buff buff, HashMap<Integer, Buff> map)

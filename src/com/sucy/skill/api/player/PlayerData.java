@@ -46,6 +46,7 @@ import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.TreeListener;
+import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.manager.ClassBoardManager;
@@ -1300,6 +1301,8 @@ public final class PlayerData
 
         if (!event.isCancelled())
         {
+            Logger.log(LogType.MANA, 2, getPlayerName() + " gained " + amount + " mana due to " + event.getSource().name());
+
             mana += event.getAmount();
             if (mana > maxMana)
             {
@@ -1337,6 +1340,8 @@ public final class PlayerData
 
         if (!event.isCancelled())
         {
+            Logger.log(LogType.MANA, 2, getPlayerName() + " used " + amount + " mana due to " + event.getSource().name());
+
             mana -= event.getAmount();
             if (mana < 0)
             {

@@ -58,7 +58,6 @@ public class SingleTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean worked = false;
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double range = attr(caster, RANGE, level, 5.0, isSelf);
         double tolerance = attr(caster, TOLERANCE, level, 4.0, isSelf);
@@ -66,6 +65,8 @@ public class SingleTarget extends EffectComponent
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
+
+        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
             LivingEntity target = TargetHelper.getLivingTarget(t, range, tolerance);
@@ -77,12 +78,10 @@ public class SingleTarget extends EffectComponent
                 }
                 if (both || ally != SkillAPI.getSettings().canAttack(caster, target))
                 {
-                    ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
                     list.add(target);
-                    worked = executeChildren(caster, level, list) || worked;
                 }
             }
         }
-        return worked;
+        return list.size() > 0 && executeChildren(caster, level, list);
     }
 }

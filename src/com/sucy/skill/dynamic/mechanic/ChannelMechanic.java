@@ -58,7 +58,7 @@ public class ChannelMechanic extends EffectComponent
             return false;
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        int ticks = (int)(20 * attr(caster, SECONDS, level, 2.0, isSelf));
+        int ticks = (int) (20 * attr(caster, SECONDS, level, 2.0, isSelf));
         FlagManager.addFlag(caster, StatusFlag.CHANNELING, ticks);
         Bukkit.getScheduler().runTaskLater(
             Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()

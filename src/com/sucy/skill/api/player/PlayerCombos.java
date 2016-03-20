@@ -198,6 +198,7 @@ public class PlayerCombos
      * if it were to be added
      *
      * @param id combo ID
+     *
      * @return true if conflict, false otherwise
      */
     public boolean hasConflict(int id)
@@ -210,6 +211,7 @@ public class PlayerCombos
      * if it were to be added
      *
      * @param id combo ID
+     *
      * @return ID of conflict or -1 if no conflict
      */
     public List<Integer> getConflicts(int id)

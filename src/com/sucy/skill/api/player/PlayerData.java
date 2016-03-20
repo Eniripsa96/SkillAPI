@@ -1313,6 +1313,7 @@ public final class PlayerData
                 mana = 0;
             }
         }
+        else Logger.log(LogType.MANA, 2, getPlayerName() + " had their mana gain cancelled");
     }
 
     /**

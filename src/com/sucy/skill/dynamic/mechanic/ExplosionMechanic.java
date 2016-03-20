@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.dynamic.mechanic.ItemRemoveMechanic
+ * com.sucy.skill.dynamic.mechanic.FireMechanic
  *
  * The MIT License (MIT)
  *
@@ -27,18 +27,17 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
-import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
 /**
- * Removes an item to from each player target
+ * Creates an explosion at the target's location
  */
-public class ItemRemoveMechanic extends EffectComponent
+public class ExplosionMechanic extends EffectComponent
 {
-
+    private static final String POWER  = "power";
+    private static final String DAMAGE = "damage";
 
     /**
      * Executes the component
@@ -52,15 +51,17 @@ public class ItemRemoveMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean players = false;
+        if (targets.size() == 0)
+        {
+            return false;
+        }
+        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        double power = attr(caster, POWER, level, 4, isSelf);
+        boolean damage = settings.getString(DAMAGE, "false").equalsIgnoreCase("true");
         for (LivingEntity target : targets)
         {
-            if (target instanceof Player)
-            {
-                players = true;
-                ItemChecker.check((Player) target, level, settings, true);
-            }
+            target.getWorld().createExplosion(target.getLocation(), (float) power, damage);
         }
-        return players;
+        return targets.size() > 0;
     }
 }

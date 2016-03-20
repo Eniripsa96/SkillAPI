@@ -68,9 +68,9 @@ public class NearestTarget extends EffectComponent
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
         double max = attr(caster, MAX, level, 99, isSelf);
         Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
+        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
-            ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
             if (self)
             {
@@ -116,9 +116,7 @@ public class NearestTarget extends EffectComponent
                 }
                 targets.remove(index);
             }
-
-            worked = targets.size() > 0 && executeChildren(caster, level, list) || worked;
         }
-        return worked;
+        return targets.size() > 0 && executeChildren(caster, level, list);
     }
 }

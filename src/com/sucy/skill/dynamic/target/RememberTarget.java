@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.target;
 
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
@@ -48,6 +49,7 @@ public class RememberTarget extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
+    @SuppressWarnings("unchecked")
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
     {
         if (!settings.has(KEY))
@@ -56,7 +58,7 @@ public class RememberTarget extends EffectComponent
         }
 
         String key = settings.getString(KEY);
-        Object data = skill.getCastData(caster).get(key);
+        Object data = DynamicSkill.getCastData(caster).get(key);
         try
         {
             List<LivingEntity> remembered = (List<LivingEntity>) data;

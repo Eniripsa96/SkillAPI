@@ -31,6 +31,8 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -147,6 +149,7 @@ public class AttributeListener implements Listener
         if (event.getSource() == ManaSource.REGEN)
         {
             double newAmount = event.getPlayerData().scaleStat(AttributeManager.MANA_REGEN, event.getAmount());
+            Logger.log(LogType.MANA, 3, "Attributes scaled mana gain to " + newAmount);
             event.setAmount(newAmount);
         }
     }

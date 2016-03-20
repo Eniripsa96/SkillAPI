@@ -34,7 +34,6 @@ import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
-import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.log.Logger;
@@ -51,7 +50,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * A skill implementation for the Dynamic system
@@ -125,7 +123,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     /**
      * Cancels the event causing a trigger to go off
      */
-    public void cancelTrigger() {
+    public void cancelTrigger()
+    {
         cancel = true;
     }
 
@@ -291,7 +290,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 && (type.equals("ANY") || type.equals(event.getEntity().getType().name())))
             {
                 trigger(shooter, shooter, level, Trigger.LAUNCH);
-                if (cancel) {
+                if (cancel)
+                {
                     event.setCancelled(true);
                     cancel = false;
                 }
@@ -347,7 +347,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 getCastData(target).put("api-taken", event.getDamage());
                 trigger(target, target, active.get(target.getEntityId()), Trigger.ENVIRONMENT_DAMAGE);
-                if (cancel) {
+                if (cancel)
+                {
                     event.setCancelled(true);
                     cancel = false;
                 }
@@ -390,7 +391,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 getCastData(target).put("api-taken", event.getDamage());
                 trigger(target, caster ? target : damager, active.get(target.getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
-                if (cancel) {
+                if (cancel)
+                {
                     event.setCancelled(true);
                     cancel = false;
                 }
@@ -411,7 +413,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 getCastData(damager).put("api-dealt", event.getDamage());
                 trigger(damager, caster ? damager : target, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
-                if (cancel) {
+                if (cancel)
+                {
                     event.setCancelled(true);
                     cancel = false;
                 }
@@ -442,7 +445,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 getCastData(target).put("api-taken", event.getDamage());
                 trigger(target, caster ? target : damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
-                if (cancel) {
+                if (cancel)
+                {
                     event.setCancelled(true);
                     cancel = false;
                 }
@@ -461,7 +465,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 getCastData(damager).put("api-dealt", event.getDamage());
                 trigger(damager, caster ? damager : target, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);
-                if (cancel) {
+                if (cancel)
+                {
                     event.setCancelled(true);
                     cancel = false;
                 }

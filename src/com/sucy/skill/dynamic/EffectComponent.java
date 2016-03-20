@@ -325,6 +325,7 @@ public abstract class EffectComponent
             put("linear", LinearTarget.class);
             put("location", LocationTarget.class);
             put("nearest", NearestTarget.class);
+            put("offset", OffsetTarget.class);
             put("remember", RememberTarget.class);
             put("self", SelfTarget.class);
             put("single", SingleTarget.class);
@@ -372,6 +373,7 @@ public abstract class EffectComponent
             put("damage lore", DamageLoreMechanic.class);
             put("defense buff", DefenseBuffMechanic.class);
             put("delay", DelayMechanic.class);
+            put("explosion", ExplosionMechanic.class);
             put("fire", FireMechanic.class);
             put("flag", FlagMechanic.class);
             put("flag clear", FlagClearMechanic.class);

@@ -29,7 +29,6 @@ package com.sucy.skill.manager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.data.Click;
 import com.sucy.skill.log.Logger;
-import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -141,6 +140,7 @@ public class ComboManager
      *
      * @param c1 first combo ID
      * @param c2 second combo ID
+     *
      * @return true if conflicts, false otherwise
      */
     public boolean conflicts(int c1, int c2)
@@ -163,6 +163,7 @@ public class ComboManager
      * Reverses a combo order
      *
      * @param id combo ID
+     *
      * @return reversed combo ID
      */
     public int reverse(int id)
@@ -269,7 +270,7 @@ public class ComboManager
         String result = "";
         for (Click click : clicks)
         {
-            if (result.length() > 0) result += ", ";
+            if (result.length() > 0) result += ' ';
             result += click.name().charAt(0);
         }
         return result;

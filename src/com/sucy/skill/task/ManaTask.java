@@ -62,8 +62,9 @@ public class ManaTask extends BukkitRunnable
      */
     public void run()
     {
-        Logger.log(LogType.MANA, 1, "Applying mana regen");
-        for (Player player : VersionManager.getOnlinePlayers())
+        Player[] players = VersionManager.getOnlinePlayers();
+        Logger.log(LogType.MANA, 1, "Applying mana regen for " + players.length + " players");
+        for (Player player : players)
         {
             PlayerData data = SkillAPI.getPlayerData(player);
             data.regenMana();

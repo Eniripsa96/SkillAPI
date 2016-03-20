@@ -71,9 +71,9 @@ public class LinearTarget extends EffectComponent
 
         int max = settings.getInt(MAX, 999);
         Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
+        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
-            ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             if (self)
             {
                 list.add(caster);
@@ -94,8 +94,8 @@ public class LinearTarget extends EffectComponent
                     }
                 }
             }
-            worked = executeChildren(caster, level, list) || worked;
+
         }
-        return worked;
+        return list.size() > 0 && executeChildren(caster, level, list);
     }
 }

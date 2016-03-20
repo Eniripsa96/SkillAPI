@@ -27,12 +27,10 @@
 package com.sucy.skill.task;
 
 import com.rit.sucy.config.FilterType;
-import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.ErrorNodes;
-import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

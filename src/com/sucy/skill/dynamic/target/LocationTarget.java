@@ -62,6 +62,8 @@ public class LocationTarget extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double range = attr(caster, RANGE, level, 5.0, isSelf);
         boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
+
+        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
             Location loc;
@@ -79,10 +81,8 @@ public class LocationTarget extends EffectComponent
                 continue;
             }
 
-            ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
             list.add(new TempEntity(loc));
-            worked = executeChildren(caster, level, list) || worked;
         }
-        return worked;
+        return executeChildren(caster, level, list);
     }
 }

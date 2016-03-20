@@ -61,10 +61,11 @@ public class StatusListener implements Listener
 {
     private static final HashMap<String, Long> messageTimers = new HashMap<String, Long>();
 
-    private static final HashSet<String> interrupts = new HashSet<String>() {{
-        add(StatusFlag.STUN);
-        add(StatusFlag.SILENCE);
-    }};
+    private static final HashSet<String> interrupts = new HashSet<String>()
+    {{
+            add(StatusFlag.STUN);
+            add(StatusFlag.SILENCE);
+        }};
 
     private static final HashMap<String, String> messageMap = new HashMap<String, String>()
     {{
@@ -213,7 +214,7 @@ public class StatusListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onCast(PlayerCastSkillEvent event)
     {
         check(event, event.getPlayer(), event.getPlayer(), StatusFlag.SILENCE, StatusFlag.STUN, StatusFlag.CHANNELING);

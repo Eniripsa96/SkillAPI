@@ -27,10 +27,9 @@
 package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Material;
+import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +39,6 @@ import java.util.List;
  */
 public class InventoryCondition extends EffectComponent
 {
-    private static final String MATERIAL = "material";
-    private static final String DATA     = "data";
-    private static final String AMOUNT   = "amount";
-
     /**
      * Executes the component
      *
@@ -57,24 +52,12 @@ public class InventoryCondition extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        String item = settings.getString(MATERIAL, "").toUpperCase().replace(" ", "_");
-        short data = (short) settings.getInt(DATA, 0);
-        int amount = settings.getInt(AMOUNT, 1);
-        ItemStack check;
-        try
-        {
-            check = new ItemStack(Material.valueOf(item), 1, data);
-        }
-        catch (Exception ex)
-        {
-            return false;
-        }
 
         for (LivingEntity target : targets)
         {
             if (!(target instanceof Player)) continue;
 
-            if (((Player) target).getInventory().containsAtLeast(check, amount))
+            if (ItemChecker.check((Player) target, level, settings, false))
             {
                 list.add(target);
             }

@@ -27,6 +27,7 @@
 package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
@@ -37,8 +38,6 @@ import java.util.List;
  */
 public class ItemCondition extends EffectComponent
 {
-    private static final String MATERIAL = "material";
-
     /**
      * Executes the component
      *
@@ -52,16 +51,10 @@ public class ItemCondition extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        String item = settings.getString(MATERIAL, "").toUpperCase().replace(" ", "_");
 
         for (LivingEntity target : targets)
         {
-            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null)
-            {
-                continue;
-            }
-            String hand = target.getEquipment().getItemInHand().getType().name();
-            if (hand.equals(item))
+            if (target.getEquipment() != null && ItemChecker.check(target.getEquipment().getItemInMainHand(), level, settings))
             {
                 list.add(target);
             }

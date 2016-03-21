@@ -26,6 +26,8 @@
  */
 package com.sucy.skill.tree.basic;
 
+import com.rit.sucy.config.Filter;
+import com.rit.sucy.config.FilterType;
 import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -33,6 +35,8 @@ import com.sucy.skill.api.exception.SkillTreeException;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.language.GUINodes;
+import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -84,7 +88,17 @@ public abstract class InventoryTree extends SkillTree
      */
     public Inventory getInventory(PlayerData player)
     {
-        Inventory inv = InventoryManager.createInventory(INVENTORY_KEY, height, tree.getName());
+        Inventory inv = InventoryManager.createInventory(
+            INVENTORY_KEY,
+            height,
+            SkillAPI.getLanguage().getMessage(
+                GUINodes.SKILL_TREE,
+                true,
+                FilterType.COLOR,
+                RPGFilter.CLASS.setReplacement(tree.getName()),
+                Filter.PLAYER.setReplacement(player.getPlayerName())
+            ).get(0)
+        );
         Player p = player.getPlayer();
 
         for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())

@@ -27,8 +27,6 @@
 package com.sucy.skill.dynamic;
 
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -113,6 +111,21 @@ public class TempEntity implements LivingEntity
 
     @Override
     public List<Block> getLastTwoTargetBlocks(Set<Material> set, int i)
+    {
+        return null;
+    }
+
+    public Egg throwEgg()
+    {
+        return null;
+    }
+
+    public Snowball throwSnowball()
+    {
+        return null;
+    }
+
+    public Arrow shootArrow()
     {
         return null;
     }
@@ -291,22 +304,14 @@ public class TempEntity implements LivingEntity
         return false;
     }
 
-    @Override
     public void setGlowing(boolean b)
     {
 
     }
 
-    @Override
     public boolean isGlowing()
     {
         return false;
-    }
-
-    @Override
-    public Spigot spigot()
-    {
-        return null;
     }
 
     @Override
@@ -762,11 +767,5 @@ public class TempEntity implements LivingEntity
     public void setOp(boolean b)
     {
 
-    }
-
-    @Override
-    public AttributeInstance getAttribute(Attribute attribute)
-    {
-        return null;
     }
 }

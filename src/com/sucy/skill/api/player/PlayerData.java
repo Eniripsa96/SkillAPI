@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.player;
 
+import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.player.TargetHelper;
@@ -43,6 +44,7 @@ import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.language.ErrorNodes;
+import com.sucy.skill.language.GUINodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.TreeListener;
@@ -72,10 +74,11 @@ import java.util.HashMap;
  */
 public final class PlayerData
 {
-    private final HashMap<String, PlayerClass>   classes    = new HashMap<String, PlayerClass>();
-    private final HashMap<String, PlayerSkill>   skills     = new HashMap<String, PlayerSkill>();
-    private final HashMap<Material, PlayerSkill> binds      = new HashMap<Material, PlayerSkill>();
-    private final HashMap<String, Integer>       attributes = new HashMap<String, Integer>();
+    private final HashMap<String, PlayerClass>   classes     = new HashMap<String, PlayerClass>();
+    private final HashMap<String, PlayerSkill>   skills      = new HashMap<String, PlayerSkill>();
+    private final HashMap<Material, PlayerSkill> binds       = new HashMap<Material, PlayerSkill>();
+    private final HashMap<String, Integer>       attributes  = new HashMap<String, Integer>();
+    private final HashMap<String, Integer>       bonusAttrib = new HashMap<String, Integer>();
 
     private OfflinePlayer  player;
     private PlayerSkillBar skillBar;
@@ -189,6 +192,25 @@ public final class PlayerData
     ///////////////////////////////////////////////////////
 
     /**
+     * Gets the number of attribute points the player has
+     * between invested and bonus sources.
+     *
+     * @param key attribute key
+     *
+     * @return number of total points
+     */
+    public int getAttribute(String key)
+    {
+        key = key.toLowerCase();
+        int total = 0;
+        if (attributes.containsKey(key))
+            total += attributes.get(key);
+        if (bonusAttrib.containsKey(key))
+            total += bonusAttrib.get(key);
+        return total;
+    }
+
+    /**
      * Gets the number of attribute points invested in the
      * given attribute
      *
@@ -196,7 +218,7 @@ public final class PlayerData
      *
      * @return number of invested points
      */
-    public int getAttribute(String key)
+    public int getInvestedAttribute(String key)
     {
         key = key.toLowerCase();
         if (!attributes.containsKey(key))
@@ -216,7 +238,7 @@ public final class PlayerData
      */
     public boolean hasAttribute(String key)
     {
-        return getAttribute(key.toLowerCase()) > 0;
+        return getAttribute(key) > 0;
     }
 
     /**
@@ -229,7 +251,7 @@ public final class PlayerData
     public void upAttribute(String key)
     {
         key = key.toLowerCase();
-        int current = getAttribute(key);
+        int current = getInvestedAttribute(key);
         int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
         if (attribPoints > 0 && current < max)
         {
@@ -256,13 +278,28 @@ public final class PlayerData
     public void giveAttribute(String key, int amount)
     {
         key = key.toLowerCase();
-        int current = getAttribute(key);
+        int current = getInvestedAttribute(key);
         int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
-        amount = Math.min(amount, max - current);
-        if (amount > 0)
+        amount = Math.min(amount + current, max);
+        if (amount > current)
         {
-            attributes.put(key, current + amount);
+            attributes.put(key, amount);
         }
+    }
+
+    /**
+     * Adds bonus attributes to the player. These do not count towards
+     * the max invest amount and cannot be refunded.
+     *
+     * @param key    attribute key
+     * @param amount amount to add
+     */
+    public void addBonusAttributes(String key, int amount)
+    {
+        key = key.toLowerCase();
+        if (bonusAttrib.containsKey(key))
+            amount += bonusAttrib.get(key);
+        bonusAttrib.put(key, Math.max(0, amount));
     }
 
     /**
@@ -275,13 +312,13 @@ public final class PlayerData
     public void refundAttribute(String key)
     {
         key = key.toLowerCase();
-        if (hasAttribute(key))
+        int current = getInvestedAttribute(key);
+        if (current > 0)
         {
             PlayerRefundAttributeEvent event = new PlayerRefundAttributeEvent(this, key);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) return;
 
-            int current = getAttribute(key);
             attribPoints += 1;
             attributes.put(key, current - 1);
             if (current - 1 <= 0) attributes.remove(key);
@@ -295,7 +332,7 @@ public final class PlayerData
     public void refundAttributes(String key)
     {
         key = key.toLowerCase();
-        attribPoints += getAttribute(key);
+        attribPoints += getInvestedAttribute(key);
         attributes.remove(key);
         AttributeListener.updatePlayer(this);
     }
@@ -399,13 +436,27 @@ public final class PlayerData
         if (SkillAPI.getSettings().isAttributesEnabled() && player != null)
         {
             AttributeManager manager = SkillAPI.getAttributeManager();
-            Inventory inv = InventoryManager.createInventory(AttributeListener.MENU_KEY, (manager.getKeys().size() + 8) / 9, "Attributes (" + attribPoints + " points)");
+            Inventory inv = InventoryManager.createInventory(
+                AttributeListener.MENU_KEY,
+                (manager.getKeys().size() + 8) / 9,
+                SkillAPI.getLanguage().getMessage(
+                    GUINodes.ATTRIB_TITLE,
+                    true,
+                    FilterType.COLOR,
+                    RPGFilter.POINTS.setReplacement(attribPoints + ""),
+                    Filter.PLAYER.setReplacement(player.getName())
+                ).get(0)
+            );
             int i = 0;
             for (String key : manager.getKeys())
             {
                 ItemStack icon = manager.getAttribute(key).getIcon().clone();
                 ItemMeta meta = icon.getItemMeta();
-                meta.setDisplayName(meta.getDisplayName().replace("{amount}", "" + getAttribute(key)));
+                meta.setDisplayName(
+                    meta.getDisplayName()
+                        .replace("{amount}", "" + getInvestedAttribute(key))
+                        .replace("{total}", "" + getAttribute(key))
+                );
                 icon.setItemMeta(meta);
                 inv.setItem(i++, icon);
             }
@@ -757,7 +808,16 @@ public final class PlayerData
         // Show list of classes that have skill trees
         else
         {
-            Inventory inv = InventoryManager.createInventory(TreeListener.CLASS_LIST_KEY, (classes.size() + 8) / 9, player.getName());
+            Inventory inv = InventoryManager.createInventory(
+                TreeListener.CLASS_LIST_KEY,
+                (classes.size() + 8) / 9,
+                SkillAPI.getLanguage().getMessage(
+                    GUINodes.CLASS_LIST,
+                    true,
+                    FilterType.COLOR,
+                    Filter.PLAYER.setReplacement(player.getName())
+                ).get(0)
+            );
             for (PlayerClass c : classes.values())
             {
                 inv.addItem(c.getData().getIcon());

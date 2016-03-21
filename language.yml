@@ -18,6 +18,10 @@ Errors:
   no-mana: '&4You need &6{missing} &4more mana'
   no-skills: '&4That class does not have any skills'
   cannot-use: '&4You cannot equip that item'
+GUI:
+  attribute-title: 'Attributes ({points} points)'
+  skill-tree: '{class}'
+  skill-class-list: '{player}'
 Skill Tree:
   title: '{name} ({level}/{max})'
   type: '&2Skill Type: &6{name}'

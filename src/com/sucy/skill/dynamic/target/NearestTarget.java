@@ -59,7 +59,6 @@ public class NearestTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean worked = false;
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double radius = attr(caster, RADIUS, level, 3.0, isSelf);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
@@ -71,6 +70,8 @@ public class NearestTarget extends EffectComponent
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
+            int prevSize = targets.size();
+
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
             if (self)
             {
@@ -116,6 +117,8 @@ public class NearestTarget extends EffectComponent
                 }
                 targets.remove(index);
             }
+
+            max += targets.size() - prevSize;
         }
         return targets.size() > 0 && executeChildren(caster, level, list);
     }

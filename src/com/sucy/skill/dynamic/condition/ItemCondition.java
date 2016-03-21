@@ -54,7 +54,7 @@ public class ItemCondition extends EffectComponent
 
         for (LivingEntity target : targets)
         {
-            if (target.getEquipment() != null && ItemChecker.check(target.getEquipment().getItemInMainHand(), level, settings))
+            if (target.getEquipment() != null && ItemChecker.check(target.getEquipment().getItemInHand(), level, settings))
             {
                 list.add(target);
             }

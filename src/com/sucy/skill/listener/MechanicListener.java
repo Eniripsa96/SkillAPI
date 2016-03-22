@@ -28,6 +28,7 @@ package com.sucy.skill.listener;
 
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.FlagExpireEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
 import com.sucy.skill.dynamic.mechanic.BlockMechanic;
@@ -62,6 +63,7 @@ public class MechanicListener implements Listener
     public static final String P_CALL            = "pmCallback";
     public static final String POTION_PROJECTILE = "potionProjectile";
     public static final String SPEED_KEY         = "sapiSpeedKey";
+    public static final String ATTR_KEY          = "attr:";
 
     private HashMap<Integer, Double> flying = new HashMap<Integer, Double>();
 
@@ -139,6 +141,16 @@ public class MechanicListener implements Listener
         WolfMechanic.removeWolves(event.getEntity());
     }
 
+    @EventHandler
+    public void onFlag(FlagApplyEvent event)
+    {
+        if (event.getFlag().startsWith(ATTR_KEY))
+        {
+            String[] bits = event.getFlag().substring(ATTR_KEY.length()).split("_");
+            SkillAPI.getPlayerData((Player) event.getEntity()).addBonusAttributes(bits[1], Integer.parseInt(bits[2]));
+        }
+    }
+
     /**
      * Clears speed modifiers when the flag expires
      *
@@ -150,6 +162,11 @@ public class MechanicListener implements Listener
         if (event.getFlag().equals(SPEED_KEY))
         {
             ((Player) event.getEntity()).setWalkSpeed(0.2f);
+        }
+        else if (event.getFlag().startsWith(ATTR_KEY))
+        {
+            String[] bits = event.getFlag().substring(ATTR_KEY.length()).split("_");
+            SkillAPI.getPlayerData((Player) event.getEntity()).addBonusAttributes(bits[1], -Integer.parseInt(bits[2]));
         }
     }
 

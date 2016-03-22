@@ -77,9 +77,10 @@ public class TreeListener implements Listener
             {
 
                 PlayerClass c = classes.toArray(new PlayerClass[classes.size()])[event.getSlot()];
+                data.showSkills(data.getPlayer(), c);
                 if (c.getData().getSkills().size() > 0)
                 {
-                    event.getWhoClicked().openInventory(((InventoryTree) c.getData().getSkillTree()).getInventory(data));
+
                 }
                 else
                 {
@@ -91,7 +92,8 @@ public class TreeListener implements Listener
         // Make sure its a skill tree inventory
         else if (InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY))
         {
-            InventoryTree tree = (InventoryTree) SkillAPI.getClass(event.getInventory().getName()).getSkillTree();
+            PlayerData player = SkillAPI.getPlayerData((Player) event.getWhoClicked());
+            InventoryTree tree = (InventoryTree) SkillAPI.getClass(player.getShownClassName()).getSkillTree();
 
             // Do nothing when clicking outside the inventory
             if (event.getSlot() == -999)
@@ -110,7 +112,6 @@ public class TreeListener implements Listener
                 // If they clicked on a skill, try upgrading it
                 if (tree.isSkill(event.getWhoClicked(), event.getSlot()))
                 {
-                    PlayerData player = SkillAPI.getPlayerData((Player) event.getWhoClicked());
                     if (event.isLeftClick())
                     {
                         if (player.upgradeSkill(tree.getSkill(event.getSlot())))

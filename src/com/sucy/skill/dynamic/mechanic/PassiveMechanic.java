@@ -93,6 +93,17 @@ public class PassiveMechanic extends EffectComponent
         }
     }
 
+    /**
+     * Stops all passive tasks
+     */
+    public static void stopAll()
+    {
+        for (ArrayList<PassiveTask> list : TASKS.values())
+            for (PassiveTask task : list)
+                task.cancel();
+        TASKS.clear();
+    }
+
     private class PassiveTask extends BukkitRunnable
     {
         private List<LivingEntity> targets;

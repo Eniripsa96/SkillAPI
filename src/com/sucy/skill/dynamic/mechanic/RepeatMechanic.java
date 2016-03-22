@@ -99,6 +99,17 @@ public class RepeatMechanic extends EffectComponent
         }
     }
 
+    /**
+     * Stops all passive tasks
+     */
+    public static void stopAll()
+    {
+        for (ArrayList<RepeatTask> list : TASKS.values())
+            for (RepeatTask task : list)
+                task.cancel();
+        TASKS.clear();
+    }
+
     private class RepeatTask extends BukkitRunnable
     {
         private List<LivingEntity> targets;

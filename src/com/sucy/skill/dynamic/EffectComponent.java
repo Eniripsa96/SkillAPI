@@ -362,6 +362,7 @@ public abstract class EffectComponent
 
     private static final HashMap<String, Class<? extends EffectComponent>> mechanics = new HashMap<String, Class<? extends EffectComponent>>()
     {{
+            put("attribute", AttributeMechanic.class);
             put("block", BlockMechanic.class);
             put("cancel", CancelMechanic.class);
             put("channel", ChannelMechanic.class);

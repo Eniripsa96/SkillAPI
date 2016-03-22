@@ -84,6 +84,7 @@ public final class PlayerData
     private PlayerSkillBar skillBar;
     private PlayerCombos   combos;
     private String         scheme;
+    private String         menuClass;
     private double         mana;
     private double         maxMana;
     private double         bonusHealth;
@@ -792,21 +793,8 @@ public final class PlayerData
             return false;
         }
 
-        // Show skill tree of only class
-        if (classes.size() == 1)
-        {
-            PlayerClass playerClass = classes.get(classes.keySet().toArray(new String[1])[0]);
-            if (playerClass.getData().getSkills().size() == 0)
-            {
-                return false;
-            }
-
-            player.openInventory(((InventoryTree) playerClass.getData().getSkillTree()).getInventory(this));
-            return true;
-        }
-
         // Show list of classes that have skill trees
-        else
+        if (classes.size() > 1)
         {
             Inventory inv = InventoryManager.createInventory(
                 TreeListener.CLASS_LIST_KEY,
@@ -825,6 +813,41 @@ public final class PlayerData
             player.openInventory(inv);
             return true;
         }
+
+        // Show only class's skill tree otherwise
+        else return showSkills(player, classes.get(classes.keySet().toArray(new String[1])[0]));
+    }
+
+    /**
+     * Shows the skill tree to the player for the given class
+     *
+     * @param player      player to show
+     * @param playerClass class to look for
+     *
+     * @return true if succeeded, false otherwise
+     */
+    public boolean showSkills(Player player, PlayerClass playerClass)
+    {
+        // Cannot show an invalid player, and cannot show no skills
+        if (player == null || playerClass.getData().getSkills().size() == 0)
+        {
+            return false;
+        }
+
+        // Show skill tree of the class
+        this.menuClass = playerClass.getData().getName();
+        player.openInventory(((InventoryTree) playerClass.getData().getSkillTree()).getInventory(this));
+        return true;
+    }
+
+    /**
+     * Retrieves the name of the class shown in the skill tree
+     *
+     * @return class name
+     */
+    public String getShownClassName()
+    {
+        return menuClass;
     }
 
     ///////////////////////////////////////////////////////

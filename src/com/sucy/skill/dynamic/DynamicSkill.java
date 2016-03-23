@@ -309,7 +309,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     {
         // Death trigger
         EffectComponent component = components.get(Trigger.DEATH);
-        if (active.containsKey(event.getEntity().getEntityId()))
+        if (active.containsKey(event.getEntity().getEntityId()) && component != null)
         {
             boolean killer = component.getSettings().getString("killer", "false").equalsIgnoreCase("true");
             if (!killer || event.getEntity().getKiller() != null)

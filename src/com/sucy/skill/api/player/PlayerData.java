@@ -208,6 +208,8 @@ public final class PlayerData
             total += attributes.get(key);
         if (bonusAttrib.containsKey(key))
             total += bonusAttrib.get(key);
+        for (PlayerClass playerClass : classes.values())
+            total += playerClass.getData().getAttribute(key, playerClass.getLevel());
         return total;
     }
 

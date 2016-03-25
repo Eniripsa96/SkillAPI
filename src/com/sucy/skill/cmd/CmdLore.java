@@ -48,7 +48,6 @@ public class CmdLore implements IFunction
     private static final String NOT_PLAYER    = "not-player";
     private static final String NO_ITEM       = "no-item";
     private static final String LORE_ADDED    = "lore-added";
-    private static final String RECEIVED_MANA = "received-mana";
 
     /**
      * Runs the command

@@ -27,6 +27,7 @@
 package com.sucy.skill.api.util;
 
 import com.rit.sucy.reflect.Reflection;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.log.Logger;
 import org.bukkit.inventory.ItemStack;
 
@@ -47,6 +48,8 @@ public class DamageLoreRemover
     private static Method
         SET,
         SET_TAG,
+        SET_BOOL,
+        SET_INT,
         GET_TAG,
         AS_CRAFT,
         AS_NMS;
@@ -69,6 +72,8 @@ public class DamageLoreRemover
             GET_TAG = NMS_ITEM.getMethod("getTag");
             SET = NBT_COMPOUND.getMethod("set", String.class, NBT_BASE);
             SET_TAG = NMS_ITEM.getMethod("setTag", NBT_COMPOUND);
+            SET_BOOL = NBT_COMPOUND.getMethod("setBoolean", String.class, boolean.class);
+            SET_INT = NBT_COMPOUND.getMethod("setInt", String.class, int.class);
             AS_CRAFT = CRAFT_ITEM.getMethod("asCraftMirror", NMS_ITEM);
         }
         catch (Exception ex)
@@ -98,10 +103,24 @@ public class DamageLoreRemover
         {
             item = item.clone();
             Object nmsStack = AS_NMS.invoke(null, item);
-            Object nbtTag = GET_TAG.invoke(nmsStack);
+            Object nbtCompound = GET_TAG.invoke(nmsStack);
+
+            // Disable durability if needed
+            if (item.getType().getMaxDurability() > 0
+                && item.getDurability() > 0)
+            {
+                SET_BOOL.invoke(nbtCompound, "Unbreakable", true);
+                SET_INT.invoke(nbtCompound, "HideFlags", 4);
+            }
+
+            // Remove default NBT displays
             Object nbtTagList = Reflection.getInstance(NBT_LIST);
-            SET.invoke(nbtTag, "AttributeModifiers", nbtTagList);
-            SET_TAG.invoke(nmsStack, nbtTag);
+            SET.invoke(nbtCompound, "AttributeModifiers", nbtTagList);
+
+            // Apply to item
+            SET_TAG.invoke(nmsStack, nbtCompound);
+
+            // Return result
             return (ItemStack) AS_CRAFT.invoke(null, nmsStack);
         }
         catch (Exception ex)

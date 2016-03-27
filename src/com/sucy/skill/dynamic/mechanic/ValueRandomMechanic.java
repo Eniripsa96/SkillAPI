@@ -41,7 +41,7 @@ public class ValueRandomMechanic extends EffectComponent
     private static final String KEY  = "key";
     private static final String TYPE = "type";
     private static final String MIN  = "min";
-    private static final String MAX  = "min";
+    private static final String MAX  = "max";
 
     /**
      * Executes the component

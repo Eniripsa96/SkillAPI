@@ -76,6 +76,7 @@ public class StatusListener implements Listener
             put(StatusFlag.DISARM, "disarmed");
             put(StatusFlag.SILENCE, "silenced");
             put(StatusFlag.CHANNELING, "channeling");
+            put(StatusFlag.CHANNEL, "channeling");
         }};
 
     private final Vector ZERO = new Vector(0, 0, 0);
@@ -127,6 +128,7 @@ public class StatusListener implements Listener
         if (interrupts.contains(event.getFlag()) && FlagManager.hasFlag(event.getEntity(), StatusFlag.CHANNELING))
         {
             FlagManager.removeFlag(event.getEntity(), StatusFlag.CHANNELING);
+            FlagManager.removeFlag(event.getEntity(), StatusFlag.CHANNEL);
         }
     }
 
@@ -164,7 +166,7 @@ public class StatusListener implements Listener
         }
 
         LivingEntity damager = ListenerUtil.getDamager(event);
-        check(event, damager, damager, StatusFlag.STUN, StatusFlag.DISARM, StatusFlag.CHANNELING);
+        check(event, damager, damager, StatusFlag.STUN, StatusFlag.DISARM, StatusFlag.CHANNEL);
     }
 
     /**
@@ -217,7 +219,7 @@ public class StatusListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onCast(PlayerCastSkillEvent event)
     {
-        check(event, event.getPlayer(), event.getPlayer(), StatusFlag.SILENCE, StatusFlag.STUN, StatusFlag.CHANNELING);
+        check(event, event.getPlayer(), event.getPlayer(), StatusFlag.SILENCE, StatusFlag.STUN, StatusFlag.CHANNEL);
     }
 
     /**

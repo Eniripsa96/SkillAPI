@@ -40,6 +40,7 @@ import java.util.List;
 public class ChannelMechanic extends EffectComponent
 {
     private static final String SECONDS = "time";
+    private static final String STILL = "still";
 
     /**
      * Executes the component
@@ -58,15 +59,18 @@ public class ChannelMechanic extends EffectComponent
             return false;
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        boolean still = settings.getBool(STILL);
         int ticks = (int) (20 * attr(caster, SECONDS, level, 2.0, isSelf));
-        FlagManager.addFlag(caster, StatusFlag.CHANNELING, ticks);
+        if (still)
+            FlagManager.addFlag(caster, StatusFlag.CHANNELING, ticks);
+        FlagManager.addFlag(caster, StatusFlag.CHANNEL, ticks);
         Bukkit.getScheduler().runTaskLater(
             Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    if (FlagManager.hasFlag(caster, StatusFlag.CHANNELING))
+                    if (FlagManager.hasFlag(caster, StatusFlag.CHANNEL))
                         executeChildren(caster, level, targets);
                 }
             }, ticks

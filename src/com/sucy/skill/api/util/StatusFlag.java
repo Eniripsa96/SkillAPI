@@ -38,6 +38,7 @@ public class StatusFlag
     public static final String DISARM     = "disarm";
     public static final String SILENCE    = "silence";
     public static final String CHANNELING = "channeling";
+    public static final String CHANNEL    = "channel";
 
     public static final String[] ALL = new String[] {
         STUN, ROOT, INVINCIBLE, ABSORB, DISARM, SILENCE, CHANNELING

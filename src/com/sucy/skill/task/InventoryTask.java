@@ -38,7 +38,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -53,6 +53,9 @@ public class InventoryTask extends BukkitRunnable
     private static SkillAPI plugin;
     private        int      playersPerCheck;
     private int index = -1;
+
+    private static HashMap<UUID, AttribBuffs> attribs = new HashMap<UUID, AttribBuffs>();
+    private static HashMap<String, Integer> tempAttribs = new HashMap<String, Integer>();
 
     /**
      * Task constructor
@@ -101,12 +104,32 @@ public class InventoryTask extends BukkitRunnable
 
             // Check for lore strings
             int index = 0;
+            tempAttribs.clear();
             for (ItemStack item : player.getInventory().getArmorContents())
             {
                 if (cannotUse(data, item)) removeArmor(player, index);
                 index++;
             }
+
+            // Give attributes
+            if (SkillAPI.getSettings().isCheckAttributes())
+            {
+                cannotUse(data, player.getItemInHand());
+                if (!attribs.containsKey(player.getUniqueId()))
+                    attribs.put(player.getUniqueId(), new AttribBuffs());
+                attribs.get(player.getUniqueId()).apply(data);
+            }
         }
+    }
+
+    /**
+     * Removes attribute buff data for a player (should only be called by the API)
+     *
+     * @param playerId player UUID
+     */
+    public static void clear(UUID playerId)
+    {
+        attribs.remove(playerId);
     }
 
     /**
@@ -143,25 +166,6 @@ public class InventoryTask extends BukkitRunnable
                     if (!player.hasClass() || player.getMainClass().getLevel() < level)
                     {
                         return true;
-                    }
-                }
-
-                // Attribute requirements
-                else if (attributes)
-                {
-                    for (String key : SkillAPI.getAttributeManager().getKeys())
-                    {
-                        AttributeManager.Attribute attr = SkillAPI.getAttributeManager().getAttribute(key);
-                        String name = attr.getName();
-                        String check = SkillAPI.getSettings().getLoreAttrText().replace("{attr}", name).toLowerCase();
-                        if (lower.startsWith(check))
-                        {
-                            int amount = Integer.parseInt(colorless.substring(check.length()));
-                            if (player.getAttribute(attr.getKey()) < amount)
-                            {
-                                return true;
-                            }
-                        }
                     }
                 }
 
@@ -213,6 +217,38 @@ public class InventoryTask extends BukkitRunnable
                         }
                     }
                 }
+
+                // Attribute requirements
+                else if (attributes)
+                {
+                    for (String key : SkillAPI.getAttributeManager().getKeys())
+                    {
+                        AttributeManager.Attribute attr = SkillAPI.getAttributeManager().getAttribute(key);
+                        String name = attr.getName();
+                        String check = SkillAPI.getSettings().getAttrReqText().replace("{attr}", name).toLowerCase();
+                        if (lower.startsWith(check))
+                        {
+                            int amount = Integer.parseInt(colorless.substring(check.length()));
+                            if (player.getAttribute(attr.getKey()) < amount)
+                            {
+                                return true;
+                            }
+                        }
+
+                        if (SkillAPI.getSettings().isCheckAttributes())
+                        {
+                            check = SkillAPI.getSettings().getAttrGiveText().replace("{attr}", name).toLowerCase();
+                            if (lower.startsWith(check))
+                            {
+                                int amount = Integer.parseInt(colorless.substring(check.length()));
+                                if (tempAttribs.containsKey(name))
+                                    tempAttribs.put(name, tempAttribs.get(name) + amount);
+                                else
+                                    tempAttribs.put(name, amount);
+                            }
+                        }
+                    }
+                }
             }
         }
         return needsRequirement != hasRequirement;
@@ -251,5 +287,42 @@ public class InventoryTask extends BukkitRunnable
 
         // Make sure its a valid player
         return players.length > 0 && (players[index].isOnline() || getNextPlayer(players));
+    }
+
+    private class AttribBuffs
+    {
+        private HashMap<String, Integer> attribs = new HashMap<String, Integer>();
+
+        public void apply(PlayerData data)
+        {
+            boolean dirty = false;
+            for (Map.Entry<String, Integer> entry : attribs.entrySet())
+            {
+                if (!tempAttribs.containsKey(entry.getKey()))
+                {
+                    data.addBonusAttributes(entry.getKey(), -entry.getValue());
+                    dirty = true;
+                }
+                else
+                {
+                    int dif = tempAttribs.get(entry.getKey()) - entry.getValue();
+                    if (dif != 0)
+                    {
+                        data.addBonusAttributes(entry.getKey(), dif);
+                        dirty = true;
+                    }
+                }
+            }
+            for (Map.Entry<String, Integer> entry : tempAttribs.entrySet())
+            {
+                if (!attribs.containsKey(entry.getKey()))
+                {
+                    data.addBonusAttributes(entry.getKey(), entry.getValue());
+                    dirty = true;
+                }
+            }
+            if (dirty)
+                attribs = new HashMap<String, Integer>(tempAttribs);
+        }
     }
 }

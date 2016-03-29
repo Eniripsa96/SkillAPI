@@ -721,17 +721,21 @@ public class Settings
 
     private static final String ITEM_BASE    = "Items.";
     private static final String ITEM_LORE    = ITEM_BASE + "lore-requirements";
+    private static final String ITEM_ATTRIBS = ITEM_BASE + "lore-attributes";
     private static final String ITEM_CLASS   = ITEM_BASE + "lore-class-text";
     private static final String ITEM_LEVEL   = ITEM_BASE + "lore-level-text";
     private static final String ITEM_EXCLUDE = ITEM_BASE + "lore-exclude-text";
     private static final String ITEM_ATTR    = ITEM_BASE + "lore-attribute-text";
+    private static final String ITEM_STATS   = ITEM_BASE + "attribute-text";
     private static final String ITEM_CHECK   = ITEM_BASE + "players-per-check";
 
     private boolean checkLore;
+    private boolean checkAttribs;
     private String  loreClassText;
     private String  loreLevelText;
     private String  loreExcludeText;
-    private String  loreAttrText;
+    private String  reqAttrText;
+    private String  giveAttrText;
     private int     playersPerCheck;
 
     /**
@@ -742,6 +746,14 @@ public class Settings
     public boolean isCheckLore()
     {
         return checkLore;
+    }
+
+    /**
+     * @return true if should check for attribute bonuses
+     */
+    public boolean isCheckAttributes()
+    {
+        return checkAttribs;
     }
 
     /**
@@ -779,9 +791,17 @@ public class Settings
      *
      * @return lore text for attributes
      */
-    public String getLoreAttrText()
+    public String getAttrReqText()
     {
-        return loreAttrText;
+        return reqAttrText;
+    }
+
+    /**
+     * @return lore text for giving attributes
+     */
+    public String getAttrGiveText()
+    {
+        return giveAttrText;
     }
 
     /**
@@ -797,10 +817,12 @@ public class Settings
     private void loadItemSettings()
     {
         checkLore = config.getBoolean(ITEM_LORE);
+        checkAttribs = config.getBoolean(ITEM_ATTRIBS);
         loreClassText = config.getString(ITEM_CLASS);
         loreLevelText = config.getString(ITEM_LEVEL);
         loreExcludeText = config.getString(ITEM_EXCLUDE);
-        loreAttrText = config.getString(ITEM_ATTR);
+        reqAttrText = config.getString(ITEM_ATTR);
+        giveAttrText = config.getString(ITEM_STATS);
         playersPerCheck = config.getInt(ITEM_CHECK);
     }
 

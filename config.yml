@@ -153,6 +153,9 @@ Items:
   # The text used for attribute requirements
   lore-attribute-text: '{attr} Req: '
   #
+  # The text used for providing attributes
+  attribute-text: '{attr}: '
+  #
   # How many players to check for the requirements each tick
   # This should be increased on larger servers to prevent
   # large delays before the same player is checked again

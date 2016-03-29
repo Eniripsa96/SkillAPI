@@ -34,13 +34,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * Listener that handles weapon item lore requirements
  */
 public class ItemListener implements Listener
 {
-
     /**
      * Sets up the listener. This should not be used
      * by other plugins as it is already handled by
@@ -52,6 +52,17 @@ public class ItemListener implements Listener
     public ItemListener(SkillAPI api)
     {
         api.getServer().getPluginManager().registerEvents(this, api);
+    }
+
+    /**
+     * Clear attribute buff data on quit
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event)
+    {
+        InventoryTask.clear(event.getPlayer().getUniqueId());
     }
 
     /**

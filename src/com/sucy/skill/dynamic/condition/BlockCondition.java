@@ -55,7 +55,7 @@ public class BlockCondition extends EffectComponent
     {
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         String block = settings.getString(MATERIAL, "").toUpperCase().replace(" ", "_");
-        boolean standing = settings.getString(STANDING, "on block").equalsIgnoreCase("not on block");
+        boolean standing = !settings.getString(STANDING, "on block").equalsIgnoreCase("not on block");
 
         for (LivingEntity target : targets)
         {

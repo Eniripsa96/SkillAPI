@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
@@ -64,7 +65,7 @@ public class ValueMultiplyMechanic extends EffectComponent
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         if (data.containsKey(key) && NUMBER.matcher(data.get(key).toString()).matches())
         {
-            data.put(key, multiplier * Double.parseDouble(data.get(key).toString()));
+            data.put(key, multiplier * NumberParser.parseDouble(data.get(key).toString()));
         }
         return true;
     }

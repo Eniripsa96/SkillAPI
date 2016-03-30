@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
@@ -82,7 +83,7 @@ public class DamageLoreMechanic extends EffectComponent
                     String value = matcher.group(1);
                     try
                     {
-                        double base = Double.parseDouble(value);
+                        double base = NumberParser.parseDouble(value);
                         if (base * m > 0)
                         {
                             skill.damage(target, base * m, caster);

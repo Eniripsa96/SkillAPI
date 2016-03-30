@@ -34,6 +34,7 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.language.RPGFilter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -85,7 +86,7 @@ public class CmdExp implements IFunction
             double amount;
             try
             {
-                amount = Double.parseDouble(args[args.length == 1 ? 0 : 1]);
+                amount = NumberParser.parseDouble(args[args.length == 1 ? 0 : 1]);
             }
             catch (Exception ex)
             {

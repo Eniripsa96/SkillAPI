@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.condition;
 
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
@@ -60,7 +61,7 @@ public class ValueCondition extends EffectComponent
 
         if (data != null && NUMBER.matcher(data.toString()).matches())
         {
-            double value = Double.parseDouble(data.toString());
+            double value = NumberParser.parseDouble(data.toString());
             if (value >= min && value <= max)
             {
                 List<LivingEntity> t = new ArrayList<LivingEntity>();

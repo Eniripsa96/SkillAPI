@@ -27,10 +27,12 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
@@ -71,9 +73,29 @@ public class AttributeMechanic extends EffectComponent
             if (target instanceof Player)
             {
                 worked = true;
-                FlagManager.addFlag(target, "attr:" + skill.getName() + "_" + key + "_" + amount, ticks);
+                PlayerData data = SkillAPI.getPlayerData((Player) target);
+                data.addBonusAttributes(key, amount);
+                SkillAPI.schedule(new AttribTask(data, key, amount), ticks);
             }
         }
         return worked;
+    }
+
+    private class AttribTask extends BukkitRunnable
+    {
+        private PlayerData data;
+        private String attrib;
+        private int amount;
+        public AttribTask(PlayerData data, String attrib, int amount)
+        {
+            this.data = data;
+            this.attrib = attrib;
+            this.amount = amount;
+        }
+        @Override
+        public void run()
+        {
+            data.addBonusAttributes(attrib, -amount);
+        }
     }
 }

@@ -31,6 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
@@ -48,8 +49,8 @@ import java.util.regex.Pattern;
  */
 public abstract class EffectComponent
 {
-    protected static final Pattern NUMBER = Pattern.compile("-?[0-9]+(\\.[0-9]+)?");
-    protected static final Pattern RANGE  = Pattern.compile("-?[0-9]+(\\.[0-9]+)?-{1,2}[0-9]+(\\.[0-9]+)?");
+    protected static final Pattern NUMBER = Pattern.compile("-?[0-9]+([,.][0-9]+)?");
+    protected static final Pattern RANGE  = Pattern.compile("-?[0-9]+([,.][0-9]+)?-{1,2}[0-9]+([,.][0-9]+)?");
 
     private static final String ICON_KEY   = "icon-key";
     private static final String COUNTS_KEY = "counts";
@@ -154,13 +155,13 @@ public abstract class EffectComponent
         }
         else if (NUMBER.matcher(val).matches())
         {
-            return Double.parseDouble(val);
+            return NumberParser.parseDouble(val);
         }
         else if (RANGE.matcher(val).matches())
         {
             int mid = val.indexOf('-', 1);
-            double min = Double.parseDouble(val.substring(0, mid));
-            double max = Double.parseDouble(val.substring(mid + 1));
+            double min = NumberParser.parseDouble(val.substring(0, mid));
+            double max = NumberParser.parseDouble(val.substring(mid + 1));
             return Math.random() * (max - min) + min;
         }
         else
@@ -171,7 +172,7 @@ public abstract class EffectComponent
                 String mapVal = map.get(val).toString();
                 if (NUMBER.matcher(mapVal).matches())
                 {
-                    return Double.parseDouble(mapVal);
+                    return NumberParser.parseDouble(mapVal);
                 }
             }
             return 0;
@@ -399,7 +400,7 @@ public abstract class EffectComponent
             put("projectile", ProjectileMechanic.class);
             put("purge", PurgeMechanic.class);
             put("push", PushMechanic.class);
-            put("remember", RememberTargetsMechanic.class);
+            put("remember targets", RememberTargetsMechanic.class);
             put("repeat", RepeatMechanic.class);
             put("speed", SpeedMechanic.class);
             put("sound", SoundMechanic.class);

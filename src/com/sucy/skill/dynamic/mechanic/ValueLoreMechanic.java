@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.ChatColor;
@@ -91,7 +92,7 @@ public class ValueLoreMechanic extends EffectComponent
                 String value = matcher.group(1);
                 try
                 {
-                    double base = Double.parseDouble(value);
+                    double base = NumberParser.parseDouble(value);
                     data.put(key, base * multiplier);
                 }
                 catch (Exception ex)

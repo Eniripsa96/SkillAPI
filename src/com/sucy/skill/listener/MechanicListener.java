@@ -141,16 +141,6 @@ public class MechanicListener implements Listener
         WolfMechanic.removeWolves(event.getEntity());
     }
 
-    @EventHandler
-    public void onFlag(FlagApplyEvent event)
-    {
-        if (event.getFlag().startsWith(ATTR_KEY))
-        {
-            String[] bits = event.getFlag().substring(ATTR_KEY.length()).split("_");
-            SkillAPI.getPlayerData((Player) event.getEntity()).addBonusAttributes(bits[1], Integer.parseInt(bits[2]));
-        }
-    }
-
     /**
      * Clears speed modifiers when the flag expires
      *
@@ -162,11 +152,6 @@ public class MechanicListener implements Listener
         if (event.getFlag().equals(SPEED_KEY))
         {
             ((Player) event.getEntity()).setWalkSpeed(0.2f);
-        }
-        else if (event.getFlag().startsWith(ATTR_KEY))
-        {
-            String[] bits = event.getFlag().substring(ATTR_KEY.length()).split("_");
-            SkillAPI.getPlayerData((Player) event.getEntity()).addBonusAttributes(bits[1], -Integer.parseInt(bits[2]));
         }
     }
 

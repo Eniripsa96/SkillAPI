@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.data;
 
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
@@ -221,7 +222,7 @@ public class Formula
                 // Parse the number
                 try
                 {
-                    values[i] = Double.parseDouble(values[i].toString());
+                    values[i] = NumberParser.parseDouble(values[i].toString());
                 }
                 catch (NumberFormatException ex)
                 {

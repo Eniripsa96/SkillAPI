@@ -27,6 +27,7 @@
 package com.sucy.skill.api;
 
 import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
@@ -139,7 +140,7 @@ public class Settings
     {
         if (settings.containsKey(key))
         {
-            return Double.parseDouble(settings.get(key).toString());
+            return NumberParser.parseDouble(settings.get(key).toString());
         }
         else
         {
@@ -324,7 +325,7 @@ public class Settings
         }
         else
         {
-            return Double.parseDouble(settings.get(key + BASE).toString());
+            return NumberParser.parseDouble(settings.get(key + BASE).toString());
         }
     }
 
@@ -344,7 +345,7 @@ public class Settings
         }
         else
         {
-            return Double.parseDouble(settings.get(key + SCALE).toString());
+            return NumberParser.parseDouble(settings.get(key + SCALE).toString());
         }
     }
 

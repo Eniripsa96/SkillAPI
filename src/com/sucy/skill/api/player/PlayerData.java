@@ -303,6 +303,7 @@ public final class PlayerData
         if (bonusAttrib.containsKey(key))
             amount += bonusAttrib.get(key);
         bonusAttrib.put(key, Math.max(0, amount));
+        AttributeListener.updatePlayer(this);
     }
 
     /**

@@ -105,6 +105,8 @@ public class ItemChecker
             if (count == 0)
                 break;
         }
+        if (remove)
+            player.getInventory().setContents(contents);
 
         return count == 0;
     }

@@ -24,7 +24,9 @@
 
 package com.sucy.skill;
 
+import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.CommentedLanguageConfig;
+import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
@@ -821,5 +823,10 @@ public class SkillAPI extends JavaPlugin
     {
         if (singleton == null) return;
         target.removeMetadata(key, singleton);
+    }
+
+    public static CommentedConfig getConfig(String name)
+    {
+        return new CommentedConfig(singleton, name);
     }
 }

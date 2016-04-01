@@ -31,34 +31,53 @@ package com.sucy.skill.api.util;
  */
 public class NumberParser
 {
+    /**
+     * Parses an integer value from a string
+     *
+     * @param value string to parse
+     * @return integer value
+     */
     public static int parseInt(String value)
     {
         int n = 0;
         int val;
         boolean negative = false;
-        char c;
-        for (int i = 0; i < value.length(); i++)
+
+        int i = 0;
+        char c = value.charAt(i);
+
+        // Negative sign in front
+        if (c == '-')
+        {
+            negative = true;
+            i++;
+        }
+
+        // Positive sign in front
+        else if (c == '+')
+        {
+            i++;
+        }
+
+        // Read in digits
+        for (; i < value.length(); i++)
         {
             c = value.charAt(i);
-            switch (c)
-            {
-                case '-':
-                    if (negative)
-                        error(value);
-                    negative = true;
-                    break;
-                default:
-                    val = (int)c - 48;
-                    if (val < 0 || val > 9)
-                        error(value);
-                    n *= 10;
-                    n += val;
-                    break;
-            }
+            val = (int)c - 48;
+            if (val < 0 || val > 9)
+                error(value);
+            n *= 10;
+            n += val;
         }
         return negative ? -n : n;
     }
 
+    /**
+     * Parses a double value from a string
+     *
+     * @param value string to parse
+     * @return double value
+     */
     public static double parseDouble(String value)
     {
         double n = 0;
@@ -66,23 +85,36 @@ public class NumberParser
         int val;
         boolean decimal = false;
         boolean negative = false;
-        char c;
-        for (int i = 0; i < value.length(); i++)
+        int i = 0;
+        char c = value.charAt(i);
+
+        // Negative sign in front
+        if (c == '-')
+        {
+            negative = true;
+            i++;
+        }
+
+        // Positive sign in front
+        else if (c == '+')
+        {
+            i++;
+        }
+
+        for (; i < value.length(); i++)
         {
             c = value.charAt(i);
             switch (c)
             {
-                case '-':
-                    if (negative)
-                        error(value);
-                    negative = true;
-                    break;
+                // Start the decimal portion
                 case '.':
                 case ',':
                     if (decimal)
                         error(value);
                     decimal = true;
                     break;
+
+                // Add digits
                 default:
                     val = (int)c - 48;
                     if (val < 0 || val > 9)
@@ -103,6 +135,11 @@ public class NumberParser
         return negative ? -n : n;
     }
 
+    /**
+     * Throws an error when parsing numbers
+     *
+     * @param value string being parsed
+     */
     private static void error(String value)
     {
         throw new NumberFormatException("Invalid Number: " + value);

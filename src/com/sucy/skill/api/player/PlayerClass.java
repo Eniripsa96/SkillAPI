@@ -468,6 +468,19 @@ public final class PlayerClass
     }
 
     /**
+     * Sets the level for the class
+     *
+     * @param level level to set to
+     */
+    public void setLevel(int level)
+    {
+        if (level < 1)
+            throw new IllegalArgumentException("Cannot be a level less than 0");
+
+        this.level = level;
+    }
+
+    /**
      * Sets the class data this player class is based off of, optionally
      * resetting the class progress.
      *

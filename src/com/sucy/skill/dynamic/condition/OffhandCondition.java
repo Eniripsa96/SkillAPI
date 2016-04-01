@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.dynamic.mechanic.PushMechanic
+ * com.sucy.skill.dynamic.condition.OffhandCondition
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -24,21 +24,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.dynamic.mechanic;
+package com.sucy.skill.dynamic.condition;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Launches the target in a given direction relative to their forward direction
+ * Item condition for a player's off hand
  */
-public class PushMechanic extends EffectComponent
+public class OffhandCondition extends EffectComponent
 {
-    private static final String SPEED = "speed";
-
     /**
      * Executes the component
      *
@@ -51,32 +51,15 @@ public class PushMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        if (targets.size() == 0)
-        {
+        if (!VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
             return false;
-        }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double speed = attr(caster, SPEED, level, 3.0, isSelf);
-        boolean worked = false;
-        String type = settings.getString("type", "scaled").toLowerCase();
+        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+
         for (LivingEntity target : targets)
-        {
-            Vector vel = target.getLocation().subtract(caster.getLocation()).toVector();
-            if (vel.lengthSquared() == 0)
-            {
-                continue;
-            }
-            if (type.equals("inverse"))
-                vel.multiply(speed);
-            else if (type.equals("fixed"))
-                vel.multiply(speed / vel.length());
-            else // "scaled"
-                vel.multiply(speed / vel.lengthSquared());
-            vel.setY(vel.getY() / 5 + 0.5);
-            target.setVelocity(vel);
-            worked = true;
-        }
-        return worked;
+            if (target.getEquipment() != null && ItemChecker.check(target.getEquipment().getItemInOffHand(), level, settings))
+                list.add(target);
+
+        return list.size() > 0 && executeChildren(caster, level, list);
     }
 }

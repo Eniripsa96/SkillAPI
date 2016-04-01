@@ -145,10 +145,10 @@ public abstract class IOManager
                     {
                         PlayerClass c = acc.setClass(rpgClass);
                         DataSection classData = classes.getSection(classKey);
-                        int levels = classData.getInt(LEVEL) - 1;
+                        int levels = classData.getInt(LEVEL);
                         if (levels > 0)
                         {
-                            c.giveLevels(levels);
+                            c.setLevel(levels);
                         }
                         c.setPoints(classData.getInt(POINTS));
                         c.setTotalExp(classData.getDouble(TOTAL_EXP));

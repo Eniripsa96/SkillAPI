@@ -577,7 +577,7 @@ public abstract class Skill
         Object result = settings.getObj(key, level);
         if (result instanceof Double)
         {
-            return FORMAT.format((double) (Double) result);
+            return format((Double) result);
         }
         return result;
     }
@@ -589,13 +589,13 @@ public abstract class Skill
      *
      * @return formatted double value
      */
-    private String format(double value)
+    protected String format(double value)
     {
-        if ((int) value == value)
-        {
-            return "" + (int) value;
-        }
-        return FORMAT.format(value);
+        String result = FORMAT.format(value);
+        if (result.endsWith(".0"))
+            return result.substring(0, result.length() - 2);
+        else
+            return result;
     }
 
     /**

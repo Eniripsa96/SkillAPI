@@ -63,10 +63,8 @@ public class ValueMultiplyMechanic extends EffectComponent
         String key = settings.getString(KEY);
         double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        if (data.containsKey(key) && NUMBER.matcher(data.get(key).toString()).matches())
-        {
-            data.put(key, multiplier * NumberParser.parseDouble(data.get(key).toString()));
-        }
+        if (data.containsKey(key))
+            data.put(key, multiplier * (Double)data.get(key));
         return true;
     }
 }

@@ -49,8 +49,8 @@ import java.util.regex.Pattern;
  */
 public abstract class EffectComponent
 {
-    protected static final Pattern NUMBER = Pattern.compile("-?[0-9]+([,.][0-9]+)?");
-    protected static final Pattern RANGE  = Pattern.compile("-?[0-9]+([,.][0-9]+)?-{1,2}[0-9]+([,.][0-9]+)?");
+    //public static final Pattern NUMBER = Pattern.compile("(-?[0-9]+([,.][0-9]+)?)|(-?[,.][0-9]+)");
+    //public static final Pattern RANGE  = Pattern.compile("((-?[0-9]+([,.][0-9]+)?)|(-?[,.][0-9]+))-((-?[0-9]+([,.][0-9]+)?)|(-?[,.][0-9]+))");
 
     private static final String ICON_KEY   = "icon-key";
     private static final String COUNTS_KEY = "counts";
@@ -121,7 +121,9 @@ public abstract class EffectComponent
      */
     protected double attr(LivingEntity caster, String key, int level, double fallback, boolean self)
     {
-        double value = getNum(caster, key + "-base", fallback) + (level - 1) * getNum(caster, key + "-scale", 0);
+        double base = getNum(caster, key + "-base", fallback);
+        double scale = getNum(caster, key + "-scale", 0);
+        double value = base + (level - 1) * scale;
 
         // Apply global modifiers
         if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player)
@@ -153,30 +155,33 @@ public abstract class EffectComponent
         {
             return fallback;
         }
-        else if (NUMBER.matcher(val).matches())
+        try
         {
             return NumberParser.parseDouble(val);
         }
-        else if (RANGE.matcher(val).matches())
+        catch (Exception ex) { /* Not a number */ }
+
+        HashMap<String, Object> map = DynamicSkill.getCastData(caster);
+        if (map.containsKey(val))
+        {
+            String mapVal = map.get(val).toString();
+            try
+            {
+                return NumberParser.parseDouble(mapVal);
+            }
+            catch (Exception ex) { /* Not a number */ }
+        }
+
+        try
         {
             int mid = val.indexOf('-', 1);
             double min = NumberParser.parseDouble(val.substring(0, mid));
             double max = NumberParser.parseDouble(val.substring(mid + 1));
             return Math.random() * (max - min) + min;
         }
-        else
-        {
-            HashMap<String, Object> map = DynamicSkill.getCastData(caster);
-            if (map.containsKey(val))
-            {
-                String mapVal = map.get(val).toString();
-                if (NUMBER.matcher(mapVal).matches())
-                {
-                    return NumberParser.parseDouble(mapVal);
-                }
-            }
-            return 0;
-        }
+        catch (Exception ex) { /* Not a range */ }
+
+        return 0;
     }
 
     /**

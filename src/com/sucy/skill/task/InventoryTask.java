@@ -110,6 +110,14 @@ public class InventoryTask extends BukkitRunnable
                 if (cannotUse(data, item)) removeArmor(player, index);
                 index++;
             }
+            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
+            {
+                if (cannotUse(data, player.getInventory().getItemInOffHand()))
+                {
+                    player.getInventory().addItem(player.getInventory().getItemInOffHand());
+                    player.getInventory().setItemInOffHand(null);
+                }
+            }
 
             // Give attributes
             if (SkillAPI.getSettings().isCheckAttributes())

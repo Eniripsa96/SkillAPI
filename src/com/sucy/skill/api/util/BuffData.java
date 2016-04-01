@@ -80,7 +80,10 @@ public class BuffData
         }
         else
         {
-            tasks.remove(id).cancel();
+            damageBuffs.put(id, buff);
+            BukkitTask task = tasks.remove(id);
+            if (task != null)
+                task.cancel();
             tasks.put(id, new BuffTask(id).runTaskLater(plugin, ticks));
         }
     }
@@ -102,7 +105,10 @@ public class BuffData
         }
         else
         {
-            tasks.remove(id).cancel();
+            defenseBuffs.put(id, buff);
+            BukkitTask task = tasks.remove(id);
+            if (task != null)
+                task.cancel();
             tasks.put(id, new BuffTask(id).runTaskLater(plugin, ticks));
         }
     }

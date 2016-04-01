@@ -63,8 +63,8 @@ public class ValueAddMechanic extends EffectComponent
         String key = settings.getString(KEY);
         double amount = attr(caster, AMOUNT, level, 1, isSelf);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        if (!data.containsKey(key) || !NUMBER.matcher(data.get(key).toString()).matches()) data.put(key, amount);
-        else data.put(key, amount + NumberParser.parseDouble(data.get(key).toString()));
+        if (!data.containsKey(key)) data.put(key, amount);
+        else data.put(key, amount + (Double)data.get(key));
         return true;
     }
 }

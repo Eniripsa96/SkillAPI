@@ -27,6 +27,7 @@
 package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.api.util.NumberParser;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
@@ -57,9 +58,9 @@ public class ValueCondition extends EffectComponent
         String key = settings.getString(KEY);
         double min = attr(caster, MIN, level, 1, true);
         double max = attr(caster, MAX, level, 999, true);
-        Object data = skill.getCastData(caster).get(key);
+        Object data = DynamicSkill.getCastData(caster).get(key);
 
-        if (data != null && NUMBER.matcher(data.toString()).matches())
+        if (data != null)
         {
             double value = NumberParser.parseDouble(data.toString());
             if (value >= min && value <= max)

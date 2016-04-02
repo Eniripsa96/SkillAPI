@@ -91,10 +91,6 @@ public class NearestTarget extends EffectComponent
                     if (both || ally == SkillAPI.getSettings().isAlly(caster, target))
                     {
                         list.add(target);
-                        if (list.size() >= max)
-                        {
-                            break;
-                        }
                     }
                 }
             }

@@ -30,6 +30,8 @@ import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkill;
+import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.ChatColor;
@@ -156,6 +158,7 @@ public class InventoryTask extends BukkitRunnable
         if (item == null) return false;
         boolean hasRequirement = false;
         boolean needsRequirement = false;
+        boolean skills = SkillAPI.getSettings().isCheckSkillLore();
         boolean attributes = SkillAPI.getSettings().isAttributesEnabled();
         if (item.hasItemMeta() && item.getItemMeta().hasLore())
         {
@@ -222,6 +225,24 @@ public class InventoryTask extends BukkitRunnable
                         if (player.isClass(SkillAPI.getClass(name)))
                         {
                             return true;
+                        }
+                    }
+                }
+
+                // Skill requirements
+                else if (skills)
+                {
+                    for (Skill skill : SkillAPI.getSkills().values())
+                    {
+                        String check = SkillAPI.getSettings().getSkillText().replace("{skill}", skill.getName()).toLowerCase();
+                        if (lower.startsWith(check))
+                        {
+                            if (!player.hasSkill(skill.getName()))
+                                return true;
+
+                            int level = Integer.parseInt(colorless.substring(check.length()));
+                            if (player.getSkill(skill.getName()).getLevel() < level)
+                                return true;
                         }
                     }
                 }

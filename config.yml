@@ -138,11 +138,18 @@ Items:
   # requirements in an item's lore
   lore-requirements: false
   #
+  # Whether or not to check for skill requirements
+  # in an item's lore
+  skill-requirements: false
+  #
   # Whether or not to check for stat bonuses in an item's lore
   lore-attributes: false
   #
   # The text used for class requirements in the lore
   lore-class-text: 'Class Req: '
+  #
+  # The text used for skill requirements in lore
+  lore-skill-text: 'Requires {skill}: '
   #
   # the text used for level requirements in the lore
   lore-level-text: 'Level Req: '

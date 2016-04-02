@@ -27,6 +27,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class ExplosionMechanic extends EffectComponent
 {
     private static final String POWER  = "power";
     private static final String DAMAGE = "damage";
+    private static final String FIRE   = "fire";
 
     /**
      * Executes the component
@@ -57,10 +59,12 @@ public class ExplosionMechanic extends EffectComponent
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double power = attr(caster, POWER, level, 4, isSelf);
-        boolean damage = settings.getString(DAMAGE, "false").equalsIgnoreCase("true");
+        boolean fire = settings.getBool(FIRE, false);
+        boolean damage = settings.getBool(DAMAGE, false);
         for (LivingEntity target : targets)
         {
-            target.getWorld().createExplosion(target.getLocation(), (float) power, damage);
+            Location loc = target.getLocation();
+            target.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), (float) power, fire, damage);
         }
         return targets.size() > 0;
     }

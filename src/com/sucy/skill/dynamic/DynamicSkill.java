@@ -28,12 +28,14 @@ package com.sucy.skill.dynamic;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
 import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
+import com.sucy.skill.dynamic.executors.*;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.log.Logger;
@@ -47,7 +49,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.PluginManager;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -156,6 +161,38 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public static void clearCastData(LivingEntity entity)
     {
         castData.remove(entity.getEntityId());
+    }
+
+    /**
+     * Registers needed events for the skill, ignoring any unused events for efficiency
+     *
+     * @param plugin plugin reference
+     */
+    public void registerEvents(SkillAPI plugin)
+    {
+        PluginManager manager = plugin.getServer().getPluginManager();
+        EventPriority p = EventPriority.HIGHEST;
+
+        if (components.containsKey(Trigger.CROUCH))
+            manager.registerEvent(PlayerToggleSneakEvent.class, this, p, CrouchExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.DEATH))
+            manager.registerEvent(EntityDeathEvent.class, this, p, CrouchExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.ENVIRONMENT_DAMAGE))
+            manager.registerEvent(EntityDamageEvent.class, this, p, EnvironmentExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.KILL))
+            manager.registerEvent(EntityDeathEvent.class, this, p, KillExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.LAND))
+            manager.registerEvent(PlayerLandEvent.class, this, p, LandExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.LAUNCH))
+            manager.registerEvent(ProjectileLaunchEvent.class, this, p, LaunchExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.PHYSICAL_DAMAGE))
+            manager.registerEvent(PhysicalDamageEvent.class, this, p, PhysicalDealtExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.TOOK_PHYSICAL_DAMAGE))
+            manager.registerEvent(PhysicalDamageEvent.class, this, p, PhysicalTakenExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.SKILL_DAMAGE))
+            manager.registerEvent(SkillDamageEvent.class, this, p, SkillDealtExecutor.instance, plugin, true);
+        if (components.containsKey(Trigger.TOOK_SKILL_DAMAGE))
+            manager.registerEvent(SkillDamageEvent.class, this, p, SkillTakenExecutor.instance, plugin, true);
     }
 
     /**
@@ -277,7 +314,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onLaunch(ProjectileLaunchEvent event)
     {
         EffectComponent component = components.get(Trigger.LAUNCH);
@@ -300,11 +336,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     /**
-     * Applies the death/kill trigger effects
+     * Applies the death trigger effects
      *
      * @param event event details
      */
-    @EventHandler
     public void onDeath(EntityDeathEvent event)
     {
         // Death trigger
@@ -318,7 +353,15 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 cancel = false;
             }
         }
+    }
 
+    /**
+     * Applies the kill trigger effects
+     *
+     * @param event event details
+     */
+    public void onKill(EntityDeathEvent event)
+    {
         // Kill trigger
         Player player = event.getEntity().getKiller();
         if (player != null && active.containsKey(player.getEntityId()))
@@ -333,7 +376,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @param event event details
      */
-    @EventHandler
     public void onEnvironmental(EntityDamageEvent event)
     {
         if (!(event.getEntity() instanceof LivingEntity)) return;
@@ -358,11 +400,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     /**
-     * Applies physical damage triggers
+     * Applies physical damage taken triggers
      *
      * @param event event details
      */
-    @EventHandler
     public void onPhysical(PhysicalDamageEvent event)
     {
         LivingEntity damager = event.getDamager();
@@ -375,10 +416,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             return;
         }
 
-        EffectComponent component;
-
-        // Physical receieved
-        component = components.get(Trigger.TOOK_PHYSICAL_DAMAGE);
+        EffectComponent component = components.get(Trigger.TOOK_PHYSICAL_DAMAGE);
         if (component != null && active.containsKey(target.getEntityId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();
@@ -398,10 +436,27 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 }
             }
         }
+    }
 
-        // Physical dealt
-        component = components.get(Trigger.PHYSICAL_DAMAGE);
-        if (component != null && active.containsKey(damager.getEntityId()))
+    /**
+     * Applies physical damage dealt trigger effects
+     *
+     * @param event event details
+     */
+    public void onDealtPhysical(PhysicalDamageEvent event)
+    {
+        LivingEntity damager = event.getDamager();
+        LivingEntity target = event.getTarget();
+        boolean projectile = event.isProjectile();
+
+        // Can't be null
+        if (damager == null || target == null)
+        {
+            return;
+        }
+
+        EffectComponent component = components.get(Trigger.PHYSICAL_DAMAGE);
+        if (active.containsKey(damager.getEntityId()))
         {
             String type = component.settings.getString("type", "both").toLowerCase();
             boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
@@ -423,11 +478,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     /**
-     * Applies skill damage triggers
+     * Applies skill damage taken trigger effects
      *
      * @param event event details
      */
-    @EventHandler
     public void onSkillDamage(SkillDamageEvent event)
     {
         LivingEntity damager = event.getDamager();
@@ -435,7 +489,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
         // Skill received
         EffectComponent component = components.get(Trigger.TOOK_SKILL_DAMAGE);
-        if (component != null && active.containsKey(target.getEntityId()))
+        if (active.containsKey(target.getEntityId()))
         {
             boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
             double min = component.settings.getDouble("dmg-min");
@@ -452,10 +506,20 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 }
             }
         }
+    }
 
-        // Skill dealt
-        component = components.get(Trigger.SKILL_DAMAGE);
-        if (component != null && active.containsKey(damager.getEntityId()))
+    /**
+     * Applies skill damage dealt trigger effects
+     *
+     * @param event event details
+     */
+    public void onSkillDealt(SkillDamageEvent event)
+    {
+        LivingEntity damager = event.getDamager();
+        LivingEntity target = event.getTarget();
+
+        EffectComponent component = components.get(Trigger.SKILL_DAMAGE);
+        if (active.containsKey(damager.getEntityId()))
         {
             boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
             double min = component.settings.getDouble("dmg-min");
@@ -479,11 +543,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @param event event details
      */
-    @EventHandler
     public void onCrouch(PlayerToggleSneakEvent event)
     {
         EffectComponent component = components.get(Trigger.CROUCH);
-        if (component != null && active.containsKey(event.getPlayer().getEntityId()))
+        if (active.containsKey(event.getPlayer().getEntityId()))
         {
             if (event.isSneaking() != component.settings.getString("type", "start crouching").toLowerCase().equals("stop crouching"))
             {
@@ -498,7 +561,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @param event event details
      */
-    @EventHandler
     public void onLand(PlayerLandEvent event)
     {
         EffectComponent component = components.get(Trigger.LAND);

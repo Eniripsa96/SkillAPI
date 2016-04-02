@@ -129,7 +129,7 @@ public class RegistrationManager
                 if (!SkillAPI.isSkillRegistered(key))
                 {
                     DynamicSkill skill = new DynamicSkill(key);
-                    api.getServer().getPluginManager().registerEvents(skill, api);
+                    skill.registerEvents(api);
                     api.skills.put(key.toLowerCase(), skill);
                     skill.load(skillConfig.getConfig().getSection(key));
                     CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + key);
@@ -167,7 +167,7 @@ public class RegistrationManager
                         {
                             CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + name);
                             DynamicSkill skill = new DynamicSkill(name);
-                            api.getServer().getPluginManager().registerEvents(skill, api);
+                            skill.registerEvents(api);
                             api.skills.put(name.toLowerCase(), skill);
                             skill.load(sConfig.getConfig().getSection(name));
                             sConfig.clear();

@@ -75,6 +75,8 @@ public class AreaTarget extends EffectComponent
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
+            int prevSize = list.size();
+
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
             if (t != caster && !(t instanceof TempEntity) && (both || SkillAPI.getSettings().isAlly(caster, t) == ally))
             {
@@ -104,6 +106,8 @@ public class AreaTarget extends EffectComponent
                     }
                 }
             }
+
+            max += list.size() - prevSize;
         }
         return list.size() > 0 && executeChildren(caster, level, list);
     }

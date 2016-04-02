@@ -60,7 +60,6 @@ public class LinearTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean worked = false;
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double tolerance = attr(caster, TOLERANCE, level, 4.0, isSelf);
         double range = attr(caster, RANGE, level, 5.0, isSelf);

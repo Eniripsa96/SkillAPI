@@ -65,9 +65,12 @@ public class NearestTarget extends EffectComponent
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
-        double max = attr(caster, MAX, level, 99, isSelf);
+        int max = (int)attr(caster, MAX, level, 1, isSelf);
         Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+        double[] dists = new double[max];
+        double maxDist = Double.MIN_VALUE;
+        int next = 0;
         for (LivingEntity t : targets)
         {
             int prevSize = targets.size();
@@ -81,41 +84,38 @@ public class NearestTarget extends EffectComponent
             // Grab nearby targets
             for (Entity entity : entities)
             {
-                if (entity instanceof LivingEntity)
-                {
-                    LivingEntity target = (LivingEntity) entity;
-                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-                    {
-                        continue;
-                    }
-                    if (both || ally == SkillAPI.getSettings().isAlly(caster, target))
-                    {
-                        list.add(target);
-                        if (list.size() >= max)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
+                if (!(entity instanceof LivingEntity))
+                    continue;
 
-            // Take only the closest
-            // TODO optimize getting the nearest ones
-            Location casterLoc = caster.getLocation();
-            while (targets.size() > max && targets.size() > 0)
-            {
-                double dSq = -1;
-                int index = 0;
-                for (int i = 0; i < targets.size(); i++)
+                LivingEntity target = (LivingEntity) entity;
+                if ((!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
+                || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
+                    continue;
+
+                double dist = target.getLocation().distanceSquared(wallCheckLoc);
+                if (list.size() >= max)
                 {
-                    double d = targets.get(i).getLocation().distanceSquared(casterLoc);
-                    if (d > dSq)
+                    if (dist > maxDist)
+                        continue;
+
+                    double newMax = Double.MIN_VALUE;
+                    for (int i = 0; i < max; i++)
                     {
-                        dSq = d;
-                        index = i;
+                        if (dists[i] == maxDist)
+                        {
+                            list.set(i, target);
+                            dists[i] = dist;
+                        }
+                        else newMax = StrictMath.max(newMax, dists[i]);
                     }
+                    maxDist = newMax;
                 }
-                targets.remove(index);
+                else
+                {
+                    maxDist = StrictMath.max(maxDist, dist);
+                    dists[next++] = dist;
+                    list.add(target);
+                }
             }
 
             max += targets.size() - prevSize;

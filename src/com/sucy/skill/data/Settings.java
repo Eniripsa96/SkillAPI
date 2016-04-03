@@ -1054,7 +1054,7 @@ public class Settings
 
     private static final String COMBO_BASE    = "Click Combos.";
     private static final String COMBO_ENABLED = COMBO_BASE + "enabled";
-    private static final String COMBO_CUSTOM  = COMBO_BASE + "custom";
+    private static final String COMBO_CUSTOM  = COMBO_BASE + "allow-custom";
     private static final String COMBO_LEFT    = COMBO_BASE + "use-click-left";
     private static final String COMBO_RIGHT   = COMBO_BASE + "use-click-right";
     private static final String COMBO_SHIFT   = COMBO_BASE + "use-click-shift";

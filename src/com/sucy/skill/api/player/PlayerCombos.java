@@ -138,10 +138,9 @@ public class PlayerCombos
         clickTime = System.currentTimeMillis();
 
         // Cast skill when combo is completed
-        if (clickIndex == clicks.length)
+        int id = SkillAPI.getComboManager().convertCombo(clicks, clickIndex);
+        if (clickIndex == clicks.length || skills.containsKey(id))
         {
-            int id = SkillAPI.getComboManager().convertCombo(clicks);
-
             PlayerComboFinishEvent event = new PlayerComboFinishEvent(player, id, skills.get(id));
             Bukkit.getPluginManager().callEvent(event);
 

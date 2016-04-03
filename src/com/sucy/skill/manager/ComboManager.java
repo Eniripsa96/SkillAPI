@@ -182,6 +182,25 @@ public class ComboManager
      * Converts a click combination to an ID
      *
      * @param clicks clicks to convert
+     * @param amount number of clicks to convert
+     *
+     * @return combo ID
+     */
+    public int convertCombo(Click[] clicks, int amount)
+    {
+        int id = 0;
+        for (int i = 0; i < clicks.length && i < amount; i++)
+        {
+            id <<= Click.BITS;
+            id |= clicks[i].getId();
+        }
+        return id;
+    }
+
+    /**
+     * Converts a click combination to an ID
+     *
+     * @param clicks clicks to convert
      *
      * @return combo ID
      */

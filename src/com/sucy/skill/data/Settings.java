@@ -721,8 +721,10 @@ public class Settings
 
     private static final String ITEM_BASE    = "Items.";
     private static final String ITEM_LORE    = ITEM_BASE + "lore-requirements";
+    private static final String ITEM_SKILLS  = ITEM_BASE + "skill-requirements";
     private static final String ITEM_ATTRIBS = ITEM_BASE + "lore-attributes";
     private static final String ITEM_CLASS   = ITEM_BASE + "lore-class-text";
+    private static final String ITEM_SKILL   = ITEM_BASE + "lore-skill-text";
     private static final String ITEM_LEVEL   = ITEM_BASE + "lore-level-text";
     private static final String ITEM_EXCLUDE = ITEM_BASE + "lore-exclude-text";
     private static final String ITEM_ATTR    = ITEM_BASE + "lore-attribute-text";
@@ -731,7 +733,9 @@ public class Settings
 
     private boolean checkLore;
     private boolean checkAttribs;
+    private boolean checkSkills;
     private String  loreClassText;
+    private String  loreSkillText;
     private String  loreLevelText;
     private String  loreExcludeText;
     private String  reqAttrText;
@@ -749,11 +753,27 @@ public class Settings
     }
 
     /**
+     * @return true if should check for skill requirements
+     */
+    public boolean isCheckSkillLore()
+    {
+        return checkSkills;
+    }
+
+    /**
      * @return true if should check for attribute bonuses
      */
     public boolean isCheckAttributes()
     {
         return checkAttribs;
+    }
+
+    /**
+     * @return lore for skill requirements
+     */
+    public String getSkillText()
+    {
+        return loreSkillText;
     }
 
     /**
@@ -817,8 +837,10 @@ public class Settings
     private void loadItemSettings()
     {
         checkLore = config.getBoolean(ITEM_LORE);
+        checkSkills = config.getBoolean(ITEM_SKILLS);
         checkAttribs = config.getBoolean(ITEM_ATTRIBS);
         loreClassText = config.getString(ITEM_CLASS);
+        loreSkillText = config.getString(ITEM_SKILL);
         loreLevelText = config.getString(ITEM_LEVEL);
         loreExcludeText = config.getString(ITEM_EXCLUDE);
         reqAttrText = config.getString(ITEM_ATTR);

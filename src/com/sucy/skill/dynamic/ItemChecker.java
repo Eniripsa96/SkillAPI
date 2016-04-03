@@ -155,7 +155,7 @@ public class ItemChecker
     {
         ItemMeta meta;
         if (!item.hasItemMeta()
-            || !(meta = item.getItemMeta()).hasLore())
+            || !(meta = item.getItemMeta()).hasDisplayName())
         {
             return false;
         }

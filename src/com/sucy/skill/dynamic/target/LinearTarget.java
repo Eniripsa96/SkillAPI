@@ -69,7 +69,7 @@ public class LinearTarget extends EffectComponent
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
 
-        int max = settings.getInt(MAX, 999);
+        int max = (int)attr(caster, MAX, level, 99, isSelf);
         Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)

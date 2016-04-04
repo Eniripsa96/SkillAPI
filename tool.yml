@@ -1,0 +1,13 @@
+# Define extra items usable in the GUI editor here.
+# NEXT_PAGE nad PREV_PAGE are provided as the items
+# used for pages. Do not remove them.
+NEXT_PAGE:
+  type: 'Book'
+  name: '&6Next Page'
+  lore:
+  - ''
+PREV_PAGE:
+  type: 'Book'
+  name: '&6Prev Page'
+  lore:
+  - ''

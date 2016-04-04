@@ -28,7 +28,38 @@ package com.sucy.skill.tools;
 
 public enum GUIType
 {
-    CLASS_SELECTION,
-    CLASS_DETAILS,
-    SKILL_TREE
+    CLASS_SELECTION(0, "cs"),
+    CLASS_DETAILS(1, "cd"),
+    SKILL_TREE(2, "st");
+
+    private int id;
+    private String prefix;
+
+    private GUIType(int id, String prefix)
+    {
+        this.id = id;
+        this.prefix = prefix;
+    }
+
+    public GUIType next()
+    {
+        return ORDERED[(id + 1) % ORDERED.length];
+    }
+
+    public GUIType prev()
+    {
+        return ORDERED[(id + ORDERED.length - 1) % ORDERED.length];
+    }
+
+    public String getPrefix()
+    {
+        return prefix;
+    }
+
+    private static final GUIType[] ORDERED = new GUIType[]
+    {
+        CLASS_SELECTION,
+        CLASS_DETAILS,
+        SKILL_TREE
+    };
 }

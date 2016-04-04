@@ -26,9 +26,11 @@
  */
 package com.sucy.skill.tools;
 
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 
 public interface ToolMenu extends InventoryHolder
 {
+    public void handleClick(InventoryClickEvent event);
     public void restore();
 }

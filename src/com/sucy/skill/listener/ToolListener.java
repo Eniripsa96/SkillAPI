@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.tools.GUIToolListener
+ * com.sucy.skill.listener.GUIToolListener
  *
  * The MIT License (MIT)
  *
@@ -24,9 +24,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.tools;
+package com.sucy.skill.listener;
 
-import com.sucy.skill.task.GUITask;
+import com.sucy.skill.tools.ToolMenu;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -40,20 +40,30 @@ public class ToolListener implements Listener
     @EventHandler
     public void onClick(InventoryClickEvent event)
     {
-
+        if (event.getInventory().getHolder() instanceof ToolMenu)
+        {
+            if (event.getAction().name().startsWith("DROP"))
+                event.setCancelled(true);
+            else
+                ((ToolMenu) event.getInventory().getHolder()).handleClick(event);
+        }
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent event)
     {
-
+        if (event.getInventory().getHolder() instanceof ToolMenu)
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent event)
     {
         if (event.getInventory().getHolder() instanceof ToolMenu)
+        {
+            event.getPlayer().setItemOnCursor(null);
             ((ToolMenu) event.getInventory().getHolder()).restore();
+        }
     }
 
     @EventHandler
@@ -61,6 +71,9 @@ public class ToolListener implements Listener
     {
         InventoryView view = event.getPlayer().getOpenInventory();
         if (view != null && view.getTopInventory().getHolder() instanceof ToolMenu)
+        {
+            event.getPlayer().setItemOnCursor(null);
             ((ToolMenu) view.getTopInventory().getHolder()).restore();
+        }
     }
 }

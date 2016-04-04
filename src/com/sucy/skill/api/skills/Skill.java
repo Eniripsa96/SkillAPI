@@ -433,6 +433,27 @@ public abstract class Skill
     }
 
     /**
+     * Gets the indicator for the skill for the GUI tools
+     *
+     * @return GUI tool indicator
+     */
+    public ItemStack getToolIndicator()
+    {
+        ItemStack item = indicator.clone();
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+
+        ArrayList<String> lore = new ArrayList<String>();
+        lore.add("Level: " + getLevelReq(0));
+        lore.add("Cost: " + getCost(0));
+        meta.setLore(lore);
+
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    /**
      * Retrieves the indicator for the skill while applying filters to match
      * the player-specific data.
      *

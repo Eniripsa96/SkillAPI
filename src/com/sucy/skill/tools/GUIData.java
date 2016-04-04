@@ -27,6 +27,7 @@
 package com.sucy.skill.tools;
 
 import com.rit.sucy.config.parse.DataSection;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,19 +37,38 @@ public class GUIData
 {
     private static final String
         ROWS = "rows",
+        PAGES = "pages",
         SLOTS = "slots";
 
-    public final HashMap<String, Integer> slots = new HashMap<String, Integer>();
-    private int rows = 6;
+    private final HashMap<Integer, GUIPage> pageMap = new HashMap<Integer, GUIPage>();
 
-    public GUIData() { }
+    private int rows  = 3;
+    private int pages = 1;
+    private int nav   = 0;
+
+    public GUIData()
+    {
+        pageMap.put(0, new GUIPage());
+    }
 
     public GUIData(DataSection data)
     {
-        rows = data.getInt(ROWS);
-        DataSection slots = data.getSection(SLOTS);
-        for (String key : slots.keys())
-            this.slots.put(key, slots.getInt(key));
+        if (data != null)
+        {
+            rows = data.getInt(ROWS, rows);
+            this.pages = data.getInt(PAGES, this.pages);
+            DataSection pages = data.getSection(SLOTS);
+            if (pages != null)
+                for (String page : pages.keys())
+                    this.pageMap.put(Integer.parseInt(page), new GUIPage(pages.getSection(page)));
+        }
+        while (pageMap.size() < pages)
+            pageMap.put(pageMap.size(), new GUIPage());
+    }
+
+    public GUIPage getPage()
+    {
+        return pageMap.get(nav);
     }
 
     public int getSize()
@@ -56,18 +76,58 @@ public class GUIData
         return rows * 9;
     }
 
+    public void init(ItemStack[] contents)
+    {
+        nav = 0;
+        fill(contents);
+    }
+
+    public void load(ItemStack[] contents)
+    {
+        pageMap.get(nav).load(contents);
+    }
+
+    public void fill(ItemStack[] contents)
+    {
+        pageMap.get(nav).fill(contents);
+    }
+
+    public void next(ItemStack[] contents)
+    {
+        nav = (nav + 1) % pages;
+        fill(contents);
+    }
+
+    public void prev(ItemStack[] contents)
+    {
+        nav = (nav + pages - 1) % pages;
+        fill(contents);
+    }
+
+    public int getPages()
+    {
+        return pages;
+    }
+
+    public void addPage(ItemStack[] contents)
+    {
+        pageMap.put(nav + 1, new GUIPage());
+        pages += 1;
+        fill(contents);
+    }
+
+    public void removePage(ItemStack[] contents)
+    {
+        pageMap.remove(nav);
+        pages -= 1;
+        nav = Math.min(nav, pages - 1);
+        fill(contents);
+    }
+
     public void shrink()
     {
         if (rows > 1)
             rows--;
-
-        int size = getSize();
-        Iterator<Map.Entry<String, Integer>> iterator = slots.entrySet().iterator();
-        while (iterator.hasNext())
-        {
-            if (iterator.next().getValue() >= size)
-                iterator.remove();
-        }
     }
 
     public void grow()
@@ -78,12 +138,21 @@ public class GUIData
 
     public boolean isValid()
     {
-        return slots.size() > 0;
+        for (GUIPage page : pageMap.values())
+            if (page.isValid())
+                return true;
+
+        return false;
     }
 
     public void save(DataSection data)
     {
         data.set(ROWS, rows);
-        data.set(SLOTS, slots);
+        data.set(PAGES, pages);
+        DataSection slots = data.createSection(SLOTS);
+        for (Map.Entry<Integer, GUIPage> entry : pageMap.entrySet())
+        {
+            entry.getValue().save(slots.createSection(entry.getKey().toString()));
+        }
     }
 }

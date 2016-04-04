@@ -44,6 +44,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -256,6 +257,20 @@ public abstract class RPGClass
     public ItemStack getIcon()
     {
         return icon;
+    }
+
+    /**
+     * Gets the indicator for the class for the GUI tools
+     *
+     * @return GUI tool indicator
+     */
+    public ItemStack getToolIcon()
+    {
+        ItemStack item = icon.clone();
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        item.setItemMeta(meta);
+        return item;
     }
 
     /**

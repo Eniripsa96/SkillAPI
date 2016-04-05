@@ -30,6 +30,7 @@ import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sun.org.apache.bcel.internal.generic.GOTO;
 import org.bukkit.ChatColor;
@@ -100,6 +101,7 @@ public class GUITool implements ToolMenu
             if (!groups.contains(c.getGroup()))
                 groups.add(c.getGroup());
         }
+        availableGroups = groups.toArray(new String[groups.size()]);
         availableProfesses = professes.toArray(new RPGClass[professes.size()]);
 
         config = SkillAPI.getConfig("gui");
@@ -167,13 +169,16 @@ public class GUITool implements ToolMenu
             init();
 
         this.player = player;
-        playerContents = new ItemStack[36];
     }
 
     public void open()
     {
-        if (data != null && !inUse)
+        if (!inUse)
         {
+            PlayerData data = SkillAPI.getPlayerData(player);
+            if (data.hasClass() && SkillAPI.getSettings().isSkillBarEnabled())
+                data.getSkillBar().clear(player);
+
             this.data = new InventoryData(player);
             setType(GUIType.CLASS_SELECTION);
             inUse = true;
@@ -185,9 +190,11 @@ public class GUITool implements ToolMenu
         GUITool.type = type;
         guiData = getActiveData();
         inventoryContents = new ItemStack[guiData.getSize()];
-        player.openInventory(inventory);
         String title = populate();
         inventory = player.getServer().createInventory(this, guiData.getSize(), title);
+        inventory.setContents(inventoryContents);
+        player.getInventory().setContents(playerContents);
+        player.openInventory(inventory);
     }
 
     private void update()
@@ -198,10 +205,7 @@ public class GUITool implements ToolMenu
 
     private String populate()
     {
-        player.getInventory().clear();
-        playerContents = player.getInventory().getContents();
-        inventory.clear();
-        inventoryContents = inventory.getContents();
+        playerContents = new ItemStack[36];
 
         playerContents[0] = PREV;
         playerContents[1] = NEXT;
@@ -224,8 +228,6 @@ public class GUITool implements ToolMenu
                 name = populateClassSelection();
                 break;
         }
-
-        player.getInventory().setContents(playerContents);
 
         return name;
     }
@@ -290,20 +292,20 @@ public class GUITool implements ToolMenu
                 inventoryContents[index] = skill.getToolIndicator();
         }
 
-        return "GUI Editor - " + availableClasses[classId] + " Skill Tree";
+        return "GUI Editor - " + availableClasses[classId].getName() + " Skill Tree";
     }
 
     @Override
     public void handleClick(InventoryClickEvent event)
     {
         boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
-        if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY
-            || event.getAction() == InventoryAction.HOTBAR_SWAP
+        if (event.getAction() == InventoryAction.HOTBAR_SWAP
             || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
             event.setCancelled(true);
         else if (!top)
         {
-            event.setCancelled(true);
+            if (event.getSlot() < 9)
+                event.setCancelled(true);
             switch (event.getSlot())
             {
                 case 0:
@@ -316,7 +318,46 @@ public class GUITool implements ToolMenu
                     break;
                 case 2:
                     guiData.shrink();
-                    sett
+                    setType(type);
+                    break;
+                case 3:
+                    guiData.grow();
+                    setType(type);
+                    break;
+                case 4:
+                    guiData.addPage();
+                    setType(type);
+                    break;
+                case 5:
+                    guiData.removePage();
+                    setType(type);
+                    break;
+                case 7:
+                    switch (type)
+                    {
+                        case CLASS_SELECTION:
+                            professId = (professId + 1) % availableProfesses.length;
+                            setType(type);
+                            break;
+                        case SKILL_TREE:
+                            classId = (classId + 1) % availableClasses.length;
+                            setType(type);
+                            break;
+                    }
+                    break;
+                case 8:
+                    switch (type)
+                    {
+                        case CLASS_SELECTION:
+                            professId = (professId + availableProfesses.length - 1) % availableProfesses.length;
+                            setType(type);
+                            break;
+                        case SKILL_TREE:
+                            classId = (classId + availableClasses.length - 1) % availableClasses.length;
+                            setType(type);
+                            break;
+                    }
+                    break;
             }
         }
     }

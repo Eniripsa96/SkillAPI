@@ -68,6 +68,13 @@ public class GUIPage
             data[entry.getValue()] = make(entry.getKey());
     }
 
+    public void remove(int min, int max)
+    {
+        for (int i = min; i < max; i++)
+            if (lookup.containsKey(i))
+                slots.remove(lookup.remove(i));
+    }
+
     private ItemStack make(String key)
     {
         ItemStack item;

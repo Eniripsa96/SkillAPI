@@ -43,9 +43,12 @@ permissions:
   skillapi.attrib:
     description: access to giving attribute points
     default: op
+  skillapi.gui:
+    description: access to GUI editor menu
+    default: op
 
   skillapi.*:
-    description: access to all commands
+    description: access to all commands and features
     default: op
     children:
       skillapi.basic: true
@@ -58,3 +61,4 @@ permissions:
       skillapi.class: true
       skillapi.skill: true
       skillapi.lore: true
+      skillapi.gui: true

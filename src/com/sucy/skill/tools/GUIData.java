@@ -109,25 +109,27 @@ public class GUIData
         return pages;
     }
 
-    public void addPage(ItemStack[] contents)
+    public void addPage()
     {
         pageMap.put(nav + 1, new GUIPage());
         pages += 1;
-        fill(contents);
+        nav++;
     }
 
-    public void removePage(ItemStack[] contents)
+    public void removePage()
     {
         pageMap.remove(nav);
         pages -= 1;
         nav = Math.min(nav, pages - 1);
-        fill(contents);
     }
 
     public void shrink()
     {
         if (rows > 1)
             rows--;
+
+        for (GUIPage page : pageMap.values())
+            page.remove(getSize(), getSize() + 9);
     }
 
     public void grow()

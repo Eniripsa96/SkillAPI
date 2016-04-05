@@ -150,6 +150,7 @@ public class SkillAPI extends JavaPlugin
         new MainListener(this);
         new MechanicListener(this);
         new StatusListener(this);
+        new ToolListener(this);
         if (settings.isMapTreeAvailable())
         {
             Menu.initialize(this);

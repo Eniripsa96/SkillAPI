@@ -44,4 +44,5 @@ public class Permissions
     public static final String FORCE  = ROOT + "force";
     public static final String LORE   = ROOT + "lore";
     public static final String ATTRIB = ROOT + "attrib";
+    public static final String GUI    = ROOT + "gui";
 }

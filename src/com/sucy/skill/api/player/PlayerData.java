@@ -193,6 +193,33 @@ public final class PlayerData
     ///////////////////////////////////////////////////////
 
     /**
+     * Retrieves a map of all player attribute totals. Modifying
+     * the map will not change actual player attributes.
+     *
+     * @return attribute totals
+     */
+    public HashMap<String, Integer> getAttributes()
+    {
+        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        for (String key : SkillAPI.getAttributeManager().getKeys())
+            map.put(key, getAttribute(key));
+        return map;
+    }
+
+    /**
+     * Retrieves a map of all attributes the player invested.
+     * This doesn't count base attributes from classes or
+     * bonus attributes from effects. Modifying the map will
+     * not change actual player attributes.
+     *
+     * @return attribute totals
+     */
+    public HashMap<String, Integer> getInvestedAttributes()
+    {
+        return new HashMap<String, Integer>(attributes);
+    }
+
+    /**
      * Gets the number of attribute points the player has
      * between invested and bonus sources.
      *

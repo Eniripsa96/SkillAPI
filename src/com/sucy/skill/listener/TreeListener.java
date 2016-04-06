@@ -35,6 +35,7 @@ import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -63,7 +64,7 @@ public class TreeListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent event)
     {
         // Class selection

@@ -120,11 +120,20 @@ public class InventoryTask extends BukkitRunnable
                     player.getInventory().setItemInOffHand(null);
                 }
             }
+            if (SkillAPI.getSettings().isDropWeapon()
+                || SkillAPI.getSettings().isCheckAttributes())
+            {
+                if (cannotUse(data, player.getItemInHand())
+                    && SkillAPI.getSettings().isDropWeapon())
+                {
+                    player.getWorld().dropItem(player.getLocation(), player.getItemInHand());
+                    player.setItemInHand(null);
+                }
+            }
 
             // Give attributes
             if (SkillAPI.getSettings().isCheckAttributes())
             {
-                cannotUse(data, player.getItemInHand());
                 if (!attribs.containsKey(player.getUniqueId()))
                     attribs.put(player.getUniqueId(), new AttribBuffs());
                 attribs.get(player.getUniqueId()).apply(data);

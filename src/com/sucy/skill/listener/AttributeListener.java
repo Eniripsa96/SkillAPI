@@ -70,6 +70,7 @@ public class AttributeListener implements Listener
                 bonuses.remove(key);
             }
         }
+        player.setWalkSpeed(0.2f);
     }
 
     /**

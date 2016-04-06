@@ -1075,7 +1075,6 @@ public final class PlayerData
     public void reset(String group)
     {
         stopPassives(getPlayer());
-        clearBonuses();
         PlayerClass playerClass = classes.remove(group);
         if (playerClass != null)
         {

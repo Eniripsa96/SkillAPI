@@ -123,7 +123,8 @@ public class InventoryTask extends BukkitRunnable
             if (SkillAPI.getSettings().isDropWeapon()
                 || SkillAPI.getSettings().isCheckAttributes())
             {
-                if (cannotUse(data, player.getItemInHand()))
+                if (cannotUse(data, player.getItemInHand())
+                    && SkillAPI.getSettings().isDropWeapon())
                 {
                     player.getWorld().dropItem(player.getLocation(), player.getItemInHand());
                     player.setItemInHand(null);

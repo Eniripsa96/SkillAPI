@@ -68,6 +68,13 @@ public class GUIPage
             data[entry.getValue()] = make(entry.getKey());
     }
 
+    public void clearRight()
+    {
+        for (int i = 8; i < 54; i += 9)
+            if (lookup.containsKey(i))
+                slots.remove(lookup.remove(i));
+    }
+
     public void remove(int min, int max)
     {
         for (int i = min; i < max; i++)

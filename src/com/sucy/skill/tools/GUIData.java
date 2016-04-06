@@ -114,6 +114,9 @@ public class GUIData
         pageMap.put(nav + 1, new GUIPage());
         pages += 1;
         nav++;
+        if (pages == 2)
+            for (GUIPage page : pageMap.values())
+                page.clearRight();
     }
 
     public void removePage()

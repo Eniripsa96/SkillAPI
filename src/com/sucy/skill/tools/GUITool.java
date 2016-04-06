@@ -305,15 +305,16 @@ public class GUITool implements ToolMenu
         else if (!top)
         {
             if (event.getSlot() < 9)
+            {
+                update();
                 event.setCancelled(true);
+            }
             switch (event.getSlot())
             {
                 case 0:
-                    update();
                     setType(type.prev());
                     break;
                 case 1:
-                    update();
                     setType(type.next());
                     break;
                 case 2:

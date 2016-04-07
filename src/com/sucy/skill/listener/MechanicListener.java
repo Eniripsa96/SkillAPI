@@ -35,6 +35,8 @@ import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PotionProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
+import com.sucy.skill.hook.PluginChecker;
+import com.sucy.skill.hook.VaultHook;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -53,6 +55,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * The listener for handling events related to dynamic mechanics
@@ -65,7 +68,7 @@ public class MechanicListener implements Listener
     public static final String SPEED_KEY         = "sapiSpeedKey";
     public static final String ATTR_KEY          = "attr:";
 
-    private HashMap<Integer, Double> flying = new HashMap<Integer, Double>();
+    private HashMap<UUID, Double> flying = new HashMap<UUID, Double>();
 
     /**
      * Initializes a new listener for dynamic mechanic related events.
@@ -86,23 +89,21 @@ public class MechanicListener implements Listener
     @EventHandler
     public void onMove(PlayerMoveEvent event)
     {
-        boolean inMap = flying.containsKey(event.getPlayer().getEntityId());
+        boolean inMap = flying.containsKey(event.getPlayer().getUniqueId());
         if (inMap == ((Entity) event.getPlayer()).isOnGround())
         {
             if (inMap)
             {
-                double maxHeight = flying.remove(event.getPlayer().getEntityId());
+                double maxHeight = flying.remove(event.getPlayer().getUniqueId());
                 Bukkit.getPluginManager().callEvent(new PlayerLandEvent(event.getPlayer(), maxHeight - event.getPlayer().getLocation().getY()));
             }
             else
-            {
-                flying.put(event.getPlayer().getEntityId(), event.getPlayer().getLocation().getY());
-            }
+                flying.put(event.getPlayer().getUniqueId(), event.getPlayer().getLocation().getY());
         }
         else if (inMap)
         {
-            double y = flying.get(event.getPlayer().getEntityId());
-            flying.put(event.getPlayer().getEntityId(), Math.max(y, event.getPlayer().getLocation().getY()));
+            double y = flying.get(event.getPlayer().getUniqueId());
+            flying.put(event.getPlayer().getUniqueId(), Math.max(y, event.getPlayer().getLocation().getY()));
         }
     }
 
@@ -115,7 +116,7 @@ public class MechanicListener implements Listener
     public void onQuit(PlayerQuitEvent event)
     {
         WolfMechanic.removeWolves(event.getPlayer());
-        flying.remove(event.getPlayer().getEntityId());
+        flying.remove(event.getPlayer().getUniqueId());
         event.getPlayer().setWalkSpeed(0.2f);
     }
 
@@ -142,16 +143,39 @@ public class MechanicListener implements Listener
     }
 
     /**
+     * Applies effects when specific flag keys are set
+     *
+     * @param event event details
+     */
+    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onApply(FlagApplyEvent event)
+    {
+        if (event.getEntity() instanceof Player)
+        {
+            if (event.getFlag().startsWith("perm:") && PluginChecker.isVaultActive())
+                VaultHook.add((Player) event.getEntity(), event.getFlag().substring(5));
+        }
+    }
+
+    /**
      * Clears speed modifiers when the flag expires
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onExpire(FlagExpireEvent event)
     {
-        if (event.getFlag().equals(SPEED_KEY))
+        if (event.getEntity() instanceof Player)
         {
-            ((Player) event.getEntity()).setWalkSpeed(0.2f);
+            if (event.getFlag().startsWith("perm:") && PluginChecker.isVaultActive())
+                VaultHook.remove((Player) event.getEntity(), event.getFlag().substring(5));
+            if (event.getFlag().equals(SPEED_KEY))
+            {
+                if (SkillAPI.getSettings().isAttributesEnabled())
+                    AttributeListener.refreshSpeed((Player) event.getEntity());
+                else
+                    ((Player) event.getEntity()).setWalkSpeed(0.2f);
+            }
         }
     }
 
@@ -164,9 +188,7 @@ public class MechanicListener implements Listener
     public void onLand(ProjectileHitEvent event)
     {
         if (event.getEntity().hasMetadata(P_CALL))
-        {
             ((ProjectileMechanic) SkillAPI.getMeta(event.getEntity(), P_CALL)).callback(event.getEntity(), null);
-        }
     }
 
     /**
@@ -198,9 +220,7 @@ public class MechanicListener implements Listener
     public void onSummonDamage(EntityDamageByEntityEvent event)
     {
         if (event.getDamager().hasMetadata(SUMMON_DAMAGE))
-        {
             VersionManager.setDamage(event, SkillAPI.getMetaDouble(event.getDamager(), SUMMON_DAMAGE));
-        }
     }
 
     /**
@@ -229,8 +249,6 @@ public class MechanicListener implements Listener
     public void onBreak(BlockBreakEvent event)
     {
         if (BlockMechanic.isPending(event.getBlock().getLocation()))
-        {
             event.setCancelled(true);
-        }
     }
 }

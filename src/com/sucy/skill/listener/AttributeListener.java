@@ -62,14 +62,9 @@ public class AttributeListener implements Listener
      */
     public static void clearBonuses(Player player)
     {
-        ArrayList<String> keys = new ArrayList<String>(bonuses.keySet());
-        for (String key : keys)
-        {
-            if (key.startsWith(player.getName() + ":"))
-            {
-                bonuses.remove(key);
-            }
-        }
+        bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
+        bonuses.remove(player.getName() + ":" + AttributeManager.HEALTH);
+        bonuses.remove(player.getName() + ":" + AttributeManager.MANA);
         player.setWalkSpeed(0.2f);
     }
 
@@ -234,6 +229,26 @@ public class AttributeListener implements Listener
         }
     }
 
+    /**
+     * Refreshes player speed after buffs expire
+     *
+     * @param player player to refresh
+     */
+    public static void refreshSpeed(Player player)
+    {
+        bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
+        double speed = updateStat(SkillAPI.getPlayerData(player), AttributeManager.MOVE_SPEED, 0.2);
+        player.setWalkSpeed((float)(0.2 + speed));
+    }
+
+    /**
+     * Updates an individual stat for a player
+     *
+     * @param data  player data
+     * @param key   stat key
+     * @param value current value
+     * @return change in the stat based on current attributes
+     */
     private static double updateStat(PlayerData data, String key, double value)
     {
         Player player = data.getPlayer();

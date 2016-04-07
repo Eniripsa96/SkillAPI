@@ -26,7 +26,9 @@
  */
 package com.sucy.skill.listener;
 
+import com.rit.sucy.config.FilterType;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.task.InventoryTask;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -78,6 +80,7 @@ public class ItemListener implements Listener
             Player player = (Player) event.getDamager();
             if (InventoryTask.cannotUse(SkillAPI.getPlayerData(player), player.getItemInHand()))
             {
+                SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, player, FilterType.COLOR);
                 event.setCancelled(true);
             }
         }
@@ -95,6 +98,7 @@ public class ItemListener implements Listener
         {
             if (InventoryTask.cannotUse(SkillAPI.getPlayerData((Player) event.getEntity()), event.getBow()))
             {
+                SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, event.getEntity(), FilterType.COLOR);
                 event.setCancelled(true);
             }
         }

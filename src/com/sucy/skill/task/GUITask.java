@@ -73,6 +73,8 @@ public class GUITask extends BukkitRunnable
         useAction = SkillAPI.getSettings().isUseActionBar() && ActionBar.isSupported();
         actionText = TextFormatter.colorString(SkillAPI.getSettings().getActionText());
 
+        Logger.log(LogType.GUI, 1, "GUI Settings: " + levelMana + "/" + levelLevel + "/" + foodMana + "/" + foodExp + "/" + useAction + "/" + actionText);
+
         if (useAction || levelMana || levelLevel || foodMana || foodExp)
         {
             runTaskTimer(api, 5, 5);

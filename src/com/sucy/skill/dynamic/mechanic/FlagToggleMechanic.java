@@ -65,7 +65,7 @@ public class FlagToggleMechanic extends EffectComponent
             }
             else
             {
-                FlagManager.addFlag(target, key, 999999999);
+                FlagManager.addFlag(target, key, -1);
             }
         }
         return targets.size() > 0;

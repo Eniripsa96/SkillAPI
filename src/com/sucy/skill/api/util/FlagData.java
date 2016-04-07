@@ -73,21 +73,23 @@ public class FlagData
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 
+        // Permanent flag
+        if (ticks < 0)
+        {
+            BukkitTask task = tasks.remove(flag);
+            if (task != null)
+                task.cancel();
+            flags.put(flag, Long.MAX_VALUE);
+            return;
+        }
+
         if (flags.containsKey(flag))
         {
-            long time = flags.get(flag) - System.currentTimeMillis();
-            if (time / 50 > ticks)
-            {
+            long time = flags.get(flag);
+            if (time > ticks * 50 + System.currentTimeMillis())
                 return;
-            }
             else
-            {
                 tasks.remove(flag).cancel();
-            }
-        }
-        else if (flag.startsWith("perm:") && PluginChecker.isVaultActive() && entity instanceof Player)
-        {
-            VaultHook.add((Player) entity, flag.substring(5));
         }
         flags.put(flag, System.currentTimeMillis() + ticks * 50);
         tasks.put(flag, new FlagTask(flag).runTaskLater(plugin, ticks));
@@ -105,10 +107,6 @@ public class FlagData
             flags.remove(flag);
             tasks.remove(flag).cancel();
             Bukkit.getPluginManager().callEvent(new FlagExpireEvent(entity, flag));
-            if (flag.startsWith("perm:") && PluginChecker.isVaultActive() && entity instanceof Player)
-            {
-                VaultHook.remove((Player) entity, flag.substring(5));
-            }
             if (flags.size() == 0)
             {
                 FlagManager.clearFlags(entity);

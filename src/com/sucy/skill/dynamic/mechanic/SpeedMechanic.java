@@ -28,6 +28,7 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -39,8 +40,6 @@ import java.util.List;
  */
 public class SpeedMechanic extends EffectComponent
 {
-    private static final float BASE_SPEED = 0.2f;
-
     private static final String MULTIPLIER = "multiplier";
     private static final String DURATION   = "duration";
 
@@ -65,8 +64,9 @@ public class SpeedMechanic extends EffectComponent
         {
             if (!(target instanceof Player)) continue;
 
+            AttributeListener.refreshSpeed((Player)target);
             FlagManager.addFlag(target, MechanicListener.SPEED_KEY, ticks);
-            ((Player) target).setWalkSpeed(multiplier * BASE_SPEED);
+            ((Player) target).setWalkSpeed(multiplier * ((Player) target).getWalkSpeed());
             worked = true;
         }
         return worked;

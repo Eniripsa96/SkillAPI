@@ -69,7 +69,12 @@ public abstract class RPGClass
     private int           maxLevel;
     private int           expSources;
     private double        manaRegen;
-    private boolean       needsPermission;
+
+    /**
+     * Whether or not the class requires permissions
+     * in order to be professed into
+     */
+    protected boolean needsPermission;
 
     /**
      * The settings for your class. This will include the

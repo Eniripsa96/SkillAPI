@@ -1292,17 +1292,14 @@ public final class PlayerData
         mana = Math.min(mana, maxMana);
 
         // Health scaling is available starting with 1.6.2
-        if (SkillAPI.getSettings().isModifyHealth() && VersionManager.isVersionAtLeast(VersionManager.V1_6_2))
+        if (SkillAPI.getSettings().isOldHealth())
         {
-            if (SkillAPI.getSettings().isOldHealth())
-            {
-                player.setHealthScaled(true);
-                player.setHealthScale(20);
-            }
-            else
-            {
-                player.setHealthScaled(false);
-            }
+            player.setHealthScaled(true);
+            player.setHealthScale(20);
+        }
+        else
+        {
+            player.setHealthScaled(false);
         }
     }
 

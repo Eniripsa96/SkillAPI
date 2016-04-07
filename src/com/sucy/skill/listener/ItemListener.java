@@ -27,6 +27,7 @@
 package com.sucy.skill.listener;
 
 import com.rit.sucy.config.FilterType;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.task.InventoryTask;
@@ -35,8 +36,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.json.simple.ItemList;
 
 /**
  * Listener that handles weapon item lore requirements
@@ -82,6 +85,16 @@ public class ItemListener implements Listener
             {
                 SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, player, FilterType.COLOR);
                 event.setCancelled(true);
+            }
+        }
+        if (event.getEntity() instanceof Player && VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
+        {
+            Player player = (Player) event.getEntity();
+            if (event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0
+                && InventoryTask.cannotUse(SkillAPI.getPlayerData(player), player.getInventory().getItemInOffHand()))
+            {
+                SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, event.getEntity(), FilterType.COLOR);
+                event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, 0);
             }
         }
     }

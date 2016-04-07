@@ -50,6 +50,9 @@ public class GUITask extends BukkitRunnable
     private final boolean foodMana;
     private final boolean foodExp;
 
+    private final boolean forceScaling;
+    private final boolean oldHealth;
+
     private final boolean useAction;
     private final String  actionText;
 
@@ -70,12 +73,15 @@ public class GUITask extends BukkitRunnable
         foodMana = foodBar.equals("mana");
         foodExp = foodBar.equals("exp");
 
+        forceScaling = SkillAPI.getSettings().isForceScaling();
+        oldHealth = SkillAPI.getSettings().isOldHealth();
+
         useAction = SkillAPI.getSettings().isUseActionBar() && ActionBar.isSupported();
         actionText = TextFormatter.colorString(SkillAPI.getSettings().getActionText());
 
         Logger.log(LogType.GUI, 1, "GUI Settings: " + levelMana + "/" + levelLevel + "/" + foodMana + "/" + foodExp + "/" + useAction + "/" + actionText);
 
-        if (useAction || levelMana || levelLevel || foodMana || foodExp)
+        if (useAction || levelMana || levelLevel || foodMana || foodExp || forceScaling)
         {
             runTaskTimer(api, 5, 5);
             isRunning = true;
@@ -98,14 +104,23 @@ public class GUITask extends BukkitRunnable
     @Override
     public void run()
     {
+        Logger.log(LogType.GUI, 1, "Updating GUI (" + VersionManager.getOnlinePlayers().length + " players)...");
         for (Player player : VersionManager.getOnlinePlayers())
         {
             if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld())) continue;
 
             PlayerData data = SkillAPI.getPlayerData(player);
 
+            // Health scale
+            if (forceScaling)
+            {
+                if (oldHealth)
+                    player.setHealthScale(20);
+                else
+                    player.setHealthScale(player.getMaxHealth());
+            }
+
             // Level bar options
-            Logger.log(LogType.GUI, 1, "Updating GUI...");
             if (levelMana)
             {
                 Logger.log(LogType.GUI, 2, "Updating level bar with mana");

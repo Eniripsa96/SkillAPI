@@ -868,6 +868,7 @@ public class Settings
     private static final String
         GUI_BASE   = "GUI.",
         GUI_OLD    = GUI_BASE + "old-health-bar",
+        GUI_FORCE  = GUI_BASE + "force-scaling",
         GUI_LVLBAR = GUI_BASE + "level-bar",
         GUI_FOOD   = GUI_BASE + "food-bar",
         GUI_ACTION = GUI_BASE + "use-action-bar",
@@ -885,6 +886,7 @@ public class Settings
     private List<String> titleMessages;
 
     private boolean oldHealth;
+    private boolean forceScaling;
     private String  levelBar;
     private String  foodBar;
     private boolean useActionBar;
@@ -907,6 +909,14 @@ public class Settings
     public boolean isOldHealth()
     {
         return oldHealth;
+    }
+
+    /**
+     * @return true if forces the SkillAPI health scaling, false otherwise
+     */
+    public boolean isForceScaling()
+    {
+        return forceScaling;
     }
 
     /**
@@ -1041,6 +1051,7 @@ public class Settings
     private void loadGUISettings()
     {
         oldHealth = config.getBoolean(GUI_OLD);
+        forceScaling = config.getBoolean(GUI_FORCE);
         levelBar = config.getString(GUI_LVLBAR);
         foodBar = config.getString(GUI_FOOD);
         useActionBar = config.getBoolean(GUI_ACTION);

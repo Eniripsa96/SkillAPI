@@ -177,6 +177,10 @@ GUI:
   # This does not affect total health, only the display
   old-health-bar: false
   #
+  # Whether or not to force SkillAPI to override
+  # health scaling of other plugins
+  force-scaling: false
+  #
   # This is what to display using the level bar, if anything.
   # Options are: none, mana, level
   level-bar: none

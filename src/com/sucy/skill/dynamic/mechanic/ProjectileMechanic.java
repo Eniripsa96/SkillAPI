@@ -48,7 +48,7 @@ import java.util.List;
 public class ProjectileMechanic extends EffectComponent
 {
     private static final String PROJECTILE = "projectile";
-    private static final String SPEED      = "speed";
+    private static final String SPEED      = "velocity";
     private static final String ANGLE      = "angle";
     private static final String AMOUNT     = "amount";
     private static final String LEVEL      = "skill_level";

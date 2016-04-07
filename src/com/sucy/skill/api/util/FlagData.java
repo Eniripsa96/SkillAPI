@@ -89,7 +89,11 @@ public class FlagData
             if (time > ticks * 50 + System.currentTimeMillis())
                 return;
             else
-                tasks.remove(flag).cancel();
+            {
+                BukkitTask task = tasks.remove(flag);
+                if (task != null)
+                    task.cancel();
+            }
         }
         flags.put(flag, System.currentTimeMillis() + ticks * 50);
         tasks.put(flag, new FlagTask(flag).runTaskLater(plugin, ticks));
@@ -105,7 +109,9 @@ public class FlagData
         if (flags.containsKey(flag))
         {
             flags.remove(flag);
-            tasks.remove(flag).cancel();
+            BukkitTask task = tasks.remove(flag);
+            if (task != null)
+                task.cancel();
             Bukkit.getPluginManager().callEvent(new FlagExpireEvent(entity, flag));
             if (flags.size() == 0)
             {

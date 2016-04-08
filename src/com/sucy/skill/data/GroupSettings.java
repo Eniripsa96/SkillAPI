@@ -42,15 +42,20 @@ public class GroupSettings
     private static final String POINTS_PER_LEVEL = "points-per-level";
     private static final String PERMISSION       = "permission";
     private static final String DEFAULT          = "default";
+    private static final String STARTING_ATTRIBS = "starting-attribs";
     private static final String ATTRIB_PER_LEVEL = "attribs-per-level";
+    private static final String SCOREBOARD       = "show-scoreboard";
 
     private String  defaultClass;
     private String  permission;
     private boolean professReset;
+    private boolean showScoreboard;
+    private boolean canReset;
     private double  deathPenalty;
     private int     startingPoints;
     private int     pointsPerLevel;
     private int     attribsPerLevel;
+    private int     startingAttribs;
 
     /**
      * Initializes a new set of settings for a class group by
@@ -65,10 +70,13 @@ public class GroupSettings
         defaultClass = config.getString(DEFAULT, defaultClass);
         permission = config.getString(PERMISSION, permission);
         professReset = config.getBoolean(PROFESS_RESET, professReset);
+        showScoreboard = config.getBoolean(SCOREBOARD, showScoreboard);
+        canReset = config.getBoolean(CAN_RESET, canReset);
         deathPenalty = config.getDouble(EXP_LOST, deathPenalty);
         startingPoints = config.getInt(STARTING_POINTS, startingPoints);
         pointsPerLevel = config.getInt(POINTS_PER_LEVEL, pointsPerLevel);
         attribsPerLevel = config.getInt(ATTRIB_PER_LEVEL, attribsPerLevel);
+        startingAttribs = config.getInt(STARTING_ATTRIBS, startingAttribs);
 
         save(config);
     }
@@ -81,10 +89,13 @@ public class GroupSettings
         defaultClass = "none";
         permission = "none";
         professReset = false;
+        showScoreboard = true;
+        canReset = true;
         deathPenalty = 0;
         startingPoints = 1;
         pointsPerLevel = 1;
         attribsPerLevel = 1;
+        startingAttribs = 0;
     }
 
     /**
@@ -128,6 +139,22 @@ public class GroupSettings
     }
 
     /**
+     * @return true if the group is allowed to reset, false otherwise
+     */
+    public boolean canReset()
+    {
+        return canReset;
+    }
+
+    /**
+     * @return true if should show the scoreboard, false otherwise
+     */
+    public boolean isShowScoreboard()
+    {
+        return showScoreboard;
+    }
+
+    /**
      * Retrieves the death penalty for classes in this group
      *
      * @return death penalty
@@ -168,6 +195,14 @@ public class GroupSettings
     }
 
     /**
+     * @return attribute points classes in the group start with
+     */
+    public int getStartingAttribs()
+    {
+        return startingAttribs;
+    }
+
+    /**
      * Saves the group settings to a config
      *
      * @param config config to save to
@@ -177,9 +212,12 @@ public class GroupSettings
         config.set(DEFAULT, defaultClass);
         config.set(PERMISSION, permission);
         config.set(PROFESS_RESET, professReset);
+        config.set(CAN_RESET, canReset);
+        config.set(SCOREBOARD, showScoreboard);
         config.set(EXP_LOST, deathPenalty);
         config.set(STARTING_POINTS, startingPoints);
         config.set(POINTS_PER_LEVEL, pointsPerLevel);
+        config.set(STARTING_ATTRIBS, startingAttribs);
         config.set(ATTRIB_PER_LEVEL, attribsPerLevel);
     }
 }

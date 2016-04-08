@@ -974,6 +974,7 @@ public final class PlayerData
                 combos.removeSkill(skill);
             }
         }
+        else attribPoints += rpgClass.getGroupSettings().getStartingAttribs();
 
         PlayerClass classData = new PlayerClass(this, rpgClass);
         classes.put(rpgClass.getGroup(), classData);
@@ -1074,7 +1075,10 @@ public final class PlayerData
      */
     public void reset(String group)
     {
-        stopPassives(getPlayer());
+        GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
+        if (!settings.canReset())
+            return;
+
         PlayerClass playerClass = classes.remove(group);
         if (playerClass != null)
         {
@@ -1082,28 +1086,27 @@ public final class PlayerData
             RPGClass data = playerClass.getData();
             for (Skill skill : data.getSkills())
             {
-                skills.remove(skill.getName());
+                PlayerSkill ps = skills.remove(skill.getName());
+                if (ps.isUnlocked() && ps.getData() instanceof PassiveSkill)
+                    ((PassiveSkill) ps.getData()).stopEffects(getPlayer(), ps.getLevel());
                 combos.removeSkill(skill);
             }
 
             // Update GUI features
-            if (getPlayer() != null)
-            {
-                ClassBoardManager.clear(new VersionPlayer(getPlayer()));
-            }
+            updateScoreboard();
 
             // Call the event
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(playerClass, data, null));
         }
 
         // Restore default class if applicable
-        GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
         RPGClass rpgClass = settings.getDefault();
         if (rpgClass != null && settings.getPermission() == null)
         {
             setClass(rpgClass);
         }
-        updateHealthAndMana(player.getPlayer());
+        binds.clear();
+        resetAttribs();
     }
 
     /**
@@ -1114,13 +1117,23 @@ public final class PlayerData
     {
         ArrayList<String> keys = new ArrayList<String>(classes.keySet());
         for (String key : keys)
-        {
             reset(key);
-        }
-        skills.clear();
-        binds.clear();
+    }
+
+    /**
+     * Resets attributes for the player
+     */
+    public void resetAttribs()
+    {
         attributes.clear();
         attribPoints = 0;
+        for (PlayerClass c : classes.values())
+        {
+            GroupSettings s = c.getData().getGroupSettings();
+            attribPoints += s.getStartingAttribs() + s.getAttribsPerLevel() * ((c.getLevel() + 1) * c.getLevel() / 2 - 1);
+        }
+        AttributeListener.updatePlayer(this);
+        updateHealthAndMana(player.getPlayer());
     }
 
     /**
@@ -1152,6 +1165,7 @@ public final class PlayerData
                 previous = null;
                 current = new PlayerClass(this, rpgClass);
                 classes.put(rpgClass.getGroup(), current);
+                attribPoints += rpgClass.getGroupSettings().getStartingAttribs();
             }
             else
             {
@@ -1615,7 +1629,8 @@ public final class PlayerData
      */
     public void updateScoreboard()
     {
-        SkillAPI.schedule(new ScoreboardTask(this), 2);
+        if (SkillAPI.getSettings().isShowScoreboard())
+            SkillAPI.schedule(new ScoreboardTask(this), 2);
     }
 
     /**

@@ -101,9 +101,12 @@ public class ClassBoardManager
         {
             for (PlayerClass c : player.getClasses())
             {
-                StatBoard board = new StatBoard(c.getData().getPrefix(), "SkillAPI");
-                board.addStats(new PlayerStats(c));
-                BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
+                if (c.getData().getGroupSettings().isShowScoreboard())
+                {
+                    StatBoard board = new StatBoard(c.getData().getPrefix(), "SkillAPI");
+                    board.addStats(new PlayerStats(c));
+                    BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
+                }
             }
         }
         if (SkillAPI.getSettings().isShowClassName())

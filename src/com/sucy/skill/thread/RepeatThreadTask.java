@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.task.SaveTask
+ * com.sucy.skill.thread.RepeatThreadTask
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -24,37 +24,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.task;
-
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.thread.RepeatThreadTask;
-import org.bukkit.scheduler.BukkitRunnable;
+package com.sucy.skill.thread;
 
 /**
- * Handles auto saving periodically
+ * A thread task that continually runs in the background
  */
-public class SaveTask extends RepeatThreadTask
+public abstract class RepeatThreadTask implements IThreadTask
 {
+    private int interval;
+    private int time;
+
+    protected boolean expired;
+
     /**
-     * Sets up the save task. This shouldn't be used by other plugins
-     * as it is set up by the API.
+     * Sets up the task with an initial delay and an interval
      *
-     * @param api API reference
+     * @param delay    delay before first run
+     * @param interval delay between subsequent runs
      */
-    public SaveTask(SkillAPI api)
+    public RepeatThreadTask(int delay, int interval)
     {
-        super(
-            SkillAPI.getSettings().getSaveFreq(),
-            SkillAPI.getSettings().getSaveFreq()
-        );
+        this.interval = interval;
+        this.time = -delay;
+        expired = false;
     }
 
     /**
-     * Saves all player data
+     * Ticks the task, running periodically depending on the interval
+     *
+     * @return true if expired
      */
     @Override
-    public void run()
+    public boolean tick()
     {
-        SkillAPI.saveData();
+        if (++time % interval == 0 && time > 0)
+        {
+            run();
+            time = 0;
+        }
+        return expired;
     }
 }

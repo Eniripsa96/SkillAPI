@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.task.SaveTask
+ * com.sucy.skill.thread.IThreadTask
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -24,37 +24,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.task;
-
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.thread.RepeatThreadTask;
-import org.bukkit.scheduler.BukkitRunnable;
+package com.sucy.skill.thread;
 
 /**
- * Handles auto saving periodically
+ * Interface for tasks used by the main async task
  */
-public class SaveTask extends RepeatThreadTask
+public interface IThreadTask extends Runnable
 {
     /**
-     * Sets up the save task. This shouldn't be used by other plugins
-     * as it is set up by the API.
+     * Ticks the task, checking if it should run
      *
-     * @param api API reference
+     * @return true if expired, false otherwise
      */
-    public SaveTask(SkillAPI api)
-    {
-        super(
-            SkillAPI.getSettings().getSaveFreq(),
-            SkillAPI.getSettings().getSaveFreq()
-        );
-    }
+    public boolean tick();
 
     /**
-     * Saves all player data
+     * Runs the functions of the task
      */
-    @Override
-    public void run()
-    {
-        SkillAPI.saveData();
-    }
+    public void run();
 }

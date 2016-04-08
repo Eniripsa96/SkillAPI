@@ -34,6 +34,8 @@ import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.manager.AttributeManager;
+import com.sucy.skill.thread.MainThread;
+import com.sucy.skill.thread.RepeatThreadTask;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -46,7 +48,7 @@ import java.util.regex.Pattern;
 /**
  * Repeating task to check for equipment requirements
  */
-public class InventoryTask extends BukkitRunnable
+public class InventoryTask extends RepeatThreadTask
 {
     private static Pattern levelRegex;
     private static Pattern classRegex;
@@ -62,29 +64,17 @@ public class InventoryTask extends BukkitRunnable
     /**
      * Task constructor
      *
-     * @param p               API reference
      * @param playersPerCheck how many players to check each tick
      */
-    public InventoryTask(SkillAPI p, int playersPerCheck)
+    public InventoryTask(int playersPerCheck)
     {
+        super(1, 1);
         this.playersPerCheck = playersPerCheck;
         if (plugin != null) return;
-        plugin = p;
-        runTaskTimer(plugin, 1, 1);
 
         levelRegex = Pattern.compile(SkillAPI.getSettings().getLoreLevelText() + "[0-9]+");
         classRegex = Pattern.compile(SkillAPI.getSettings().getLoreClassText() + ".+");
         excludeRegex = Pattern.compile(SkillAPI.getSettings().getLoreExcludeText() + ".+");
-    }
-
-    /**
-     * Clears the plugin reference on cancel
-     */
-    @Override
-    public void cancel()
-    {
-        super.cancel();
-        plugin = null;
     }
 
     /**
@@ -163,7 +153,6 @@ public class InventoryTask extends BukkitRunnable
      */
     public static boolean cannotUse(PlayerData player, ItemStack item)
     {
-        if (plugin == null) return false;
         if (item == null) return false;
         boolean hasRequirement = false;
         boolean needsRequirement = false;

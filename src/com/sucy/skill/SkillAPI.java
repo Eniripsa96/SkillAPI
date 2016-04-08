@@ -49,6 +49,7 @@ import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
 import com.sucy.skill.task.*;
+import com.sucy.skill.thread.MainThread;
 import com.sucy.skill.tools.GUITool;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -85,11 +86,7 @@ public class SkillAPI extends JavaPlugin
     private RegistrationManager registrationManager;
     private AttributeManager    attributeManager;
 
-    private ManaTask      manaTask;
-    private CooldownTask  cdTask;
-    private InventoryTask invTask;
-    private SaveTask      saveTask;
-    private GUITask       guiTask;
+    private MainThread mainThread;
 
     private boolean loaded = false;
 
@@ -106,6 +103,8 @@ public class SkillAPI extends JavaPlugin
             throw new IllegalStateException("Cannot enable SkillAPI twice!");
         }
         singleton = this;
+
+        mainThread = new MainThread();
 
         // Load settings
         settings = new Settings(this);
@@ -178,22 +177,14 @@ public class SkillAPI extends JavaPlugin
 
         // Set up tasks
         if (settings.isManaEnabled())
-        {
-            manaTask = new ManaTask(this);
-        }
+            MainThread.register(new ManaTask());
         if (settings.isSkillBarCooldowns())
-        {
-            cdTask = new CooldownTask(this);
-        }
+            MainThread.register(new CooldownTask());
         if (settings.isCheckLore())
-        {
-            invTask = new InventoryTask(this, settings.getPlayersPerCheck());
-        }
+            MainThread.register(new InventoryTask(getSettings().getPlayersPerCheck()));
         if (settings.isAutoSave())
-        {
-            saveTask = new SaveTask(this);
-        }
-        guiTask = new GUITask(this);
+            MainThread.register(new SaveTask(this));
+        MainThread.register(new GUITask(this));
 
         GUITool.init();
 
@@ -215,36 +206,14 @@ public class SkillAPI extends JavaPlugin
 
         GUITool.save();
 
+        mainThread.disable();
+        mainThread = null;
+
         // Clear tasks
         WolfMechanic.removeWolves();
         BlockMechanic.revertAll();
         PassiveMechanic.stopAll();
         RepeatMechanic.stopAll();
-        if (manaTask != null)
-        {
-            manaTask.cancel();
-            manaTask = null;
-        }
-        if (cdTask != null)
-        {
-            cdTask.cancel();
-            cdTask = null;
-        }
-        if (invTask != null)
-        {
-            invTask.cancel();
-            invTask = null;
-        }
-        if (saveTask != null)
-        {
-            saveTask.cancel();
-            saveTask = null;
-        }
-        if (guiTask.isRunning())
-        {
-            guiTask.cancel();
-            guiTask = null;
-        }
 
         // Clear scoreboards
         ClassBoardManager.clearAll();

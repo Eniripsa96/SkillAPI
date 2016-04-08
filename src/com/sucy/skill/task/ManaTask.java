@@ -31,6 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.thread.RepeatThreadTask;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -39,22 +40,19 @@ import org.bukkit.scheduler.BukkitRunnable;
  * <p>This task is run by the API and you should not
  * use this task yourself.</p>
  */
-public class ManaTask extends BukkitRunnable
+public class ManaTask extends RepeatThreadTask
 {
-
-    final SkillAPI plugin;
-
     /**
-     * <p>Starts a new task for regenerating mana over time. The task is
+     * Starts a new task for regenerating mana over time. The task is
      * started automatically so don't initialize this class unless wanting to
-     * start a new task.</p>
-     *
-     * @param plugin SkillAPI reference
+     * start a new task.
      */
-    public ManaTask(SkillAPI plugin)
+    public ManaTask()
     {
-        this.plugin = plugin;
-        runTaskTimer(plugin, SkillAPI.getSettings().getGainFreq(), SkillAPI.getSettings().getGainFreq());
+        super(
+            SkillAPI.getSettings().getGainFreq(),
+            SkillAPI.getSettings().getGainFreq()
+        );
     }
 
     /**

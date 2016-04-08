@@ -35,6 +35,7 @@ import com.sucy.skill.api.util.ActionBar;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.thread.RepeatThreadTask;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -42,7 +43,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * Task that handles updating GUI elements such as level bar,
  * food bar, and action bar according to the config.yml content.
  */
-public class GUITask extends BukkitRunnable
+public class GUITask extends RepeatThreadTask
 {
     private final boolean levelMana;
     private final boolean levelLevel;
@@ -56,8 +57,6 @@ public class GUITask extends BukkitRunnable
     private final boolean useAction;
     private final String  actionText;
 
-    private boolean isRunning = false;
-
     /**
      * Sets up the task, running if any of the GUI options are enabled
      *
@@ -65,6 +64,8 @@ public class GUITask extends BukkitRunnable
      */
     public GUITask(SkillAPI api)
     {
+        super(5, 5);
+
         String levelBar = SkillAPI.getSettings().getLevelBar().toLowerCase();
         levelMana = levelBar.equals("mana");
         levelLevel = levelBar.equals("level");
@@ -82,20 +83,9 @@ public class GUITask extends BukkitRunnable
         Logger.log(LogType.GUI, 1, "GUI Settings: " + levelMana + "/" + levelLevel + "/" + foodMana + "/" + foodExp + "/" + useAction + "/" + actionText);
 
         if (useAction || levelMana || levelLevel || foodMana || foodExp || forceScaling)
-        {
-            runTaskTimer(api, 5, 5);
-            isRunning = true;
-        }
-    }
+            return;
 
-    /**
-     * Checks whether or not the task is running
-     *
-     * @return true if running, false otherwise
-     */
-    public boolean isRunning()
-    {
-        return isRunning;
+        expired = true;
     }
 
     /**

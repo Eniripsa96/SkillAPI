@@ -29,24 +29,23 @@ package com.sucy.skill.task;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.thread.RepeatThreadTask;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Handles updating cooldown values on skill bars for players
  */
-public class CooldownTask extends BukkitRunnable
+public class CooldownTask extends RepeatThreadTask
 {
     /**
      * Initializes a new cooldown task. This shouldn't be used by
      * other plugins as it is already set up by the API and additional
      * copies would create extra processing for no real gain.
-     *
-     * @param api SkillAPI reference
      */
-    public CooldownTask(SkillAPI api)
+    public CooldownTask()
     {
-        runTaskTimer(api, 20, 20);
+        super(20, 20);
     }
 
     /**

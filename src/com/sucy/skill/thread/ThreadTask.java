@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.task.SaveTask
+ * com.sucy.skill.thread.ThreadTask
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -24,37 +24,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.task;
-
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.thread.RepeatThreadTask;
-import org.bukkit.scheduler.BukkitRunnable;
+package com.sucy.skill.thread;
 
 /**
- * Handles auto saving periodically
+ * A task that runs ones and is finished
  */
-public class SaveTask extends RepeatThreadTask
+public abstract class ThreadTask implements IThreadTask
 {
+    private int time;
+
     /**
-     * Sets up the save task. This shouldn't be used by other plugins
-     * as it is set up by the API.
-     *
-     * @param api API reference
+     * Sets up the task to run on the next thread iteration
      */
-    public SaveTask(SkillAPI api)
+    public ThreadTask()
     {
-        super(
-            SkillAPI.getSettings().getSaveFreq(),
-            SkillAPI.getSettings().getSaveFreq()
-        );
+        this(0);
     }
 
     /**
-     * Saves all player data
+     * Sets up the task to run after a delay
+     *
+     * @param delay delay in ticks
+     */
+    public ThreadTask(int delay)
+    {
+        time = delay;
+    }
+
+    /**
+     * Ticks the task, running it if applicable
+     *
+     * @return true after the task runs, false beforehand
      */
     @Override
-    public void run()
+    public boolean tick()
     {
-        SkillAPI.saveData();
+        if (--time <= 0)
+        {
+            run();
+            return true;
+        }
+        return false;
     }
 }

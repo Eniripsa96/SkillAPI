@@ -29,6 +29,7 @@ package com.sucy.skill.tools;
 import com.rit.sucy.config.parse.DataSection;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class GUIData
         PAGES = "pages",
         SLOTS = "slots";
 
-    private final HashMap<Integer, GUIPage> pageMap = new HashMap<Integer, GUIPage>();
+    private final ArrayList<GUIPage> pageMap = new ArrayList<GUIPage>();
 
     private int rows  = 3;
     private int pages = 1;
@@ -48,7 +49,7 @@ public class GUIData
 
     public GUIData()
     {
-        pageMap.put(0, new GUIPage());
+        pageMap.add(new GUIPage());
     }
 
     public GUIData(DataSection data)
@@ -60,10 +61,10 @@ public class GUIData
             DataSection pages = data.getSection(SLOTS);
             if (pages != null)
                 for (String page : pages.keys())
-                    this.pageMap.put(Integer.parseInt(page), new GUIPage(pages.getSection(page)));
+                    this.pageMap.add(new GUIPage(pages.getSection(page)));
         }
         while (pageMap.size() < pages)
-            pageMap.put(pageMap.size(), new GUIPage());
+            pageMap.add(new GUIPage());
     }
 
     public GUIPage getPage()
@@ -92,16 +93,14 @@ public class GUIData
         pageMap.get(nav).fill(contents);
     }
 
-    public void next(ItemStack[] contents)
+    public void next()
     {
         nav = (nav + 1) % pages;
-        fill(contents);
     }
 
-    public void prev(ItemStack[] contents)
+    public void prev()
     {
         nav = (nav + pages - 1) % pages;
-        fill(contents);
     }
 
     public int getPages()
@@ -111,11 +110,11 @@ public class GUIData
 
     public void addPage()
     {
-        pageMap.put(nav + 1, new GUIPage());
+        pageMap.add(new GUIPage());
         pages += 1;
         nav++;
         if (pages == 2)
-            for (GUIPage page : pageMap.values())
+            for (GUIPage page : pageMap)
                 page.clearRight();
     }
 
@@ -131,7 +130,7 @@ public class GUIData
         if (rows > 1)
             rows--;
 
-        for (GUIPage page : pageMap.values())
+        for (GUIPage page : pageMap)
             page.remove(getSize(), getSize() + 9);
     }
 
@@ -143,8 +142,17 @@ public class GUIData
 
     public boolean isValid()
     {
-        for (GUIPage page : pageMap.values())
+        for (GUIPage page : pageMap)
             if (page.isValid())
+                return true;
+
+        return false;
+    }
+
+    public boolean has(String item)
+    {
+        for (GUIPage page : pageMap)
+            if (page.getIndex(item) != -1)
                 return true;
 
         return false;
@@ -155,9 +163,10 @@ public class GUIData
         data.set(ROWS, rows);
         data.set(PAGES, pages);
         DataSection slots = data.createSection(SLOTS);
-        for (Map.Entry<Integer, GUIPage> entry : pageMap.entrySet())
+        int i = 0;
+        for (GUIPage page : pageMap)
         {
-            entry.getValue().save(slots.createSection(entry.getKey().toString()));
+            page.save(slots.createSection((++i) + ""));
         }
     }
 }

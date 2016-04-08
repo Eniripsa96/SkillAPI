@@ -106,6 +106,9 @@ public class GUIPage
                 continue;
 
             String key = data[i].getItemMeta().getDisplayName();
+            if (key.equals(GUITool.PREV_PAGE) || key.equals(GUITool.NEXT_PAGE))
+                continue;
+
             slots.put(key, i);
             lookup.put(i, key);
         }

@@ -28,11 +28,14 @@ package com.sucy.skill.tools;
 
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
+import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.log.Logger;
 import com.sun.org.apache.bcel.internal.generic.GOTO;
+import net.minecraft.server.v1_9_R1.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -45,9 +48,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class GUITool implements ToolMenu
 {
+    // Page buttons
+    public static final String NEXT_PAGE = "NEXT_PAGE";
+    public static final String PREV_PAGE = "PREV_PAGE";
+
     private static boolean inUse = false;
 
     public static boolean isInUse()
@@ -55,7 +63,8 @@ public class GUITool implements ToolMenu
         return inUse;
     }
 
-    private static HashMap<String, GUIData> setups = new HashMap<String, GUIData>();
+    private static HashMap<String, GUIData>   setups = new HashMap<String, GUIData>();
+    private static HashMap<String, ItemStack> items  = new HashMap<String, ItemStack>();
 
     private static CommentedConfig config;
 
@@ -75,10 +84,13 @@ public class GUITool implements ToolMenu
 
     private static RPGClass[] availableClasses;
     private static RPGClass[] availableProfesses;
-    private static String[] availableGroups;
+    private static String[]   availableGroups;
 
-    private static void init()
+    public static void init()
     {
+        if (NEXT != null)
+            return;
+
         NEXT = make(Material.BOOK, ChatColor.GOLD + "Next Menu");
         PREV = make(Material.BOOK, ChatColor.GOLD + "Previous Menu");
         SHRINK = make(Material.MELON_SEEDS, ChatColor.GOLD + "Shrink", "", "Removes a row from the GUI");
@@ -110,6 +122,49 @@ public class GUITool implements ToolMenu
         {
             setups.put(key, new GUIData(data.getSection(key)));
         }
+
+        CommentedConfig itemFile = SkillAPI.getConfig("tool");
+        itemFile.checkDefaults();
+        itemFile.save();
+        DataSection custom = itemFile.getConfig();
+        for (String key : custom.keys())
+        {
+            try
+            {
+                ItemStack item = parseItem(custom.getSection(key));
+                items.put(key, item);
+            }
+            catch (Exception ex)
+            {
+                Logger.invalid("Bad custom tool item: " + key);
+            }
+        }
+    }
+
+    private static ItemStack parseItem(DataSection data)
+    {
+        ItemStack item = new ItemStack(
+            Material.valueOf(data.getString("type").toUpperCase().replace(" ", "_")),
+            1,
+            data.getShort("durability"),
+            data.getByte("data")
+        );
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(TextFormatter.colorString(data.getString("name")));
+        meta.setLore(TextFormatter.colorStringList(data.getList("lore")));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static void save()
+    {
+        config.clear();
+        DataSection data = config.getConfig();
+        for (Map.Entry<String, GUIData> entry : setups.entrySet())
+        {
+            entry.getValue().save(data.createSection(entry.getKey()));
+        }
+        config.save();
     }
 
     public static boolean hasData(String key)
@@ -123,13 +178,16 @@ public class GUITool implements ToolMenu
         switch (type)
         {
             case CLASS_SELECTION:
-                key += availableProfesses[professId];
+                if (professId == 0)
+                    key = type.name();
+                else
+                    key += availableProfesses[professId].getName();
                 break;
             case CLASS_DETAILS:
                 key = type.name();
                 break;
             case SKILL_TREE:
-                key += availableClasses[classId];
+                key += availableClasses[classId].getName();
         }
         if (!setups.containsKey(key))
             setups.put(key, new GUIData());
@@ -163,11 +221,12 @@ public class GUITool implements ToolMenu
     private ItemStack[] playerContents;
     private ItemStack[] inventoryContents;
 
+    private int i;
+
+    private boolean switching = false;
+
     public GUITool(Player player)
     {
-        if (NEXT == null)
-            init();
-
         this.player = player;
     }
 
@@ -194,7 +253,10 @@ public class GUITool implements ToolMenu
         inventory = player.getServer().createInventory(this, guiData.getSize(), title);
         inventory.setContents(inventoryContents);
         player.getInventory().setContents(playerContents);
+
+        switching = true;
         player.openInventory(inventory);
+        switching = false;
     }
 
     private void update()
@@ -229,7 +291,45 @@ public class GUITool implements ToolMenu
                 break;
         }
 
+        GUIPage page = guiData.getPage();
+        for (Map.Entry<String, ItemStack> entry : items.entrySet())
+        {
+            if (entry.getKey().equals(NEXT_PAGE) || entry.getKey().equals(PREV_PAGE))
+                continue;
+
+            if (i < playerContents.length)
+                playerContents[i++] = toPlaceholder(entry.getKey(), entry.getValue());
+            int index = page.getIndex(entry.getKey());
+            if (index >= 0)
+                inventoryContents[index] = toPlaceholder(entry.getKey(), entry.getValue());
+        }
+
+        // Page buttons
+        if (guiData.getPages() > 1)
+        {
+            if (inventoryContents.length > 9)
+            {
+                inventoryContents[8] = items.get(PREV_PAGE);
+                inventoryContents[17] = items.get(NEXT_PAGE);
+            }
+            else
+            {
+                inventoryContents[7] = items.get(PREV_PAGE);
+                inventoryContents[8] = items.get(NEXT_PAGE);
+            }
+        }
+
         return name;
+    }
+
+    private ItemStack toPlaceholder(String key, ItemStack custom)
+    {
+        ItemStack copy = custom.clone();
+        ItemMeta meta = copy.getItemMeta();
+        meta.setDisplayName(key);
+        meta.setLore(new ArrayList<String>());
+        copy.setItemMeta(meta);
+        return copy;
     }
 
     private String populateClassSelection()
@@ -239,17 +339,17 @@ public class GUITool implements ToolMenu
 
         GUIPage page = guiData.getPage();
         RPGClass profession = availableProfesses[professId];
-        int i = 9;
+        i = 9;
         for (RPGClass c : availableClasses)
         {
             if (c.getParent() != profession)
                 continue;
 
             int index = page.getIndex(c.getName());
-            if (index == -1)
-                playerContents[i++] = c.getToolIcon();
-            else
+            if (index != -1)
                 inventoryContents[index] = c.getToolIcon();
+            else if (!guiData.has(c.getName()) && i < playerContents.length)
+                playerContents[i++] = c.getToolIcon();
         }
 
         if (profession == null)
@@ -260,16 +360,16 @@ public class GUITool implements ToolMenu
 
     private String populateClassDetails()
     {
-        int i = 9;
+        i = 9;
         GUIPage page = guiData.getPage();
         for (String group : availableGroups)
         {
-            int index = page.getIndex(group);
             ItemStack item = make(Material.DRAGON_EGG, group, "", "Spot for the player's current", "class in the group should", "be placed in the GUI");
-            if (index == -1)
-                playerContents[i++] = item;
-            else
+            int index = page.getIndex(group);
+            if (index != -1)
                 inventoryContents[index] = item;
+            else if (!guiData.has(group) && i < playerContents.length)
+                playerContents[i++] = item;
         }
 
         return "GUI Editor - Class Details";
@@ -282,14 +382,16 @@ public class GUITool implements ToolMenu
 
         RPGClass current = availableClasses[classId];
         GUIPage page = guiData.getPage();
-        int i = 9;
+        i = 9;
         for (Skill skill : current.getSkills())
         {
             int index = page.getIndex(skill.getName());
-            if (index == -1)
-                playerContents[i++] = skill.getToolIndicator();
-            else
+            if (index != -1)
                 inventoryContents[index] = skill.getToolIndicator();
+            else if (!guiData.has(skill.getName()) && i < playerContents.length)
+            {
+                playerContents[i++] = skill.getToolIndicator();
+            }
         }
 
         return "GUI Editor - " + availableClasses[classId].getName() + " Skill Tree";
@@ -298,11 +400,52 @@ public class GUITool implements ToolMenu
     @Override
     public void handleClick(InventoryClickEvent event)
     {
-        boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
         if (event.getAction() == InventoryAction.HOTBAR_SWAP
             || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
             event.setCancelled(true);
-        else if (!top)
+        else if (event.getRawSlot() < event.getView().getTopInventory().getSize())
+        {
+            if (guiData.getPages() == 1)
+                return;
+
+            if (guiData.getSize() > 9)
+            {
+                switch (event.getSlot())
+                {
+                    case 8:
+                        update();
+                        guiData.prev();
+                        setType(type);
+                        event.setCancelled(true);
+                        break;
+                    case 17:
+                        update();
+                        guiData.next();
+                        setType(type);
+                        event.setCancelled(true);
+                        break;
+                }
+            }
+            else
+            {
+                switch (event.getSlot())
+                {
+                    case 7:
+                        update();
+                        guiData.prev();
+                        setType(type);
+                        event.setCancelled(true);
+                        break;
+                    case 8:
+                        update();
+                        guiData.next();
+                        setType(type);
+                        event.setCancelled(true);
+                        break;
+                }
+            }
+        }
+        else
         {
             if (event.getSlot() < 9)
             {
@@ -366,7 +509,7 @@ public class GUITool implements ToolMenu
     @Override
     public void restore()
     {
-        if (data != null)
+        if (data != null && !switching)
         {
             update();
             data.restore(player);

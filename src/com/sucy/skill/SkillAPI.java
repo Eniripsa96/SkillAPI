@@ -26,7 +26,6 @@ package com.sucy.skill;
 
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.CommentedLanguageConfig;
-import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
@@ -50,6 +49,7 @@ import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
 import com.sucy.skill.task.*;
+import com.sucy.skill.tools.GUITool;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -195,6 +195,8 @@ public class SkillAPI extends JavaPlugin
         }
         guiTask = new GUITask(this);
 
+        GUITool.init();
+
         loaded = true;
     }
 
@@ -210,6 +212,8 @@ public class SkillAPI extends JavaPlugin
         {
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
         }
+
+        GUITool.save();
 
         // Clear tasks
         WolfMechanic.removeWolves();

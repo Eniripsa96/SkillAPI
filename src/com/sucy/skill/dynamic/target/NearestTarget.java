@@ -106,13 +106,13 @@ public class NearestTarget extends EffectComponent
                             list.set(i, target);
                             dists[i] = dist;
                         }
-                        else newMax = StrictMath.max(newMax, dists[i]);
+                        else newMax = Math.max(newMax, dists[i]);
                     }
                     maxDist = newMax;
                 }
                 else
                 {
-                    maxDist = StrictMath.max(maxDist, dist);
+                    maxDist = Math.max(maxDist, dist);
                     dists[next++] = dist;
                     list.add(target);
                 }

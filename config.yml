@@ -249,6 +249,66 @@ GUI:
   # this to "partial"
   map-tree-enabled: false
 #
+Casting:
+  #
+  # Whether or not the main casting option is enabled
+  enabled: true
+  #
+  # Whether or not to instantly cast a skill when
+  # switching to it's slot. When false, left clicking,
+  # right clicking, or pressing Q will cast a hovered skill
+  instant-cast: false
+  #
+  # Settings for skill target indicators that play effects
+  # to show where a skill will hit
+  cast-indicator:
+    #
+    # Whether or not the feature is enabled
+    enabled: true
+    #
+    # How tightly to pack particles in the effect. A higher
+    # density will play more particles. It represents the
+    # amount of particles played per block units
+    density: 2
+    #
+    # How often the particles are played for the effect
+    # in plays per second
+    frequency: 10
+    #
+    # How fast position animations happen in blocks per second
+    animation: 1
+    #
+    # Particle to use when it has a target
+    has-target:
+      type: 'Happy Villager'
+      dx: 0
+      dy: 0
+      dz: 0
+      speed: 1
+    #
+    # Particle to use when it won't affect anything
+    no-target:
+      type: 'Angry Villager'
+      dx: 0
+      dy: 0
+      dz: 0
+      speed: 1
+  #
+  # The slot the item is kept in, must be in the range 1-9
+  slot: 9
+  #
+  # The item to use in the cast slot
+  item:
+    type: BOOK
+    data: 0
+    durability: 0
+    name: '&dSkills'
+    lore:
+    - ''
+    - '&6Left Click&2 - First skill set'
+    - '&6Right Click&2 - Second skill set'
+    - '&6Q&2 - Organize skills'
+#
 Click Combos:
   #
   # Whether or not to use click combinations

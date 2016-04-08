@@ -141,7 +141,7 @@ public class GUITool implements ToolMenu
         }
     }
 
-    private static ItemStack parseItem(DataSection data)
+    public static ItemStack parseItem(DataSection data)
     {
         ItemStack item = new ItemStack(
             Material.valueOf(data.getString("type").toUpperCase().replace(" ", "_")),

@@ -32,8 +32,10 @@ import com.rit.sucy.player.Protection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.cast.IndicatorSettings;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.tools.GUITool;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -89,6 +91,7 @@ public class Settings
         loadSkillSettings();
         loadItemSettings();
         loadGUISettings();
+        loadCastSettings();
         loadComboSettings();
         loadExpSettings();
         loadSkillBarSettings();
@@ -1070,6 +1073,66 @@ public class Settings
 
     ///////////////////////////////////////////////////////
     //                                                   //
+    //                   Cast Settings                   //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    private static final String CAST_BASE      = "Casting";
+    private static final String CAST_ENABLED   = CAST_BASE + "enabled";
+    private static final String CAST_INSTANT   = CAST_BASE + "instant-cast";
+    private static final String CAST_INDICATOR = CAST_BASE + "cast-indicator";
+    private static final String CAST_SLOT      = CAST_BASE + "slot";
+    private static final String CAST_ITEM      = CAST_BASE + "item";
+
+    private boolean castEnabled;
+    private boolean instantCast;
+    private int castSlot;
+    private ItemStack castItem;
+
+    /**
+     * @return true if default casting is enabled
+     */
+    public boolean isCastEnabled()
+    {
+        return castEnabled;
+    }
+
+    /**
+     * @return true if default casting uses instant cast
+     */
+    public boolean isInstantCast()
+    {
+        return instantCast;
+    }
+
+    /**
+     * @return slot the cast item is stored in
+     */
+    public int getCastSlot()
+    {
+        return castSlot;
+    }
+
+    /**
+     * @return cast item to use in the slot
+     */
+    public ItemStack getCastItem()
+    {
+        return castItem;
+    }
+
+    private void loadCastSettings()
+    {
+        castEnabled = config.getBoolean(CAST_ENABLED);
+        instantCast = config.getBoolean(CAST_INSTANT);
+        castSlot = config.getInt(CAST_SLOT);
+        castItem = GUITool.parseItem(config.getSection(CAST_ITEM));
+        castEnabled = castEnabled && castItem != null;
+        IndicatorSettings.load(config.getSection(CAST_INDICATOR));
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
     //               Click Combo Settings                //
     //                                                   //
     ///////////////////////////////////////////////////////
@@ -1163,7 +1226,7 @@ public class Settings
 
     private void loadComboSettings()
     {
-        combosEnabled = config.getBoolean(COMBO_ENABLED);
+        combosEnabled = config.getBoolean(COMBO_ENABLED) && !castEnabled;
         customCombos = combosEnabled && config.getBoolean(COMBO_CUSTOM);
         comboLeft = config.getBoolean(COMBO_LEFT);
         comboRight = config.getBoolean(COMBO_RIGHT);

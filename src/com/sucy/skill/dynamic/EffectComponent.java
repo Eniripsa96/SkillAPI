@@ -339,6 +339,7 @@ public abstract class EffectComponent
 
     private static final HashMap<String, Class<? extends EffectComponent>> conditions = new HashMap<String, Class<? extends EffectComponent>>()
     {{
+            put("armor", ArmorCondition.class);
             put("attribute", AttributeCondition.class);
             put("biome", BiomeCondition.class);
             put("block", BlockCondition.class);

@@ -279,10 +279,10 @@ public class InventoryTask extends BukkitRunnable
                             if (lower.startsWith(check))
                             {
                                 int amount = Integer.parseInt(colorless.substring(check.length()));
-                                if (tempAttribs.containsKey(name))
-                                    tempAttribs.put(name, tempAttribs.get(name) + amount);
+                                if (tempAttribs.containsKey(attr.getKey()))
+                                    tempAttribs.put(attr.getKey(), tempAttribs.get(attr.getKey()) + amount);
                                 else
-                                    tempAttribs.put(name, amount);
+                                    tempAttribs.put(attr.getKey(), amount);
                             }
                         }
                     }

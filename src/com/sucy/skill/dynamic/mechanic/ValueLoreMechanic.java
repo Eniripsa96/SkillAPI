@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
@@ -46,6 +47,7 @@ public class ValueLoreMechanic extends EffectComponent
     private static final String KEY        = "key";
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
+    private static final String HAND       = "hand";
 
     /**
      * Executes the component
@@ -68,20 +70,24 @@ public class ValueLoreMechanic extends EffectComponent
         String key = settings.getString(KEY);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
+        boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
+                          && settings.getString(HAND).equalsIgnoreCase("offhand");
 
         String regex = settings.getString(REGEX, "Damage: {value}");
         regex = regex.replace("{value}", "([0-9]+)");
         Pattern pattern = Pattern.compile(regex);
 
-        if (caster.getEquipment() == null || caster.getEquipment().getItemInHand() == null)
-        {
-            return true;
-        }
-        ItemStack hand = caster.getEquipment().getItemInHand();
-        if (!hand.hasItemMeta() || !hand.getItemMeta().hasLore())
-        {
-            return true;
-        }
+        if (caster.getEquipment() == null)
+            return false;
+
+        ItemStack hand;
+        if (offhand)
+            hand = caster.getEquipment().getItemInOffHand();
+        else hand = caster.getEquipment().getItemInHand();
+
+        if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore())
+            return false;
+
         List<String> lore = hand.getItemMeta().getLore();
         for (String line : lore)
         {

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.ChatColor;
@@ -43,6 +44,7 @@ public class DamageLoreMechanic extends EffectComponent
 {
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
+    private static final String HAND       = "hand";
 
     /**
      * Executes the component
@@ -62,17 +64,21 @@ public class DamageLoreMechanic extends EffectComponent
         Pattern pattern = Pattern.compile(regex);
         double m = attr(caster, MULTIPLIER, level, 1.0, isSelf);
         boolean worked = false;
+        boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
+                          && settings.getString(HAND).equalsIgnoreCase("offhand");
         for (LivingEntity target : targets)
         {
-            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null)
-            {
+            if (caster.getEquipment() == null)
                 continue;
-            }
-            ItemStack hand = caster.getEquipment().getItemInHand();
-            if (!hand.hasItemMeta() || !hand.getItemMeta().hasLore())
-            {
+
+            ItemStack hand;
+            if (offhand)
+                hand = caster.getEquipment().getItemInOffHand();
+            else hand = caster.getEquipment().getItemInHand();
+
+            if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore())
                 continue;
-            }
+
             List<String> lore = hand.getItemMeta().getLore();
             for (String line : lore)
             {

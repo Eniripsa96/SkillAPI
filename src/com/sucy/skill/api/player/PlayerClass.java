@@ -455,8 +455,8 @@ public final class PlayerClass
         amount = Math.min(amount, classData.getMaxLevel() - level);
         if (amount <= 0) return;
         level += amount;
-        points += classData.getGroupSettings().getPointsPerLevel() * amount;
-        getPlayerData().giveAttribPoints(classData.getGroupSettings().getAttribsPerLevel() * amount);
+        points += classData.getGroupSettings().getPointsForLevels(level, level - amount);
+        getPlayerData().giveAttribPoints(classData.getGroupSettings().getAttribsForLevels(level, level - amount));
 
         // Update health/mana
         getPlayerData().updateHealthAndMana(getPlayerData().getPlayer());

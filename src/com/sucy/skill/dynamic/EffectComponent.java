@@ -382,6 +382,7 @@ public abstract class EffectComponent
             put("damage lore", DamageLoreMechanic.class);
             put("defense buff", DefenseBuffMechanic.class);
             put("delay", DelayMechanic.class);
+            put("disguise", DisguiseMechanic.class);
             put("explosion", ExplosionMechanic.class);
             put("fire", FireMechanic.class);
             put("flag", FlagMechanic.class);
@@ -412,6 +413,7 @@ public abstract class EffectComponent
             put("speed", SpeedMechanic.class);
             put("sound", SoundMechanic.class);
             put("status", StatusMechanic.class);
+            put("taunt", TauntMechanic.class);
             put("value add", ValueAddMechanic.class);
             put("value attribute", ValueAttributeMechanic.class);
             put("value location", ValueLocationMechanic.class);

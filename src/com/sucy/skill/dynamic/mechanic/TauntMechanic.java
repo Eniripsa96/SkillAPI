@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.hook.PluginChecker
+ * com.sucy.skill.dynamic.mechanic.TauntMechanic
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -24,43 +24,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.hook;
+package com.sucy.skill.dynamic.mechanic;
 
-import org.bukkit.Bukkit;
+import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.entity.Creature;
+import org.bukkit.entity.LivingEntity;
+
+import java.util.List;
 
 /**
- * Handler for checking whether or not hooked plugins are present
- * and active before using related code.
+ * Mechanic for taunting mobs
  */
-public class PluginChecker
+public class TauntMechanic extends EffectComponent
 {
     /**
-     * Checks if vault is active on the server
+     * Executes the component
      *
-     * @return true if active with permissions plugin, false otherwise
-     */
-    public static boolean isVaultActive()
-    {
-        return Bukkit.getPluginManager().getPlugin("Vault") != null && VaultHook.isValid();
-    }
-
-    /**
-     * Checks whether or not Lib's Disguises is active
+     * @param caster  caster of the skill
+     * @param level   level of the skill
+     * @param targets targets to apply to
      *
-     * @return true if active
+     * @return true if applied to something, false otherwise
      */
-    public static boolean isDisguiseActive()
+    @Override
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        return Bukkit.getPluginManager().getPlugin("LibsDisguises") != null;
-    }
-
-    /**
-     * Checks whether or not NoCheatPlus is active on the server
-     *
-     * @return true if active, false otherwise
-     */
-    public static boolean isNoCheatActive()
-    {
-        return Bukkit.getPluginManager().getPlugin("NoCheatPlus") != null;
+        boolean taunted = false;
+        for (LivingEntity entity : targets)
+        {
+            if (entity instanceof Creature && entity != caster)
+            {
+                ((Creature) entity).setTarget(caster);
+                taunted = true;
+            }
+        }
+        return taunted;
     }
 }

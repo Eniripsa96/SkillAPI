@@ -38,6 +38,7 @@ public class DamageMechanic extends EffectComponent
 {
     private static final String TYPE   = "type";
     private static final String DAMAGE = "value";
+    private static final String TRUE   = "true";
 
     /**
      * Executes the component
@@ -56,6 +57,7 @@ public class DamageMechanic extends EffectComponent
         boolean percent = pString.equals("multiplier") || pString.equals("percent");
         boolean missing = pString.equals("percent missing");
         boolean left = pString.equals("percent left");
+        boolean trueDmg = settings.getBool(TRUE, false);
         double damage = attr(caster, DAMAGE, level, 1.0, isSelf);
         if (damage < 0) return false;
         for (LivingEntity target : targets)
@@ -73,7 +75,10 @@ public class DamageMechanic extends EffectComponent
             {
                 amount = damage * target.getHealth() / 100;
             }
-            skill.damage(target, amount, caster);
+            if (trueDmg)
+                skill.trueDamage(target, amount, caster);
+            else
+                skill.damage(target, amount, caster);
         }
         return targets.size() > 0;
     }

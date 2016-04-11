@@ -1130,7 +1130,7 @@ public final class PlayerData
         for (PlayerClass c : classes.values())
         {
             GroupSettings s = c.getData().getGroupSettings();
-            attribPoints += s.getStartingAttribs() + s.getAttribsPerLevel() * ((c.getLevel() + 1) * c.getLevel() / 2 - 1);
+            attribPoints += s.getStartingAttribs() + s.getAttribsForLevels(c.getLevel(), 1);
         }
         AttributeListener.updatePlayer(this);
         updateHealthAndMana(player.getPlayer());

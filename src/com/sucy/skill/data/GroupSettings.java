@@ -53,8 +53,8 @@ public class GroupSettings
     private boolean canReset;
     private double  deathPenalty;
     private int     startingPoints;
-    private int     pointsPerLevel;
-    private int     attribsPerLevel;
+    private double  pointsPerLevel;
+    private double  attribsPerLevel;
     private int     startingAttribs;
 
     /**
@@ -74,8 +74,8 @@ public class GroupSettings
         canReset = config.getBoolean(CAN_RESET, canReset);
         deathPenalty = config.getDouble(EXP_LOST, deathPenalty);
         startingPoints = config.getInt(STARTING_POINTS, startingPoints);
-        pointsPerLevel = config.getInt(POINTS_PER_LEVEL, pointsPerLevel);
-        attribsPerLevel = config.getInt(ATTRIB_PER_LEVEL, attribsPerLevel);
+        pointsPerLevel = config.getDouble(POINTS_PER_LEVEL, pointsPerLevel);
+        attribsPerLevel = config.getDouble(ATTRIB_PER_LEVEL, attribsPerLevel);
         startingAttribs = config.getInt(STARTING_ATTRIBS, startingAttribs);
 
         save(config);
@@ -179,9 +179,21 @@ public class GroupSettings
      *
      * @return skill points per level
      */
-    public int getPointsPerLevel()
+    public double getPointsPerLevel()
     {
         return pointsPerLevel;
+    }
+
+    /**
+     * Gets the number of skill points to gain for a specified level
+     *
+     * @param newLevel level to check for
+     * @param oldLevel level coming from
+     * @return gained points
+     */
+    public int getPointsForLevels(int newLevel, int oldLevel)
+    {
+        return (int)(newLevel * pointsPerLevel) - (int)(oldLevel * pointsPerLevel);
     }
 
     /**
@@ -189,9 +201,21 @@ public class GroupSettings
      *
      * @return attribute points gained each level
      */
-    public int getAttribsPerLevel()
+    public double getAttribsPerLevel()
     {
         return attribsPerLevel;
+    }
+
+    /**
+     * Gets the number of attribute points to gain for a specified level
+     *
+     * @param newLevel level to check for
+     * @param oldLevel level coming from
+     * @return gained points
+     */
+    public int getAttribsForLevels(int newLevel, int oldLevel)
+    {
+        return (int)(newLevel * attribsPerLevel) - (int)(oldLevel * attribsPerLevel);
     }
 
     /**

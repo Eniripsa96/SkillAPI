@@ -45,6 +45,7 @@ public class DamageLoreMechanic extends EffectComponent
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
     private static final String HAND       = "hand";
+    private static final String TRUE       = "true";
 
     /**
      * Executes the component
@@ -66,41 +67,46 @@ public class DamageLoreMechanic extends EffectComponent
         boolean worked = false;
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
                           && settings.getString(HAND).equalsIgnoreCase("offhand");
-        for (LivingEntity target : targets)
+        boolean trueDmg = settings.getBool(TRUE, false);
+
+        if (caster.getEquipment() == null)
+            return false;
+
+        ItemStack hand;
+        if (offhand)
+            hand = caster.getEquipment().getItemInOffHand();
+        else hand = caster.getEquipment().getItemInHand();
+
+        if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore())
+            return false;
+
+        List<String> lore = hand.getItemMeta().getLore();
+        for (String line : lore)
         {
-            if (caster.getEquipment() == null)
-                continue;
-
-            ItemStack hand;
-            if (offhand)
-                hand = caster.getEquipment().getItemInOffHand();
-            else hand = caster.getEquipment().getItemInHand();
-
-            if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore())
-                continue;
-
-            List<String> lore = hand.getItemMeta().getLore();
-            for (String line : lore)
+            line = ChatColor.stripColor(line);
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find())
             {
-                line = ChatColor.stripColor(line);
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find())
+                String value = matcher.group(1);
+                try
                 {
-                    String value = matcher.group(1);
-                    try
+                    double base = NumberParser.parseDouble(value);
+                    if (base * m > 0)
                     {
-                        double base = NumberParser.parseDouble(value);
-                        if (base * m > 0)
+                        for (LivingEntity target : targets)
                         {
-                            skill.damage(target, base * m, caster);
-                            worked = true;
-                            break;
+                            if (trueDmg)
+                                skill.trueDamage(target, base * m, caster);
+                            else
+                                skill.damage(target, base * m, caster);
                         }
+                        worked = targets.size() > 0;
+                        break;
                     }
-                    catch (Exception ex)
-                    {
-                        // Not a valid value
-                    }
+                }
+                catch (Exception ex)
+                {
+                    // Not a valid value
                 }
             }
         }

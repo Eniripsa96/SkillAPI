@@ -68,20 +68,21 @@ public class Particle
             sendPacket = Class.forName(nms + "PlayerConnection").getDeclaredMethod("sendPacket", Class.forName(nms + "Packet"));
 
             // 1.8+ servers
+            Class<?> packetClass;
             if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0))
             {
                 particleEnum = Class.forName(nms + "EnumParticle");
                 for (Object value : particleEnum.getEnumConstants())
                     particleTypes.put(value.toString(), value);
-                packet = Class.forName(nms + "PacketPlayOutWorldParticles")
-                    .getConstructor(particleEnum, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE, int[].class);
+                packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
+                packet = packetClass.getConstructor(particleEnum, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE, int[].class);
             }
 
             // 1.7.x servers
             else
             {
-                packet = Class.forName(nms + "PacketPlayOutWorldParticles")
-                    .getConstructor(String.class, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE);
+                packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
+                packet = packetClass.getConstructor(String.class, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE);
             }
         }
         catch (Exception ex)
@@ -143,8 +144,9 @@ public class Particle
         // 1.8+ servers use an enum value to validate the particle type
         if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0))
         {
-            if (CONVERSION.containsKey(type.toLowerCase()))
-                type = CONVERSION.get(type.toLowerCase());
+            String lower = type.toLowerCase();
+            if (CONVERSION.containsKey(lower))
+                type = CONVERSION.get(lower);
             else
                 type = type.toUpperCase().replace(" ", "_");
 
@@ -174,7 +176,6 @@ public class Particle
         {
             return packet.newInstance(
                 type,
-                true,
                 (float)x,
                 (float)y,
                 (float)z,

@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.dynamic.mechanic.DamageMechanic
+ * com.sucy.skill.dynamic.condition.ArmorCondition
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -24,21 +24,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.dynamic.mechanic;
+package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Deals damage to each target
+ * Checks the player's armor for matching items
  */
-public class DamageMechanic extends EffectComponent
+public class ArmorCondition extends EffectComponent
 {
-    private static final String TYPE   = "type";
-    private static final String DAMAGE = "value";
-    private static final String TRUE   = "true";
+    private static final String ARMOR = "armor";
 
     /**
      * Executes the component
@@ -52,34 +54,30 @@ public class DamageMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        String pString = settings.getString(TYPE, "damage").toLowerCase();
-        boolean percent = pString.equals("multiplier") || pString.equals("percent");
-        boolean missing = pString.equals("percent missing");
-        boolean left = pString.equals("percent left");
-        boolean trueDmg = settings.getBool(TRUE, false);
-        double damage = attr(caster, DAMAGE, level, 1.0, isSelf);
-        if (damage < 0) return false;
+        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+        String armor = settings.getString(ARMOR).toLowerCase();
+        boolean helmet = armor.equals("helmet");
+        boolean chestplate = armor.equals("chestplate");
+        boolean leggings = armor.equals("leggings");
+        boolean boots = armor.equals("boots");
+        if (!helmet && !chestplate && !leggings && !boots)
+            helmet = chestplate = leggings = boots = true;
+
         for (LivingEntity target : targets)
         {
-            double amount = damage;
-            if (percent)
+            if (!(target instanceof Player))
+                continue;
+
+            PlayerInventory inv = ((Player) target).getInventory();
+            if ((helmet && ItemChecker.check(inv.getHelmet(), level, settings))
+                || (chestplate && ItemChecker.check(inv.getChestplate(), level, settings))
+                || (leggings && ItemChecker.check(inv.getLeggings(), level, settings))
+                || (boots && ItemChecker.check(inv.getBoots(), level, settings)))
             {
-                amount = damage * target.getMaxHealth() / 100;
+                list.add(target);
             }
-            else if (missing)
-            {
-                amount = damage * (target.getMaxHealth() - target.getHealth()) / 100;
-            }
-            else if (left)
-            {
-                amount = damage * target.getHealth() / 100;
-            }
-            if (trueDmg)
-                skill.trueDamage(target, amount, caster);
-            else
-                skill.damage(target, amount, caster);
         }
-        return targets.size() > 0;
+
+        return list.size() > 0 && executeChildren(caster, level, list);
     }
 }

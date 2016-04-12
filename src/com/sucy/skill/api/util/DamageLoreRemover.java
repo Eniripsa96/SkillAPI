@@ -27,7 +27,6 @@
 package com.sucy.skill.api.util;
 
 import com.rit.sucy.reflect.Reflection;
-import com.sucy.skill.SkillAPI;
 import com.sucy.skill.log.Logger;
 import org.bukkit.inventory.ItemStack;
 

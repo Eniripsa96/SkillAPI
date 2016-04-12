@@ -135,15 +135,6 @@ public class SkillAPI extends JavaPlugin
         // Load group settings after groups are determined
         settings.loadGroupSettings();
 
-        // Load player data
-        for (Player player : VersionManager.getOnlinePlayers())
-        {
-            PlayerData data = loadPlayerData(player).getActiveData();
-            data.updateHealthAndMana(player);
-            data.updateScoreboard();
-        }
-        if (settings.isUseSql()) ((SQLIO) io).cleanup();
-
         // Set up listeners
         new CastListener(this);
         new MainListener(this);
@@ -187,6 +178,16 @@ public class SkillAPI extends JavaPlugin
         MainThread.register(new GUITask(this));
 
         GUITool.init();
+
+        // Load player data
+        for (Player player : VersionManager.getOnlinePlayers())
+        {
+            PlayerData data = loadPlayerData(player).getActiveData();
+            AttributeListener.updatePlayer(data);
+            data.updateHealthAndMana(player);
+            data.updateScoreboard();
+        }
+        if (settings.isUseSql()) ((SQLIO) io).cleanup();
 
         loaded = true;
     }
@@ -236,6 +237,9 @@ public class SkillAPI extends JavaPlugin
         players.clear();
 
         HandlerList.unregisterAll(this);
+        AttributeListener.cleanup();
+        MechanicListener.cleanup();
+        StatusListener.cleanup();
         cmd.clear();
 
         loaded = false;
@@ -799,8 +803,27 @@ public class SkillAPI extends JavaPlugin
         target.removeMetadata(key, singleton);
     }
 
+    /**
+     * Grabs a config for SkillAPI
+     *
+     * @param name config file name
+     * @return config data
+     */
     public static CommentedConfig getConfig(String name)
     {
         return new CommentedConfig(singleton, name);
+    }
+
+    /**
+     * Reloads the plugin
+     */
+    public static void reload()
+    {
+        if (singleton != null)
+        {
+            SkillAPI inst = singleton;
+            inst.onDisable();
+            inst.onEnable();
+        }
     }
 }

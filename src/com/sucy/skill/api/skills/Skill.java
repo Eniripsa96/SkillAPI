@@ -37,9 +37,7 @@ import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.util.DamageLoreRemover;
-import com.sucy.skill.api.util.Data;
-import com.sucy.skill.api.util.NumberParser;
+import com.sucy.skill.api.util.*;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.hook.NoCheatHook;
 import com.sucy.skill.hook.PluginChecker;
@@ -53,6 +51,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -644,7 +643,6 @@ public abstract class Skill
 
     /**
      * Applies skill damage to the target, launching the skill damage event
-     * and keeping the damage version compatible.
      *
      * @param target target to receive the damage
      * @param damage amount of damage to deal
@@ -663,7 +661,8 @@ public abstract class Skill
                 Player player = (Player) source;
                 if (PluginChecker.isNoCheatActive()) NoCheatHook.exempt(player);
                 skillDamage = true;
-                VersionManager.damage(target, source, event.getDamage());
+                target.setNoDamageTicks(0);
+                target.damage(event.getDamage(), source);
                 skillDamage = false;
                 if (PluginChecker.isNoCheatActive()) NoCheatHook.unexempt(player);
             }
@@ -673,6 +672,35 @@ public abstract class Skill
                 VersionManager.damage(target, source, event.getDamage());
                 skillDamage = false;
             }
+        }
+    }
+
+    /**
+     * Applies skill damage to the target, launching the skill damage event
+     * and keeping the damage version compatible.
+     *
+     * @param target target to receive the damage
+     * @param damage amount of damage to deal
+     * @param source source of the damage (skill caster)
+     */
+    public void trueDamage(LivingEntity target, double damage, LivingEntity source)
+    {
+        if (FlagManager.hasFlag(target, StatusFlag.ABSORB))
+            target.setHealth(Math.min(target.getHealth() + damage, target.getMaxHealth()));
+        else if (!FlagManager.hasFlag(target, StatusFlag.INVINCIBLE))
+        {
+            if (target != source)
+            {
+                target.setLastDamageCause(
+                    new EntityDamageEvent(
+                        source,
+                        EntityDamageEvent.DamageCause.CUSTOM,
+                        damage
+                    )
+                );
+            }
+            target.setLastDamage(damage);
+            target.setHealth(Math.max(0, target.getHealth() - damage));
         }
     }
 

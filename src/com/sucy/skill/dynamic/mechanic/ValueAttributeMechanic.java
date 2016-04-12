@@ -63,7 +63,7 @@ public class ValueAttributeMechanic extends EffectComponent
         String key = settings.getString(KEY);
         String attr = settings.getString(ATTR);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        data.put(key, SkillAPI.getPlayerData((Player) caster).getAttribute(attr));
+        data.put(key, (double) SkillAPI.getPlayerData((Player) caster).getAttribute(attr));
         return true;
     }
 }

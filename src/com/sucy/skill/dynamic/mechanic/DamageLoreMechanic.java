@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.ChatColor;
@@ -43,6 +44,8 @@ public class DamageLoreMechanic extends EffectComponent
 {
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
+    private static final String HAND       = "hand";
+    private static final String TRUE       = "true";
 
     /**
      * Executes the component
@@ -62,39 +65,48 @@ public class DamageLoreMechanic extends EffectComponent
         Pattern pattern = Pattern.compile(regex);
         double m = attr(caster, MULTIPLIER, level, 1.0, isSelf);
         boolean worked = false;
-        for (LivingEntity target : targets)
+        boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
+                          && settings.getString(HAND).equalsIgnoreCase("offhand");
+        boolean trueDmg = settings.getBool(TRUE, false);
+
+        if (caster.getEquipment() == null)
+            return false;
+
+        ItemStack hand;
+        if (offhand)
+            hand = caster.getEquipment().getItemInOffHand();
+        else hand = caster.getEquipment().getItemInHand();
+
+        if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore())
+            return false;
+
+        List<String> lore = hand.getItemMeta().getLore();
+        for (String line : lore)
         {
-            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null)
+            line = ChatColor.stripColor(line);
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find())
             {
-                continue;
-            }
-            ItemStack hand = caster.getEquipment().getItemInHand();
-            if (!hand.hasItemMeta() || !hand.getItemMeta().hasLore())
-            {
-                continue;
-            }
-            List<String> lore = hand.getItemMeta().getLore();
-            for (String line : lore)
-            {
-                line = ChatColor.stripColor(line);
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find())
+                String value = matcher.group(1);
+                try
                 {
-                    String value = matcher.group(1);
-                    try
+                    double base = NumberParser.parseDouble(value);
+                    if (base * m > 0)
                     {
-                        double base = NumberParser.parseDouble(value);
-                        if (base * m > 0)
+                        for (LivingEntity target : targets)
                         {
-                            skill.damage(target, base * m, caster);
-                            worked = true;
-                            break;
+                            if (trueDmg)
+                                skill.trueDamage(target, base * m, caster);
+                            else
+                                skill.damage(target, base * m, caster);
                         }
+                        worked = targets.size() > 0;
+                        break;
                     }
-                    catch (Exception ex)
-                    {
-                        // Not a valid value
-                    }
+                }
+                catch (Exception ex)
+                {
+                    // Not a valid value
                 }
             }
         }

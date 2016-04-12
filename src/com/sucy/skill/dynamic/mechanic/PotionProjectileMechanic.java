@@ -34,9 +34,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -80,7 +82,12 @@ public class PotionProjectileMechanic extends EffectComponent
         ItemStack item;
         try
         {
-            item = new ItemStack(Material.valueOf(linger ? "LINGERING_POTION" : "POTION"));
+            item = new ItemStack(Material.valueOf(linger ? "LINGERING_POTION" : "SPLASH_POTION"));
+            Field meta = ItemStack.class.getDeclaredField("meta");
+            meta.setAccessible(true);
+            PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+            potionMeta.setDisplayName("lol");
+            meta.set(item, potionMeta);
         }
         catch (Exception ex)
         {

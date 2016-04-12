@@ -46,16 +46,17 @@ import java.util.List;
  */
 public class ItemProjectileMechanic extends EffectComponent implements ProjectileCallback
 {
-    private static final String ITEM   = "item";
-    private static final String DATA   = "item-data";
-    private static final String SPEED  = "velocity";
-    private static final String ANGLE  = "angle";
-    private static final String AMOUNT = "amount";
-    private static final String LEVEL  = "skill_level";
-    private static final String HEIGHT = "height";
-    private static final String RADIUS = "radius";
-    private static final String SPREAD = "spread";
-    private static final String ALLY   = "group";
+    private static final String POSITION = "position";
+    private static final String ITEM     = "item";
+    private static final String DATA     = "item-data";
+    private static final String SPEED    = "velocity";
+    private static final String ANGLE    = "angle";
+    private static final String AMOUNT   = "amount";
+    private static final String LEVEL    = "skill_level";
+    private static final String HEIGHT   = "height";
+    private static final String RADIUS   = "radius";
+    private static final String SPREAD   = "spread";
+    private static final String ALLY     = "group";
 
     /**
      * Executes the component
@@ -86,6 +87,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
+        double position = settings.getDouble(POSITION);
 
         // Fire from each target
         for (LivingEntity target : targets)
@@ -110,7 +112,7 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                 }
                 dir.multiply(speed);
                 double angle = attr(caster, ANGLE, level, 30.0, true);
-                list = ItemProjectile.spread(caster, dir, loc.add(0, 0.5, 0), item, angle, amount, this);
+                list = ItemProjectile.spread(caster, dir, loc.add(0, 0.5 + position, 0), item, angle, amount, this);
             }
 
             // Set metadata for when the callback happens

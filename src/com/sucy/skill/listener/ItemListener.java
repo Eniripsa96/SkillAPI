@@ -39,7 +39,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.json.simple.ItemList;
 
 /**
  * Listener that handles weapon item lore requirements
@@ -91,7 +90,7 @@ public class ItemListener implements Listener
         {
             Player player = (Player) event.getEntity();
             if (event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0
-                && InventoryTask.cannotUse(SkillAPI.getPlayerData(player), player.getInventory().getItemInOffHand()))
+                && InventoryTask.cannotUse(SkillAPI.getPlayerData(player), player.getInventory().getItemInMainHand()))
             {
                 SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, event.getEntity(), FilterType.COLOR);
                 event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, 0);

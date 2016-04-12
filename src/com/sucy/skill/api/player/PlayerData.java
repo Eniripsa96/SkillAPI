@@ -31,7 +31,6 @@ import com.rit.sucy.config.FilterType;
 import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.player.TargetHelper;
 import com.rit.sucy.version.VersionManager;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.*;
@@ -51,7 +50,6 @@ import com.sucy.skill.listener.TreeListener;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
-import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.task.ScoreboardTask;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
@@ -66,6 +64,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Represents one account for a player which can contain one class from each group
@@ -483,16 +482,23 @@ public final class PlayerData
             {
                 ItemStack icon = manager.getAttribute(key).getIcon().clone();
                 ItemMeta meta = icon.getItemMeta();
-                meta.setDisplayName(
-                    meta.getDisplayName()
-                        .replace("{amount}", "" + getInvestedAttribute(key))
-                        .replace("{total}", "" + getAttribute(key))
-                );
+                meta.setDisplayName(filter(meta.getDisplayName(), key));
+                List<String> lore = meta.getLore();
+                for (int j = 0; j < lore.size(); j++)
+                    lore.set(j, filter(lore.get(j), key));
+
                 icon.setItemMeta(meta);
                 inv.setItem(i++, icon);
             }
             player.openInventory(inv);
         }
+    }
+
+    private String filter(String text, String key)
+    {
+        return text
+            .replace("{amount}", "" + getInvestedAttribute(key))
+            .replace("{total}", "" + getAttribute(key));
     }
 
     /**
@@ -524,11 +530,7 @@ public final class PlayerData
      */
     public boolean hasSkill(String name)
     {
-        if (name == null)
-        {
-            return false;
-        }
-        return skills.containsKey(name.toLowerCase());
+        return name != null && skills.containsKey(name.toLowerCase());
     }
 
     /**
@@ -541,9 +543,7 @@ public final class PlayerData
     public PlayerSkill getSkill(String name)
     {
         if (name == null)
-        {
             return null;
-        }
         return skills.get(name.toLowerCase());
     }
 
@@ -974,6 +974,7 @@ public final class PlayerData
                 combos.removeSkill(skill);
             }
         }
+        else attribPoints += rpgClass.getGroupSettings().getStartingAttribs();
 
         PlayerClass classData = new PlayerClass(this, rpgClass);
         classes.put(rpgClass.getGroup(), classData);
@@ -1074,7 +1075,10 @@ public final class PlayerData
      */
     public void reset(String group)
     {
-        stopPassives(getPlayer());
+        GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
+        if (!settings.canReset())
+            return;
+
         PlayerClass playerClass = classes.remove(group);
         if (playerClass != null)
         {
@@ -1082,28 +1086,27 @@ public final class PlayerData
             RPGClass data = playerClass.getData();
             for (Skill skill : data.getSkills())
             {
-                skills.remove(skill.getName());
+                PlayerSkill ps = skills.remove(skill.getName());
+                if (ps != null && ps.isUnlocked() && ps.getData() instanceof PassiveSkill)
+                    ((PassiveSkill) ps.getData()).stopEffects(getPlayer(), ps.getLevel());
                 combos.removeSkill(skill);
             }
 
             // Update GUI features
-            if (getPlayer() != null)
-            {
-                ClassBoardManager.clear(new VersionPlayer(getPlayer()));
-            }
+            updateScoreboard();
 
             // Call the event
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(playerClass, data, null));
         }
 
         // Restore default class if applicable
-        GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
         RPGClass rpgClass = settings.getDefault();
         if (rpgClass != null && settings.getPermission() == null)
         {
             setClass(rpgClass);
         }
-        updateHealthAndMana(player.getPlayer());
+        binds.clear();
+        resetAttribs();
     }
 
     /**
@@ -1114,13 +1117,23 @@ public final class PlayerData
     {
         ArrayList<String> keys = new ArrayList<String>(classes.keySet());
         for (String key : keys)
-        {
             reset(key);
-        }
-        skills.clear();
-        binds.clear();
+    }
+
+    /**
+     * Resets attributes for the player
+     */
+    public void resetAttribs()
+    {
         attributes.clear();
         attribPoints = 0;
+        for (PlayerClass c : classes.values())
+        {
+            GroupSettings s = c.getData().getGroupSettings();
+            attribPoints += s.getStartingAttribs() + s.getAttribsForLevels(c.getLevel(), 1);
+        }
+        AttributeListener.updatePlayer(this);
+        updateHealthAndMana(player.getPlayer());
     }
 
     /**
@@ -1152,6 +1165,7 @@ public final class PlayerData
                 previous = null;
                 current = new PlayerClass(this, rpgClass);
                 classes.put(rpgClass.getGroup(), current);
+                attribPoints += rpgClass.getGroupSettings().getStartingAttribs();
             }
             else
             {
@@ -1170,7 +1184,7 @@ public final class PlayerData
             }
 
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(current, previous, current.getData()));
-            updateHealthAndMana(getPlayer());
+            resetAttribs();
             updateScoreboard();
             return true;
         }
@@ -1615,7 +1629,8 @@ public final class PlayerData
      */
     public void updateScoreboard()
     {
-        SkillAPI.schedule(new ScoreboardTask(this), 2);
+        if (SkillAPI.getSettings().isShowScoreboard())
+            SkillAPI.schedule(new ScoreboardTask(this), 2);
     }
 
     /**
@@ -1691,7 +1706,6 @@ public final class PlayerData
             throw new IllegalArgumentException("Skill cannot be null");
         }
 
-        SkillStatus status = skill.getStatus();
         int level = skill.getLevel();
         double cost = skill.getData().getManaCost(level);
 
@@ -1701,30 +1715,10 @@ public final class PlayerData
             return false;
         }
 
-        // On Cooldown
-        if (status == SkillStatus.ON_COOLDOWN)
+        // Check cooldowns and mana requirements
+        if (!check(skill, true, true))
         {
-            SkillAPI.getLanguage().sendMessage(
-                ErrorNodes.COOLDOWN,
-                getPlayer(),
-                FilterType.COLOR,
-                RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
-                RPGFilter.SKILL.setReplacement(skill.getData().getName())
-            );
-        }
-
-        // Not enough mana
-        else if (status == SkillStatus.MISSING_MANA)
-        {
-            SkillAPI.getLanguage().sendMessage(
-                ErrorNodes.MANA,
-                getPlayer(),
-                FilterType.COLOR,
-                RPGFilter.SKILL.setReplacement(skill.getData().getName()),
-                RPGFilter.MANA.setReplacement(getMana() + ""),
-                RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
-                RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + "")
-            );
+            return false;
         }
 
         // Skill Shots
@@ -1805,5 +1799,60 @@ public final class PlayerData
         }
 
         return false;
+    }
+
+    /**
+     * Checks the cooldown and mana requirements for a skill
+     *
+     * @param skill    skill to check for
+     * @param cooldown whether or not to check cooldowns
+     * @param mana     whether or not to check mana requirements
+     *
+     * @return true if can use
+     */
+    public boolean check(PlayerSkill skill, boolean cooldown, boolean mana)
+    {
+        if (skill == null)
+            return false;
+
+        SkillStatus status = skill.getStatus();
+        int level = skill.getLevel();
+        double cost = skill.getData().getManaCost(level);
+
+        // Not unlocked
+        if (level <= 0)
+        {
+            return false;
+        }
+
+        // On Cooldown
+        if (status == SkillStatus.ON_COOLDOWN && cooldown)
+        {
+            SkillAPI.getLanguage().sendMessage(
+                ErrorNodes.COOLDOWN,
+                getPlayer(),
+                FilterType.COLOR,
+                RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
+                RPGFilter.SKILL.setReplacement(skill.getData().getName())
+            );
+            return false;
+        }
+
+        // Not enough mana
+        else if (status == SkillStatus.MISSING_MANA && mana)
+        {
+            SkillAPI.getLanguage().sendMessage(
+                ErrorNodes.MANA,
+                getPlayer(),
+                FilterType.COLOR,
+                RPGFilter.SKILL.setReplacement(skill.getData().getName()),
+                RPGFilter.MANA.setReplacement(getMana() + ""),
+                RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
+                RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + "")
+            );
+            return false;
+        }
+
+        else return true;
     }
 }

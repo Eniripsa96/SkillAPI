@@ -42,7 +42,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * A component for dynamic skills which takes care of one effect
@@ -339,6 +338,7 @@ public abstract class EffectComponent
 
     private static final HashMap<String, Class<? extends EffectComponent>> conditions = new HashMap<String, Class<? extends EffectComponent>>()
     {{
+            put("armor", ArmorCondition.class);
             put("attribute", AttributeCondition.class);
             put("biome", BiomeCondition.class);
             put("block", BlockCondition.class);
@@ -381,6 +381,7 @@ public abstract class EffectComponent
             put("damage lore", DamageLoreMechanic.class);
             put("defense buff", DefenseBuffMechanic.class);
             put("delay", DelayMechanic.class);
+            put("disguise", DisguiseMechanic.class);
             put("explosion", ExplosionMechanic.class);
             put("fire", FireMechanic.class);
             put("flag", FlagMechanic.class);
@@ -411,6 +412,7 @@ public abstract class EffectComponent
             put("speed", SpeedMechanic.class);
             put("sound", SoundMechanic.class);
             put("status", StatusMechanic.class);
+            put("taunt", TauntMechanic.class);
             put("value add", ValueAddMechanic.class);
             put("value attribute", ValueAttributeMechanic.class);
             put("value location", ValueLocationMechanic.class);

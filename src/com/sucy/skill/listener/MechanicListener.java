@@ -35,6 +35,7 @@ import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PotionProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
+import com.sucy.skill.hook.DisguiseHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.VaultHook;
 import org.bukkit.Bukkit;
@@ -46,10 +47,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -66,9 +64,9 @@ public class MechanicListener implements Listener
     public static final String P_CALL            = "pmCallback";
     public static final String POTION_PROJECTILE = "potionProjectile";
     public static final String SPEED_KEY         = "sapiSpeedKey";
-    public static final String ATTR_KEY          = "attr:";
+    public static final String DISGUISE_KEY      = "sapiDisguiseKey";
 
-    private HashMap<UUID, Double> flying = new HashMap<UUID, Double>();
+    private static HashMap<UUID, Double> flying = new HashMap<UUID, Double>();
 
     /**
      * Initializes a new listener for dynamic mechanic related events.
@@ -79,6 +77,14 @@ public class MechanicListener implements Listener
     public MechanicListener(SkillAPI api)
     {
         api.getServer().getPluginManager().registerEvents(this, api);
+    }
+
+    /**
+     * Cleans up listener data on shutdown
+     */
+    public static void cleanup()
+    {
+        flying.clear();
     }
 
     /**
@@ -147,7 +153,7 @@ public class MechanicListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onApply(FlagApplyEvent event)
     {
         if (event.getEntity() instanceof Player)
@@ -162,20 +168,22 @@ public class MechanicListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onExpire(FlagExpireEvent event)
     {
         if (event.getEntity() instanceof Player)
         {
             if (event.getFlag().startsWith("perm:") && PluginChecker.isVaultActive())
                 VaultHook.remove((Player) event.getEntity(), event.getFlag().substring(5));
-            if (event.getFlag().equals(SPEED_KEY))
+            else if (event.getFlag().equals(SPEED_KEY))
             {
                 if (SkillAPI.getSettings().isAttributesEnabled())
                     AttributeListener.refreshSpeed((Player) event.getEntity());
                 else
                     ((Player) event.getEntity()).setWalkSpeed(0.2f);
             }
+            else if (event.getFlag().equals(DISGUISE_KEY))
+                DisguiseHook.removeDisguise(event.getEntity());
         }
     }
 
@@ -189,6 +197,18 @@ public class MechanicListener implements Listener
     {
         if (event.getEntity().hasMetadata(P_CALL))
             ((ProjectileMechanic) SkillAPI.getMeta(event.getEntity(), P_CALL)).callback(event.getEntity(), null);
+    }
+
+    /**
+     * Stop explosions of projectiles fired from skills
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onExplode(EntityExplodeEvent event)
+    {
+        if (event.getEntity().hasMetadata(P_CALL))
+            event.setCancelled(true);
     }
 
     /**

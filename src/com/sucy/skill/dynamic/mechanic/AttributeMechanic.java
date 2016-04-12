@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -84,14 +83,16 @@ public class AttributeMechanic extends EffectComponent
     private class AttribTask extends BukkitRunnable
     {
         private PlayerData data;
-        private String attrib;
-        private int amount;
+        private String     attrib;
+        private int        amount;
+
         public AttribTask(PlayerData data, String attrib, int amount)
         {
             this.data = data;
             this.attrib = attrib;
             this.amount = amount;
         }
+
         @Override
         public void run()
         {

@@ -82,6 +82,14 @@ public class StatusListener implements Listener
     private final Vector ZERO = new Vector(0, 0, 0);
 
     /**
+     * Cleans up the listener data on shutdown
+     */
+    public static void cleanup()
+    {
+        messageTimers.clear();
+    }
+
+    /**
      * Initializes a new StatusListener. Do not use this constructor
      * as the API already handles it.
      *

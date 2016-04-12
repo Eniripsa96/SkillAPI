@@ -44,13 +44,14 @@ import java.util.List;
  */
 public class ParticleProjectileMechanic extends EffectComponent implements ProjectileCallback
 {
-    private static final String ANGLE  = "angle";
-    private static final String AMOUNT = "amount";
-    private static final String LEVEL  = "skill_level";
-    private static final String HEIGHT = "height";
-    private static final String RADIUS = "radius";
-    private static final String SPREAD = "spread";
-    private static final String ALLY   = "group";
+    private static final String POSITION = "position";
+    private static final String ANGLE    = "angle";
+    private static final String AMOUNT   = "amount";
+    private static final String LEVEL    = "skill_level";
+    private static final String HEIGHT   = "height";
+    private static final String RADIUS   = "radius";
+    private static final String SPREAD   = "spread";
+    private static final String ALLY     = "group";
 
     /**
      * Executes the component
@@ -70,6 +71,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         settings.set("level", level);
+        double position = settings.getDouble(POSITION);
 
         // Fire from each target
         for (LivingEntity target : targets)
@@ -93,7 +95,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
                     dir.normalize();
                 }
                 double angle = attr(caster, ANGLE, level, 30.0, isSelf);
-                list = ParticleProjectile.spread(caster, level, dir, loc.add(0, 0.5, 0), settings, angle, amount, this);
+                list = ParticleProjectile.spread(caster, level, dir, loc.add(0, 0.5 + position, 0), settings, angle, amount, this);
             }
 
             // Set metadata for when the callback happens

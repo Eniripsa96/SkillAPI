@@ -362,15 +362,15 @@ public final class PlayerClass
             exp = exp - amount;
 
             // Exp loss message
-            if (SkillAPI.getSettings().isShowLossMessages())
+            if (SkillAPI.getSettings().isShowLossMessages() && (int) amount > 0)
             {
                 TitleManager.show(
                     player.getPlayer(),
                     TitleType.EXP_LOST,
                     NotificationNodes.LOSE,
-                    RPGFilter.EXP.setReplacement(amount + ""),
+                    RPGFilter.EXP.setReplacement((int) amount + ""),
                     RPGFilter.CLASS.setReplacement(classData.getName()),
-                    Filter.AMOUNT.setReplacement(amount + "")
+                    Filter.AMOUNT.setReplacement((int) amount + "")
                 );
             }
         }
@@ -455,8 +455,8 @@ public final class PlayerClass
         amount = Math.min(amount, classData.getMaxLevel() - level);
         if (amount <= 0) return;
         level += amount;
-        points += classData.getGroupSettings().getPointsPerLevel() * amount;
-        getPlayerData().giveAttribPoints(classData.getGroupSettings().getAttribsPerLevel() * amount);
+        points += classData.getGroupSettings().getPointsForLevels(level, level - amount);
+        getPlayerData().giveAttribPoints(classData.getGroupSettings().getAttribsForLevels(level, level - amount));
 
         // Update health/mana
         getPlayerData().updateHealthAndMana(getPlayerData().getPlayer());

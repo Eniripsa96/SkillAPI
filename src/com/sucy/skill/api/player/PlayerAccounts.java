@@ -194,8 +194,21 @@ public class PlayerAccounts
      */
     public void setAccount(int id)
     {
+        setAccount(id, true);
+    }
+
+    /**
+     * Switches the active account for the player by ID. This will not accept
+     * IDs outside the player's account limits. If the player is offline or
+     * dead, this will not do anything.
+     *
+     * @param id    ID of the account to switch to
+     * @param apply whether or not to apply the switch
+     */
+    public void setAccount(int id, boolean apply)
+    {
         Player player = getPlayer();
-        if (player == null || id == active)
+        if (player == null || id == active || !apply)
         {
             active = id;
             return;

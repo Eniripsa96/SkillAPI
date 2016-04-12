@@ -26,9 +26,11 @@
  */
 package com.sucy.skill.task;
 
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.manager.ClassBoardManager;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ScoreboardTask extends BukkitRunnable
@@ -51,10 +53,15 @@ public class ScoreboardTask extends BukkitRunnable
     @Override
     public void run()
     {
-        if (data.getPlayer() != null && data.getMainClass() != null)
+        Player player = data.getPlayer();
+        if (player != null && data.getMainClass() != null)
         {
             PlayerClass main = data.getMainClass();
             ClassBoardManager.update(data, main.getData().getPrefix(), main.getData().getPrefixColor());
+        }
+        else if (player != null)
+        {
+            ClassBoardManager.clear(new VersionPlayer(player));
         }
     }
 }

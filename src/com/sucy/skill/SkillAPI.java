@@ -134,15 +134,6 @@ public class SkillAPI extends JavaPlugin
         // Load group settings after groups are determined
         settings.loadGroupSettings();
 
-        // Load player data
-        for (Player player : VersionManager.getOnlinePlayers())
-        {
-            PlayerData data = loadPlayerData(player).getActiveData();
-            data.updateHealthAndMana(player);
-            data.updateScoreboard();
-        }
-        if (settings.isUseSql()) ((SQLIO) io).cleanup();
-
         // Set up listeners
         new CastListener(this);
         new MainListener(this);
@@ -191,6 +182,16 @@ public class SkillAPI extends JavaPlugin
             saveTask = new SaveTask(this);
         }
         guiTask = new GUITask(this);
+
+        // Load player data
+        for (Player player : VersionManager.getOnlinePlayers())
+        {
+            PlayerData data = loadPlayerData(player).getActiveData();
+            AttributeListener.updatePlayer(data);
+            data.updateHealthAndMana(player);
+            data.updateScoreboard();
+        }
+        if (settings.isUseSql()) ((SQLIO) io).cleanup();
 
         loaded = true;
     }
@@ -260,6 +261,9 @@ public class SkillAPI extends JavaPlugin
         players.clear();
 
         HandlerList.unregisterAll(this);
+        AttributeListener.cleanup();
+        MechanicListener.cleanup();
+        StatusListener.cleanup();
         cmd.clear();
 
         loaded = false;
@@ -821,5 +825,18 @@ public class SkillAPI extends JavaPlugin
     {
         if (singleton == null) return;
         target.removeMetadata(key, singleton);
+    }
+
+    /**
+     * Reloads the plugin
+     */
+    public static void reload()
+    {
+        if (singleton != null)
+        {
+            SkillAPI inst = singleton;
+            inst.onDisable();
+            inst.onEnable();
+        }
     }
 }

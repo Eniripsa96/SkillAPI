@@ -55,6 +55,14 @@ public class AttributeListener implements Listener
     private static HashMap<String, Double> bonuses = new HashMap<String, Double>();
 
     /**
+     * Cleans up the listener on shutdown
+     */
+    public static void cleanup()
+    {
+        bonuses.clear();
+    }
+
+    /**
      * Clears stored bonuses for the given player
      *
      * @param player player to clear bonuses for

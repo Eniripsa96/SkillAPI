@@ -66,7 +66,7 @@ public class MechanicListener implements Listener
     public static final String SPEED_KEY         = "sapiSpeedKey";
     public static final String DISGUISE_KEY      = "sapiDisguiseKey";
 
-    private HashMap<UUID, Double> flying = new HashMap<UUID, Double>();
+    private static HashMap<UUID, Double> flying = new HashMap<UUID, Double>();
 
     /**
      * Initializes a new listener for dynamic mechanic related events.
@@ -77,6 +77,14 @@ public class MechanicListener implements Listener
     public MechanicListener(SkillAPI api)
     {
         api.getServer().getPluginManager().registerEvents(this, api);
+    }
+
+    /**
+     * Cleans up listener data on shutdown
+     */
+    public static void cleanup()
+    {
+        flying.clear();
     }
 
     /**

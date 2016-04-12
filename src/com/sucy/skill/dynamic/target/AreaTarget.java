@@ -61,7 +61,6 @@ public class AreaTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean worked = false;
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double radius = attr(caster, RADIUS, level, 3.0, isSelf);
         String group = settings.getString(ALLY, "enemy").toLowerCase();

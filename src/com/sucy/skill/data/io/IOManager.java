@@ -253,7 +253,7 @@ public abstract class IOManager
             acc.endInit();
             acc.autoLevel();
         }
-        data.setAccount(file.getInt(ACTIVE, data.getActiveId()));
+        data.setAccount(file.getInt(ACTIVE, data.getActiveId()), false);
 
         return data;
     }

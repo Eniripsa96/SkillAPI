@@ -64,6 +64,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Represents one account for a player which can contain one class from each group
@@ -481,16 +482,23 @@ public final class PlayerData
             {
                 ItemStack icon = manager.getAttribute(key).getIcon().clone();
                 ItemMeta meta = icon.getItemMeta();
-                meta.setDisplayName(
-                    meta.getDisplayName()
-                        .replace("{amount}", "" + getInvestedAttribute(key))
-                        .replace("{total}", "" + getAttribute(key))
-                );
+                meta.setDisplayName(filter(meta.getDisplayName(), key));
+                List<String> lore = meta.getLore();
+                for (int j = 0; j < lore.size(); j++)
+                    lore.set(j, filter(lore.get(j), key));
+
                 icon.setItemMeta(meta);
                 inv.setItem(i++, icon);
             }
             player.openInventory(inv);
         }
+    }
+
+    private String filter(String text, String key)
+    {
+        return text
+            .replace("{amount}", "" + getInvestedAttribute(key))
+            .replace("{total}", "" + getAttribute(key));
     }
 
     /**
@@ -522,11 +530,7 @@ public final class PlayerData
      */
     public boolean hasSkill(String name)
     {
-        if (name == null)
-        {
-            return false;
-        }
-        return skills.containsKey(name.toLowerCase());
+        return name != null && skills.containsKey(name.toLowerCase());
     }
 
     /**
@@ -539,9 +543,7 @@ public final class PlayerData
     public PlayerSkill getSkill(String name)
     {
         if (name == null)
-        {
             return null;
-        }
         return skills.get(name.toLowerCase());
     }
 
@@ -1182,7 +1184,7 @@ public final class PlayerData
             }
 
             Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(current, previous, current.getData()));
-            updateHealthAndMana(getPlayer());
+            resetAttribs();
             updateScoreboard();
             return true;
         }

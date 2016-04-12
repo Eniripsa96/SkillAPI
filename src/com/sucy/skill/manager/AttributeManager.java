@@ -36,6 +36,7 @@ import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -131,9 +132,9 @@ public class AttributeManager
         private int       max;
 
         // Dynamic global modifiers
-        private HashMap<String, AttributeValue> conditions = new HashMap<String, AttributeValue>();
-        private HashMap<String, AttributeValue> mechanics  = new HashMap<String, AttributeValue>();
-        private HashMap<String, AttributeValue> targets    = new HashMap<String, AttributeValue>();
+        private HashMap<String, AttributeValue[]> conditions = new HashMap<String, AttributeValue[]>();
+        private HashMap<String, AttributeValue[]> mechanics  = new HashMap<String, AttributeValue[]>();
+        private HashMap<String, AttributeValue[]> targets    = new HashMap<String, AttributeValue[]>();
 
         // General stat modifiers
         private HashMap<String, Formula> statModifiers = new HashMap<String, Formula>();
@@ -229,7 +230,7 @@ public class AttributeManager
          */
         public double modify(EffectComponent component, String key, boolean self, double value, int amount)
         {
-            HashMap<String, AttributeValue> map;
+            HashMap<String, AttributeValue[]> map;
             if (component.getType().equals("condition")) map = conditions;
             else if (component.getType().equals("mechanic")) map = mechanics;
             else map = targets;
@@ -237,7 +238,10 @@ public class AttributeManager
             key = component.getKey().replaceAll("-.+", "").toLowerCase() + "-" + key.toLowerCase();
             if (map.containsKey(key))
             {
-                return map.get(key).apply(component, self, value, amount);
+                AttributeValue[] list = map.get(key);
+                for (AttributeValue attribValue : list)
+                    if (attribValue.passes(component, self))
+                        return attribValue.apply(value, amount);
             }
             return value;
         }
@@ -266,13 +270,19 @@ public class AttributeManager
          * @param data   config data to load from
          * @param target target map to store the data in
          */
-        private void loadGroup(DataSection data, HashMap<String, AttributeValue> target)
+        private void loadGroup(DataSection data, HashMap<String, AttributeValue[]> target)
         {
             if (data == null) return;
             for (String key : data.keys())
             {
                 Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    SkillMod: " + key);
-                target.put(key.toLowerCase(), new AttributeValue(data.getString(key)));
+                String value = data.getString(key);
+                String[] formulas = value.split("\\|");
+                AttributeValue[] values = new AttributeValue[formulas.length];
+                int i = 0;
+                for (String formula : formulas)
+                    values[i] = new AttributeValue(formula);
+                target.put(key.toLowerCase(), values);
             }
         }
 
@@ -315,38 +325,42 @@ public class AttributeManager
             {
                 String[] sides = pieces[i].split("=");
                 conditions.put(sides[0], sides[1]);
+                Logger.log(LogType.ATTRIBUTE_LOAD, 3, "      Condition: " + sides[0] + " / " + sides[1]);
             }
         }
 
         /**
-         * Checks the conditions for the given component
+         * Checks whether or not the formula should be applied to the component
          *
          * @param component component to check for conditions against
          * @param self      whether or not the component is targeting the caster
-         * @param value     base value
-         * @param amount    amount of attribute points
-         *
-         * @return the modified value if the conditions passed or the base value if they failed
+         * @return true if passes the conditions
          */
-        public double apply(EffectComponent component, boolean self, double value, int amount)
+        public boolean passes(EffectComponent component, boolean self)
         {
             for (String key : conditions.keySet())
             {
                 if (key.equals("self"))
                 {
                     if (conditions.get(key).equalsIgnoreCase("false") != self)
-                    {
-                        return value;
-                    }
+                        return false;
                 }
-                else
-                {
-                    if (!component.getSettings().getString(key).equalsIgnoreCase(conditions.get(key)))
-                    {
-                        return value;
-                    }
-                }
+                else if (!component.getSettings().getString(key).equalsIgnoreCase(conditions.get(key)))
+                        return false;
             }
+            return true;
+        }
+
+        /**
+         * Checks the conditions for the given component
+         *
+         * @param value     base value
+         * @param amount    amount of attribute points
+         *
+         * @return the modified value if the conditions passed or the base value if they failed
+         */
+        public double apply(double value, int amount)
+        {
             return formula.compute(value, amount);
         }
     }

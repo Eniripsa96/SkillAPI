@@ -62,8 +62,6 @@ public class MainListener implements Listener
     private static final String S_TYPE  = "sType";
     private static final int    SPAWNER = 0, EGG = 1;
 
-    private SkillAPI plugin;
-
     /**
      * Initializes a new listener for general SkillAPI functions. This is
      * handled by the API and should not be used by other plugins.
@@ -72,7 +70,6 @@ public class MainListener implements Listener
      */
     public MainListener(SkillAPI plugin)
     {
-        this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 

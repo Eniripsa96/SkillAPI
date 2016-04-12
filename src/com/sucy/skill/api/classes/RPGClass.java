@@ -46,7 +46,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Represents a template for a class used in the RPG system. This is
@@ -367,11 +366,12 @@ public abstract class RPGClass
      *
      * @param key   attribute key
      * @param level class level
+     *
      * @return attribute amount
      */
     public int getAttribute(String key, int level)
     {
-        return (int)settings.getAttr(key, level, 0);
+        return (int) settings.getAttr(key, level, 0);
     }
 
     /**

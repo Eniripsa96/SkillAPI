@@ -35,6 +35,7 @@ public class NumberParser
      * Parses an integer value from a string
      *
      * @param value string to parse
+     *
      * @return integer value
      */
     public static int parseInt(String value)
@@ -63,7 +64,7 @@ public class NumberParser
         for (; i < value.length(); i++)
         {
             c = value.charAt(i);
-            val = (int)c - 48;
+            val = (int) c - 48;
             if (val < 0 || val > 9)
                 error(value);
             n *= 10;
@@ -76,6 +77,7 @@ public class NumberParser
      * Parses a double value from a string
      *
      * @param value string to parse
+     *
      * @return double value
      */
     public static double parseDouble(String value)
@@ -116,7 +118,7 @@ public class NumberParser
 
                 // Add digits
                 default:
-                    val = (int)c - 48;
+                    val = (int) c - 48;
                     if (val < 0 || val > 9)
                         error(value);
                     if (decimal)

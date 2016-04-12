@@ -68,7 +68,7 @@ public class ArmorCondition extends EffectComponent
             if (!(target instanceof Player))
                 continue;
 
-            PlayerInventory inv = ((Player)target).getInventory();
+            PlayerInventory inv = ((Player) target).getInventory();
             if ((helmet && ItemChecker.check(inv.getHelmet(), level, settings))
                 || (chestplate && ItemChecker.check(inv.getChestplate(), level, settings))
                 || (leggings && ItemChecker.check(inv.getLeggings(), level, settings))

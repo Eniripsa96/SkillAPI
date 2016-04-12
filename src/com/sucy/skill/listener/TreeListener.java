@@ -64,7 +64,7 @@ public class TreeListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent event)
     {
         // Class selection

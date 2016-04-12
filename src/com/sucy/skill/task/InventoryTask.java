@@ -30,7 +30,6 @@ import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.manager.AttributeManager;
@@ -40,7 +39,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -56,8 +58,8 @@ public class InventoryTask extends BukkitRunnable
     private        int      playersPerCheck;
     private int index = -1;
 
-    private static HashMap<UUID, AttribBuffs> attribs = new HashMap<UUID, AttribBuffs>();
-    private static HashMap<String, Integer> tempAttribs = new HashMap<String, Integer>();
+    private static HashMap<UUID, AttribBuffs> attribs     = new HashMap<UUID, AttribBuffs>();
+    private static HashMap<String, Integer>   tempAttribs = new HashMap<String, Integer>();
 
     /**
      * Task constructor

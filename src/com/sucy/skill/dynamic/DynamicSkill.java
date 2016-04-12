@@ -28,9 +28,12 @@ package com.sucy.skill.dynamic;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
 import com.sucy.skill.api.event.SkillDamageEvent;
+import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
@@ -62,7 +65,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
     private static final HashMap<Integer, HashMap<String, Object>> castData = new HashMap<Integer, HashMap<String, Object>>();
 
-    private boolean cancel = false;
+    private boolean cancel  = false;
     private boolean running = false;
 
     /**
@@ -534,11 +537,24 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     {
         if (user != null && components.containsKey(trigger))
         {
+            EffectComponent component = components.get(trigger);
+            if (user instanceof Player)
+            {
+                PlayerData data = SkillAPI.getPlayerData((Player) user);
+                PlayerSkill skill = data.getSkill(getName());
+                if (!data.check(
+                    skill,
+                    component.getSettings().getBool("cooldown", false),
+                    component.getSettings().getBool("mana", false)
+                ))
+                    return false;
+            }
+
             ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
             targets.add(target);
 
             running = true;
-            boolean result = components.get(trigger).execute(user, level, targets);
+            boolean result = component.execute(user, level, targets);
             running = false;
             return result;
         }

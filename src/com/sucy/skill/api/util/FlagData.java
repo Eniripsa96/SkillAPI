@@ -28,11 +28,8 @@ package com.sucy.skill.api.util;
 
 import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.FlagExpireEvent;
-import com.sucy.skill.hook.PluginChecker;
-import com.sucy.skill.hook.VaultHook;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;

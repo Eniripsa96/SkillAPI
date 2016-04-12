@@ -189,11 +189,12 @@ public class GroupSettings
      *
      * @param newLevel level to check for
      * @param oldLevel level coming from
+     *
      * @return gained points
      */
     public int getPointsForLevels(int newLevel, int oldLevel)
     {
-        return (int)(newLevel * pointsPerLevel) - (int)(oldLevel * pointsPerLevel);
+        return (int) (newLevel * pointsPerLevel) - (int) (oldLevel * pointsPerLevel);
     }
 
     /**
@@ -211,11 +212,12 @@ public class GroupSettings
      *
      * @param newLevel level to check for
      * @param oldLevel level coming from
+     *
      * @return gained points
      */
     public int getAttribsForLevels(int newLevel, int oldLevel)
     {
-        return (int)(newLevel * attribsPerLevel) - (int)(oldLevel * attribsPerLevel);
+        return (int) (newLevel * attribsPerLevel) - (int) (oldLevel * attribsPerLevel);
     }
 
     /**

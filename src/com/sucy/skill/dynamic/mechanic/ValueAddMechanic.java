@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
@@ -64,7 +63,7 @@ public class ValueAddMechanic extends EffectComponent
         double amount = attr(caster, AMOUNT, level, 1, isSelf);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         if (!data.containsKey(key)) data.put(key, amount);
-        else data.put(key, amount + (Double)data.get(key));
+        else data.put(key, amount + (Double) data.get(key));
         return true;
     }
 }

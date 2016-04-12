@@ -145,7 +145,7 @@ public class MechanicListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onApply(FlagApplyEvent event)
     {
         if (event.getEntity() instanceof Player)
@@ -160,7 +160,7 @@ public class MechanicListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onExpire(FlagExpireEvent event)
     {
         if (event.getEntity() instanceof Player)

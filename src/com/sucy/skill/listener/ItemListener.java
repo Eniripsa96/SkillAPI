@@ -39,7 +39,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.json.simple.ItemList;
 
 /**
  * Listener that handles weapon item lore requirements

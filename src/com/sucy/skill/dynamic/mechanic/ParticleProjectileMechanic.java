@@ -45,13 +45,13 @@ import java.util.List;
 public class ParticleProjectileMechanic extends EffectComponent implements ProjectileCallback
 {
     private static final String POSITION = "position";
-    private static final String ANGLE  = "angle";
-    private static final String AMOUNT = "amount";
-    private static final String LEVEL  = "skill_level";
-    private static final String HEIGHT = "height";
-    private static final String RADIUS = "radius";
-    private static final String SPREAD = "spread";
-    private static final String ALLY   = "group";
+    private static final String ANGLE    = "angle";
+    private static final String AMOUNT   = "amount";
+    private static final String LEVEL    = "skill_level";
+    private static final String HEIGHT   = "height";
+    private static final String RADIUS   = "radius";
+    private static final String SPREAD   = "spread";
+    private static final String ALLY     = "group";
 
     /**
      * Executes the component

@@ -53,8 +53,9 @@ public class InterruptMechanic extends EffectComponent
         boolean worked = false;
         for (LivingEntity target : targets)
         {
-            if (FlagManager.hasFlag(target, StatusFlag.CHANNELING))
+            if (FlagManager.hasFlag(target, StatusFlag.CHANNEL))
             {
+                FlagManager.removeFlag(target, StatusFlag.CHANNEL);
                 FlagManager.removeFlag(target, StatusFlag.CHANNELING);
                 worked = true;
             }

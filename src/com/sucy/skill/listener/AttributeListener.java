@@ -43,7 +43,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -238,7 +237,7 @@ public class AttributeListener implements Listener
     {
         bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
         double speed = updateStat(SkillAPI.getPlayerData(player), AttributeManager.MOVE_SPEED, 0.2);
-        player.setWalkSpeed((float)(0.2 + speed));
+        player.setWalkSpeed((float) (0.2 + speed));
     }
 
     /**
@@ -247,6 +246,7 @@ public class AttributeListener implements Listener
      * @param data  player data
      * @param key   stat key
      * @param value current value
+     *
      * @return change in the stat based on current attributes
      */
     private static double updateStat(PlayerData data, String key, double value)

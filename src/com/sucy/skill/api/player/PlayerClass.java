@@ -362,15 +362,15 @@ public final class PlayerClass
             exp = exp - amount;
 
             // Exp loss message
-            if (SkillAPI.getSettings().isShowLossMessages() && (int)amount > 0)
+            if (SkillAPI.getSettings().isShowLossMessages() && (int) amount > 0)
             {
                 TitleManager.show(
                     player.getPlayer(),
                     TitleType.EXP_LOST,
                     NotificationNodes.LOSE,
-                    RPGFilter.EXP.setReplacement((int)amount + ""),
+                    RPGFilter.EXP.setReplacement((int) amount + ""),
                     RPGFilter.CLASS.setReplacement(classData.getName()),
-                    Filter.AMOUNT.setReplacement((int)amount + "")
+                    Filter.AMOUNT.setReplacement((int) amount + "")
                 );
             }
         }

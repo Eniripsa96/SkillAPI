@@ -640,6 +640,7 @@ public abstract class Skill
                 Player player = (Player) source;
                 if (PluginChecker.isNoCheatActive()) NoCheatHook.exempt(player);
                 skillDamage = true;
+                target.setNoDamageTicks(0);
                 target.damage(event.getDamage(), source);
                 skillDamage = false;
                 if (PluginChecker.isNoCheatActive()) NoCheatHook.unexempt(player);

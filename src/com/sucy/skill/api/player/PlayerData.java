@@ -31,7 +31,6 @@ import com.rit.sucy.config.FilterType;
 import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.player.TargetHelper;
 import com.rit.sucy.version.VersionManager;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.*;
@@ -51,7 +50,6 @@ import com.sucy.skill.listener.TreeListener;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
-import com.sucy.skill.manager.ClassBoardManager;
 import com.sucy.skill.task.ScoreboardTask;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
@@ -1706,7 +1704,6 @@ public final class PlayerData
             throw new IllegalArgumentException("Skill cannot be null");
         }
 
-        SkillStatus status = skill.getStatus();
         int level = skill.getLevel();
         double cost = skill.getData().getManaCost(level);
 
@@ -1716,30 +1713,10 @@ public final class PlayerData
             return false;
         }
 
-        // On Cooldown
-        if (status == SkillStatus.ON_COOLDOWN)
+        // Check cooldowns and mana requirements
+        if (!check(skill, true, true))
         {
-            SkillAPI.getLanguage().sendMessage(
-                ErrorNodes.COOLDOWN,
-                getPlayer(),
-                FilterType.COLOR,
-                RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
-                RPGFilter.SKILL.setReplacement(skill.getData().getName())
-            );
-        }
-
-        // Not enough mana
-        else if (status == SkillStatus.MISSING_MANA)
-        {
-            SkillAPI.getLanguage().sendMessage(
-                ErrorNodes.MANA,
-                getPlayer(),
-                FilterType.COLOR,
-                RPGFilter.SKILL.setReplacement(skill.getData().getName()),
-                RPGFilter.MANA.setReplacement(getMana() + ""),
-                RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
-                RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + "")
-            );
+            return false;
         }
 
         // Skill Shots
@@ -1820,5 +1797,60 @@ public final class PlayerData
         }
 
         return false;
+    }
+
+    /**
+     * Checks the cooldown and mana requirements for a skill
+     *
+     * @param skill    skill to check for
+     * @param cooldown whether or not to check cooldowns
+     * @param mana     whether or not to check mana requirements
+     *
+     * @return true if can use
+     */
+    public boolean check(PlayerSkill skill, boolean cooldown, boolean mana)
+    {
+        if (skill == null)
+            return false;
+
+        SkillStatus status = skill.getStatus();
+        int level = skill.getLevel();
+        double cost = skill.getData().getManaCost(level);
+
+        // Not unlocked
+        if (level <= 0)
+        {
+            return false;
+        }
+
+        // On Cooldown
+        if (status == SkillStatus.ON_COOLDOWN && cooldown)
+        {
+            SkillAPI.getLanguage().sendMessage(
+                ErrorNodes.COOLDOWN,
+                getPlayer(),
+                FilterType.COLOR,
+                RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
+                RPGFilter.SKILL.setReplacement(skill.getData().getName())
+            );
+            return false;
+        }
+
+        // Not enough mana
+        else if (status == SkillStatus.MISSING_MANA && mana)
+        {
+            SkillAPI.getLanguage().sendMessage(
+                ErrorNodes.MANA,
+                getPlayer(),
+                FilterType.COLOR,
+                RPGFilter.SKILL.setReplacement(skill.getData().getName()),
+                RPGFilter.MANA.setReplacement(getMana() + ""),
+                RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
+                RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + "")
+            );
+            return false;
+        }
+
+        else return true;
     }
 }

@@ -26,10 +26,14 @@
  */
 package com.sucy.skill.cast;
 
+import org.bukkit.Location;
+
 import java.util.List;
 
 public interface IIndicator
 {
+    public void moveTo(Location loc);
+    public void moveTo(double x, double y, double z);
     public void makePackets(List<Object> packets, CastIndicatorParticle particle, int step)
         throws Exception;
 }

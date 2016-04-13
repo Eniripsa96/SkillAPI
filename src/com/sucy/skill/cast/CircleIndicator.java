@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.cast.AreaIndicator
+ * com.sucy.skill.cast.CircleIndicator
  *
  * The MIT License (MIT)
  *
@@ -26,41 +26,85 @@
  */
 package com.sucy.skill.cast;
 
-import com.sucy.skill.api.util.Particle;
 import org.bukkit.Location;
 
 import java.util.List;
 
-public class AreaIndicator implements IIndicator
+/**
+ * An indicator for a circular pattern
+ */
+public class CircleIndicator implements IIndicator
 {
+    private double x;
+    private double y;
+    private double z;
     private double radius;
-    private Location loc;
+    private double sin;
+    private double cos;
+    private int particles;
 
-    public AreaIndicator(Location loc, double radius)
+    /**
+     * @param radius radius of the circle
+     */
+    public CircleIndicator(double radius)
     {
-        this.loc = loc;
-        this.radius = radius;
+        if (radius == 0)
+            throw new IllegalArgumentException("Invalid radius - cannot be 0");
+
+        this.radius = Math.abs(radius);
+        particles = (int)(IndicatorSettings.density * radius * 2 * Math.PI);
+
+        double angle = Math.PI / (2 * particles);
+        sin = Math.sin(angle);
+        cos = Math.cos(angle);
     }
 
+    /**
+     * Updates the position of the indicator to be centered
+     * at the given coordinates
+     *
+     * @param loc location to move to
+     */
+    @Override
+    public void moveTo(Location loc)
+    {
+        this.x = loc.getX();
+        this.y = loc.getY();
+        this.z = loc.getZ();
+    }
+
+    /**
+     * Updates the position of the indicator to be centered
+     * at the given coordinates
+     *
+     * @param x X-axis coordinate
+     * @param y Y-axis coordinate
+     * @param z Z-axis coordinate
+     */
+    @Override
+    public void moveTo(double x, double y, double z)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    /**
+     * Creates the packets for the indicator, adding them to the list
+     *
+     * @param packets  packet list to add to
+     * @param particle particle type to use
+     * @param step     animation step
+     * @throws Exception
+     */
     @Override
     public void makePackets(List<Object> packets, CastIndicatorParticle particle, int step)
         throws Exception
     {
-        // Data for particles and angle between them
-        int particles = (int)(IndicatorSettings.density * radius * 2 * Math.PI);
-        double angle = Math.PI / (2 * particles);
-        double sin = Math.sin(angle);
-        double cos = Math.cos(angle);
-
         // Offset angle for animation
         double startAngle = step * IndicatorSettings.animation / (20 * radius);
         double ii = Math.sin(startAngle) * radius;
         double jj = Math.cos(startAngle) * radius;
-
-        // Grab base location numbers
-        double x = loc.getX();
-        double y = loc.getY();
-        double z = loc.getZ();
 
         // Make the packets
         for (int i = 0; i < particles; i++)

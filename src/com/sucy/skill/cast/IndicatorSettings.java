@@ -33,22 +33,19 @@ import com.rit.sucy.config.parse.DataSection;
  */
 public class IndicatorSettings
 {
-    public static CastIndicatorParticle hasParticle;
-    public static CastIndicatorParticle noParticle;
+    public static CastIndicatorParticle particle;
 
     public static boolean enabled;
-    public static double density;
-    public static double animation;
-    public static int interval;
+    public static double  density;
+    public static double  animation;
+    public static int     interval;
 
     public static void load(DataSection data)
     {
         enabled = data.getBoolean("enabled");
         density = data.getDouble("density");
         animation = data.getDouble("animation");
-        interval = (int)Math.ceil(20 / data.getDouble("frequency"));
-
-        hasParticle = new CastIndicatorParticle(data.getSection("has-target"));
-        noParticle = new CastIndicatorParticle(data.getSection("no-target"));
+        interval = (int) Math.ceil(20 / data.getDouble("frequency"));
+        particle = new CastIndicatorParticle(data.getSection("particle"));
     }
 }

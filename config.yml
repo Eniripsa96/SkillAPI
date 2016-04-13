@@ -279,16 +279,8 @@ Casting:
     animation: 1
     #
     # Particle to use when it has a target
-    has-target:
+    particle:
       type: 'Happy Villager'
-      dx: 0
-      dy: 0
-      dz: 0
-      speed: 1
-    #
-    # Particle to use when it won't affect anything
-    no-target:
-      type: 'Angry Villager'
       dx: 0
       dy: 0
       dz: 0

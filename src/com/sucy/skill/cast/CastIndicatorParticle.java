@@ -36,6 +36,15 @@ public class CastIndicatorParticle
     private float dx, dy, dz;
     private float speed;
 
+    public CastIndicatorParticle(String type, float dx, float dy, float dz, float speed)
+    {
+        this.type = type;
+        this.dx = dx;
+        this.dy = dy;
+        this.dz = dz;
+        this.speed = speed;
+    }
+
     public CastIndicatorParticle(DataSection data)
     {
         type = data.getString("type");

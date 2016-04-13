@@ -32,6 +32,7 @@ import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.NumberParser;
+import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
@@ -48,12 +49,12 @@ import java.util.List;
  */
 public abstract class EffectComponent
 {
-    //public static final Pattern NUMBER = Pattern.compile("(-?[0-9]+([,.][0-9]+)?)|(-?[,.][0-9]+)");
-    //public static final Pattern RANGE  = Pattern.compile("((-?[0-9]+([,.][0-9]+)?)|(-?[,.][0-9]+))-((-?[0-9]+([,.][0-9]+)?)|(-?[,.][0-9]+))");
-
     private static final String ICON_KEY   = "icon-key";
     private static final String COUNTS_KEY = "counts";
 
+    /**
+     * Child components
+     */
     public final ArrayList<EffectComponent> children = new ArrayList<EffectComponent>();
 
     /**
@@ -67,14 +68,18 @@ public abstract class EffectComponent
     protected DynamicSkill skill;
 
     /**
-     * Key of the component for the config
+     * Starting index for indicators
      */
-    private String key;
+    protected int indicatorIndex;
 
     /**
-     * Type of the component
+     * Number of indicators added
      */
+    protected int indicatorCount;
+
+    private String key;
     private String type = "trigger";
+    private int indicatorType;
 
     /**
      * Retrieves the config key for the component
@@ -233,7 +238,43 @@ public abstract class EffectComponent
      */
     public abstract boolean execute(LivingEntity caster, int level, List<LivingEntity> targets);
 
+    /**
+     * Initializes the effect, grabbing settings data
+     * and creating indicators
+     *
+     * @param indicators indicator list to add to
+     */
+    public void initialize(List<IIndicator> indicators)
+    {
+        indicatorIndex = indicators.size();
+    }
+
+    /**
+     * Updates the indicators for the component
+     *
+     * @param indicators indicator list to grab from
+     */
+    public void updateIndicators(IIndicator[] indicators)
+    {
+        if (indicatorType == 0)
+            return;
+
+
+    }
+
+    /**
+     * Updates indicators of child components
+     *
+     * @param indicators indicators to update
+     */
+    protected void updateChildIndicators(IIndicator[] indicators)
+    {
+        for (EffectComponent child : children)
+            child.updateIndicators(indicators);
+    }
+
     private static final String TYPE = "type";
+    private static final String INDICATOR = "indicator";
 
     /**
      * Saves the component and its children to the config
@@ -273,6 +314,7 @@ public abstract class EffectComponent
                 skill.setAttribKey(key, this);
             }
         }
+        indicatorType = settings.getInt(INDICATOR);
 
         DataSection children = config.getSection("children");
         if (children != null)

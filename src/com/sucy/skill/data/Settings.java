@@ -33,6 +33,8 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.hook.NoCheatHook;
+import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -306,7 +308,17 @@ public class Settings
                        && canAttack((LivingEntity) tameable.getOwner(), target);
             }
         }
-        return Protection.canAttack(attacker, target);
+        boolean canAttack;
+        if (PluginChecker.isNoCheatActive() && attacker instanceof Player)
+        {
+            Player player = (Player) attacker;
+            NoCheatHook.exempt(player);
+            canAttack = Protection.canAttack(attacker, target);
+            NoCheatHook.unexempt(player);
+        }
+        else canAttack = Protection.canAttack(attacker, target);
+
+        return canAttack;
     }
 
     /**

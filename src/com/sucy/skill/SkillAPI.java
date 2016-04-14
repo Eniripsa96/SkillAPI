@@ -136,7 +136,7 @@ public class SkillAPI extends JavaPlugin
         settings.loadGroupSettings();
 
         // Set up listeners
-        new CastListener(this);
+        new BindListener(this);
         new MainListener(this);
         new MechanicListener(this);
         new StatusListener(this);

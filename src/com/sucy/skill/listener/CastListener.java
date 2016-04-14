@@ -4,10 +4,10 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -27,69 +27,82 @@
 package com.sucy.skill.listener;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.player.PlayerData;
-import org.bukkit.Material;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
- * A listener that handles casting skills through binds. This shouldn't be
- * use by other plugins as it is handled by the API.
+ * Listener for the main casting system
  */
 public class CastListener implements Listener
 {
+    private static final HashMap<UUID, ItemStack[]> backup = new HashMap<UUID, ItemStack[]>();
+
     /**
-     * Initializes a new Castlistener. Do not use this constructor as
-     * the API handles it already.
-     *
-     * @param plugin plugin reference
+     * Restores all player backups
+     */
+    public static void cleanup()
+    {
+        for (Map.Entry<UUID, ItemStack[]> entry : backup.entrySet())
+        {
+            Player player = Bukkit.getPlayer(entry.getKey());
+            if (player != null)
+                player.getInventory().setContents(entry.getValue());
+        }
+        backup.clear();
+    }
+
+    private int slot;
+
+    /**
+     * @param plugin API reference
      */
     public CastListener(SkillAPI plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        slot = SkillAPI.getSettings().getCastSlot() - 1;
     }
 
-    /**
-     * Handles interact events to check when a player right clicks with
-     * a bound item to cast a skill.
-     *
-     * @param event event details
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
+    public void onClick(InventoryClickEvent event)
+    {
+        if (event.getInventory() == event.getWhoClicked().getInventory() && event.getSlot() == slot)
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent event)
+    {
+        if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
+        {
+            event.setCancelled(true);
+
+            // Open skill organizer
+        }
+    }
+
+    @EventHandler
     public void onInteract(PlayerInteractEvent event)
     {
-        Player player = event.getPlayer();
-        if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+        if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
-            return;
+            event.setCancelled(true);
+            if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
+                // Activate hover bar
+                ;
+            else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+                // Activate instant bar
+                ;
         }
-
-        PlayerData data = SkillAPI.getPlayerData(player);
-        Material heldItem = player.getItemInHand().getType();
-
-        // Must be on right click
-        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
-        {
-            return;
-        }
-
-        // Cannot be cancelled if clicking on a block
-        if (event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_BLOCK)
-        {
-            return;
-        }
-
-        // Must have a valid item
-        if (heldItem == null || data.getBoundSkill(heldItem) == null || !SkillAPI.isSkillRegistered(data.getBoundSkill(heldItem).getData().getName()))
-        {
-            return;
-        }
-
-        // Cast the skill
-        data.cast(data.getBoundSkill(heldItem));
     }
 }

@@ -254,10 +254,8 @@ Casting:
   # Whether or not the main casting option is enabled
   enabled: true
   #
-  # Whether or not to instantly cast a skill when
-  # switching to it's slot. When false, left clicking,
-  # right clicking, or pressing Q will cast a hovered skill
-  instant-cast: false
+  # Global cooldown between skill casts in seconds
+  cooldown: 0
   #
   # Settings for skill target indicators that play effects
   # to show where a skill will hit

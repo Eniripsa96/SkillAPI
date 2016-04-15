@@ -107,7 +107,7 @@ public class CmdForceAttr implements IFunction
             {
                 int amount = Integer.parseInt(args[2]);
                 data.giveAttribute(args[1], amount);
-                cmd.sendMessage(sender, GAVE_ATTR, ChatColor.GOLD + "{player}" + ChatColor.DARK_GREEN + " was given " + ChatColor.GOLD + "{amount} {name} points", Filter.PLAYER.setReplacement(args[0]), RPGFilter.TYPE.setReplacement(args[1]), Filter.AMOUNT.setReplacement(amount + ""));
+                cmd.sendMessage(sender, GAVE_ATTR, ChatColor.GOLD + "{player}" + ChatColor.DARK_GREEN + " was given " + ChatColor.GOLD + "{amount} {name} points", Filter.PLAYER.setReplacement(args[0]), RPGFilter.NAME.setReplacement(args[1]), Filter.AMOUNT.setReplacement(amount + ""));
             }
             catch (Exception ex)
             {

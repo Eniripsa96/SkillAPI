@@ -189,6 +189,12 @@ public class MainListener implements Listener
             }
         }
 
+        // Summons don't give experience
+        if (event.getEntity().hasMetadata(MechanicListener.SUMMON_DAMAGE))
+        {
+            return;
+        }
+
         Player k = event.getEntity().getKiller();
         if (k != null && k.hasPermission(Permissions.EXP))
         {

@@ -79,7 +79,7 @@ public class DisguiseMechanic extends EffectComponent
         {
             for (LivingEntity target : targets)
                 if (!(target instanceof TempEntity))
-                    DisguiseHook.disguisePlayer(target, settings.getString(PLAYER, "Eniripsa96"));
+                    DisguiseHook.disguisePlayer(target, settings.getString(PLAYER, "Eniripsa96").replace("{player}", caster.getName()));
         }
 
         // Miscellaneous disguises

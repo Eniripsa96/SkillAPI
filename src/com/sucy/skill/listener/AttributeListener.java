@@ -200,7 +200,7 @@ public class AttributeListener implements Listener
             Player player = (Player) event.getDamager();
             PlayerData data = SkillAPI.getPlayerData(player);
 
-            double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
+            double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, event.getDamage());
             event.setDamage(newAmount);
         }
 
@@ -210,7 +210,7 @@ public class AttributeListener implements Listener
             Player player = (Player) event.getTarget();
             PlayerData data = SkillAPI.getPlayerData(player);
 
-            double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage());
+            double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, event.getDamage());
             event.setDamage(newAmount);
         }
     }
@@ -232,6 +232,16 @@ public class AttributeListener implements Listener
             data.addMaxMana(change);
 
             change = updateStat(data, AttributeManager.MOVE_SPEED, player.getWalkSpeed());
+            if (change + player.getWalkSpeed() > 1)
+            {
+                bonuses.put(AttributeManager.MOVE_SPEED, 0.8);
+                change = 1 - player.getWalkSpeed();
+            }
+            else if (change + player.getWalkSpeed() < -1)
+            {
+                bonuses.put(AttributeManager.MOVE_SPEED, -1.8);
+                change = -1 - player.getWalkSpeed();
+            }
             player.setWalkSpeed(player.getWalkSpeed() + (float) change);
         }
     }

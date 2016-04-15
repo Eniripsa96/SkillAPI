@@ -91,6 +91,7 @@ public final class PlayerData
     private double         bonusHealth;
     private double         bonusMana;
     private boolean        init;
+    private boolean        passive;
     private int            attribPoints;
 
     /**
@@ -324,6 +325,7 @@ public final class PlayerData
         if (amount > current)
         {
             attributes.put(key, amount);
+            AttributeListener.updatePlayer(this);
         }
     }
 
@@ -696,24 +698,27 @@ public final class PlayerData
             data.addLevels(1);
 
             // Passive calls
-            Player player = getPlayer();
-            if (player != null && skill instanceof PassiveSkill)
+            if (passive)
             {
+                Player player = getPlayer();
+                if (player != null && skill instanceof PassiveSkill)
+                {
+                    if (data.getLevel() == 1)
+                    {
+                        ((PassiveSkill) skill).initialize(player, data.getLevel());
+                    }
+                    else
+                    {
+                        ((PassiveSkill) skill).update(player, data.getLevel() - 1, data.getLevel());
+                    }
+                }
+
+                // Unlock event
                 if (data.getLevel() == 1)
                 {
-                    ((PassiveSkill) skill).initialize(player, data.getLevel());
+                    Bukkit.getPluginManager().callEvent(new PlayerSkillUnlockEvent(this, data));
+                    this.autoLevel();
                 }
-                else
-                {
-                    ((PassiveSkill) skill).update(player, data.getLevel() - 1, data.getLevel());
-                }
-            }
-
-            // Unlock event
-            if (data.getLevel() == 1)
-            {
-                Bukkit.getPluginManager().callEvent(new PlayerSkillUnlockEvent(this, data));
-                this.autoLevel();
             }
 
             return true;
@@ -1340,9 +1345,7 @@ public final class PlayerData
         bonusHealth += amount;
         Player player = getPlayer();
         if (player != null)
-        {
-            VersionManager.setMaxHealth(player, player.getMaxHealth() + amount);
-        }
+            player.setMaxHealth(player.getMaxHealth() + amount);
     }
 
     /**
@@ -1656,6 +1659,7 @@ public final class PlayerData
         {
             return;
         }
+        passive = true;
         for (PlayerSkill skill : skills.values())
         {
             if (skill.isUnlocked() && (skill.getData() instanceof PassiveSkill))
@@ -1677,6 +1681,7 @@ public final class PlayerData
         {
             return;
         }
+        passive = false;
         for (PlayerSkill skill : skills.values())
         {
             if (skill.isUnlocked() && (skill.getData() instanceof PassiveSkill))

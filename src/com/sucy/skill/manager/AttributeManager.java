@@ -36,8 +36,8 @@ import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 /**
@@ -56,7 +56,7 @@ public class AttributeManager
     public static final String SKILL_DEFENSE    = "skill-defense";
     public static final String MOVE_SPEED       = "move-speed";
 
-    private HashMap<String, Attribute> attributes = new HashMap<String, Attribute>();
+    private LinkedHashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
 
     /**
      * Sets up the attribute manager, loading the attribute
@@ -281,7 +281,7 @@ public class AttributeManager
                 AttributeValue[] values = new AttributeValue[formulas.length];
                 int i = 0;
                 for (String formula : formulas)
-                    values[i] = new AttributeValue(formula);
+                    values[i++] = new AttributeValue(formula);
                 target.put(key.toLowerCase(), values);
             }
         }
@@ -334,6 +334,7 @@ public class AttributeManager
          *
          * @param component component to check for conditions against
          * @param self      whether or not the component is targeting the caster
+         *
          * @return true if passes the conditions
          */
         public boolean passes(EffectComponent component, boolean self)
@@ -346,7 +347,7 @@ public class AttributeManager
                         return false;
                 }
                 else if (!component.getSettings().getString(key).equalsIgnoreCase(conditions.get(key)))
-                        return false;
+                    return false;
             }
             return true;
         }
@@ -354,8 +355,8 @@ public class AttributeManager
         /**
          * Checks the conditions for the given component
          *
-         * @param value     base value
-         * @param amount    amount of attribute points
+         * @param value  base value
+         * @param amount amount of attribute points
          *
          * @return the modified value if the conditions passed or the base value if they failed
          */

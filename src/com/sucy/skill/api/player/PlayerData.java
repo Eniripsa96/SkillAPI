@@ -39,6 +39,7 @@ import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
+import com.sucy.skill.cast.PlayerCastBars;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.EffectComponent;
@@ -81,6 +82,7 @@ public final class PlayerData
 
     private OfflinePlayer  player;
     private PlayerSkillBar skillBar;
+    private PlayerCastBars castBars;
     private PlayerCombos   combos;
     private String         scheme;
     private String         menuClass;
@@ -100,6 +102,7 @@ public final class PlayerData
     {
         this.player = player;
         this.skillBar = new PlayerSkillBar(this);
+        this.castBars = new PlayerCastBars();
         this.combos = new PlayerCombos(this);
         this.init = SkillAPI.isLoaded() && init;
         this.scheme = "default";
@@ -143,6 +146,14 @@ public final class PlayerData
     public PlayerSkillBar getSkillBar()
     {
         return skillBar;
+    }
+
+    /**
+     * @return cast bars data for the player
+     */
+    public PlayerCastBars getCastBars()
+    {
+        return castBars;
     }
 
     /**

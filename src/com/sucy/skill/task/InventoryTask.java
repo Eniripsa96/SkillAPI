@@ -33,13 +33,11 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.manager.AttributeManager;
-import com.sucy.skill.thread.MainThread;
 import com.sucy.skill.thread.RepeatThreadTask;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +54,6 @@ public class InventoryTask extends RepeatThreadTask
     private static Pattern classRegex;
     private static Pattern excludeRegex;
 
-    private static SkillAPI plugin;
     private        int      playersPerCheck;
     private int index = -1;
 
@@ -72,7 +69,6 @@ public class InventoryTask extends RepeatThreadTask
     {
         super(1, 1);
         this.playersPerCheck = playersPerCheck;
-        if (plugin != null) return;
 
         levelRegex = Pattern.compile(SkillAPI.getSettings().getLoreLevelText() + "[0-9]+");
         classRegex = Pattern.compile(SkillAPI.getSettings().getLoreClassText() + ".+");

@@ -27,6 +27,7 @@
 package com.sucy.skill.listener;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -73,6 +74,18 @@ public class CastListener implements Listener
         slot = SkillAPI.getSettings().getCastSlot() - 1;
     }
 
+    /**
+     * Adds unlocked skills to the skill bar if applicable
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onUnlock(PlayerSkillUnlockEvent event)
+    {
+        if (event.getUnlockedSkill().getData().canCast() && event.getPlayerData().getPlayer() == null)
+            event.getPlayerData().getCastBars().unlock(event.getUnlockedSkill());
+    }
+
     @EventHandler
     public void onClick(InventoryClickEvent event)
     {
@@ -83,7 +96,7 @@ public class CastListener implements Listener
     @EventHandler
     public void onDrop(PlayerDropItemEvent event)
     {
-        if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
+        if (event.getPlayer().getInventory().getHeldItemSlot() == slot && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             event.setCancelled(true);
 
@@ -94,15 +107,13 @@ public class CastListener implements Listener
     @EventHandler
     public void onInteract(PlayerInteractEvent event)
     {
-        if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
+        if (event.getPlayer().getInventory().getHeldItemSlot() == slot && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             event.setCancelled(true);
             if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
-                // Activate hover bar
-                ;
+                SkillAPI.getPlayerData(event.getPlayer()).getCastBars().showHoverBar(event.getPlayer());
             else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-                // Activate instant bar
-                ;
+                SkillAPI.getPlayerData(event.getPlayer()).getCastBars().showInstantBar(event.getPlayer());
         }
     }
 }

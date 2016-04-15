@@ -26,14 +26,12 @@
  */
 package com.sucy.skill.thread;
 
-import java.util.ArrayList;
-
 /**
  * The main async task for SkillAPI functions
  */
 public class MainThread extends Thread
 {
-    private static ArrayList<IThreadTask> tasks = new ArrayList<IThreadTask>();
+    private static final TaskList tasks = new TaskList();
 
     private long time;
 
@@ -59,9 +57,10 @@ public class MainThread extends Thread
         {
             while (enabled)
             {
-                for (int i = tasks.size(); i >= 0; i--)
-                    if (tasks.get(i).tick())
-                        tasks.remove(i);
+                tasks.iterator();
+                while (tasks.hasNext())
+                    if (tasks.next().tick())
+                        tasks.remove();
 
                 long current = System.currentTimeMillis();
                 time = Math.max(time + 50, current + 1);

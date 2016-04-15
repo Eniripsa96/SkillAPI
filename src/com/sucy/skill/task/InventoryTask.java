@@ -241,50 +241,53 @@ public class InventoryTask extends BukkitRunnable
                 }
 
                 // Skill requirements
-                else if (skills)
+                else
                 {
-                    for (Skill skill : SkillAPI.getSkills().values())
+                    if (skills)
                     {
-                        String check = SkillAPI.getSettings().getSkillText().replace("{skill}", skill.getName()).toLowerCase();
-                        if (lower.startsWith(check))
+                        for (Skill skill : SkillAPI.getSkills().values())
                         {
-                            if (!player.hasSkill(skill.getName()))
-                                return true;
-
-                            int level = Integer.parseInt(colorless.substring(check.length()));
-                            if (player.getSkill(skill.getName()).getLevel() < level)
-                                return true;
-                        }
-                    }
-                }
-
-                // Attribute requirements
-                else if (attributes)
-                {
-                    for (String key : SkillAPI.getAttributeManager().getKeys())
-                    {
-                        AttributeManager.Attribute attr = SkillAPI.getAttributeManager().getAttribute(key);
-                        String name = attr.getName();
-                        String check = SkillAPI.getSettings().getAttrReqText().replace("{attr}", name).toLowerCase();
-                        if (lower.startsWith(check))
-                        {
-                            int amount = Integer.parseInt(colorless.substring(check.length()));
-                            if (player.getAttribute(attr.getKey()) < amount)
+                            String check = SkillAPI.getSettings().getSkillText().replace("{skill}", skill.getName()).toLowerCase();
+                            if (lower.startsWith(check))
                             {
-                                return true;
+                                if (!player.hasSkill(skill.getName()))
+                                    return true;
+
+                                int level = Integer.parseInt(colorless.substring(check.length()));
+                                if (player.getSkill(skill.getName()).getLevel() < level)
+                                    return true;
                             }
                         }
+                    }
 
-                        if (SkillAPI.getSettings().isCheckAttributes())
+                    // Attribute requirements
+                    if (attributes)
+                    {
+                        for (String key : SkillAPI.getAttributeManager().getKeys())
                         {
-                            check = SkillAPI.getSettings().getAttrGiveText().replace("{attr}", name).toLowerCase();
+                            AttributeManager.Attribute attr = SkillAPI.getAttributeManager().getAttribute(key);
+                            String name = attr.getName();
+                            String check = SkillAPI.getSettings().getAttrReqText().replace("{attr}", name).toLowerCase();
                             if (lower.startsWith(check))
                             {
                                 int amount = Integer.parseInt(colorless.substring(check.length()));
-                                if (tempAttribs.containsKey(attr.getKey()))
-                                    tempAttribs.put(attr.getKey(), tempAttribs.get(attr.getKey()) + amount);
-                                else
-                                    tempAttribs.put(attr.getKey(), amount);
+                                if (player.getAttribute(attr.getKey()) < amount)
+                                {
+                                    return true;
+                                }
+                            }
+
+                            if (SkillAPI.getSettings().isCheckAttributes())
+                            {
+                                check = SkillAPI.getSettings().getAttrGiveText().replace("{attr}", name).toLowerCase();
+                                if (lower.startsWith(check))
+                                {
+                                    int amount = Integer.parseInt(colorless.substring(check.length()));
+                                    if (tempAttribs.containsKey(attr.getKey()))
+                                        tempAttribs.put(attr.getKey(), tempAttribs.get(attr.getKey()) + amount);
+                                    else
+                                        tempAttribs.put(attr.getKey(), amount);
+                                }
                             }
                         }
                     }

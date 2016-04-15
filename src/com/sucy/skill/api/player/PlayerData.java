@@ -314,6 +314,7 @@ public final class PlayerData
         if (amount > current)
         {
             attributes.put(key, amount);
+            AttributeListener.updatePlayer(this);
         }
     }
 

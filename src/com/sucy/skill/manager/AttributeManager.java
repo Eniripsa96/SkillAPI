@@ -37,6 +37,7 @@ import com.sucy.skill.log.Logger;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 /**
@@ -55,7 +56,7 @@ public class AttributeManager
     public static final String SKILL_DEFENSE    = "skill-defense";
     public static final String MOVE_SPEED       = "move-speed";
 
-    private HashMap<String, Attribute> attributes = new HashMap<String, Attribute>();
+    private LinkedHashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
 
     /**
      * Sets up the attribute manager, loading the attribute
@@ -280,7 +281,7 @@ public class AttributeManager
                 AttributeValue[] values = new AttributeValue[formulas.length];
                 int i = 0;
                 for (String formula : formulas)
-                    values[i] = new AttributeValue(formula);
+                    values[i++] = new AttributeValue(formula);
                 target.put(key.toLowerCase(), values);
             }
         }

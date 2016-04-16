@@ -28,15 +28,19 @@ package com.sucy.skill.listener;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
+import com.sucy.skill.cast.PlayerCastBars;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,22 +51,6 @@ import java.util.UUID;
  */
 public class CastListener implements Listener
 {
-    private static final HashMap<UUID, ItemStack[]> backup = new HashMap<UUID, ItemStack[]>();
-
-    /**
-     * Restores all player backups
-     */
-    public static void cleanup()
-    {
-        for (Map.Entry<UUID, ItemStack[]> entry : backup.entrySet())
-        {
-            Player player = Bukkit.getPlayer(entry.getKey());
-            if (player != null)
-                player.getInventory().setContents(entry.getValue());
-        }
-        backup.clear();
-    }
-
     private int slot;
 
     /**
@@ -71,7 +59,58 @@ public class CastListener implements Listener
     public CastListener(SkillAPI plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        slot = SkillAPI.getSettings().getCastSlot() - 1;
+        slot = SkillAPI.getSettings().getCastSlot();
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event)
+    {
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            addCastItem(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        boolean from = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
+        boolean to = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
+        if (from && !to)
+            event.getPlayer().getInventory().setItem(SkillAPI.getSettings().getCastSlot(), null);
+        else
+            addCastItem(event.getPlayer());
+    }
+
+    private void addCastItem(Player player)
+    {
+        PlayerInventory inv = player.getInventory();
+        int slot = SkillAPI.getSettings().getCastSlot();
+        ItemStack item = inv.getItem(slot);
+        inv.setItem(slot, SkillAPI.getSettings().getCastItem());
+        if (item != null && item.getType() != Material.AIR)
+            inv.addItem(item);
+        inv.getItem(slot).setAmount(1);
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event)
+    {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        SkillAPI.getPlayerData(event.getPlayer()).getCastBars().restore(event.getPlayer());
+        event.getPlayer().getInventory().setItem(slot, null);
+    }
+
+    @EventHandler
+    public void onOpen(InventoryOpenEvent event)
+    {
+        SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().restore((Player)event.getPlayer());
+    }
+
+    @EventHandler
+    public void onClose(InventoryCloseEvent event)
+    {
+        SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().restore((Player)event.getPlayer());
     }
 
     /**
@@ -96,24 +135,44 @@ public class CastListener implements Listener
     @EventHandler
     public void onDrop(PlayerDropItemEvent event)
     {
-        if (event.getPlayer().getInventory().getHeldItemSlot() == slot && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        if (SkillAPI.getPlayerData(event.getPlayer()).getCastBars().handleInteract(event.getPlayer()))
+        {
+            event.setCancelled(true);
+        }
+
+        else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
             event.setCancelled(true);
 
-            // Open skill organizer
+            // TODO - Open skill organizer
         }
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event)
     {
-        if (event.getPlayer().getInventory().getHeldItemSlot() == slot && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        PlayerCastBars bars = SkillAPI.getPlayerData(event.getPlayer()).getCastBars();
+
+        // Interaction while in a view
+        if (bars.handleInteract(event.getPlayer()))
+        {
+            event.setCancelled(true);
+        }
+
+        // Entering a view
+        else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
             event.setCancelled(true);
             if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
-                SkillAPI.getPlayerData(event.getPlayer()).getCastBars().showHoverBar(event.getPlayer());
+                bars.showHoverBar(event.getPlayer());
             else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-                SkillAPI.getPlayerData(event.getPlayer()).getCastBars().showInstantBar(event.getPlayer());
+                bars.showInstantBar(event.getPlayer());
         }
     }
 }

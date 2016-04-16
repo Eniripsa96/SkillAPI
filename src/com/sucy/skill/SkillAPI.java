@@ -125,9 +125,7 @@ public class SkillAPI extends JavaPlugin
         ClassBoardManager.registerText();
         ResourceManager.copyQuestsModule();
         if (settings.isAttributesEnabled())
-        {
             attributeManager = new AttributeManager(this);
-        }
 
         // Load classes and skills
         registrationManager.initialize();
@@ -142,29 +140,19 @@ public class SkillAPI extends JavaPlugin
         new StatusListener(this);
         new ToolListener(this);
         if (settings.isMapTreeAvailable())
-        {
             Menu.initialize(this);
-        }
         if (!settings.isMapTreeEnabled())
-        {
             new TreeListener(this);
-        }
         if (settings.isCheckLore())
-        {
             new ItemListener(this);
-        }
         if (settings.isSkillBarEnabled())
-        {
             new BarListener(this);
-        }
         if (settings.isCombosEnabled())
-        {
             new ClickListener(this);
-        }
         if (settings.isAttributesEnabled())
-        {
             new AttributeListener(this);
-        }
+        if (settings.isCastEnabled())
+            new CastListener(this);
 
         // Set up tasks
         if (settings.isManaEnabled())

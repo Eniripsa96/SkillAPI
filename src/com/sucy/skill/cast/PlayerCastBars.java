@@ -27,8 +27,13 @@
 package com.sucy.skill.cast;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -46,7 +51,35 @@ public class PlayerCastBars
 
     private ItemStack[] backup;
 
+    private PlayerData player;
+
     private long cooldown;
+
+    private int oldSlot;
+
+    /**
+     * @param data player data reference
+     */
+    public PlayerCastBars(PlayerData data)
+    {
+        this.player = data;
+    }
+
+    /**
+     * Restores the players inventory after
+     * viewing one of the related views
+     *
+     * @param player player to restore
+     */
+    public void restore(Player player)
+    {
+        if (view == PlayerView.INVENTORY)
+            return;
+
+        player.getInventory().setContents(backup);
+        view = PlayerView.INVENTORY;
+        player.getInventory().setHeldItemSlot(oldSlot);
+    }
 
     /**
      * Shows the hover cast bar to the player
@@ -55,15 +88,7 @@ public class PlayerCastBars
      */
     public void showHoverBar(Player player)
     {
-        if (view != PlayerView.INVENTORY || hoverBar.size() == 0)
-            return;
-
-        view = PlayerView.HOVER_BAR;
-        backup = player.getInventory().getContents();
-
-        ItemStack[] contents = new ItemStack[36];
-        makeContents(player, hoverBar, contents, 0);
-        player.getInventory().setContents(contents);
+        show(player, PlayerView.HOVER_BAR, hoverBar);
     }
 
     /**
@@ -73,15 +98,85 @@ public class PlayerCastBars
      */
     public void showInstantBar(Player player)
     {
-        if (view != PlayerView.INVENTORY || instantBar.size() == 0)
-            return;
+        show(player, PlayerView.INSTANT_BAR, instantBar);
+    }
 
-        view = PlayerView.INSTANT_BAR;
+    /**
+     * Shows a cast bar to the player if requirements are met
+     *
+     * @param player player to show
+     * @param view   view related to the bar
+     * @param bar    bar data
+     */
+    private void show(Player player, PlayerView view, HashMap<Integer, String> bar)
+    {
+        long left = System.currentTimeMillis() - cooldown - SkillAPI.getSettings().getCastCooldown();
+        if (view != PlayerView.INVENTORY || bar.size() == 0 || left < 0)
+        {
+            System.out.println("Didn't show: " + view + "/" + bar.size() + "/" + left);
+            return;
+        }
+        else System.out.println("Shown");
+
+        this.view = view;
         backup = player.getInventory().getContents();
+        oldSlot = player.getInventory().getHeldItemSlot();
 
         ItemStack[] contents = new ItemStack[36];
-        makeContents(player, instantBar, contents, 0);
+        makeContents(player, bar, contents, 0);
         player.getInventory().setContents(contents);
+    }
+
+    /**
+     * Handles changing to a different weapon slot
+     *
+     * @param event event details
+     */
+    public boolean handle(PlayerItemHeldEvent event)
+    {
+        switch (view)
+        {
+            case INSTANT_BAR:
+                if (instantBar.containsKey(event.getNewSlot()))
+                {
+                    player.cast(instantBar.get(event.getNewSlot()));
+                    cooldown = System.currentTimeMillis();
+                }
+                restore(event.getPlayer());
+                event.setCancelled(true);
+                return true;
+
+            case HOVER_BAR:
+                // TODO - setup indicator for skill
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Handles a click event when in certain views
+     *
+     * @param player the player doing the interaction
+     */
+    public boolean handleInteract(Player player)
+    {
+        switch (view)
+        {
+            case INSTANT_BAR:
+                restore(player);
+                return true;
+
+            case HOVER_BAR:
+                if (hoverBar.containsKey(player.getInventory().getHeldItemSlot()))
+                {
+                    this.player.cast(hoverBar.get(player.getInventory().getHeldItemSlot()));
+                    cooldown = System.currentTimeMillis();
+                }
+                restore(player);
+                return true;
+        }
+        return false;
     }
 
     /**

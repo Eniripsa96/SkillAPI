@@ -1089,7 +1089,7 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private static final String CAST_BASE      = "Casting";
+    private static final String CAST_BASE      = "Casting.";
     private static final String CAST_ENABLED   = CAST_BASE + "enabled";
     private static final String CAST_INDICATOR = CAST_BASE + "cast-indicator";
     private static final String CAST_SLOT      = CAST_BASE + "slot";
@@ -1098,7 +1098,7 @@ public class Settings
 
     private boolean   castEnabled;
     private int       castSlot;
-    private int       castCooldown;
+    private long      castCooldown;
     private ItemStack castItem;
 
     /**
@@ -1120,7 +1120,7 @@ public class Settings
     /**
      * @return global cooldown for casting
      */
-    public int getCastCooldown()
+    public long getCastCooldown()
     {
         return castCooldown;
     }
@@ -1136,8 +1136,8 @@ public class Settings
     private void loadCastSettings()
     {
         castEnabled = config.getBoolean(CAST_ENABLED);
-        castSlot = config.getInt(CAST_SLOT);
-        castCooldown = (int)(config.getDouble(CAST_COOLDOWN) * 20);
+        castSlot = config.getInt(CAST_SLOT) - 1;
+        castCooldown = (long)(config.getDouble(CAST_COOLDOWN) * 1000);
         castItem = GUITool.parseItem(config.getSection(CAST_ITEM));
         castEnabled = castEnabled && castItem != null;
         IndicatorSettings.load(config.getSection(CAST_INDICATOR));
@@ -1470,7 +1470,7 @@ public class Settings
     private void loadSkillBarSettings()
     {
         DataSection bar = config.getSection("Skill Bar");
-        skillBarEnabled = bar.getBoolean("enabled", false);
+        skillBarEnabled = bar.getBoolean("enabled", false) && !castEnabled;
         skillBarCooldowns = bar.getBoolean("show-cooldown", true);
 
         DataSection icon = bar.getSection("empty-icon");

@@ -103,7 +103,7 @@ public final class PlayerData
     {
         this.player = player;
         this.skillBar = new PlayerSkillBar(this);
-        this.castBars = new PlayerCastBars();
+        this.castBars = new PlayerCastBars(this);
         this.combos = new PlayerCombos(this);
         this.init = SkillAPI.isLoaded() && init;
         this.scheme = "default";

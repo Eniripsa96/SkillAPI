@@ -1095,11 +1095,15 @@ public class Settings
     private static final String CAST_SLOT      = CAST_BASE + "slot";
     private static final String CAST_ITEM      = CAST_BASE + "item";
     private static final String CAST_COOLDOWN  = CAST_BASE + "cooldown";
+    private static final String CAST_HOVER     = CAST_BASE + "hover-item";
+    private static final String CAST_INSTANT   = CAST_BASE + "instant-item";
 
     private boolean   castEnabled;
     private int       castSlot;
     private long      castCooldown;
     private ItemStack castItem;
+    private ItemStack hoverItem;
+    private ItemStack instantItem;
 
     /**
      * @return true if default casting is enabled
@@ -1133,12 +1137,24 @@ public class Settings
         return castItem;
     }
 
+    public ItemStack getHoverItem()
+    {
+        return hoverItem;
+    }
+
+    public ItemStack getInstantItem()
+    {
+        return instantItem;
+    }
+
     private void loadCastSettings()
     {
         castEnabled = config.getBoolean(CAST_ENABLED);
         castSlot = config.getInt(CAST_SLOT) - 1;
         castCooldown = (long)(config.getDouble(CAST_COOLDOWN) * 1000);
         castItem = GUITool.parseItem(config.getSection(CAST_ITEM));
+        hoverItem = GUITool.parseItem(config.getSection(CAST_HOVER));
+        instantItem = GUITool.parseItem(config.getSection(CAST_INSTANT));
         castEnabled = castEnabled && castItem != null;
         IndicatorSettings.load(config.getSection(CAST_INDICATOR));
     }
@@ -1238,7 +1254,7 @@ public class Settings
 
     private void loadComboSettings()
     {
-        combosEnabled = config.getBoolean(COMBO_ENABLED) && !castEnabled;
+        combosEnabled = config.getBoolean(COMBO_ENABLED);
         customCombos = combosEnabled && config.getBoolean(COMBO_CUSTOM);
         comboLeft = config.getBoolean(COMBO_LEFT);
         comboRight = config.getBoolean(COMBO_RIGHT);

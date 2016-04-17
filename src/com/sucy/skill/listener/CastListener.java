@@ -27,6 +27,7 @@
 package com.sucy.skill.listener;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.cast.PlayerCastBars;
 import org.bukkit.Bukkit;
@@ -60,6 +61,12 @@ public class CastListener implements Listener
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         slot = SkillAPI.getSettings().getCastSlot();
+    }
+
+    @EventHandler
+    public void onClassChange(PlayerClassChangeEvent event)
+    {
+        event.getPlayerData().getCastBars().reset();
     }
 
     @EventHandler
@@ -104,7 +111,7 @@ public class CastListener implements Listener
     @EventHandler
     public void onOpen(InventoryOpenEvent event)
     {
-        SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().restore((Player)event.getPlayer());
+        SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().handleOpen((Player)event.getPlayer());
     }
 
     @EventHandler
@@ -139,15 +146,12 @@ public class CastListener implements Listener
             return;
 
         if (SkillAPI.getPlayerData(event.getPlayer()).getCastBars().handleInteract(event.getPlayer()))
-        {
             event.setCancelled(true);
-        }
 
         else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
             event.setCancelled(true);
-
-            // TODO - Open skill organizer
+            SkillAPI.getPlayerData(event.getPlayer()).getCastBars().showOrganizer(event.getPlayer());
         }
     }
 

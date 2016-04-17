@@ -298,6 +298,35 @@ Casting:
     - '&6Left Click&2 - First skill set'
     - '&6Right Click&2 - Second skill set'
     - '&6Q&2 - Organize skills'
+  #
+  # The item used in the bar GUI to describe the hover bar
+  hover-item:
+    type: BOOKSHELF
+    data: 0
+    durability: 0
+    name: '&6Hover Bar'
+    lore:
+    - ''
+    - 'Skills in this row will'
+    - 'be usable via left clicking'
+    - 'the cast item and will let'
+    - 'you see where they will hit'
+    - 'before casting them.'
+  instant-item:
+    type: BOOKSHELF
+    data: 0
+    durability: 0
+    name: '&6Instant Bar'
+    data: 0
+    durability: 0
+    name: '&6Instant Bar'
+    lore:
+    - ''
+    - 'Skills in this row will'
+    - 'be usable via right clicking'
+    - 'the cast item and will be'
+    - 'cast immediately when switching'
+    - 'to their slot.'
 #
 Click Combos:
   #

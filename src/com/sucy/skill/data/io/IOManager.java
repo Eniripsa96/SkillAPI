@@ -59,6 +59,8 @@ public abstract class IOManager
         TOTAL_EXP      = "total-exp",
         POINTS         = "points",
         SKILL_BAR      = "bar",
+        HOVER          = "hover",
+        INSTANT        = "instant",
         ENABLED        = "enabled",
         SLOTS          = "slots",
         UNASSIGNED     = "e",
@@ -250,6 +252,14 @@ public abstract class IOManager
                 }
             }
 
+            // Load cast bars
+            if (SkillAPI.getSettings().isCastEnabled())
+            {
+                acc.getCastBars().reset();
+                acc.getCastBars().load(account.getSection(HOVER), true);
+                acc.getCastBars().load(account.getSection(INSTANT), false);
+            }
+
             acc.endInit();
             acc.autoLevel();
         }
@@ -344,6 +354,13 @@ public abstract class IOManager
                     {
                         attribs.set(key, acc.getAttributeData().get(key));
                     }
+                }
+
+                // Save cast bars
+                if (SkillAPI.getSettings().isCastEnabled())
+                {
+                    acc.getCastBars().save(account.createSection(HOVER), true);
+                    acc.getCastBars().save(account.createSection(INSTANT), false);
                 }
             }
             return file;

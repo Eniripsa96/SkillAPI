@@ -70,6 +70,7 @@ public class MainThread extends Thread
         catch (Exception ex)
         {
             // Thread ended
+            ex.printStackTrace();
         }
     }
 

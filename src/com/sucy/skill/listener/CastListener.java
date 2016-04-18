@@ -30,6 +30,8 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.cast.PlayerCastBars;
+import com.sucy.skill.thread.MainThread;
+import com.sucy.skill.thread.ThreadTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,6 +44,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -151,7 +154,7 @@ public class CastListener implements Listener
         else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
             event.setCancelled(true);
-            SkillAPI.getPlayerData(event.getPlayer()).getCastBars().showOrganizer(event.getPlayer());
+            MainThread.register(new OrganizerTask(event.getPlayer()));
         }
     }
 
@@ -177,6 +180,26 @@ public class CastListener implements Listener
                 bars.showHoverBar(event.getPlayer());
             else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
                 bars.showInstantBar(event.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onHeld(PlayerItemHeldEvent event)
+    {
+        SkillAPI.getPlayerData(event.getPlayer()).getCastBars().handle(event);
+    }
+
+    private class OrganizerTask extends ThreadTask
+    {
+        private Player player;
+        public OrganizerTask(Player player)
+        {
+            this.player = player;
+        }
+        @Override
+        public void run()
+        {
+            SkillAPI.getPlayerData(player).getCastBars().showOrganizer(player);
         }
     }
 }

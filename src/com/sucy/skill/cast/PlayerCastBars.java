@@ -31,6 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -132,10 +133,7 @@ public class PlayerCastBars implements InventoryHolder
     public boolean showOrganizer(Player player)
     {
         if (used.size() + unused.size() == 0 || view != PlayerView.INVENTORY)
-        {
-            System.out.println("Nope " + used.size() + "/" + unused.size() + "/" + view);
             return false;
-        }
 
         view = PlayerView.ORGANIZER;
         backup = player.getInventory().getContents();
@@ -254,7 +252,7 @@ public class PlayerCastBars implements InventoryHolder
     private boolean show(Player player, PlayerView view, HashMap<Integer, String> bar)
     {
         long left = System.currentTimeMillis() - cooldown - SkillAPI.getSettings().getCastCooldown();
-        if (view != PlayerView.INVENTORY || bar.size() == 0 || left < 0)
+        if (this.view != PlayerView.INVENTORY || bar.size() == 0 || left < 0)
             return false;
 
         this.view = view;
@@ -332,6 +330,22 @@ public class PlayerCastBars implements InventoryHolder
     {
         if (view == PlayerView.HOVER_BAR || view == PlayerView.INSTANT_BAR)
             restore(player);
+    }
+
+    /**
+     * Handles clicking in the GUI
+     *
+     * @param event event details
+     */
+    public void handle(InventoryClickEvent event)
+    {
+        if (event.getInventory() == event.getWhoClicked().getInventory())
+        {
+            if (event.getSlot() == 8 || event.getSlot() == 35)
+                event.setCancelled(true);
+        }
+        else if (event.getSlot() < 0)
+            event.setCancelled(true);
     }
 
     /**

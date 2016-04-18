@@ -33,10 +33,16 @@ public class TaskList implements Iterable<IThreadTask>, Iterator<IThreadTask>
     private Entry iteratee;
     private Entry head;
     private Entry tail;
+    private int   size;
 
     public TaskList()
     {
         head = tail = new Entry();
+    }
+
+    public int size()
+    {
+        return size;
     }
 
     public void add(IThreadTask task)
@@ -44,12 +50,14 @@ public class TaskList implements Iterable<IThreadTask>, Iterator<IThreadTask>
         tail.next = new Entry(task);
         tail.next.prev = tail;
         tail = tail.next;
+        size++;
     }
 
     public void clear()
     {
         head.next = null;
         tail = head;
+        size = 0;
     }
 
     @Override
@@ -75,7 +83,12 @@ public class TaskList implements Iterable<IThreadTask>, Iterator<IThreadTask>
     public void remove()
     {
         if (iteratee != null && iteratee.prev != null)
+        {
+            if (iteratee == tail)
+                tail = iteratee.prev;
             iteratee.prev.next = iteratee.next;
+            size--;
+        }
     }
 
     private class Entry

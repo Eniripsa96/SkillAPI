@@ -29,6 +29,7 @@ package com.sucy.skill.dynamic;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.enums.ManaCost;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
 import com.sucy.skill.api.event.SkillDamageEvent;
@@ -542,12 +543,15 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             {
                 PlayerData data = SkillAPI.getPlayerData((Player) user);
                 PlayerSkill skill = data.getSkill(getName());
-                if (!data.check(
-                    skill,
-                    component.getSettings().getBool("cooldown", false),
-                    component.getSettings().getBool("mana", false)
-                ))
+                boolean cd = component.getSettings().getBool("cooldown", false);
+                boolean mana = component.getSettings().getBool("mana", false);
+                if (!data.check(skill, cd, mana))
                     return false;
+
+                if (cd)
+                    skill.startCooldown();
+                if (mana)
+                    data.useMana(skill.getManaCost(), ManaCost.SKILL_CAST);
             }
 
             ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();

@@ -62,7 +62,7 @@ public class ChannelMechanic extends EffectComponent
         boolean still = settings.getBool(STILL);
         int ticks = (int) (20 * attr(caster, SECONDS, level, 2.0, isSelf));
         if (still)
-            FlagManager.addFlag(caster, StatusFlag.CHANNELING, -1);
+            FlagManager.addFlag(caster, StatusFlag.CHANNELING, ticks + 2);
         Bukkit.getScheduler().runTaskLater(
             Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
             {
@@ -78,7 +78,7 @@ public class ChannelMechanic extends EffectComponent
                 }
             }, ticks
         );
-        FlagManager.addFlag(caster, StatusFlag.CHANNEL, -1);
+        FlagManager.addFlag(caster, StatusFlag.CHANNEL, ticks + 2);
         return true;
     }
 }

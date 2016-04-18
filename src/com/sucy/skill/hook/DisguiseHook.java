@@ -47,9 +47,12 @@ public class DisguiseHook
     {
         try
         {
+            String name = target.getCustomName();
             DisguiseType disguise = DisguiseType.valueOf(type.toUpperCase().replace(" ", "_"));
             MobDisguise mobDisguise = new MobDisguise(disguise, adult);
             DisguiseAPI.disguiseToAll(target, mobDisguise);
+            if (name != null)
+                target.setCustomName(name);
         }
         catch (Exception ex)
         {
@@ -67,8 +70,11 @@ public class DisguiseHook
     {
         try
         {
+            String name = target.getCustomName();
             PlayerDisguise playerDisguise = new PlayerDisguise(player);
             DisguiseAPI.disguiseToAll(target, playerDisguise);
+            if (name != null)
+                target.setCustomName(name);
         }
         catch (Exception ex)
         {
@@ -87,9 +93,12 @@ public class DisguiseHook
     {
         try
         {
+            String name = target.getCustomName();
             DisguiseType disguise = DisguiseType.valueOf(type.toUpperCase().replace(" ", "_"));
             MiscDisguise miscDisguise = new MiscDisguise(disguise, data);
             DisguiseAPI.disguiseToAll(target, miscDisguise);
+            if (name != null)
+                target.setCustomName(name);
         }
         catch (Exception ex)
         {

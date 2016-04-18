@@ -120,8 +120,8 @@ public class ProjectileMechanic extends EffectComponent
                 for (Location loc : locs)
                 {
                     Projectile p = caster.launchProjectile(type);
-                    p.teleport(loc);
                     p.setVelocity(new Vector(0, speed, 0));
+                    p.teleport(loc);
                     SkillAPI.setMeta(p, LEVEL, level);
                     if (flaming) p.setFireTicks(9999);
                     projectiles.add(p);
@@ -152,7 +152,7 @@ public class ProjectileMechanic extends EffectComponent
                 }
             }
         }
-        new RemoveTask(projectiles, (int) Math.ceil(range / speed));
+        new RemoveTask(projectiles, (int) Math.ceil(range / Math.abs(speed)));
 
         return targets.size() > 0;
     }

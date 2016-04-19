@@ -752,12 +752,13 @@ public class Settings
     private boolean checkSkills;
     private boolean dropWeapon;
     private String  loreClassText;
-    private String  loreSkillText;
     private String  loreLevelText;
     private String  loreExcludeText;
-    private String  reqAttrText;
-    private String  giveAttrText;
     private int     playersPerCheck;
+
+    private String skillPre, skillPost;
+    private String attrReqPre, attrReqPost;
+    private String attrPre, attrPost;
 
     /**
      * Checks whether or not lore requirements are enabled
@@ -796,9 +797,9 @@ public class Settings
     /**
      * @return lore for skill requirements
      */
-    public String getSkillText()
+    public String getSkillText(String skill)
     {
-        return loreSkillText;
+        return skillPre + skill + skillPost;
     }
 
     /**
@@ -836,17 +837,17 @@ public class Settings
      *
      * @return lore text for attributes
      */
-    public String getAttrReqText()
+    public String getAttrReqText(String attr)
     {
-        return reqAttrText;
+        return attrReqPre + attr + attrReqPost;
     }
 
     /**
      * @return lore text for giving attributes
      */
-    public String getAttrGiveText()
+    public String getAttrGiveText(String attr)
     {
-        return giveAttrText;
+        return attrPre + attr + attrPost;
     }
 
     /**
@@ -865,13 +866,25 @@ public class Settings
         dropWeapon = config.getBoolean(ITEM_DROP);
         checkSkills = config.getBoolean(ITEM_SKILLS);
         checkAttribs = config.getBoolean(ITEM_ATTRIBS);
-        loreClassText = config.getString(ITEM_CLASS);
-        loreSkillText = config.getString(ITEM_SKILL);
-        loreLevelText = config.getString(ITEM_LEVEL);
-        loreExcludeText = config.getString(ITEM_EXCLUDE);
-        reqAttrText = config.getString(ITEM_ATTR);
-        giveAttrText = config.getString(ITEM_STATS);
+        loreClassText = config.getString(ITEM_CLASS).toLowerCase();
+        loreLevelText = config.getString(ITEM_LEVEL).toLowerCase();
+        loreExcludeText = config.getString(ITEM_EXCLUDE).toLowerCase();
         playersPerCheck = config.getInt(ITEM_CHECK);
+
+        String temp = config.getString(ITEM_SKILL).toLowerCase();
+        int index = temp.indexOf('{');
+        skillPre = temp.substring(0, index);
+        skillPost = temp.substring(index + 7);
+
+        temp = config.getString(ITEM_ATTR).toLowerCase();
+        index = temp.indexOf('{');
+        attrReqPre = temp.substring(0, index);
+        attrReqPost = temp.substring(index + 6);
+
+        temp = config.getString(ITEM_STATS).toLowerCase();
+        index = temp.indexOf('{');
+        attrPre = temp.substring(0, index);
+        attrPost = temp.substring(index + 6);
     }
 
     ///////////////////////////////////////////////////////

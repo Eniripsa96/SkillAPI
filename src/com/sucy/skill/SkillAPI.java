@@ -159,8 +159,6 @@ public class SkillAPI extends JavaPlugin
             MainThread.register(new ManaTask());
         if (settings.isSkillBarCooldowns())
             MainThread.register(new CooldownTask());
-        if (settings.isCheckLore())
-            MainThread.register(new InventoryTask(getSettings().getPlayersPerCheck()));
         if (settings.isAutoSave())
             MainThread.register(new SaveTask(this));
         MainThread.register(new GUITask(this));

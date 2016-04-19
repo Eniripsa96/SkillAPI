@@ -42,6 +42,7 @@ import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.cast.PlayerCastBars;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.GUINodes;
@@ -84,6 +85,7 @@ public final class PlayerData
     private PlayerSkillBar skillBar;
     private PlayerCastBars castBars;
     private PlayerCombos   combos;
+    private PlayerEquips   equips;
     private String         scheme;
     private String         menuClass;
     private double         mana;
@@ -105,6 +107,7 @@ public final class PlayerData
         this.skillBar = new PlayerSkillBar(this);
         this.castBars = new PlayerCastBars(this);
         this.combos = new PlayerCombos(this);
+        this.equips = new PlayerEquips(this);
         this.init = SkillAPI.isLoaded() && init;
         this.scheme = "default";
         for (String group : SkillAPI.getGroups())
@@ -165,6 +168,14 @@ public final class PlayerData
     public PlayerCombos getComboData()
     {
         return combos;
+    }
+
+    /**
+     * @return equipped item data
+     */
+    public PlayerEquips getEquips()
+    {
+        return equips;
     }
 
     /**

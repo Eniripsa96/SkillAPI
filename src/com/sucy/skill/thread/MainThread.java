@@ -63,8 +63,8 @@ public class MainThread extends Thread
                         tasks.remove();
 
                 long current = System.currentTimeMillis();
-                time = Math.max(time + 50, current + 1);
-                sleep(time - current);
+                time += 50;
+                sleep(Math.max(1, time - current));
             }
         }
         catch (Exception ex)

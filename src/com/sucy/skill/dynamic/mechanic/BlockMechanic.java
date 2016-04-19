@@ -154,9 +154,9 @@ public class BlockMechanic extends EffectComponent
         else
         {
             // Cuboid options
-            double width = attr(caster, WIDTH, level, 5, isSelf) / 2;
-            double height = attr(caster, HEIGHT, level, 5, isSelf) / 2;
-            double depth = attr(caster, DEPTH, level, 5, isSelf) / 2;
+            double width = (attr(caster, WIDTH, level, 5, isSelf) - 1) / 2;
+            double height = (attr(caster, HEIGHT, level, 5, isSelf) - 1) / 2;
+            double depth = (attr(caster, DEPTH, level, 5, isSelf) - 1) / 2;
             double x, y, z;
 
             for (LivingEntity t : targets)
@@ -166,17 +166,18 @@ public class BlockMechanic extends EffectComponent
                 Vector dir = t.getLocation().getDirection().setY(0).normalize();
                 Vector nor = dir.clone().crossProduct(up);
                 loc.add(dir.multiply(forward).add(nor.multiply(right)));
+                loc.add(0, upward, 0);
 
                 x = loc.getX();
                 y = loc.getY();
                 z = loc.getZ();
 
                 // Get all blocks in the area
-                for (double i = x - width; i < x + width - 0.01; i++)
+                for (double i = x - width; i <= x + width + 0.01; i++)
                 {
-                    for (double j = y - height; j < y + height - 0.01; j++)
+                    for (double j = y - height; j <= y + height + 0.01; j++)
                     {
-                        for (double k = z - depth; k < z + depth - 0.01; k++)
+                        for (double k = z - depth; k <= z + depth + 0.01; k++)
                         {
                             Block b = w.getBlockAt((int) i, (int) j, (int) k);
                             if ((!solid || b.getType().isSolid())

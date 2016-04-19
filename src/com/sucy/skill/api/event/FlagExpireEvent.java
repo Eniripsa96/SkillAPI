@@ -38,6 +38,7 @@ public class FlagExpireEvent extends Event
     private static final HandlerList handlers = new HandlerList();
     private LivingEntity entity;
     private String       flag;
+    private ExpireReason reason;
 
     /**
      * Constructor
@@ -45,10 +46,11 @@ public class FlagExpireEvent extends Event
      * @param entity the entity the flag was on
      * @param flag   the flag that expired
      */
-    public FlagExpireEvent(LivingEntity entity, String flag)
+    public FlagExpireEvent(LivingEntity entity, String flag, ExpireReason reason)
     {
         this.entity = entity;
         this.flag = flag;
+        this.reason = reason;
     }
 
     /**
@@ -72,6 +74,14 @@ public class FlagExpireEvent extends Event
     }
 
     /**
+     * @return reason for the flag expiring
+     */
+    public ExpireReason getReason()
+    {
+        return reason;
+    }
+
+    /**
      * @return gets the handlers for the event
      */
     @Override
@@ -86,5 +96,17 @@ public class FlagExpireEvent extends Event
     public static HandlerList getHandlerList()
     {
         return handlers;
+    }
+
+    /**
+     * The reason the flag expired
+     */
+    public enum ExpireReason
+    {
+        // Expired due to running out of time
+        TIME,
+
+        // Expired due to being removed
+        REMOVED
     }
 }

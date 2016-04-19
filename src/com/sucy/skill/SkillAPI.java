@@ -210,12 +210,13 @@ public class SkillAPI extends JavaPlugin
         // Clear skill bars and stop passives before disabling
         for (Player player : VersionManager.getOnlinePlayers())
         {
-            player.setMaxHealth(20);
             getPlayerData(player).stopPassives(player);
             if (player.getGameMode() != GameMode.CREATIVE && !player.isDead())
             {
                 getPlayerData(player).getSkillBar().clear(player);
             }
+            player.setMaxHealth(20);
+            player.setWalkSpeed(0.2f);
         }
 
         io.saveAll();

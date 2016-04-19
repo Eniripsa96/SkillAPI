@@ -1734,7 +1734,6 @@ public final class PlayerData
         }
 
         int level = skill.getLevel();
-        double cost = skill.getData().getManaCost(level);
 
         // Not unlocked
         if (level <= 0)
@@ -1769,7 +1768,7 @@ public final class PlayerData
                         }
                         if (SkillAPI.getSettings().isManaEnabled())
                         {
-                            useMana(cost, ManaCost.SKILL_CAST);
+                            useMana(skill.getManaCost(), ManaCost.SKILL_CAST);
                         }
                         return true;
                     }
@@ -1812,7 +1811,7 @@ public final class PlayerData
                         }
                         if (SkillAPI.getSettings().isManaEnabled())
                         {
-                            useMana(cost, ManaCost.SKILL_CAST);
+                            useMana(skill.getManaCost(), ManaCost.SKILL_CAST);
                         }
                         return true;
                     }

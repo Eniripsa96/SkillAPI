@@ -103,13 +103,24 @@ public class FlagData
      */
     public void removeFlag(String flag)
     {
+        removeFlag(flag, FlagExpireEvent.ExpireReason.REMOVED);
+    }
+
+    /**
+     * Removes a flag from the entity, using the given reason
+     *
+     * @param flag   flag to remove
+     * @param reason reason for removal
+     */
+    private void removeFlag(String flag, FlagExpireEvent.ExpireReason reason)
+    {
         if (flags.containsKey(flag))
         {
             flags.remove(flag);
             BukkitTask task = tasks.remove(flag);
             if (task != null)
                 task.cancel();
-            Bukkit.getPluginManager().callEvent(new FlagExpireEvent(entity, flag));
+            Bukkit.getPluginManager().callEvent(new FlagExpireEvent(entity, flag, reason));
             if (flags.size() == 0)
             {
                 FlagManager.clearFlags(entity);
@@ -194,7 +205,7 @@ public class FlagData
                 FlagManager.clearFlags(entity);
                 return;
             }
-            removeFlag(flag);
+            removeFlag(flag, FlagExpireEvent.ExpireReason.TIME);
         }
     }
 }

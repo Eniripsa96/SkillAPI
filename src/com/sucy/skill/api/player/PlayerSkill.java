@@ -144,6 +144,14 @@ public final class PlayerSkill
     }
 
     /**
+     * @return mana cost to use the skill
+     */
+    public double getManaCost()
+    {
+        return skill.getManaCost(level);
+    }
+
+    /**
      * Retrieves the level requirement of the skill to get to the next level
      *
      * @return the level requirement to get to the next level

@@ -545,7 +545,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 PlayerSkill skill = data.getSkill(getName());
                 boolean cd = component.getSettings().getBool("cooldown", false);
                 boolean mana = component.getSettings().getBool("mana", false);
-                if (!data.check(skill, cd, mana))
+                if ((cd || mana) && !data.check(skill, cd, mana))
                     return false;
 
                 if (cd)

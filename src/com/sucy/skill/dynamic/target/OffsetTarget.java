@@ -26,9 +26,15 @@
  */
 package com.sucy.skill.dynamic.target;
 
+import com.sucy.skill.cast.CircleIndicator;
+import com.sucy.skill.cast.IIndicator;
+import com.sucy.skill.cast.IndicatorType;
+import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -46,6 +52,37 @@ public class OffsetTarget extends EffectComponent
     private static final String RIGHT   = "right";
 
     /**
+     * Creates the list of indicators for the skill
+     *
+     * @param list   list to store indicators in
+     * @param caster caster reference
+     * @param target location to base location on
+     * @param level  the level of the skill to create for
+     */
+    @Override
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
+    {
+        target = getTargetLoc(caster, level, target);
+        if (indicatorType == IndicatorType.DIM_3)
+        {
+            Location loc = target.getLocation();
+            IIndicator indicator = new SphereIndicator(0.5);
+            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
+            list.add(indicator);
+        }
+        else if (indicatorType == IndicatorType.DIM_2)
+        {
+            Location loc = target.getLocation();
+            IIndicator indicator = new CircleIndicator(0.5);
+            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
+            list.add(indicator);
+        }
+
+        for (EffectComponent component : children)
+            component.makeIndicators(list, caster, target, level);
+    }
+
+    /**
      * Executes the component
      *
      * @param caster  caster of the skill
@@ -57,21 +94,24 @@ public class OffsetTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+        for (LivingEntity t : targets)
+            list.add(getTargetLoc(caster, level, t));
+        return executeChildren(caster, level, list);
+    }
+
+    private TempEntity getTargetLoc(LivingEntity caster, int level, LivingEntity t)
+    {
+        boolean isSelf = t == caster;
         double forward = attr(caster, FORWARD, level, 0, isSelf);
         double upward = attr(caster, UPWARD, level, 0, isSelf);
         double right = attr(caster, RIGHT, level, 0, isSelf);
 
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity t : targets)
-        {
-            Vector dir = t.getLocation().getDirection().setY(0).normalize();
-            Vector nor = dir.clone().crossProduct(up);
-            dir.multiply(forward);
-            dir.add(nor.multiply(right)).setY(upward);
+        Vector dir = t.getLocation().getDirection().setY(0).normalize();
+        Vector nor = dir.clone().crossProduct(up);
+        dir.multiply(forward);
+        dir.add(nor.multiply(right)).setY(upward);
 
-            list.add(new TempEntity(t.getLocation().add(dir)));
-        }
-        return executeChildren(caster, level, list);
+        return new TempEntity(t.getLocation().add(dir));
     }
 }

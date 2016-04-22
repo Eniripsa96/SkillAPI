@@ -38,6 +38,7 @@ import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.*;
+import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.hook.NoCheatHook;
 import com.sucy.skill.hook.PluginChecker;
@@ -703,6 +704,26 @@ public abstract class Skill
             target.setHealth(Math.max(0, target.getHealth() - damage));
         }
     }
+
+    /**
+     * Initializes the indicators for a skill.
+     * This should be implemented by each skill.
+     *
+     * @param list   list to store indicators in
+     * @param player player to base location on
+     * @param level  the level of the skill to create for
+     */
+    public void createPreview(List<IIndicator> list, Player player, int level) { }
+
+    /**
+     * Updates the positions of indicators for a skill.
+     * This should be implemented by each skill.
+     *
+     * @param list   list to update
+     * @param player player to base location on
+     * @param level  level of the skill updating for
+     */
+    public void updateIndicators(List<IIndicator> list, Player player, int level) { }
 
     private static boolean skillDamage = false;
 

@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.cast.CircleIndicator
+ * com.sucy.skill.cast.CylinderIndicator
  *
  * The MIT License (MIT)
  *
@@ -30,26 +30,34 @@ import org.bukkit.Location;
 
 import java.util.List;
 
-/**
- * An indicator for a circular pattern
- */
-public class CircleIndicator implements IIndicator
+public class CylinderIndicator implements IIndicator
 {
-    private double x, y, z;
+    private double x;
+    private double y;
+    private double z;
     private double radius;
-    private double sin, cos;
+    private double height;
+    private double sin;
+    private double cos;
     private int particles;
+    private int vertParticles;
+    private double vertOffset;
+    private int vert;
 
     /**
      * @param radius radius of the circle
      */
-    public CircleIndicator(double radius)
+    public CylinderIndicator(double radius, double height)
     {
         if (radius == 0)
             throw new IllegalArgumentException("Invalid radius - cannot be 0");
 
         this.radius = Math.abs(radius);
+        this.height = height;
         particles = (int)(IndicatorSettings.density * radius * 2 * Math.PI);
+        vert = particles / 8;
+        vertParticles = (int)(IndicatorSettings.density * height);
+        vertOffset = height / vertParticles;
 
         double angle = Math.PI * 2 / particles;
         sin = Math.sin(angle);
@@ -100,17 +108,26 @@ public class CircleIndicator implements IIndicator
     {
         // Offset angle for animation
         double startAngle = step * IndicatorSettings.animation / (20 * radius);
-        double ii = Math.sin(startAngle) * radius;
-        double jj = Math.cos(startAngle) * radius;
+        double rSin = Math.sin(startAngle) * radius;
+        double rCos = Math.cos(startAngle) * radius;
 
         // Make the packets
         for (int i = 0; i < particles; i++)
         {
-            packets.add(particle.instance(x + ii, y, z + jj));
+            packets.add(particle.instance(x + rSin, y, z + rCos));
+            packets.add(particle.instance(x + rSin, y + height, z + rCos));
 
-            double temp = ii * cos - jj * sin;
-            jj = ii * sin + jj * cos;
-            ii = temp;
+            if (i % vert == 0)
+            {
+                for (int j = 0; j < vertParticles; j++)
+                {
+                    packets.add(particle.instance(x + rSin, y + vertOffset * j, z + rCos));
+                }
+            }
+
+            double temp = rSin * cos - rCos * sin;
+            rCos = rSin * sin + rCos * cos;
+            rSin = temp;
         }
     }
 }

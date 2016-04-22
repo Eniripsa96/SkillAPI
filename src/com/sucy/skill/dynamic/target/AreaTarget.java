@@ -28,11 +28,17 @@ package com.sucy.skill.dynamic.target;
 
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.util.Nearby;
+import com.sucy.skill.cast.CircleIndicator;
+import com.sucy.skill.cast.IIndicator;
+import com.sucy.skill.cast.IndicatorType;
+import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +54,47 @@ public class AreaTarget extends EffectComponent
     private static final String MAX    = "max";
     private static final String WALL   = "wall";
     private static final String CASTER = "caster";
+    private static final String BOX    = "box";
+
+    /**
+     * Creates the list of indicators for the skill
+     *
+     * @param list   list to store indicators in
+     * @param caster caster reference
+     * @param target location to base location on
+     * @param level  the level of the skill to create for
+     */
+    @Override
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
+    {
+        if (indicatorType == IndicatorType.DIM_3)
+        {
+            Location loc = target.getLocation();
+            IIndicator indicator = new SphereIndicator(attr(caster, RADIUS, level, 3.0, true));
+            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
+            list.add(indicator);
+        }
+        else if (indicatorType == IndicatorType.DIM_2)
+        {
+            Location loc = target.getLocation();
+            IIndicator indicator = new CircleIndicator(attr(caster, RADIUS, level, 3.0, true));
+            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
+            list.add(indicator);
+        }
+
+        List<LivingEntity> targets = null;
+        for (EffectComponent component : children)
+        {
+            if (component.hasEffect)
+            {
+                if (targets == null)
+                    targets = getTargets(caster, level, target);
+
+                for (LivingEntity t : targets)
+                    component.makeIndicators(list, caster, t, level);
+            }
+        }
+    }
 
     /**
      * Executes the component
@@ -61,53 +108,54 @@ public class AreaTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        boolean worked = false;
+        for (LivingEntity target : targets)
+        {
+            List<LivingEntity> list = getTargets(caster, level, target);
+            worked = (list.size() > 0 && executeChildren(caster, level, list)) || worked;
+        }
+        return worked;
+    }
+
+    private List<LivingEntity> getTargets(LivingEntity caster, int level, LivingEntity target)
+    {
+        boolean isSelf = target == caster;
         double radius = attr(caster, RADIUS, level, 3.0, isSelf);
         String group = settings.getString(ALLY, "enemy").toLowerCase();
         boolean both = group.equals("both");
         boolean ally = group.equals("ally");
-        boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
-        boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
+        boolean throughWall = settings.getString(WALL, "false").equalsIgnoreCase("true");
+        boolean self = settings.getString(CASTER, "false").equalsIgnoreCase("true");
         double max = attr(caster, MAX, level, 99, isSelf);
         Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
 
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity t : targets)
-        {
-            int prevSize = list.size();
 
-            List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            if (t != caster && !(t instanceof TempEntity) && (both || SkillAPI.getSettings().isAlly(caster, t) == ally))
+        List<LivingEntity> entities = Nearby.getLivingNearby(target.getLocation(), radius);
+
+        if (target != caster && !(target instanceof TempEntity) && (both || SkillAPI.getSettings().isAlly(caster, target) == ally))
+        {
+            list.add(target);
+        }
+        if (self)
+        {
+            list.add(caster);
+        }
+
+        for (int i = 0; i < entities.size() && list.size() < max; i++)
+        {
+            LivingEntity t = entities.get(i);
+            if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, t.getLocation().add(0, 0.5, 0)))
+                continue;
+
+            if (both || ally == SkillAPI.getSettings().isAlly(caster, t))
             {
                 list.add(t);
+                if (list.size() >= max)
+                    return list;
             }
-            if (self)
-            {
-                list.add(caster);
-            }
-
-            for (int i = 0; i < entities.size() && list.size() < max; i++)
-            {
-                if (entities.get(i) instanceof LivingEntity)
-                {
-                    LivingEntity target = (LivingEntity) entities.get(i);
-                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-                    {
-                        continue;
-                    }
-                    if (both || ally == SkillAPI.getSettings().isAlly(caster, target))
-                    {
-                        list.add(target);
-                        if (list.size() >= max)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            max += list.size() - prevSize;
         }
-        return list.size() > 0 && executeChildren(caster, level, list);
+
+        return list;
     }
 }

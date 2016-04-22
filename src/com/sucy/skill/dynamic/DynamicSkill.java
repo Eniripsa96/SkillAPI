@@ -38,6 +38,7 @@ import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
+import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.dynamic.executors.*;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
@@ -45,19 +46,17 @@ import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.PluginManager;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A skill implementation for the Dynamic system
@@ -253,6 +252,34 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public boolean cast(LivingEntity user, int level)
     {
         return trigger(user, user, level, Trigger.CAST);
+    }
+
+    /**
+     * Initializes the indicators for a skill.
+     *
+     * @param list   list to store indicators in
+     * @param player player to base location on
+     * @param level  the level of the skill to create for
+     */
+    @Override
+    public void createPreview(List<IIndicator> list, Player player, int level)
+    {
+        list.clear();
+        for (EffectComponent component : components.values())
+            component.makeIndicators(list, player, player, level);
+    }
+
+    /**
+     * Updates the positions of indicators for a skill.
+     *
+     * @param list   list to store indicators in
+     * @param player player to base location on
+     * @param level  the level of the skill to create for
+     */
+    @Override
+    public void updateIndicators(List<IIndicator> list, Player player, int level)
+    {
+        createPreview(list, player, level);
     }
 
     /**
@@ -649,6 +676,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 catch (Exception ex)
                 {
                     // Invalid trigger
+                    ex.printStackTrace();
                     Logger.invalid("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
                 }
             }

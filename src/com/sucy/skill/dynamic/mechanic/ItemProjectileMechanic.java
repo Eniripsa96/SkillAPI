@@ -30,11 +30,13 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.api.projectile.ItemProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
+import com.sucy.skill.cast.*;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -57,6 +59,62 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
     private static final String RADIUS   = "radius";
     private static final String SPREAD   = "spread";
     private static final String ALLY     = "group";
+
+    /**
+     * Creates the list of indicators for the skill
+     *
+     * @param list   list to store indicators in
+     * @param caster caster reference
+     * @param target location to base location on
+     * @param level  the level of the skill to create for
+     */
+    @Override
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
+    {
+        // Get common values
+        int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
+        double speed = attr(caster, "velocity", level, 1, true);
+        String spread = settings.getString(SPREAD, "cone").toLowerCase();
+
+        // Apply the spread type
+        if (spread.equals("rain"))
+        {
+            double radius = attr(caster, RADIUS, level, 2.0, true);
+
+            if (indicatorType == IndicatorType.DIM_2)
+            {
+                IIndicator indicator = new CircleIndicator(radius);
+                indicator.moveTo(target.getLocation().add(0, 0.1, 0));
+                list.add(indicator);
+            }
+            else
+            {
+                double height = attr(caster, HEIGHT, level, 8.0, true);
+                IIndicator indicator = new CylinderIndicator(radius, height);
+                indicator.moveTo(target.getLocation());
+                list.add(indicator);
+            }
+        }
+        else
+        {
+            Vector dir = target.getLocation().getDirection();
+            if (spread.equals("horizontal cone"))
+            {
+                dir.setY(0);
+                dir.normalize();
+            }
+            double angle = attr(caster, ANGLE, level, 30.0, true);
+            ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
+            Location loc = caster.getLocation().add(0, caster.getEyeHeight(), 0);
+            for (Vector d : dirs)
+            {
+                ProjectileIndicator indicator = new ProjectileIndicator(speed, 0.04);
+                indicator.setDirection(d);
+                indicator.moveTo(loc);
+                list.add(indicator);
+            }
+        }
+    }
 
     /**
      * Executes the component

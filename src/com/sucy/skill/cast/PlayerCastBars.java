@@ -30,6 +30,9 @@ import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
+import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.task.PreviewTask;
+import com.sucy.skill.thread.MainThread;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -57,6 +60,8 @@ public class PlayerCastBars implements InventoryHolder
 
     private PlayerData player;
 
+    private PlayerSkill hovered;
+
     private long cooldown;
 
     private int oldSlot;
@@ -76,6 +81,46 @@ public class PlayerCastBars implements InventoryHolder
     {
         validate(hoverBar);
         validate(instantBar);
+    }
+
+    /**
+     * @return true if in the hover view, false otherwise
+     */
+    public boolean isHovering()
+    {
+        return view == PlayerView.HOVER_BAR;
+    }
+
+    /**
+     * Marks a skill as hovered
+     *
+     * @param slot skill slot
+     */
+    public void hoverSkill(Player player, int slot)
+    {
+        if (hoverBar.containsKey(slot))
+        {
+            hovered = this.player.getSkill(hoverBar.get(slot));
+            hovered.initIndicators(player);
+        }
+        else hovered = null;
+    }
+
+    /**
+     * Makes the packets for cast previews
+     *
+     * @param step animation step
+     * @return packet list or null if nothing is hovered
+     * @throws Exception
+     */
+    public List<Object> getHoverPackets(Player player, int step)
+        throws Exception
+    {
+        if (hovered == null)
+            return null;
+
+        hovered.updateIndicators(player);
+        return hovered.makePackets(step);
     }
 
     /**
@@ -229,7 +274,11 @@ public class PlayerCastBars implements InventoryHolder
      */
     public boolean showHoverBar(Player player)
     {
-        return show(player, PlayerView.HOVER_BAR, hoverBar);
+        boolean result = show(player, PlayerView.HOVER_BAR, hoverBar);
+        player.getInventory().setHeldItemSlot(0);
+        hoverSkill(player, 0);
+        MainThread.register(new PreviewTask(player));
+        return result;
     }
 
     /**
@@ -285,7 +334,7 @@ public class PlayerCastBars implements InventoryHolder
                 return true;
 
             case HOVER_BAR:
-                // TODO - setup indicator for skill
+                hoverSkill(event.getPlayer(), event.getNewSlot());
                 return true;
 
             case INVENTORY:

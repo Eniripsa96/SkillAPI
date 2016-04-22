@@ -28,9 +28,11 @@ package com.sucy.skill.dynamic.target;
 
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.cast.*;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -48,6 +50,42 @@ public class ConeTarget extends EffectComponent
     private static final String CASTER = "caster";
 
     /**
+     * Creates the list of indicators for the skill
+     *
+     * @param list   list to store indicators in
+     * @param caster caster reference
+     * @param target location to base location on
+     * @param level  the level of the skill to create for
+     */
+    @Override
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
+    {
+        double range = attr(caster, RANGE, level, 3.0, target == caster);
+        double angle = attr(caster, ANGLE, level, 90.0, target == caster);
+        if (indicatorType != IndicatorType.NONE)
+        {
+            Location loc = target.getLocation();
+            ConeIndicator indicator = new ConeIndicator(angle, range);
+            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
+            indicator.setDirection(loc.getYaw());
+            list.add(indicator);
+        }
+
+        List<LivingEntity> targets = null;
+        for (EffectComponent component : children)
+        {
+            if (component.hasEffect)
+            {
+                if (targets == null)
+                    targets = getTargets(caster, level, target);
+
+                for (LivingEntity t : targets)
+                    component.makeIndicators(list, caster, t, level);
+            }
+        }
+    }
+
+    /**
      * Executes the component
      *
      * @param caster  caster of the skill
@@ -60,7 +98,17 @@ public class ConeTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         boolean worked = false;
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        for (LivingEntity t : targets)
+        {
+            List<LivingEntity> list = getTargets(caster, level, t);
+            worked = (list.size() > 0 && executeChildren(caster, level, list)) || worked;
+        }
+        return worked;
+    }
+
+    private List<LivingEntity> getTargets(LivingEntity caster, int level, LivingEntity t)
+    {
+        boolean isSelf = t == caster;
         double range = attr(caster, RANGE, level, 3.0, isSelf);
         double angle = attr(caster, ANGLE, level, 90.0, isSelf);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
@@ -69,26 +117,23 @@ public class ConeTarget extends EffectComponent
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
         int max = settings.getInt(MAX, 99);
         Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
-        for (LivingEntity t : targets)
+
+        List<LivingEntity> list = TargetHelper.getConeTargets(t, angle, range);
+        if (self)
         {
-            List<LivingEntity> list = TargetHelper.getConeTargets(caster, angle, range);
-            if (self)
-            {
-                list.add(caster);
-            }
-            for (int i = 0; i < list.size(); i++)
-            {
-                LivingEntity target = list.get(i);
-                if (i >= max
-                    || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-                    || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
-                {
-                    list.remove(i);
-                    i--;
-                }
-            }
-            worked = executeChildren(caster, level, list) || worked;
+            list.add(caster);
         }
-        return worked;
+        for (int i = list.size() - 1; i >= 0; i--)
+        {
+            LivingEntity target = list.get(i);
+            if (i >= max
+                || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
+                || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
+            {
+                list.remove(i);
+            }
+        }
+
+        return list;
     }
 }

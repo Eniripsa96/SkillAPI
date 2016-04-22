@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.cast.CircleIndicator
+ * com.sucy.skill.cast.SphereIndicator
  *
  * The MIT License (MIT)
  *
@@ -31,25 +31,29 @@ import org.bukkit.Location;
 import java.util.List;
 
 /**
- * An indicator for a circular pattern
+ * A fancier sphere indicator
  */
-public class CircleIndicator implements IIndicator
+public class SphereIndicator implements IIndicator
 {
+    private static final double COS_45 = Math.cos(Math.PI / 4);
+
     private double x, y, z;
     private double radius;
     private double sin, cos;
+    private double angleStep;
     private int particles;
 
     /**
      * @param radius radius of the circle
      */
-    public CircleIndicator(double radius)
+    public SphereIndicator(double radius)
     {
         if (radius == 0)
             throw new IllegalArgumentException("Invalid radius - cannot be 0");
 
         this.radius = Math.abs(radius);
         particles = (int)(IndicatorSettings.density * radius * 2 * Math.PI);
+        angleStep = IndicatorSettings.animation * IndicatorSettings.interval / (20 * this.radius);
 
         double angle = Math.PI * 2 / particles;
         sin = Math.sin(angle);
@@ -99,18 +103,24 @@ public class CircleIndicator implements IIndicator
         throws Exception
     {
         // Offset angle for animation
-        double startAngle = step * IndicatorSettings.animation / (20 * radius);
-        double ii = Math.sin(startAngle) * radius;
-        double jj = Math.cos(startAngle) * radius;
+        double startAngle = step * angleStep;
 
-        // Make the packets
+        double urs = Math.sin(startAngle);
+        double urc = Math.cos(startAngle);
+
+        double rs = urs * radius;
+        double rc = urc * radius;
+
+        // Flat circle packets
         for (int i = 0; i < particles; i++)
         {
-            packets.add(particle.instance(x + ii, y, z + jj));
+            packets.add(particle.instance(x + rs, y, z + rc));
+            packets.add(particle.instance(x + rs * urc, y + rc, z + rs * urs));
+            packets.add(particle.instance(x + (rc - rs * urs) * COS_45, y + rs * urc, z + (rc + rs * urs) * COS_45));
 
-            double temp = ii * cos - jj * sin;
-            jj = ii * sin + jj * cos;
-            ii = temp;
+            double temp = rs * cos - rc * sin;
+            rc = rs * sin + rc * cos;
+            rs = temp;
         }
     }
 }

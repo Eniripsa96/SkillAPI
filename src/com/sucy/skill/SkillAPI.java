@@ -34,6 +34,7 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.util.Particle;
 import com.sucy.skill.data.PlayerStats;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
@@ -105,6 +106,7 @@ public class SkillAPI extends JavaPlugin
         singleton = this;
 
         mainThread = new MainThread();
+        Particle.init();
 
         // Load settings
         settings = new Settings(this);
@@ -210,10 +212,12 @@ public class SkillAPI extends JavaPlugin
         // Clear skill bars and stop passives before disabling
         for (Player player : VersionManager.getOnlinePlayers())
         {
-            getPlayerData(player).stopPassives(player);
+            PlayerData data = getPlayerData(player);
+            data.stopPassives(player);
+            data.getCastBars().restore(player);
             if (player.getGameMode() != GameMode.CREATIVE && !player.isDead())
             {
-                getPlayerData(player).getSkillBar().clear(player);
+                data.getSkillBar().clear(player);
             }
             player.setMaxHealth(20);
             player.setWalkSpeed(0.2f);

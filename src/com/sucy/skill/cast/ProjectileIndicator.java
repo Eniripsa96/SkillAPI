@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.cast.CircleIndicator
+ * com.sucy.skill.cast.ArcIndicator
  *
  * The MIT License (MIT)
  *
@@ -27,33 +27,56 @@
 package com.sucy.skill.cast;
 
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 
 /**
- * An indicator for a circular pattern
+ * Represents a preview indicator for showing the direction of projectiles to fire
  */
-public class CircleIndicator implements IIndicator
+public class ProjectileIndicator implements IIndicator
 {
     private double x, y, z;
-    private double radius;
-    private double sin, cos;
-    private int particles;
+    private double velX, velY, velZ;
+    private double speed;
+    private double gravity;
+    private double tBase;
 
     /**
-     * @param radius radius of the circle
+     * @param speed   speed of the projectile
+     * @param gravity gravity of the projectile
      */
-    public CircleIndicator(double radius)
+    public ProjectileIndicator(double speed, double gravity)
     {
-        if (radius == 0)
-            throw new IllegalArgumentException("Invalid radius - cannot be 0");
+        this.speed = speed;
+        this.gravity = gravity;
+        this.tBase = 3 / this.speed;
+    }
 
-        this.radius = Math.abs(radius);
-        particles = (int)(IndicatorSettings.density * radius * 2 * Math.PI);
+    /**
+     * Sets the direction of the projectile
+     *
+     * @param direction direction of the indicator
+     */
+    public void setDirection(Vector direction)
+    {
+        velX = direction.getX() * speed;
+        velY = direction.getY() * speed;
+        velZ = direction.getZ() * speed;
+    }
 
-        double angle = Math.PI * 2 / particles;
-        sin = Math.sin(angle);
-        cos = Math.cos(angle);
+    /**
+     * Sets the direction of the projectile
+     *
+     * @param x X-Axis value
+     * @param y Y-Axis value
+     * @param z Z-Axis value
+     */
+    public void setDirection(double x, double y, double z)
+    {
+        velX = x * speed;
+        velY = y * speed;
+        velZ = z * speed;
     }
 
     /**
@@ -98,19 +121,10 @@ public class CircleIndicator implements IIndicator
     public void makePackets(List<Object> packets, CastIndicatorParticle particle, int step)
         throws Exception
     {
-        // Offset angle for animation
-        double startAngle = step * IndicatorSettings.animation / (20 * radius);
-        double ii = Math.sin(startAngle) * radius;
-        double jj = Math.cos(startAngle) * radius;
+        double px = x + velX * tBase;
+        double py = y + velY * tBase - gravity * tBase * tBase;
+        double pz = z + velZ * tBase;
 
-        // Make the packets
-        for (int i = 0; i < particles; i++)
-        {
-            packets.add(particle.instance(x + ii, y, z + jj));
-
-            double temp = ii * cos - jj * sin;
-            jj = ii * sin + jj * cos;
-            ii = temp;
-        }
+        packets.add(particle.instance(px, py, pz));
     }
 }

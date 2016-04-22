@@ -67,13 +67,13 @@ public class TempEntity implements LivingEntity
     @Override
     public double getEyeHeight()
     {
-        return 0;
+        return 0.2;
     }
 
     @Override
     public double getEyeHeight(boolean b)
     {
-        return 0;
+        return 0.2;
     }
 
     @Override

@@ -26,9 +26,16 @@
  */
 package com.sucy.skill.dynamic.target;
 
+import com.sucy.skill.cast.CircleIndicator;
+import com.sucy.skill.cast.IIndicator;
+import com.sucy.skill.cast.IndicatorType;
+import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.TempEntity;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -40,6 +47,43 @@ public class RememberTarget extends EffectComponent
     private static final String KEY = "key";
 
     /**
+     * Creates the list of indicators for the skill
+     *
+     * @param list   list to store indicators in
+     * @param caster caster reference
+     * @param target location to base location on
+     * @param level  the level of the skill to create for
+     */
+    @Override
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
+    {
+        List<LivingEntity> targets = getTargets(caster);
+        if (targets == null)
+            return;
+
+        for (LivingEntity t : targets)
+        {
+            if (indicatorType == IndicatorType.DIM_3)
+            {
+                Location loc = t.getLocation();
+                IIndicator indicator = new SphereIndicator(0.5);
+                indicator.moveTo(loc.getX(), loc.getY() + t.getEyeHeight() / 2, loc.getZ());
+                list.add(indicator);
+            }
+            else if (indicatorType == IndicatorType.DIM_2)
+            {
+                Location loc = t.getLocation();
+                IIndicator indicator = new CircleIndicator(0.5);
+                indicator.moveTo(loc.getX(), loc.getY() + t.getEyeHeight() / 2, loc.getZ());
+                list.add(indicator);
+            }
+
+            for (EffectComponent component : children)
+                component.makeIndicators(list, caster, t, level);
+        }
+    }
+
+    /**
      * Executes the component
      *
      * @param caster  caster of the skill
@@ -49,18 +93,19 @@ public class RememberTarget extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        if (!settings.has(KEY))
-        {
-            return false;
-        }
+        targets = getTargets(caster);
+        return targets != null && executeChildren(caster, level, targets);
+    }
 
+    @SuppressWarnings("unchecked")
+    private List<LivingEntity> getTargets(LivingEntity caster)
+    {
         String key = settings.getString(KEY);
-        Object data = DynamicSkill.getCastData(caster).get(key);
         try
         {
+            Object data = DynamicSkill.getCastData(caster).get(key);
             List<LivingEntity> remembered = (List<LivingEntity>) data;
             for (int i = 0; i < remembered.size(); i++)
             {
@@ -70,11 +115,11 @@ public class RememberTarget extends EffectComponent
                     i--;
                 }
             }
-            return targets.size() > 0 && executeChildren(caster, level, remembered);
+            return remembered;
         }
         catch (Exception ex)
         {
-            return false;
+            return null;
         }
     }
 }

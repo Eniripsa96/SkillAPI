@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.cast.CircleIndicator
+ * com.sucy.skill.cast.ConeIndicator
  *
  * The MIT License (MIT)
  *
@@ -27,33 +27,54 @@
 package com.sucy.skill.cast;
 
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 
-/**
- * An indicator for a circular pattern
- */
-public class CircleIndicator implements IIndicator
+public class ConeIndicator implements IIndicator
 {
     private double x, y, z;
-    private double radius;
+    private double fx, fz;
+    private double arc, radius;
     private double sin, cos;
-    private int particles;
+    private double rSin, rCos;
+    private double offset;
+    private double yaw;
+    private double angleOffset;
 
     /**
-     * @param radius radius of the circle
+     * @param arc    angle of the cone in degrees
+     * @param radius radius of the cone
      */
-    public CircleIndicator(double radius)
+    public ConeIndicator(double arc, double radius)
     {
         if (radius == 0)
             throw new IllegalArgumentException("Invalid radius - cannot be 0");
 
+        this.arc = arc * Math.PI / 180;
         this.radius = Math.abs(radius);
-        particles = (int)(IndicatorSettings.density * radius * 2 * Math.PI);
+        double perimeter = radius * arc + 2 * radius;
+        int particles = (int)(IndicatorSettings.density * perimeter);
 
-        double angle = Math.PI * 2 / particles;
-        sin = Math.sin(angle);
-        cos = Math.cos(angle);
+        offset = perimeter / particles;
+        angleOffset = offset / radius;
+        sin = Math.sin(angleOffset);
+        cos = Math.cos(angleOffset);
+        rSin = Math.sin(arc / 2);
+        rCos = Math.cos(arc / 2);
+    }
+
+    /**
+     * Sets the direction of the projectile
+     *
+     * @param yaw the directional yaw
+     */
+    public void setDirection(float yaw)
+    {
+        yaw *= -Math.PI / 180;
+        fx = Math.sin(yaw);
+        fz = Math.cos(yaw);
+        this.yaw = yaw + Math.PI / 4;
     }
 
     /**
@@ -98,19 +119,39 @@ public class CircleIndicator implements IIndicator
     public void makePackets(List<Object> packets, CastIndicatorParticle particle, int step)
         throws Exception
     {
-        // Offset angle for animation
-        double startAngle = step * IndicatorSettings.animation / (20 * radius);
-        double ii = Math.sin(startAngle) * radius;
-        double jj = Math.cos(startAngle) * radius;
+        double base = (IndicatorSettings.animation * 0.05 * step) % offset;
 
-        // Make the packets
-        for (int i = 0; i < particles; i++)
+        // Offset angle for animation
+        double startAngle = ((radius - base) % offset) / radius;
+        double ii = Math.sin(startAngle + yaw) * radius;
+        double jj = Math.cos(startAngle + yaw) * radius;
+
+        // Packets along the edges
+        make(packets, particle, base, fx * rCos + fz * rSin, fz * rCos - fx * rSin);
+        make(packets, particle, offset - base, fx * rCos - fz * rSin, fx * rSin + fz * rCos);
+
+        // Packets around the curve
+        System.out.println("Playing");
+        while (startAngle < arc)
         {
             packets.add(particle.instance(x + ii, y, z + jj));
 
             double temp = ii * cos - jj * sin;
             jj = ii * sin + jj * cos;
             ii = temp;
+
+            System.out.println("  - " + startAngle + " / " + arc);
+            startAngle += angleOffset;
+        }
+    }
+
+    private void make(List<Object> packets, CastIndicatorParticle particle, double pos, double rfx, double rfz)
+        throws Exception
+    {
+        while (pos <= radius)
+        {
+            packets.add(particle.instance(x + pos * rfx, y, z + pos * rfz));
+            pos += offset;
         }
     }
 }

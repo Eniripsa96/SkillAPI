@@ -33,10 +33,12 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.cast.IIndicator;
+import com.sucy.skill.cast.IndicatorType;
 import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
 import com.sucy.skill.log.Logger;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -68,18 +70,17 @@ public abstract class EffectComponent
     protected DynamicSkill skill;
 
     /**
-     * Starting index for indicators
+     * Type of indicators to show
      */
-    protected int indicatorIndex;
+    protected IndicatorType indicatorType;
 
     /**
-     * Number of indicators added
+     * Whether or not the component has preview effects
      */
-    protected int indicatorCount;
+    public boolean hasEffect;
 
     private String key;
     private String type = "trigger";
-    private int indicatorType;
 
     /**
      * Retrieves the config key for the component
@@ -109,6 +110,23 @@ public abstract class EffectComponent
     public Settings getSettings()
     {
         return settings;
+    }
+
+    /**
+     * Checks whether or not the component or its children have an effect
+     *
+     * @return true if has an effect, false otherwise
+     */
+    private boolean hasEffect()
+    {
+        if (indicatorType != IndicatorType.NONE)
+            return true;
+
+        for (EffectComponent child : children)
+            if (child.hasEffect())
+                return true;
+
+        return false;
     }
 
     /**
@@ -239,38 +257,18 @@ public abstract class EffectComponent
     public abstract boolean execute(LivingEntity caster, int level, List<LivingEntity> targets);
 
     /**
-     * Initializes the effect, grabbing settings data
-     * and creating indicators
+     * Creates the list of indicators for the skill
      *
-     * @param indicators indicator list to add to
+     * @param list   list to store indicators in
+     * @param caster caster reference
+     * @param target location to base location on
+     * @param level  the level of the skill to create for
      */
-    public void initialize(List<IIndicator> indicators)
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
     {
-        indicatorIndex = indicators.size();
-    }
-
-    /**
-     * Updates the indicators for the component
-     *
-     * @param indicators indicator list to grab from
-     */
-    public void updateIndicators(IIndicator[] indicators)
-    {
-        if (indicatorType == 0)
-            return;
-
-
-    }
-
-    /**
-     * Updates indicators of child components
-     *
-     * @param indicators indicators to update
-     */
-    protected void updateChildIndicators(IIndicator[] indicators)
-    {
-        for (EffectComponent child : children)
-            child.updateIndicators(indicators);
+        if (hasEffect)
+            for (EffectComponent component : children)
+                component.makeIndicators(list, caster, target, level);
     }
 
     private static final String TYPE = "type";
@@ -314,7 +312,7 @@ public abstract class EffectComponent
                 skill.setAttribKey(key, this);
             }
         }
-        indicatorType = settings.getInt(INDICATOR);
+        indicatorType = IndicatorType.getByKey(settings.getString(INDICATOR));
 
         DataSection children = config.getSection("children");
         if (children != null)
@@ -359,10 +357,12 @@ public abstract class EffectComponent
                 }
                 else
                 {
-                    Logger.invalid("Invalid " + type + " component: " + key);
+                    Logger.invalid("Invalid " + type + " component: " + mkey);
                 }
             }
         }
+
+        hasEffect = hasEffect();
     }
 
     private static final HashMap<String, Class<? extends EffectComponent>> targets = new HashMap<String, Class<? extends EffectComponent>>()

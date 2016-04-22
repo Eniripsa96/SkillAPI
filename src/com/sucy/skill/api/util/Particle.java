@@ -72,8 +72,12 @@ public class Particle
             if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0))
             {
                 particleEnum = Class.forName(nms + "EnumParticle");
+                System.out.println("Particles:");
                 for (Object value : particleEnum.getEnumConstants())
+                {
+                    System.out.println("  - " + value.toString());
                     particleTypes.put(value.toString(), value);
+                }
                 packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
                 packet = packetClass.getConstructor(particleEnum, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE, int[].class);
             }
@@ -144,15 +148,17 @@ public class Particle
         // 1.8+ servers use an enum value to validate the particle type
         if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0))
         {
-            String lower = type.toLowerCase();
-            if (CONVERSION.containsKey(lower))
-                type = CONVERSION.get(lower);
+            if (CONVERSION.containsKey(type))
+                type = CONVERSION.get(type);
             else
                 type = type.toUpperCase().replace(" ", "_");
 
             Object enumType = particleTypes.get(type);
             if (enumType == null)
+            {
+                System.out.println("Null particle: " + type);
                 return null;
+            }
 
             return packet.newInstance(
                 enumType,

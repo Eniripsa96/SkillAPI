@@ -28,10 +28,16 @@ package com.sucy.skill.dynamic.target;
 
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.util.Nearby;
+import com.sucy.skill.cast.CircleIndicator;
+import com.sucy.skill.cast.IIndicator;
+import com.sucy.skill.cast.IndicatorType;
+import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +54,46 @@ public class NearestTarget extends EffectComponent
     private static final String CASTER = "caster";
 
     /**
+     * Creates the list of indicators for the skill
+     *
+     * @param list   list to store indicators in
+     * @param caster caster reference
+     * @param target location to base location on
+     * @param level  the level of the skill to create for
+     */
+    @Override
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
+    {
+        if (indicatorType == IndicatorType.DIM_3)
+        {
+            Location loc = target.getLocation();
+            IIndicator indicator = new SphereIndicator(attr(caster, RADIUS, level, 3.0, true));
+            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
+            list.add(indicator);
+        }
+        else if (indicatorType == IndicatorType.DIM_2)
+        {
+            Location loc = target.getLocation();
+            IIndicator indicator = new CircleIndicator(attr(caster, RADIUS, level, 3.0, true));
+            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
+            list.add(indicator);
+        }
+
+        List<LivingEntity> targets = null;
+        for (EffectComponent component : children)
+        {
+            if (component.hasEffect)
+            {
+                if (targets == null)
+                    targets = getTargets(caster, level, target);
+
+                for (LivingEntity t : targets)
+                    component.makeIndicators(list, caster, t, level);
+            }
+        }
+    }
+
+    /**
      * Executes the component
      *
      * @param caster  caster of the skill
@@ -59,7 +105,18 @@ public class NearestTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        boolean worked = false;
+        for (LivingEntity t : targets)
+        {
+            List<LivingEntity> list = getTargets(caster, level, t);
+            worked = (list.size() > 0 && executeChildren(caster, level, list)) || worked;
+        }
+        return worked;
+    }
+
+    private List<LivingEntity> getTargets(LivingEntity caster, int level, LivingEntity t)
+    {
+        boolean isSelf = t == caster;
         double radius = attr(caster, RADIUS, level, 3.0, isSelf);
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
@@ -71,55 +128,52 @@ public class NearestTarget extends EffectComponent
         double[] dists = new double[max];
         double maxDist = Double.MIN_VALUE;
         int next = 0;
-        for (LivingEntity t : targets)
+
+        List<LivingEntity> entities = Nearby.getLivingNearbyBox(t.getLocation(), radius);
+
+        if (self)
         {
-            int prevSize = targets.size();
-
-            List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            if (self)
-            {
-                list.add(caster);
-            }
-
-            // Grab nearby targets
-            for (Entity entity : entities)
-            {
-                if (!(entity instanceof LivingEntity))
-                    continue;
-
-                LivingEntity target = (LivingEntity) entity;
-                if ((!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-                || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
-                    continue;
-
-                double dist = target.getLocation().distanceSquared(wallCheckLoc);
-                if (list.size() >= max)
-                {
-                    if (dist > maxDist)
-                        continue;
-
-                    double newMax = Double.MIN_VALUE;
-                    for (int i = 0; i < max; i++)
-                    {
-                        if (dists[i] == maxDist)
-                        {
-                            list.set(i, target);
-                            dists[i] = dist;
-                        }
-                        else newMax = Math.max(newMax, dists[i]);
-                    }
-                    maxDist = newMax;
-                }
-                else
-                {
-                    maxDist = Math.max(maxDist, dist);
-                    dists[next++] = dist;
-                    list.add(target);
-                }
-            }
-
-            max += targets.size() - prevSize;
+            list.add(caster);
         }
-        return targets.size() > 0 && executeChildren(caster, level, list);
+
+        // Grab nearby targets
+        for (Entity entity : entities)
+        {
+            if (!(entity instanceof LivingEntity))
+                continue;
+
+            LivingEntity target = (LivingEntity) entity;
+            Location targetLoc = target.getLocation().add(0, 0.5, 0);
+            if ((!throughWall && TargetHelper.isObstructed(wallCheckLoc, targetLoc))
+                || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
+                continue;
+
+            double dist = targetLoc.distanceSquared(wallCheckLoc);
+            if (list.size() >= max)
+            {
+                if (dist > maxDist)
+                    continue;
+
+                double newMax = Double.MIN_VALUE;
+                for (int i = 0; i < max; i++)
+                {
+                    if (dists[i] == maxDist)
+                    {
+                        list.set(i, target);
+                        dists[i] = dist;
+                    }
+                    else newMax = Math.max(newMax, dists[i]);
+                }
+                maxDist = newMax;
+            }
+            else
+            {
+                maxDist = Math.max(maxDist, dist);
+                dists[next++] = dist;
+                list.add(target);
+            }
+        }
+
+        return list;
     }
 }

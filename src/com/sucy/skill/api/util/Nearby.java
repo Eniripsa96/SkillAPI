@@ -100,22 +100,7 @@ public class Nearby
      */
     public static List<Entity> getNearby(Entity entity, double radius)
     {
-        List<Entity> result = new ArrayList<Entity>();
-
-        Location loc = entity.getLocation();
-
-        int minX = (int)(loc.getX() - radius) >> 4;
-        int maxX = (int)(loc.getX() + radius) >> 4;
-        int minZ = (int)(loc.getZ() - radius) >> 4;
-        int maxZ = (int)(loc.getZ() + radius) >> 4;
-
-        for (int i = minX; i <= maxX; i++)
-            for (int j = minZ; j <= maxZ; j++)
-                for (Entity ent : loc.getWorld().getChunkAt(i, j).getEntities())
-                    if (ent != entity && ent.getLocation().distanceSquared(loc) < radius)
-                        result.add(ent);
-
-        return result;
+        return getNearby(entity.getLocation(), radius);
     }
 
     /**
@@ -127,23 +112,47 @@ public class Nearby
      */
     public static List<LivingEntity> getLivingNearby(Entity entity, double radius)
     {
-        List<LivingEntity> result = new ArrayList<LivingEntity>();
+        return getLivingNearby(entity.getLocation(), radius);
+    }
 
-        Location loc = entity.getLocation();
+    public static List<Entity> getNearbyBox(Location loc, double radius)
+    {
+        List<Entity> result = new ArrayList<Entity>();
 
         int minX = (int)(loc.getX() - radius) >> 4;
         int maxX = (int)(loc.getX() + radius) >> 4;
         int minZ = (int)(loc.getZ() - radius) >> 4;
         int maxZ = (int)(loc.getZ() + radius) >> 4;
 
-        radius *= radius;
+        for (int i = minX; i <= maxX; i++)
+            for (int j = minZ; j <= maxZ; j++)
+                for (Entity entity : loc.getWorld().getChunkAt(i, j).getEntities())
+                    if (boxDistance(entity.getLocation(), loc) < radius)
+                        result.add(entity);
+
+        return result;
+    }
+
+    public static List<LivingEntity> getLivingNearbyBox(Location loc, double radius)
+    {
+        List<LivingEntity> result = new ArrayList<LivingEntity>();
+
+        int minX = (int)(loc.getX() - radius) >> 4;
+        int maxX = (int)(loc.getX() + radius) >> 4;
+        int minZ = (int)(loc.getZ() - radius) >> 4;
+        int maxZ = (int)(loc.getZ() + radius) >> 4;
 
         for (int i = minX; i <= maxX; i++)
             for (int j = minZ; j <= maxZ; j++)
-                for (Entity ent : loc.getWorld().getChunkAt(i, j).getEntities())
-                    if (ent != entity && ent instanceof LivingEntity && ent.getLocation().distanceSquared(loc) < radius)
-                        result.add((LivingEntity) ent);
+                for (Entity entity : loc.getWorld().getChunkAt(i, j).getEntities())
+                    if (entity instanceof LivingEntity && boxDistance(entity.getLocation(), loc) < radius)
+                        result.add((LivingEntity)entity);
 
         return result;
+    }
+
+    private static double boxDistance(Location loc1, Location loc2)
+    {
+        return Math.max(Math.max(Math.abs(loc1.getX() - loc2.getX()), Math.abs(loc1.getY() - loc2.getY())), Math.abs(loc1.getZ() - loc2.getZ()));
     }
 }

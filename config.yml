@@ -267,7 +267,7 @@ Casting:
     # How tightly to pack particles in the effect. A higher
     # density will play more particles. It represents the
     # amount of particles played per block units
-    density: 2
+    density: 1
     #
     # How often the particles are played for the effect
     # in plays per second
@@ -278,7 +278,7 @@ Casting:
     #
     # Particle to use when it has a target
     particle:
-      type: 'Happy Villager'
+      type: 'happyVillager'
       dx: 0
       dy: 0
       dz: 0

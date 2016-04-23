@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.cast.CastIndicatorParticle
+ * com.sucy.skill.example.Examples
  *
  * The MIT License (MIT)
  *
@@ -24,45 +24,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.cast;
+package com.sucy.skill.example;
 
-import com.rit.sucy.config.parse.DataSection;
-import com.sucy.skill.api.util.Particle;
-import org.bukkit.Location;
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.example.psykin.Psykin;
 
-public class CastIndicatorParticle
+public class Examples
 {
-    private String type;
-    private float dx, dy, dz;
-    private float speed;
-
-    public CastIndicatorParticle(String type, float dx, float dy, float dz, float speed)
+    public static void registerSkills(SkillAPI api)
     {
-        this.type = type;
-        this.dx = dx;
-        this.dy = dy;
-        this.dz = dz;
-        this.speed = speed;
+
     }
 
-    public CastIndicatorParticle(DataSection data)
+    public static void registerClasses(SkillAPI api)
     {
-        type = data.getString("type");
-        dx = data.getFloat("dx");
-        dy = data.getFloat("dy");
-        dz = data.getFloat("dz");
-        speed = data.getFloat("speed");
-    }
-
-    public Object instance(Location loc)
-        throws Exception
-    {
-        return Particle.make(type, loc, dx, dy, dz, speed);
-    }
-
-    public Object instance(double x, double y, double z)
-        throws Exception
-    {
-        return Particle.make(type, x, y, z, dx, dy, dz, speed);
+        api.addClass(new Psykin());
     }
 }

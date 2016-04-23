@@ -27,7 +27,6 @@
 package com.sucy.skill.cast;
 
 import org.bukkit.Location;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 
@@ -116,7 +115,7 @@ public class ConeIndicator implements IIndicator
      * @throws Exception
      */
     @Override
-    public void makePackets(List<Object> packets, CastIndicatorParticle particle, int step)
+    public void makePackets(List<Object> packets, ParticleSettings particle, int step)
         throws Exception
     {
         double base = (IndicatorSettings.animation * 0.05 * step) % offset;
@@ -131,7 +130,6 @@ public class ConeIndicator implements IIndicator
         make(packets, particle, offset - base, fx * rCos - fz * rSin, fx * rSin + fz * rCos);
 
         // Packets around the curve
-        System.out.println("Playing");
         while (startAngle < arc)
         {
             packets.add(particle.instance(x + ii, y, z + jj));
@@ -140,12 +138,11 @@ public class ConeIndicator implements IIndicator
             jj = ii * sin + jj * cos;
             ii = temp;
 
-            System.out.println("  - " + startAngle + " / " + arc);
             startAngle += angleOffset;
         }
     }
 
-    private void make(List<Object> packets, CastIndicatorParticle particle, double pos, double rfx, double rfz)
+    private void make(List<Object> packets, ParticleSettings particle, double pos, double rfx, double rfz)
         throws Exception
     {
         while (pos <= radius)

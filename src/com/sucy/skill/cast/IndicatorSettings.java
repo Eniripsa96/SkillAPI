@@ -27,13 +27,14 @@
 package com.sucy.skill.cast;
 
 import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.api.particle.ParticleSettings;
 
 /**
  * An indicator for a player's skill
  */
 public class IndicatorSettings
 {
-    public static CastIndicatorParticle particle;
+    public static ParticleSettings particle;
 
     public static boolean enabled;
     public static double  density;
@@ -46,6 +47,6 @@ public class IndicatorSettings
         density = data.getDouble("density");
         animation = data.getDouble("animation");
         interval = (int) Math.ceil(20 / data.getDouble("frequency"));
-        particle = new CastIndicatorParticle(data.getSection("particle"));
+        particle = new ParticleSettings(data.getSection("particle"));
     }
 }

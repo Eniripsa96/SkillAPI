@@ -34,6 +34,7 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.example.Examples;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import org.bukkit.plugin.Plugin;
@@ -105,6 +106,7 @@ public class RegistrationManager
 
         // Request plugin skills
         mode = Mode.SKILL;
+        Examples.registerSkills(api);
         for (Plugin plugin : api.getServer().getPluginManager().getPlugins())
         {
             if (plugin instanceof SkillPlugin)
@@ -197,6 +199,7 @@ public class RegistrationManager
 
         // Request plugin classes
         mode = Mode.CLASS;
+        Examples.registerClasses(api);
         for (Plugin plugin : api.getServer().getPluginManager().getPlugins())
         {
             if (plugin instanceof SkillPlugin)

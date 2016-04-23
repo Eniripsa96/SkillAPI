@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.api.util.Particle
+ * com.sucy.skill.api.particle.Particle
  *
  * The MIT License (MIT)
  *
@@ -24,9 +24,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.api.util;
+package com.sucy.skill.api.particle;
 
 import com.rit.sucy.version.VersionManager;
+import com.sucy.skill.api.particle.ParticleType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -111,130 +112,71 @@ public class Particle
     }
 
     /**
-     * Makes a particle packet using the given data
+     * Make a particle packet using the given data
      *
-     * @param type  type of particle
-     * @param loc   location to show at
-     * @param dx    DX value
-     * @param dy    DY value
-     * @param dz    DZ value
-     * @param speed particle speed
+     * @param settings particle details
+     * @param loc      location to play at
      * @return particle object or null if invalid
      * @throws Exception
      */
-    public static Object make(String type, Location loc, float dx, float dy, float dz, float speed)
+    public static Object make(ParticleSettings settings, Location loc)
         throws Exception
     {
-        return make(type, loc.getX(), loc.getY(), loc.getZ(), dx, dy, dz, speed);
+        return make(settings, loc.getX(), loc.getY(), loc.getZ());
     }
 
     /**
      * Make a particle packet using the given data
      *
-     * @param type  type of particle
-     * @param x     X coordinate
-     * @param y     Y coordinate
-     * @param z     Z coordinate
-     * @param dx    DX value
-     * @param dy    DY value
-     * @param dz    DZ value
-     * @param speed particle speed
+     * @param settings particle details
+     * @param x        X coordinate
+     * @param y        Y coordinate
+     * @param z        Z coordinate
      * @return particle object or null if invalid
      * @throws Exception
      */
-    public static Object make(String type, double x, double y, double z, float dx, float dy, float dz, float speed)
+    public static Object make(ParticleSettings settings, double x, double y, double z)
         throws Exception
     {
+        // Invalid particle settings
+        if (settings == null || settings.type == null)
+            return null;
+
         // 1.8+ servers use an enum value to validate the particle type
         if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0))
         {
-            if (CONVERSION.containsKey(type))
-                type = CONVERSION.get(type);
-            else
-                type = type.toUpperCase().replace(" ", "_");
-
-            Object enumType = particleTypes.get(type);
-            if (enumType == null)
-            {
-                System.out.println("Null particle: " + type);
-                return null;
-            }
-
+            Object enumType = particleTypes.get(settings.type.name());
             return packet.newInstance(
                 enumType,
                 true,
                 (float)x,
                 (float)y,
                 (float)z,
-                dx,
-                dy,
-                dz,
-                speed,
-                1,
-                new int[0]
+                settings.dx,
+                settings.dy,
+                settings.dz,
+                settings.speed,
+                settings.amount,
+                settings.data
             );
         }
 
         // 1.7.x servers just use a string for the type,
         // so make sure it is a usable type before blindly
         // sending it through
-        else if (CONVERSION.containsKey(type))
+        else
         {
             return packet.newInstance(
-                type,
+                settings.type.oldName(),
                 (float)x,
                 (float)y,
                 (float)z,
-                dx,
-                dy,
-                dz,
-                speed,
+                settings.dx,
+                settings.dy,
+                settings.dz,
+                settings.amount,
                 1
             );
         }
-        else return null;
     }
-
-    /**
-     * Particle conversion map
-     */
-    public static final HashMap<String, String> CONVERSION = new HashMap<String, String>()
-    {{
-            put("angryVillager", "VILLAGER_ANGRY");
-            put("bubble", "WATER_BUBBLE");
-            put("blockcrack_", "BLOCK_CRACK");
-            put("blockdust_", "BLOCK_DUST");
-            put("cloud", "CLOUD");
-            put("crit", "CRIT");
-            put("depthSuspend", "SUSPENDED_DEPTH");
-            put("dripLava", "DRIP_LAVA");
-            put("dripWater", "DRIP_WATER");
-            put("enchantmenttable", "ENCHANTMENT_TABLE");
-            put("explode", "EXPLOSION_NORMAL");
-            put("fireworksSpark", "FIREWORKS_SPARK");
-            put("flame", "FLAME");
-            put("footstep", "FOOTSTEP");
-            put("happyVillager", "VILLAGER_HAPPY");
-            put("heart", "HEART");
-            put("hugeexplosion", "EXPLOSION_HUGE");
-            put("iconcrack_", "ITEM_CRACK");
-            put("instantSpell", "SPELL_INSTANT");
-            put("largeexplode", "EXPLOSION_LARGE");
-            put("largesmoke", "SMOKE_LARGE");
-            put("lava", "LAVA");
-            put("magicCrit", "CRIT_MAGIC");
-            put("mobSpell", "SPELL_MOB");
-            put("mobSpellAmbient", "SPELL_MOB_AMBIENT");
-            put("note", "NOTE");
-            put("portal", "PORTAL");
-            put("reddust", "REDSTONE");
-            put("slime", "SLIME");
-            put("snowballpoof", "SNOWBALL");
-            put("snowshovel", "SNOW_SHOVEL");
-            put("spell", "SPELL");
-            put("splash", "WATER_SPLASH");
-            put("suspend", "SUSPENDED");
-            put("townaura", "TOWN_AURA");
-            put("witchMagic", "SPELL_WITCH");
-        }};
 }

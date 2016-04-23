@@ -99,7 +99,7 @@ public class SphereIndicator implements IIndicator
      * @throws Exception
      */
     @Override
-    public void makePackets(List<Object> packets, CastIndicatorParticle particle, int step)
+    public void makePackets(List<Object> packets, ParticleSettings particle, int step)
         throws Exception
     {
         // Offset angle for animation

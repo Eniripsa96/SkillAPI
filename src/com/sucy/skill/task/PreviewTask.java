@@ -28,6 +28,7 @@ package com.sucy.skill.task;
 
 import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.particle.Particle;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.cast.IndicatorSettings;
 import com.sucy.skill.thread.RepeatThreadTask;
@@ -39,24 +40,6 @@ import java.util.List;
 
 public class PreviewTask extends RepeatThreadTask
 {
-    private static Method getHandle;
-    private static Method sendPacket;
-    private static Field  playerConnection;
-
-    static
-    {
-        try
-        {
-            getHandle = Reflection.getCraftClass("entity.CraftPlayer").getMethod("getHandle");
-            sendPacket = Reflection.getNMSClass("PlayerConnection").getMethod("sendPacket", Reflection.getNMSClass("Packet"));
-            playerConnection = Reflection.getNMSClass("EntityPlayer").getDeclaredField("playerConnection");
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-
     private Player     player;
     private PlayerData data;
     private int step = 0;
@@ -75,7 +58,6 @@ public class PreviewTask extends RepeatThreadTask
         // Expire when not in the hover view anymore
         if (!data.getCastBars().isHovering())
         {
-            System.out.println("Preview expired");
             expired = true;
             return;
         }
@@ -84,13 +66,8 @@ public class PreviewTask extends RepeatThreadTask
         try
         {
             List<Object> packets = data.getCastBars().getHoverPackets(player, step++);
-            if (packets == null)
-                return;
-
-            Object nms = getHandle.invoke(player);
-            Object connection = playerConnection.get(nms);
-            for (Object packet : packets)
-                sendPacket.invoke(connection, packet);
+            if (packets != null)
+                Particle.send(player, packets);
         }
         catch (Exception ex)
         {

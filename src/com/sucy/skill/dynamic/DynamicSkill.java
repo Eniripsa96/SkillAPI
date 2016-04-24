@@ -361,6 +361,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             if (active.containsKey(shooter.getEntityId())
                 && (type.equals("ANY") || type.equals(event.getEntity().getType().name())))
             {
+                getCastData(shooter).put("api-velocity", event.getEntity().getVelocity().length());
                 trigger(shooter, shooter, level, Trigger.LAUNCH);
                 if (cancel)
                 {
@@ -593,7 +594,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         EffectComponent component = components.get(Trigger.CROUCH);
         if (active.containsKey(event.getPlayer().getEntityId()))
         {
-            if (event.isSneaking() != component.settings.getString("type", "start crouching").toLowerCase().equals("stop crouching"))
+            String type = component.settings.getString("type", "start crouching");
+            if (type.equalsIgnoreCase("both") || event.isSneaking() != type.equalsIgnoreCase("stop crouching"))
             {
                 trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.CROUCH);
                 cancel = false;
@@ -616,6 +618,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             double minDistance = component.settings.getDouble("min-distance", 0);
             if (event.getDistance() >= minDistance)
             {
+                getCastData(event.getPlayer()).put("api-distance", event.getDistance());
                 trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.LAND);
                 cancel = false;
             }
@@ -633,7 +636,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
                 PlayerSkill skill = data.getSkill(getName());
                 boolean cd = component.getSettings().getBool("cooldown", false);
                 boolean mana = component.getSettings().getBool("mana", false);
-                if (!data.check(skill, cd, mana))
+                if ((cd || mana) && !data.check(skill, cd, mana))
                     return false;
 
                 if (cd)

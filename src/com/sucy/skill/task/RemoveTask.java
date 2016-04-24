@@ -29,6 +29,7 @@ package com.sucy.skill.task;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -107,6 +108,8 @@ public class RemoveTask extends BukkitRunnable
                         ((PassiveSkill) skill).stopEffects((LivingEntity) entity, level);
                     }
                 }
+
+                DynamicSkill.clearCastData((LivingEntity)entity);
             }
 
             // Remove entity

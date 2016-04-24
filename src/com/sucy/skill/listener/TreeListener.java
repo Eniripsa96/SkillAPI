@@ -29,6 +29,7 @@ package com.sucy.skill.listener;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.language.ErrorNodes;
@@ -94,7 +95,14 @@ public class TreeListener implements Listener
         else if (InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY))
         {
             PlayerData player = SkillAPI.getPlayerData((Player) event.getWhoClicked());
-            InventoryTree tree = (InventoryTree) SkillAPI.getClass(player.getShownClassName()).getSkillTree();
+            RPGClass c = SkillAPI.getClass(player.getShownClassName());
+            if (c == null)
+            {
+                event.setCancelled(true);
+                event.getWhoClicked().closeInventory();
+                return;
+            }
+            InventoryTree tree = (InventoryTree) c.getSkillTree();
 
             // Do nothing when clicking outside the inventory
             if (event.getSlot() == -999)

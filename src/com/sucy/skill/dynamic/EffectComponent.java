@@ -388,6 +388,7 @@ public abstract class EffectComponent
             put("class", ClassCondition.class);
             put("class level", ClassLevelCondition.class);
             put("combat", CombatCondition.class);
+            put("crouch", CrouchCondition.class);
             put("direction", DirectionCondition.class);
             put("elevation", ElevationCondition.class);
             put("fire", FireCondition.class);

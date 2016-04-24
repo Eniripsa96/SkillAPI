@@ -85,7 +85,7 @@ public class CmdForceCast implements IFunction
                 {
                     level = Integer.parseInt(args[i]);
                 }
-                else name += args[i];
+                else name += ' ' + args[i];
             }
 
             Skill skill = SkillAPI.getSkill(name);
@@ -97,7 +97,7 @@ public class CmdForceCast implements IFunction
             }
 
             // Castable skill
-            if (skill instanceof SkillShot)
+            else if (skill instanceof SkillShot)
             {
                 ((SkillShot) skill).cast(player, level);
             }

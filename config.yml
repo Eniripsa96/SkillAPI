@@ -278,11 +278,12 @@ Casting:
     #
     # Particle to use when it has a target
     particle:
-      type: 'happyVillager'
+      particle: 'crit'
       dx: 0
       dy: 0
       dz: 0
-      speed: 1
+      speed: 0
+      amount: 1
   #
   # The slot the item is kept in, must be in the range 1-9
   slot: 9

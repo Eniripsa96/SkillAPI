@@ -141,4 +141,19 @@ public class ParticleSettings
         else
             this.data = new int[0];
     }
+
+    /**
+     * Makes a new instance of the particle effect
+     *
+     * @param x X-axis coordinates
+     * @param y Y-axis coordinates
+     * @param z Z-axis coordinates
+     * @return packet instance
+     * @throws Exception
+     */
+    public Object instance(double x, double y, double z)
+        throws Exception
+    {
+        return Particle.make(this, x, y, z);
+    }
 }

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.cast;
 
+import com.sucy.skill.api.particle.ParticleSettings;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 

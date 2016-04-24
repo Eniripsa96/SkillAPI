@@ -69,7 +69,7 @@ public class AreaTarget extends EffectComponent
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
         double max = attr(caster, MAX, level, 99, isSelf);
-        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
+        double radSq = radius * radius;
 
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
@@ -84,12 +84,15 @@ public class AreaTarget extends EffectComponent
                 list.add(caster);
             }
 
+            Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
             for (int i = 0; i < entities.size() && list.size() < max; i++)
             {
                 if (entities.get(i) instanceof LivingEntity)
                 {
                     LivingEntity target = (LivingEntity) entities.get(i);
-                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
+                    Location loc = target.getLocation().add(0, 0.5, 0);
+                    if (loc.distanceSquared(wallCheckLoc) > radSq
+                        || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, loc)))
                     {
                         continue;
                     }

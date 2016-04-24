@@ -31,6 +31,8 @@ package com.sucy.skill.api.util;
  */
 public class Buff
 {
+    protected BuffType type;
+
     private double  value;
     private boolean percent;
     private String  key;

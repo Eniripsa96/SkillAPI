@@ -70,7 +70,6 @@ public class LinearTarget extends EffectComponent
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
 
         int max = (int) attr(caster, MAX, level, 99, isSelf);
-        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
@@ -78,6 +77,8 @@ public class LinearTarget extends EffectComponent
             {
                 list.add(caster);
             }
+            Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
+
             List<LivingEntity> result = TargetHelper.getLivingTargets(t, range, tolerance);
             for (LivingEntity target : result)
             {

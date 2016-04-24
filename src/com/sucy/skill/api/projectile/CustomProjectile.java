@@ -199,18 +199,19 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         // Get the base velocity
         Vector base = dir.clone();
         base.setY(0);
+        base.normalize();
         vel.setX(1);
         vel.setY(0);
         vel.setZ(0);
 
         // Get the vertical angle
-        double vBaseAngle = base.angle(dir);
+        double vBaseAngle = Math.acos(Math.max(-1, Math.min(base.dot(dir), 1)));
         if (dir.getY() < 0)
         {
             vBaseAngle = -vBaseAngle;
         }
-        double hAngle = base.angle(X_VEC) / DEGREE_TO_RAD;
-        if (base.getZ() < 0)
+        double hAngle = Math.acos(Math.max(-1, Math.min(1, base.dot(X_VEC)))) / DEGREE_TO_RAD;
+        if (dir.getZ() < 0)
         {
             hAngle = -hAngle;
         }

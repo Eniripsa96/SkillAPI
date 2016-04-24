@@ -64,11 +64,11 @@ public class SingleTarget extends EffectComponent
         boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
-        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
 
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
+            Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
             LivingEntity target = TargetHelper.getLivingTarget(t, range, tolerance);
             if (target != null)
             {

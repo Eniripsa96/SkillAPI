@@ -125,6 +125,38 @@ public class BuffManager
     }
 
     /**
+     * Adds an offensive buff to the entity
+     *
+     * @param entity entity to give the buff to
+     * @param buff   buff to add
+     * @param ticks  ticks to apply the buff for
+     */
+    public static void addSkillDamageBuff(LivingEntity entity, Buff buff, int ticks)
+    {
+        if (entity == null)
+        {
+            return;
+        }
+        getBuffData(entity, true).addSkillDamageBuff(buff, ticks);
+    }
+
+    /**
+     * Adds a defensive buff to the entity
+     *
+     * @param entity entity to give the buff to
+     * @param buff   buff to add
+     * @param ticks  ticks to apply the buff for
+     */
+    public static void addSkillDefenseBuff(LivingEntity entity, Buff buff, int ticks)
+    {
+        if (entity == null)
+        {
+            return;
+        }
+        getBuffData(entity, true).addSkillDefenseBuff(buff, ticks);
+    }
+
+    /**
      * Modifies the amount of dealt damage using damage buff
      * multipliers and bonuses.
      *
@@ -165,6 +197,50 @@ public class BuffManager
         else
         {
             return data.modifyTakenDamage(damage);
+        }
+    }
+
+    /**
+     * Modifies the amount of dealt damage using damage buff
+     * multipliers and bonuses.
+     *
+     * @param entity entity to use the data of
+     * @param damage base damage amount to modify
+     *
+     * @return modified damage amount
+     */
+    public static double modifySkillDealtDamage(LivingEntity entity, double damage)
+    {
+        BuffData data = getBuffData(entity, false);
+        if (data == null)
+        {
+            return damage;
+        }
+        else
+        {
+            return data.modifySkillDealtDamage(damage);
+        }
+    }
+
+    /**
+     * Modifies the amount of taken damage using defense buff
+     * multipliers and bonuses.
+     *
+     * @param entity entity to use the data of
+     * @param damage base damage amount to modify
+     *
+     * @return modified damage amount
+     */
+    public static double modifySkillTakenDefense(LivingEntity entity, double damage)
+    {
+        BuffData data = getBuffData(entity, false);
+        if (data == null)
+        {
+            return damage;
+        }
+        else
+        {
+            return data.modifySkillTakenDamage(damage);
         }
     }
 }

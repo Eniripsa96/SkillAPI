@@ -110,12 +110,12 @@ public class ParticleHelper
     /**
      * Settings key for the reflection particles' Y-offset (default 0)
      */
-    public static final String DY_KEY = "dx";
+    public static final String DY_KEY = "dy";
 
     /**
      * Settings key for the reflection particles' Z-offset (default 0)
      */
-    public static final String DZ_KEY = "dx";
+    public static final String DZ_KEY = "dz";
 
     /**
      * Settings key for the reflection particles' "speed" value (default 1)

@@ -30,6 +30,7 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
@@ -103,6 +104,10 @@ public class WolfMechanic extends EffectComponent
             wolf.setMaxHealth(health);
             wolf.setHealth(health);
             SkillAPI.setMeta(wolf, MechanicListener.SUMMON_DAMAGE, damage);
+
+            List<LivingEntity> owner = new ArrayList<LivingEntity>(1);
+            owner.add(caster);
+            DynamicSkill.getCastData(wolf).put("api-owner", owner);
 
             if (dye != null)
             {

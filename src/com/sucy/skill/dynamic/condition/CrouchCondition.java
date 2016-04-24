@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.dynamic.condition.ValueCondition
+ * com.sucy.skill.dynamic.condition.CrouchCondition
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -26,22 +26,17 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.api.util.NumberParser;
-import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.api.util.Combat;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A condition for dynamic skills that requires the target to have a specified flag active
- */
-public class ValueCondition extends EffectComponent
+public class CrouchCondition extends EffectComponent
 {
-    private static final String KEY = "key";
-    private static final String MIN = "min-value";
-    private static final String MAX = "max-value";
+    private static final String CROUCH = "crouch";
 
     /**
      * Executes the component
@@ -55,17 +50,14 @@ public class ValueCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        String key = settings.getString(KEY);
-        double min = attr(caster, MIN, level, 1, true);
-        double max = attr(caster, MAX, level, 999, true);
-        Object data = DynamicSkill.getCastData(caster).get(key);
+        boolean crouch = !settings.getString(CROUCH, "true").toLowerCase().equals("false");
 
-        if (data != null)
+        List<LivingEntity> list = new ArrayList<LivingEntity>();
+        for (LivingEntity target : targets)
         {
-            double value = (Double)data;
-            return value >= min && value <= max && executeChildren(caster, level, targets);
+            if (target instanceof Player && ((Player) target).isSneaking() == crouch)
+                list.add(target);
         }
-
-        return false;
+        return list.size() > 0 && executeChildren(caster, level, list);
     }
 }

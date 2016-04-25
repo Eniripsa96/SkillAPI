@@ -116,7 +116,7 @@ public class ConeTarget extends EffectComponent
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
         int max = settings.getInt(MAX, 99);
-        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
+        Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
 
         List<LivingEntity> list = TargetHelper.getConeTargets(t, angle, range);
         if (self)

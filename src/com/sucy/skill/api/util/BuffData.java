@@ -44,9 +44,11 @@ public class BuffData
 {
     private static final int MAX_ID = 9999999;
 
-    private final HashMap<Integer, Buff>       damageBuffs  = new HashMap<Integer, Buff>();
-    private final HashMap<Integer, Buff>       defenseBuffs = new HashMap<Integer, Buff>();
-    private final HashMap<Integer, BukkitTask> tasks        = new HashMap<Integer, BukkitTask>();
+    private final HashMap<Integer, Buff>       damageBuffs       = new HashMap<Integer, Buff>();
+    private final HashMap<Integer, Buff>       defenseBuffs      = new HashMap<Integer, Buff>();
+    private final HashMap<Integer, Buff>       skillDamageBuffs  = new HashMap<Integer, Buff>();
+    private final HashMap<Integer, Buff>       skillDefenseBuffs = new HashMap<Integer, Buff>();
+    private final HashMap<Integer, BukkitTask> tasks             = new HashMap<Integer, BukkitTask>();
 
     private LivingEntity entity;
     private Plugin       plugin;
@@ -71,11 +73,12 @@ public class BuffData
      */
     public void addDamageBuff(Buff buff, int ticks)
     {
+        buff.type = BuffType.DAMAGE;
         int id = check(buff, damageBuffs);
         if (id == -1)
         {
             damageBuffs.put(nextId, buff);
-            tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
+            tasks.put(nextId, new BuffTask(BuffType.DAMAGE, nextId).runTaskLater(plugin, ticks));
             nextId = (nextId + 1) % MAX_ID;
         }
         else
@@ -84,7 +87,7 @@ public class BuffData
             BukkitTask task = tasks.remove(id);
             if (task != null)
                 task.cancel();
-            tasks.put(id, new BuffTask(id).runTaskLater(plugin, ticks));
+            tasks.put(id, new BuffTask(BuffType.DAMAGE, id).runTaskLater(plugin, ticks));
         }
     }
 
@@ -96,11 +99,12 @@ public class BuffData
      */
     public void addDefenseBuff(Buff buff, int ticks)
     {
+        buff.type = BuffType.DEFENSE;
         int id = check(buff, defenseBuffs);
         if (id == -1)
         {
             defenseBuffs.put(nextId, buff);
-            tasks.put(nextId, new BuffTask(nextId).runTaskLater(plugin, ticks));
+            tasks.put(nextId, new BuffTask(BuffType.DEFENSE, nextId).runTaskLater(plugin, ticks));
             nextId = (nextId + 1) % MAX_ID;
         }
         else
@@ -109,7 +113,59 @@ public class BuffData
             BukkitTask task = tasks.remove(id);
             if (task != null)
                 task.cancel();
-            tasks.put(id, new BuffTask(id).runTaskLater(plugin, ticks));
+            tasks.put(id, new BuffTask(BuffType.DEFENSE, id).runTaskLater(plugin, ticks));
+        }
+    }
+
+    /**
+     * Adds an offensive buff to the entity
+     *
+     * @param buff  buff to add
+     * @param ticks ticks to apply the buff for
+     */
+    public void addSkillDamageBuff(Buff buff, int ticks)
+    {
+        buff.type = BuffType.SKILL_DAMAGE;
+        int id = check(buff, skillDamageBuffs);
+        if (id == -1)
+        {
+            skillDamageBuffs.put(nextId, buff);
+            tasks.put(nextId, new BuffTask(BuffType.SKILL_DAMAGE, nextId).runTaskLater(plugin, ticks));
+            nextId = (nextId + 1) % MAX_ID;
+        }
+        else
+        {
+            skillDamageBuffs.put(id, buff);
+            BukkitTask task = tasks.remove(id);
+            if (task != null)
+                task.cancel();
+            tasks.put(id, new BuffTask(BuffType.SKILL_DAMAGE, id).runTaskLater(plugin, ticks));
+        }
+    }
+
+    /**
+     * Adds a defensive buff to the entity
+     *
+     * @param buff  buff to add
+     * @param ticks ticks to apply the buff for
+     */
+    public void addSkillDefenseBuff(Buff buff, int ticks)
+    {
+        buff.type = BuffType.SKILL_DEFENSE;
+        int id = check(buff, skillDefenseBuffs);
+        if (id == -1)
+        {
+            skillDefenseBuffs.put(nextId, buff);
+            tasks.put(nextId, new BuffTask(BuffType.SKILL_DEFENSE, nextId).runTaskLater(plugin, ticks));
+            nextId = (nextId + 1) % MAX_ID;
+        }
+        else
+        {
+            skillDefenseBuffs.put(id, buff);
+            BukkitTask task = tasks.remove(id);
+            if (task != null)
+                task.cancel();
+            tasks.put(id, new BuffTask(BuffType.SKILL_DEFENSE, id).runTaskLater(plugin, ticks));
         }
     }
 
@@ -159,6 +215,32 @@ public class BuffData
         return modify(defenseBuffs.values(), damage);
     }
 
+    /**
+     * Modifies the amount of dealt damage using damage buff
+     * multipliers and bonuses.
+     *
+     * @param damage base damage amount to modify
+     *
+     * @return modified damage amount
+     */
+    public double modifySkillDealtDamage(double damage)
+    {
+        return modify(skillDamageBuffs.values(), damage);
+    }
+
+    /**
+     * Modifies the amount of taken damage using defense buff
+     * multipliers and bonuses.
+     *
+     * @param damage base damage amount to modify
+     *
+     * @return modified damage amount
+     */
+    public double modifySkillTakenDamage(double damage)
+    {
+        return modify(skillDefenseBuffs.values(), damage);
+    }
+
     private double modify(Collection<Buff> buffs, double value)
     {
         if (value <= 0)
@@ -199,6 +281,8 @@ public class BuffData
     {
         damageBuffs.clear();
         defenseBuffs.clear();
+        skillDamageBuffs.clear();
+        skillDefenseBuffs.clear();
         for (BukkitTask task : tasks.values())
         {
             task.cancel();
@@ -209,10 +293,12 @@ public class BuffData
 
     private class BuffTask extends BukkitRunnable
     {
+        private BuffType type;
         private int id;
 
-        public BuffTask(int id)
+        public BuffTask(BuffType type, int id)
         {
+            this.type = type;
             this.id = id;
         }
 
@@ -224,13 +310,19 @@ public class BuffData
                 BuffManager.clearData(entity);
                 return;
             }
-            if (damageBuffs.containsKey(id))
+            switch (type)
             {
-                damageBuffs.remove(id);
-            }
-            else
-            {
-                defenseBuffs.remove(id);
+                case DAMAGE:
+                    damageBuffs.remove(id);
+                    break;
+                case DEFENSE:
+                    defenseBuffs.remove(id);
+                    break;
+                case SKILL_DAMAGE:
+                    skillDamageBuffs.remove(id);
+                    break;
+                case SKILL_DEFENSE:
+                    skillDefenseBuffs.remove(id);
             }
             tasks.remove(id);
             if (damageBuffs.size() + defenseBuffs.size() == 0)

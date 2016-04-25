@@ -127,7 +127,7 @@ public class AreaTarget extends EffectComponent
         boolean throughWall = settings.getString(WALL, "false").equalsIgnoreCase("true");
         boolean self = settings.getString(CASTER, "false").equalsIgnoreCase("true");
         double max = attr(caster, MAX, level, 99, isSelf);
-        Location wallCheckLoc = caster.getLocation().add(0, 0.5, 0);
+        Location wallCheckLoc = target.getLocation().add(0, 0.5, 0);
 
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
 

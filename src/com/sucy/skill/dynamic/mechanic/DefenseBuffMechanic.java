@@ -39,6 +39,7 @@ import java.util.List;
 public class DefenseBuffMechanic extends EffectComponent
 {
     private static final String TYPE    = "type";
+    private static final String SKILL   = "skill";
     private static final String VALUE   = "value";
     private static final String SECONDS = "seconds";
 
@@ -60,13 +61,17 @@ public class DefenseBuffMechanic extends EffectComponent
         }
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        boolean skill = settings.getString(SKILL, "false").equalsIgnoreCase("true");
         boolean percent = settings.getString(TYPE, "flat").toLowerCase().equals("multiplier");
         double value = attr(caster, VALUE, level, 1.0, isSelf);
         double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
-            BuffManager.addDefenseBuff(target, new Buff(skill.getName(), value, percent), ticks);
+            if (skill)
+                BuffManager.addSkillDefenseBuff(target, new Buff(this.skill.getName(), value, percent), ticks);
+            else
+                BuffManager.addDefenseBuff(target, new Buff(this.skill.getName(), value, percent), ticks);
         }
         return targets.size() > 0;
     }

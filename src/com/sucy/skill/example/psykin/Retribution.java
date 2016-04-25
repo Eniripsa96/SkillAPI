@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.example.psykin.Psykin
+ * com.sucy.skill.example.psykin.Retribution
  *
  * The MIT License (MIT)
  *
@@ -26,63 +26,62 @@
  */
 package com.sucy.skill.example.psykin;
 
-import com.sucy.skill.api.classes.ClassAttribute;
-import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.listener.ListenerUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class Psykin extends RPGClass implements Listener
+public class Retribution extends Skill implements SkillShot
 {
-    public static String OFFENDER = "offender";
+    public static final String NAME = "Retribution";
 
-    public Psykin()
+    private static final String RADIUS = "radius";
+    private static final String DELAY = "delay";
+
+    public Retribution()
     {
-        super("Psykin", makeIcon(), 100);
+        super(NAME, "Delayed AOE", makeIcon(), 10);
+    }
 
-        settings.set(ClassAttribute.HEALTH, 20, 2);
-        settings.set(ClassAttribute.MANA, 30, 4);
+    @Override
+    public boolean cast(LivingEntity user, int level)
+    {
+        Object offender = DynamicSkill.getCastData(user).get(Psykin.OFFENDER);
+        if (offender == null)
+            return false;
 
-        setPrefix(ChatColor.DARK_PURPLE + "Psykin");
-        setManaName("Capacity");
-        setManaRegen(2);
-        setAllowedExpSources(ExpSource.MOB, ExpSource.QUEST, ExpSource.COMMAND);
+        LivingEntity target = (LivingEntity) offender;
 
-        addSkills(
-            Retribution.NAME
-        );
+        return true;
     }
 
     private static ItemStack makeIcon()
     {
-        ItemStack icon = new ItemStack(Material.BOOK);
+        ItemStack icon = new ItemStack(Material.DIAMOND);
         ItemMeta meta = icon.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Psykin");
-        List<String> lore = new ArrayList<String>();
+        meta.setDisplayName("Ͽ=----=\u058E=----=Ͼ");
+        ArrayList<String> lore = new ArrayList<String>();
+        lore.add(" &d{name} &7[{level} / {max}] ");
         lore.add("");
-        lore.add("A mysterious class known for");
-        lore.add("their mystical powers.");
+        lore.add(" {req:level}Level: {attr:level}");
+        lore.add(" {req:cost}Cost: {attr:cost}");
+        lore.add("");
+        lore.add(" &2Capacity: {attr:mana}");
+        lore.add(" &2Cooldown: {attr:cooldown}");
+        lore.add(" &2Radius: {attr:radius}");
+        lore.add(" &2Delay: {attr:delay}");
+        lore.add("");
+        lore.add(" Builds up energy around the ");
+        lore.add(" last foe that attacked you, ");
+        lore.add(" exploding after a short time. ");
         meta.setLore(lore);
         icon.setItemMeta(meta);
         return icon;
-    }
-
-    @EventHandler
-    public void onDamaged(EntityDamageByEntityEvent event)
-    {
-        LivingEntity offender = ListenerUtil.getDamager(event);
-        if (offender != null)
-            DynamicSkill.getCastData((LivingEntity)event.getEntity()).put(OFFENDER, offender);
     }
 }

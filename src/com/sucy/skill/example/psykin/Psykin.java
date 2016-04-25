@@ -26,18 +26,25 @@
  */
 package com.sucy.skill.example.psykin;
 
+import com.comphenix.protocol.PacketType;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.ClassAttribute;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Psykin extends RPGClass
+public class Psykin extends RPGClass implements Listener
 {
     public Psykin()
     {

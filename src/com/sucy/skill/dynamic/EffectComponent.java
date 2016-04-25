@@ -54,6 +54,8 @@ public abstract class EffectComponent
     private static final String ICON_KEY   = "icon-key";
     private static final String COUNTS_KEY = "counts";
 
+    private static boolean passed;
+
     /**
      * Child components
      */
@@ -207,6 +209,16 @@ public abstract class EffectComponent
     }
 
     /**
+     * Checks whether or not the last component passed or not
+     *
+     * @return true if passed, false otherwise
+     */
+    protected boolean lastPassed()
+    {
+        return passed;
+    }
+
+    /**
      * Executes the children of the component using the given targets
      *
      * @param caster  caster of the skill
@@ -217,11 +229,13 @@ public abstract class EffectComponent
      */
     protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        passed = true;
         boolean worked = false;
         for (EffectComponent child : children)
         {
             boolean counts = !child.settings.getString(COUNTS_KEY, "true").toLowerCase().equals("false");
-            worked = (child.execute(caster, level, targets) && counts) || worked;
+            passed = child.execute(caster, level, targets);
+            worked = (passed && counts) || worked;
         }
         return worked;
     }
@@ -384,6 +398,7 @@ public abstract class EffectComponent
             put("attribute", AttributeCondition.class);
             put("biome", BiomeCondition.class);
             put("block", BlockCondition.class);
+            put("cast level", CastLevelCondition.class);
             put("chance", ChanceCondition.class);
             put("class", ClassCondition.class);
             put("class level", ClassLevelCondition.class);
@@ -391,6 +406,7 @@ public abstract class EffectComponent
             put("crouch", CrouchCondition.class);
             put("direction", DirectionCondition.class);
             put("elevation", ElevationCondition.class);
+            put("else", ElseCondition.class);
             put("fire", FireCondition.class);
             put("flag", FlagCondition.class);
             put("health", HealthCondition.class);

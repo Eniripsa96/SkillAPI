@@ -30,7 +30,8 @@ import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.Data;
-import com.sucy.skill.data.Formula;
+import com.sucy.skill.data.formula.Formula;
+import com.sucy.skill.data.formula.value.CustomValue;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
@@ -297,7 +298,7 @@ public class AttributeManager
             if (data.has(key))
             {
                 Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    StatMod: " + key);
-                statModifiers.put(key, new Formula(data.getString(key, "v")));
+                statModifiers.put(key, new Formula(data.getString(key, "v"), new CustomValue("v", 0), new CustomValue("a", 1)));
             }
         }
     }
@@ -320,7 +321,7 @@ public class AttributeManager
         public AttributeValue(String data)
         {
             String[] pieces = data.split(":");
-            formula = new Formula(pieces[0]);
+            formula = new Formula(pieces[0], new CustomValue("v", 0), new CustomValue("a", 1));
             for (int i = 1; i < pieces.length; i++)
             {
                 String[] sides = pieces[i].split("=");

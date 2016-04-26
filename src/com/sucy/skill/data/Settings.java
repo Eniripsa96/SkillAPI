@@ -33,6 +33,8 @@ import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IndicatorSettings;
+import com.sucy.skill.data.formula.Formula;
+import com.sucy.skill.data.formula.value.CustomValue;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.hook.NoCheatHook;
 import com.sucy.skill.hook.PluginChecker;
@@ -1423,7 +1425,7 @@ public class Settings
         int z = formula.getInt("z");
         expFormula = new ExpFormula(x, y, z);
 
-        expCustom = new Formula(config.getString(EXP_BASE + "custom-formula").replace("lvl", "v"));
+        expCustom = new Formula(config.getString(EXP_BASE + "custom-formula"), new CustomValue("lvl", 0));
         useCustomExp = config.getBoolean(EXP_BASE + "use-custom") && expCustom.isValid();
 
         DataSection yields = config.getSection(EXP_BASE + "yields");

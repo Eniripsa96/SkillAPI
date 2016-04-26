@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.Formula
+ * com.sucy.skill.data.formula.Formula
  *
  * The MIT License (MIT)
  *
@@ -24,26 +24,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data;
+package com.sucy.skill.data.formula;
 
-import com.sucy.skill.api.util.NumberParser;
+import com.sucy.skill.data.formula.func.*;
+import com.sucy.skill.data.formula.operator.*;
+import com.sucy.skill.data.formula.value.*;
 import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * Represents a basic math equation read from left to right, ignoring
  * order of operations. Currently this only supports addition, subtraction,
  * multiplication, and division.
  */
-public class Formula
+public class Formula implements IValue
 {
-    private static final List<Character> OPS = Arrays.asList('+', '-', '*', '/', '^');
+    public static final double DEG_TO_RAD = Math.PI / 180;
 
-    private Object[]    values;
-    private Character[] operations;
+    private static final HashMap<Character, IOperator> OPS = new HashMap<Character, IOperator>()
+    {{
+            put('+', new Addition());
+            put('-', new Subtraction());
+            put('*', new Multiplication());
+            put('/', new Division());
+            put('%', new Modulo());
+            put('^', new Exponent());
+            put('_', new Log());
+        }};
+
+    private static final HashMap<String, Class<? extends IValue>> FUNCS = new HashMap<String, Class<? extends IValue>>()
+    {{
+            put("cos", Cos.class);
+            put("sin", Sin.class);
+            put("tan", Tan.class);
+            put("ceil", Ceil.class);
+            put("floor", Floor.class);
+            put("sqrt", Root.class);
+            put("sign", Sign.class);
+        }};
+
+    private IValue[]    values;
+    private IOperator[] operations;
     private boolean     valid;
     private boolean     negative;
     private String      equation;
@@ -53,16 +76,14 @@ public class Formula
      *
      * @param equation equation string
      */
-    public Formula(String equation)
+    public Formula(String equation, CustomValue... defined)
     {
         negative = false;
 
         // Empty formulas
         if (equation == null || equation.length() == 0)
         {
-            values = new Object[] { 'v' };
-            operations = new Character[0];
-            this.equation = "v";
+            invalidate(defined);
             return;
         }
 
@@ -71,9 +92,10 @@ public class Formula
         this.equation = equation;
 
         // Parse the formula
-        ArrayList<Object> vals = new ArrayList<Object>();
-        ArrayList<Character> ops = new ArrayList<Character>();
+        ArrayList<IValue> vals = new ArrayList<IValue>();
+        ArrayList<IOperator> ops = new ArrayList<IOperator>();
         int parens = 0, l = equation.length(), valStart = 0, lastOp = -1;
+        Class<? extends IValue> func = null;
         for (int i = 0; i < l; i++)
         {
             char c = equation.charAt(i);
@@ -85,10 +107,15 @@ public class Formula
                 {
                     if (valStart != i)
                     {
-                        vals.add(makeVal(equation.substring(valStart, i)));
-                        ops.add('*');
+                        String val = equation.substring(valStart, i);
+                        if (FUNCS.containsKey(val))
+                            func = FUNCS.get(val);
+                        else
+                            vals.add(makeVal(val, defined));
+                            ops.add(OPS.get('*'));
                     }
                     valStart = i + 1;
+                    lastOp = i;
                 }
                 parens++;
             }
@@ -99,13 +126,30 @@ public class Formula
                 parens--;
                 if (parens == 0)
                 {
-                    vals.add(makeVal(new Formula(equation.substring(valStart, i))));
+                    if (func == null)
+                        vals.add(makeVal(new Formula(equation.substring(valStart, i), defined)));
+                    else
+                    {
+                        try
+                        {
+                            vals.add(
+                                func.getConstructor(Formula.class).newInstance(
+                                    makeVal(new Formula(equation.substring(valStart, i), defined))
+                                )
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            invalidate(defined);
+                            return;
+                        }
+                    }
                     valStart = i + 1;
                 }
             }
 
             // Operators
-            else if (parens == 0 && OPS.contains(c))
+            else if (parens == 0 && OPS.containsKey(c))
             {
                 if (c == '-' && lastOp == i - 1)
                 {
@@ -117,9 +161,9 @@ public class Formula
                 {
                     if (valStart != i)
                     {
-                        vals.add(makeVal(equation.substring(valStart, i)));
+                        vals.add(makeVal(equation.substring(valStart, i), defined));
                     }
-                    ops.add(c);
+                    ops.add(OPS.get(c));
                     lastOp = i;
                     valStart = i + 1;
                 }
@@ -129,46 +173,67 @@ public class Formula
         // End any lingering values
         if (valStart != l)
         {
-            vals.add(makeVal(equation.substring(valStart, equation.length())));
+            vals.add(makeVal(equation.substring(valStart, equation.length()), defined));
         }
 
         negative = false;
 
         // Convert to arrays
-        values = vals.toArray();
-        operations = ops.toArray(new Character[ops.size()]);
+        values = vals.toArray(new IValue[vals.size()]);
+        operations = ops.toArray(new IOperator[ops.size()]);
 
         if (!validate())
+            invalidate(defined);
+        else
+            valid = true;
+    }
+
+    /**
+     * Invalidates the equation
+     *
+     * @param defined defined inputs
+     */
+    private void invalidate(CustomValue ... defined)
+    {
+        Logger.invalid("Invalid equation: " + equation);
+        equation = defined[0].getToken();
+        values = new IValue[] { defined[0] };
+        operations = new IOperator[0];
+        valid = false;
+    }
+
+    private IValue makeVal(String val, CustomValue ... defined)
+    {
+        if (negative)
         {
-            Logger.invalid("Invalid equation: " + equation);
-            values = new Object[] { 'v' };
-            operations = new Character[0];
-            valid = false;
+            negative = false;
+            return new Formula(val, defined).negate();
         }
         else
         {
-            valid = true;
+            for (CustomValue value : defined)
+            {
+                if (value.getToken().equals(val))
+                    return value;
+            }
+            return new ValueNum(val);
         }
     }
 
-    private Object makeVal(String val)
+    private IValue makeVal(Formula val)
     {
-        if (negative)
-        {
-            negative = false;
-            return new Formula(val).negate();
-        }
-        else return val;
-    }
-
-    private Object makeVal(Formula val)
-    {
-        if (negative)
+        if (negative && val.operations.length == 0 && val.values[0] instanceof ValueNum)
+            return new ValueNum(-val.values[0].compute());
+        else if (negative)
         {
             val.negate();
             negative = false;
+            return val;
         }
-        return val;
+        else if (val.operations.length == 0)
+            return val.values[0];
+        else
+            return val;
     }
 
     /**
@@ -202,34 +267,12 @@ public class Formula
         // Operators between values means there should
         // always be one more value than operators
         if (values.length != operations.length + 1)
-        {
             return false;
-        }
 
-        // Parse each value to make sure it's a valid equation
-        for (int i = 0; i < values.length; i++)
-        {
-            // Sub-equations
-            if (values[i] instanceof Formula)
-            {
-                if (!((Formula) values[i]).validate())
-                    return false;
-            }
-
-            // Numbers
-            else if (!values[i].toString().equals("v") && !values[i].toString().equals("a"))
-            {
-                // Parse the number
-                try
-                {
-                    values[i] = NumberParser.parseDouble(values[i].toString());
-                }
-                catch (NumberFormatException ex)
-                {
-                    return false;
-                }
-            }
-        }
+        // Ensure valid sub equations
+        for (IValue value : values)
+            if (value instanceof Formula && !((Formula) value).validate())
+                return false;
 
         // Nothing went wrong
         return true;
@@ -239,48 +282,21 @@ public class Formula
      * Calculates the formula using the given base value and attribute.
      * If the formula is invalid, this returns the value.
      *
-     * @param value base value
-     * @param attr  attribute
-     *
+     * @param input the input data
      * @return computed value
      */
-    public double compute(double value, double attr)
+    public double compute(double ... input)
     {
-        double result = getValue(0, value, attr);
+        double result = values[0].compute(input);
         int i;
         for (i = 1; i < values.length; i++)
         {
-            double val = getValue(i, value, attr);
-            switch (operations[i - 1])
-            {
-                case '+':
-                    result += val;
-                    break;
-                case '-':
-                    result -= val;
-                    break;
-                case '*':
-                    result *= val;
-                    break;
-                case '/':
-                    result /= val;
-                    break;
-                case '^':
-                    result = Math.pow(result, val);
-                    break;
-            }
+            double val = values[i].compute(input);
+            result = operations[i - 1].compute(result, val);
         }
 
         if (negative) result = -result;
         return result;
-    }
-
-    private double getValue(int index, double value, double attr)
-    {
-        if (values[index] instanceof Formula) return ((Formula) values[index]).compute(value, attr);
-        if (values[index].toString().equals("v")) return value;
-        if (values[index].toString().equals("a")) return attr;
-        return (Double) values[index];
     }
 
     /**

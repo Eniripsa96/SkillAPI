@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.formula.operator.Log
+ * com.sucy.skill.data.Point2D
  *
  * The MIT License (MIT)
  *
@@ -24,24 +24,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data.formula.operator;
+package com.sucy.skill.data;
 
-import com.sucy.skill.data.formula.IOperator;
-
-/**
- * The exponent operation used in formulas
- */
-public class Log implements IOperator
+public class Point2D
 {
-    /**
-     * Performs the operation between the two values
-     *
-     * @param a first value
-     * @param b second value
-     * @return result
-     */
-    public double compute(double a, double b)
+    public double x;
+    public double y;
+
+    public Point2D()
     {
-        return a <= 0 || b <= 0 ? 0 : Math.log(a) / Math.log(b);
+        this.x = this.y = 0;
+    }
+
+    public Point2D(double x, double y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void rotate(double cos, double sin)
+    {
+        double temp = x * cos - y * sin;
+        y = x * sin + y * cos;
+        x = temp;
     }
 }

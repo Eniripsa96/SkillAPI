@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.formula.operator.Log
+ * com.sucy.skill.api.particle.target.FollowTarget
  *
  * The MIT License (MIT)
  *
@@ -24,24 +24,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data.formula.operator;
+package com.sucy.skill.api.particle.target;
 
-import com.sucy.skill.data.formula.IOperator;
+import org.bukkit.Location;
 
 /**
- * The exponent operation used in formulas
+ * Tracks a followable target to play an effect around
  */
-public class Log implements IOperator
+public class FollowTarget implements EffectTarget
 {
+    private Followable entity;
+
     /**
-     * Performs the operation between the two values
-     *
-     * @param a first value
-     * @param b second value
-     * @return result
+     * @param target object to follow
      */
-    public double compute(double a, double b)
+    public FollowTarget(Followable target)
     {
-        return a <= 0 || b <= 0 ? 0 : Math.log(a) / Math.log(b);
+        this.entity = target;
+    }
+
+    /**
+     * Gets the location to center the effect around
+     *
+     * @return effect location
+     */
+    public Location getLocation()
+    {
+        return entity.getLocation();
+    }
+
+    /**
+     * @return tue if target is still valid, false otherwise
+     */
+    public boolean isValid()
+    {
+        return entity.isValid();
     }
 }

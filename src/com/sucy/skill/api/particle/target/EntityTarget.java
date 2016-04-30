@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.formula.operator.Log
+ * com.sucy.skill.api.particle.target.EntityTarget
  *
  * The MIT License (MIT)
  *
@@ -24,24 +24,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data.formula.operator;
+package com.sucy.skill.api.particle.target;
 
-import com.sucy.skill.data.formula.IOperator;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 
 /**
- * The exponent operation used in formulas
+ * Causes an effect to follow the target entity
  */
-public class Log implements IOperator
+public class EntityTarget implements EffectTarget
 {
+    private Entity   entity;
+    private Location loc;
+
     /**
-     * Performs the operation between the two values
-     *
-     * @param a first value
-     * @param b second value
-     * @return result
+     * @param target entity to follow
      */
-    public double compute(double a, double b)
+    public EntityTarget(Entity target)
     {
-        return a <= 0 || b <= 0 ? 0 : Math.log(a) / Math.log(b);
+        this.entity = target;
+        this.loc = target.getLocation();
+    }
+
+    /**
+     * Gets the location to center the effect around
+     *
+     * @return effect location
+     */
+    public Location getLocation()
+    {
+        return entity.getLocation(loc);
+    }
+
+    /**
+     * @return tue if target is still valid, false otherwise
+     */
+    public boolean isValid()
+    {
+        return entity.isValid() && !entity.isDead();
     }
 }

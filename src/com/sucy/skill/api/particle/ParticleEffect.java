@@ -26,38 +26,29 @@
  */
 package com.sucy.skill.api.particle;
 
-import org.bukkit.entity.LivingEntity;
+import com.sucy.skill.api.particle.target.EffectTarget;
 
 public class ParticleEffect
 {
-    private FormulaSettings  stepFormula;
-    private FormulaSettings  animation;
+    private PolarSettings    shape;
+    private PolarSettings    animation;
     private ParticleSettings particle;
-    private LivingEntity     target;
+    private EffectTarget     target;
 
-    private double cos      = 1;
-    private double sin      = 0;
-    private int    step     = 0;
-    private int    duration = 0;
+    private int frame;
 
-    public ParticleEffect(FormulaSettings stepFormula, FormulaSettings animation, ParticleSettings particle, LivingEntity target)
+    /**
+     * @param shape     shape formula details
+     * @param animation animation formula details
+     * @param particle  settings of the particle to use
+     * @param target    target to follow
+     */
+    public ParticleEffect(PolarSettings shape, PolarSettings animation, ParticleSettings particle, EffectTarget target)
     {
-        this.stepFormula = stepFormula;
+        this.shape = shape;
         this.animation = animation;
         this.particle = particle;
         this.target = target;
-    }
-
-    public void setDuration(int duration)
-    {
-        this.duration = Math.max(this.duration, duration);
-    }
-
-    public boolean step()
-    {
-        this.duration--;
-
-
-        return this.duration <= 0;
+        this.frame = 0;
     }
 }

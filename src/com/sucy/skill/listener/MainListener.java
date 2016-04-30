@@ -453,7 +453,11 @@ public class MainListener implements Listener
 
         PhysicalDamageEvent e = new PhysicalDamageEvent(ListenerUtil.getDamager(event), (LivingEntity) event.getEntity(), event.getDamage(), event.getDamager() instanceof Projectile);
         Bukkit.getPluginManager().callEvent(e);
+        double armor = event.getDamage(EntityDamageEvent.DamageModifier.ARMOR);
+        double dmg = event.getDamage();
         event.setDamage(e.getDamage());
+        System.out.println(dmg + " -> " + event.getDamage());
+        System.out.println(armor + " -> " + event.getDamage(EntityDamageEvent.DamageModifier.ARMOR));
         event.setCancelled(e.isCancelled());
     }
 

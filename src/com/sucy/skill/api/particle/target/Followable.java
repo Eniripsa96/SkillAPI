@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.formula.operator.Log
+ * com.sucy.skill.api.particle.target.Followable
  *
  * The MIT License (MIT)
  *
@@ -24,24 +24,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data.formula.operator;
+package com.sucy.skill.api.particle.target;
 
-import com.sucy.skill.data.formula.IOperator;
+import org.bukkit.Location;
 
 /**
- * The exponent operation used in formulas
+ * Interface allowing something to be followed by particle effects
  */
-public class Log implements IOperator
+public interface Followable
 {
     /**
-     * Performs the operation between the two values
-     *
-     * @param a first value
-     * @param b second value
-     * @return result
+     * @return retrieves the location of the object
      */
-    public double compute(double a, double b)
-    {
-        return a <= 0 || b <= 0 ? 0 : Math.log(a) / Math.log(b);
-    }
+    public Location getLocation();
+
+    /**
+     * @return true if can be followed still
+     */
+    public boolean isValid();
 }

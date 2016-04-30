@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.formula.operator.Log
+ * com.sucy.skill.api.particle.direction.YZHandler
  *
  * The MIT License (MIT)
  *
@@ -24,24 +24,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data.formula.operator;
+package com.sucy.skill.api.particle.direction;
 
-import com.sucy.skill.data.formula.IOperator;
+import com.sucy.skill.data.Point3D;
 
 /**
- * The exponent operation used in formulas
+ * Handles the YZ direction
  */
-public class Log implements IOperator
+public class YZHandler implements DirectionHandler
 {
+    public static YZHandler instance = new YZHandler();
+
     /**
-     * Performs the operation between the two values
+     * Applies the two results from the polar calculation to a point
      *
-     * @param a first value
-     * @param b second value
-     * @return result
+     * @param point the point to apply it to
+     * @param n1    first value
+     * @param n2    second value
      */
-    public double compute(double a, double b)
+    public void apply(Point3D point, double n1, double n2)
     {
-        return a <= 0 || b <= 0 ? 0 : Math.log(a) / Math.log(b);
+        point.x = 0;
+        point.y = n1;
+        point.z = n2;
     }
 }

@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.api.particle.direction.DirectionHandler
+ * com.sucy.skill.api.particle.direction.Directions
  *
  * The MIT License (MIT)
  *
@@ -26,47 +26,25 @@
  */
 package com.sucy.skill.api.particle.direction;
 
-import com.sucy.skill.data.Point2D;
-import com.sucy.skill.data.Point3D;
-
 /**
- * Handles the directional application
+ * Handles getting a direction handler by name
  */
-public interface DirectionHandler
+public class Directions
 {
     /**
-     * Applies the two results from the polar calculation to a point
+     * Fetches the direction handler by name, defaulting
+     * to XZ if invalid
      *
-     * @param point the point to apply it to
-     * @param n1    first value
-     * @param n2    second value
+     * @param name XY, XZ, or YZ
+     * @return corresponding handler or XZ if invalid
      */
-    public void apply(Point3D point, double n1, double n2);
-
-    /**
-     * Calculates the X value of a point after rotation
-     *
-     * @param p    original point
-     * @param trig trig data
-     * @return rotation
-     */
-    public double rotateX(Point3D p, Point2D trig);
-
-    /**
-     * Calculates the Y value of a point after rotation
-     *
-     * @param p    original point
-     * @param trig trig data
-     * @return rotation
-     */
-    public double rotateY(Point3D p, Point2D trig);
-
-    /**
-     * Calculates the Z value of a point after rotation
-     *
-     * @param p    original point
-     * @param trig trig data
-     * @return rotation
-     */
-    public double rotateZ(Point3D p, Point2D trig);
+    public static DirectionHandler byName(String name)
+    {
+        if (name.equalsIgnoreCase("XY"))
+            return XYHandler.instance;
+        else if (name.equals("YZ"))
+            return YZHandler.instance;
+        else
+            return XZHandler.instance;
+    }
 }

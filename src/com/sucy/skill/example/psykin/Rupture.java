@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.example.psykin.Retribution
+ * com.sucy.skill.example.psykin.Rupture
  *
  * The MIT License (MIT)
  *
@@ -39,22 +39,23 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Retribution extends Skill implements SkillShot
+public class Rupture extends Skill implements SkillShot
 {
-    public static final String NAME = "Retribution";
+    public static final String NAME = "Rupture";
 
-    private static final String CHARGE = "retribution-charge";
-    private static final String SPIKE = "retribution-spike";
+    private static final String SPIKE = "rupture";
 
     private static final String DAMAGE = "damage";
     private static final String RADIUS = "radius";
-    private static final String DELAY  = "delay";
+    private static final String INTERVAL = "interval";
+    private static final String RANGE = "range";
 
-    public Retribution()
+    public Rupture()
     {
         super(NAME, "Delayed AOE", makeIcon(), 10);
 
@@ -63,29 +64,14 @@ public class Retribution extends Skill implements SkillShot
         settings.set(SkillAttribute.COOLDOWN, 7, -0.5);
         settings.set(SkillAttribute.MANA, 8, 0);
 
-        settings.set(DAMAGE, 4, 1);
-        settings.set(RADIUS, 1, 0.1);
-        settings.set(DELAY, 2, -0.1);
-
-        settings.set(CHARGE + SHAPE, "three-point");
-        settings.set(CHARGE + SHAPE_DIR, "XZ");
-        settings.set(CHARGE + SHAPE_SIZE, "1-p");
-        settings.set(CHARGE + ANIMATION, "linear");
-        settings.set(CHARGE + ANIM_DIR, "YZ");
-        settings.set(CHARGE + ANIM_SIZE, "1-p");
-        settings.set(CHARGE + INTERVAL, 2);
-        settings.set(CHARGE + VIEW_RANGE, 25);
-
-        settings.set(CHARGE + P_TYPE, "SPELL");
-        settings.set(CHARGE + AMOUNT, 1);
-        settings.set(CHARGE + DX, 0);
-        settings.set(CHARGE + DY, 0);
-        settings.set(CHARGE + DZ, 0);
-        settings.set(CHARGE + SPEED, 0);
+        settings.set(DAMAGE, 6, 2);
+        settings.set(RADIUS, 2, 0);
+        settings.set(INTERVAL, 5, 0);
+        settings.set(RANGE, 6, 1);
 
         settings.set(SPIKE + SHAPE, "one-circle");
         settings.set(SPIKE + SHAPE_DIR, "XZ");
-        settings.set(SPIKE + SHAPE_SIZE, "sq(1-p*(v*0.1+0.9))");
+        settings.set(SPIKE + SHAPE_SIZE, "sq(1-p*2)");
         settings.set(SPIKE + ANIMATION, "linear-quick");
         settings.set(SPIKE + ANIM_DIR, "YZ");
         settings.set(SPIKE + ANIM_SIZE, "4*p");
@@ -103,29 +89,32 @@ public class Retribution extends Skill implements SkillShot
     @Override
     public boolean cast(final LivingEntity user, final int level)
     {
-        Object offender = DynamicSkill.getCastData(user).get(Psykin.OFFENDER);
-        if (offender == null)
-            return false;
+        final double radius = settings.getAttr(RADIUS, level);
+        final double damage = settings.getAttr(DAMAGE, level);
+        int interval = (int)(20 * settings.getAttr(INTERVAL, level));
 
-        int ticks = (int) (20 * settings.getAttr(DELAY, level));
-
-        final Location target = ((LivingEntity) offender).getLocation();
-        playEffect(new FixedTarget(target), CHARGE, ticks, level);
+        final Location target = user.getLocation();
+        final Vector direction = target.getDirection();
+        direction.setY(0);
+        direction.normalize().multiply(radius);
         SkillAPI.schedule(
             new BukkitRunnable()
             {
+                int spikes = (int)Math.ceil(settings.getAttr(RANGE, level) / radius);
                 @Override
                 public void run()
                 {
-                    double damage = settings.getAttr(DAMAGE, level);
-                    double radius = settings.getAttr(RADIUS, level);
+                    spikes--;
+                    target.add(direction);
                     playEffect(new FixedTarget(target), SPIKE, 10, level);
                     List<LivingEntity> targets = Nearby.getLivingNearby(target, radius);
                     for (LivingEntity entity : targets)
                         if (SkillAPI.getSettings().canAttack(user, entity))
-                            Retribution.this.damage(entity, damage, user);
+                            Rupture.this.damage(entity, damage, user);
+                    if (spikes <= 0)
+                        cancel();
                 }
-            }, ticks
+            }, 0, interval
         );
 
         return true;
@@ -146,11 +135,11 @@ public class Retribution extends Skill implements SkillShot
         lore.add(" &2Cooldown: {attr:cooldown}");
         lore.add(" &2Damage: {attr:damage}");
         lore.add(" &2Radius: {attr:radius}");
-        lore.add(" &2Delay: {attr:delay}");
+        lore.add(" &2Range: {attr:range}");
         lore.add("");
-        lore.add(" Builds up energy around the ");
-        lore.add(" last foe that attacked you, ");
-        lore.add(" exploding after a short time. ");
+        lore.add(" Releases a wave of destructive ");
+        lore.add(" energy in front of you, damaging ");
+        lore.add(" enemies along the way.");
         meta.setLore(lore);
         icon.setItemMeta(meta);
         return icon;

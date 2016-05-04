@@ -35,6 +35,9 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
+import com.sucy.skill.api.particle.*;
+import com.sucy.skill.api.particle.direction.Directions;
+import com.sucy.skill.api.particle.target.EffectTarget;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.*;
@@ -737,6 +740,112 @@ public abstract class Skill
     public static boolean isSkillDamage()
     {
         return skillDamage;
+    }
+
+    protected static final String SHAPE      = "-shape";
+    protected static final String SHAPE_DIR  = "-shape-dir";
+    protected static final String SHAPE_SIZE = "-shape-size";
+    protected static final String ANIMATION  = "-animation";
+    protected static final String ANIM_DIR   = "-anim-dir";
+    protected static final String ANIM_SIZE  = "-anim-size";
+    protected static final String INTERVAL   = "-interval";
+    protected static final String VIEW_RANGE = "-view-range";
+
+    protected static final String P_TYPE = "-particle-type";
+    protected static final String MAT    = "-particle-material";
+    protected static final String DATA   = "-particle-data";
+    protected static final String AMOUNT = "-particle-amount";
+    protected static final String DX     = "-particle-dx";
+    protected static final String DY     = "-particle-dy";
+    protected static final String DZ     = "-particle-dz";
+    protected static final String SPEED  = "-particle-speed";
+
+    /**
+     * Plays a particle effect, grabbing values from the settings data
+     *
+     * @param target target to play for
+     * @param key    effect key to use
+     * @param ticks  duration of effect in ticks
+     */
+    protected void playEffect(EffectTarget target, String key, int ticks, int level)
+    {
+        // If the effect is already running, just refresh it
+        EffectInstance instance = EffectManager.getEffect(target, key);
+        if (instance != null)
+        {
+            instance.extend(ticks);
+            return;
+        }
+
+        // If the effect is not registered, make it
+        if (EffectManager.getEffect(key) == null)
+            makeEffect(key);
+
+        // Play the effect
+        EffectManager.runEffect(EffectManager.getEffect(key), target, ticks, level);
+    }
+
+    /**
+     * Creates and registers an effect
+     *
+     * @param key effect key
+     */
+    private void makeEffect(String key)
+    {
+        // Grab the particle type
+        ParticleType particleType = ParticleLookup.find(settings.getString(key + P_TYPE, "SPELL"));
+        ParticleSettings particle;
+
+        // Block Crack and the related use materials
+        if (particleType.usesMat())
+        {
+            try
+            {
+                particle = new ParticleSettings(
+                    particleType,
+                    (float) settings.getDouble(key + DX),
+                    (float) settings.getDouble(key + DY),
+                    (float) settings.getDouble(key + DZ),
+                    (float) settings.getDouble(key + SPEED, 1),
+                    settings.getInt(key + AMOUNT, 1),
+                    Material.valueOf(settings.getString(key + MAT, "DIRT")),
+                    settings.getInt(key + DATA)
+                );
+            }
+            catch (Exception ex)
+            {
+                Logger.invalid("Bad material for particle effect - " + settings.getString(key + MAT));
+                return;
+            }
+        }
+
+        // Others just use basic data
+        else
+            particle = new ParticleSettings(
+                particleType,
+                (float) settings.getDouble(key + DX),
+                (float) settings.getDouble(key + DY),
+                (float) settings.getDouble(key + DZ),
+                (float) settings.getDouble(key + SPEED, 1),
+                settings.getInt(key + AMOUNT, 1)
+            );
+
+        // Make the effect
+        ParticleEffect effect = new ParticleEffect(
+            key,
+            EffectManager.getFormula(settings.getString(key + SHAPE, "single")),
+            EffectManager.getFormula(settings.getString(key + ANIMATION, "single")),
+            particle,
+            Directions.byName(settings.getString(key + SHAPE_DIR, "XZ")),
+            Directions.byName(settings.getString(key + ANIM_DIR, "XZ")),
+            settings.getString(key + SHAPE_SIZE, "1"),
+            settings.getString(key + ANIM_SIZE, "1"),
+            settings.getInt(key + INTERVAL, 1),
+            settings.getInt(key + VIEW_RANGE, 25)
+        );
+
+        // Register the effect
+        EffectManager.register(effect);
     }
 
     private static final String NAME      = "name";

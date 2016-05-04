@@ -61,6 +61,7 @@ public class Formula implements IValue
             put("tan", Tan.class);
             put("ceil", Ceil.class);
             put("floor", Floor.class);
+            put("sq", Square.class);
             put("sqrt", Root.class);
             put("sign", Sign.class);
         }};
@@ -78,6 +79,10 @@ public class Formula implements IValue
      */
     public Formula(String equation, CustomValue... defined)
     {
+        int i = 0;
+        for (CustomValue value : defined)
+            value.setIndex(i++);
+
         negative = false;
 
         // Empty formulas
@@ -96,7 +101,7 @@ public class Formula implements IValue
         ArrayList<IOperator> ops = new ArrayList<IOperator>();
         int parens = 0, l = equation.length(), valStart = 0, lastOp = -1;
         Class<? extends IValue> func = null;
-        for (int i = 0; i < l; i++)
+        for (i = 0; i < l; i++)
         {
             char c = equation.charAt(i);
 
@@ -111,8 +116,10 @@ public class Formula implements IValue
                         if (FUNCS.containsKey(val))
                             func = FUNCS.get(val);
                         else
+                        {
                             vals.add(makeVal(val, defined));
                             ops.add(OPS.get('*'));
+                        }
                     }
                     valStart = i + 1;
                     lastOp = i;
@@ -133,13 +140,14 @@ public class Formula implements IValue
                         try
                         {
                             vals.add(
-                                func.getConstructor(Formula.class).newInstance(
+                                func.getConstructor(IValue.class).newInstance(
                                     makeVal(new Formula(equation.substring(valStart, i), defined))
                                 )
                             );
                         }
                         catch (Exception ex)
                         {
+                            ex.printStackTrace();
                             invalidate(defined);
                             return;
                         }
@@ -267,7 +275,10 @@ public class Formula implements IValue
         // Operators between values means there should
         // always be one more value than operators
         if (values.length != operations.length + 1)
+        {
+            System.out.println("Values: " + values.length + ", Operations: " + operations.length + ", Text: " + equation);
             return false;
+        }
 
         // Ensure valid sub equations
         for (IValue value : values)

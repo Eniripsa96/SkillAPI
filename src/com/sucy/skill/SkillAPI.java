@@ -29,6 +29,7 @@ import com.rit.sucy.config.CommentedLanguageConfig;
 import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.particle.EffectManager;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
@@ -107,6 +108,7 @@ public class SkillAPI extends JavaPlugin
 
         mainThread = new MainThread();
         Particle.init();
+        EffectManager.init();
 
         // Load settings
         settings = new Settings(this);

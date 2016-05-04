@@ -28,16 +28,25 @@ package com.sucy.skill.example;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.example.psykin.Psykin;
+import com.sucy.skill.example.psykin.Retribution;
+import com.sucy.skill.example.psykin.Rupture;
 
 public class Examples
 {
     public static void registerSkills(SkillAPI api)
     {
+        api.addSkills(
 
+            // Psykin skills
+            new Retribution(),
+            new Rupture()
+        );
     }
 
     public static void registerClasses(SkillAPI api)
     {
-        api.addClass(new Psykin());
+        api.addClasses(
+            new Psykin()
+        );
     }
 }

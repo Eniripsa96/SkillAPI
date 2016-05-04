@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.particle.direction;
 
+import com.sucy.skill.data.Point2D;
 import com.sucy.skill.data.Point3D;
 
 /**
@@ -47,5 +48,41 @@ public class XZHandler implements DirectionHandler
         point.x = n1;
         point.y = 0;
         point.z = n2;
+    }
+
+    /**
+     * Calculates the X value of a point after rotation
+     *
+     * @param p    original point
+     * @param trig trig data
+     * @return rotation
+     */
+    public double rotateX(Point3D p, Point2D trig)
+    {
+        return p.x * trig.x - p.z * trig.y;
+    }
+
+    /**
+     * Calculates the Y value of a point after rotation
+     *
+     * @param p    original point
+     * @param trig trig data
+     * @return rotation
+     */
+    public double rotateY(Point3D p, Point2D trig)
+    {
+        return p.y;
+    }
+
+    /**
+     * Calculates the Z value of a point after rotation
+     *
+     * @param p    original point
+     * @param trig trig data
+     * @return rotation
+     */
+    public double rotateZ(Point3D p, Point2D trig)
+    {
+        return p.x * trig.y + p.z * trig.x;
     }
 }

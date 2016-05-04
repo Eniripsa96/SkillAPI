@@ -40,11 +40,21 @@ public class CustomValue implements IValue
      * A defined value used in formulas
      *
      * @param token equation token
-     * @param index index of input data
      */
-    public CustomValue(String token, int index)
+    public CustomValue(String token)
     {
         this.token = token;
+    }
+
+    /**
+     * Sets the argument index for the value.
+     * This is handled by formulas so you shouldn't
+     * need to use this.
+     *
+     * @param index argument index
+     */
+    public void setIndex(int index)
+    {
         this.index = index;
     }
 

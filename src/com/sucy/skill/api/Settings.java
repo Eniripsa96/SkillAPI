@@ -32,6 +32,7 @@ import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class Settings
     private static final String BASE  = "-base";
     private static final String SCALE = "-scale";
 
-    private final HashMap<String, Object> settings = new HashMap<String, Object>();
+    private final HashMap<String, Object> settings = new LinkedHashMap<String, Object>();
 
     /**
      * Sets the value for a setting. You should only provide a

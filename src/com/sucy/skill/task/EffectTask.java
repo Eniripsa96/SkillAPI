@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.api.particle.target.EntityTarget
+ * com.sucy.skill.task.EffectTask
  *
  * The MIT License (MIT)
  *
@@ -24,55 +24,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.api.particle.target;
+package com.sucy.skill.task;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
+import com.sucy.skill.api.particle.EffectManager;
+import com.sucy.skill.thread.RepeatThreadTask;
 
-/**
- * Causes an effect to follow the target entity
- */
-public class EntityTarget implements EffectTarget
+public class EffectTask extends RepeatThreadTask
 {
-    private Entity   entity;
-    private Location loc;
-
-    /**
-     * @param target entity to follow
-     */
-    public EntityTarget(Entity target)
+    public EffectTask()
     {
-        this.entity = target;
-        this.loc = target.getLocation();
+        super(1, 1);
     }
 
-    /**
-     * Gets the location to center the effect around
-     *
-     * @return effect location
-     */
-    public Location getLocation()
-    {
-        return entity.getLocation(loc);
-    }
-
-    /**
-     * @return tue if target is still valid, false otherwise
-     */
-    public boolean isValid()
-    {
-        return entity.isValid() && !entity.isDead();
-    }
-
-    /**
-     * Checks whether or not the target is equivalent to another
-     *
-     * @param o object to compare against
-     * @return true if equivalent
-     */
     @Override
-    public boolean equals(Object o)
+    public void run()
     {
-        return (o instanceof EntityTarget) && (((EntityTarget) o).entity == entity);
+        EffectManager.tick();
     }
 }

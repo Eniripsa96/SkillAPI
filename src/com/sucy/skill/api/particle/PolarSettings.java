@@ -27,6 +27,7 @@
 package com.sucy.skill.api.particle;
 
 import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.api.enums.Direction;
 import com.sucy.skill.api.particle.direction.DirectionHandler;
 import com.sucy.skill.api.particle.direction.XYHandler;
 import com.sucy.skill.api.particle.direction.XZHandler;
@@ -39,35 +40,32 @@ import com.sucy.skill.data.formula.value.CustomValue;
 import org.bukkit.Location;
 
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * Settings for a particle effect
  */
 public class PolarSettings
 {
-    private Point3D[] points;
+    private HashMap<DirectionHandler, Point3D[]> points = new HashMap<DirectionHandler, Point3D[]>();
 
-    private final DirectionHandler handler;
+    private Point2D[][] trig;
 
-    private IValue formula;
-    private int    copies;
-    private int    steps;
-    private double domain;
-    private double cos, sin, copyCos, copySin;
-    private double xOff, yOff, zOff;
-
-    private boolean calculated;
+    private IValue  formula;
+    private int     copies;
+    private int     steps;
+    private double  domain;
+    private double  xOff, yOff, zOff;
 
     /**
      * Sets up a formula for particle effects
      *
      * @param formula   formula to use
      * @param steps     the number of steps to apply
-     * @param handler   the direction for the formula to apply
      */
-    public PolarSettings(IValue formula, int steps, DirectionHandler handler)
+    public PolarSettings(IValue formula, int steps)
     {
-        this(formula, steps, handler, 1, 1);
+        this(formula, steps, 1, 1);
     }
 
     /**
@@ -75,26 +73,36 @@ public class PolarSettings
      *
      * @param formula   formula to use
      * @param steps     the number of steps to apply
-     * @param handler   the direction for the formula to apply
      * @param copies    number of copies to use rotated about the origin
      * @param domain    domain of the input values
      */
-    public PolarSettings(IValue formula, int steps, DirectionHandler handler, int copies, double domain)
+    public PolarSettings(IValue formula, int steps, int copies, double domain)
     {
         this.formula = formula;
         this.copies = Math.max(1, copies);
-        this.domain = domain;
-        this.handler = handler;
-        this.steps = steps;
+        this.domain = Math.max(0, domain / steps);
+        this.steps = Math.max(1, steps);
 
-        double angle = Math.PI * 2 / steps;
-        cos = Math.cos(angle);
-        sin = Math.sin(angle);
-        copyCos = Math.cos(Math.PI * 2 / copies);
-        copySin = Math.sin(Math.PI * 2 / copies);
+        double angle = Math.PI * 2 * this.domain;
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        double copyCos = Math.cos(Math.PI * 2 / copies);
+        double copySin = Math.sin(Math.PI * 2 / copies);
 
-        for (int i = 0; i < points.length; i++)
-            points[i] = new Point3D();
+        this.trig = new Point2D[steps][copies];
+        Point2D rot = new Point2D(1, 0);
+        Point2D copy = new Point2D();
+        for (int i = 0; i < steps; i++)
+        {
+            copy.x = rot.x;
+            copy.y = rot.y;
+            for (int j = 0; j < copies; j++)
+            {
+                trig[i][j] = new Point2D(copy.x, copy.y);
+                copy.rotate(copyCos, copySin);
+            }
+            rot.rotate(cos, sin);
+        }
     }
 
     /**
@@ -107,13 +115,12 @@ public class PolarSettings
         this(
             new Formula(
                 settings.getString("formula"),
-                new CustomValue("t", 0),
-                new CustomValue("a", 1),
-                new CustomValue("c", 2),
-                new CustomValue("s", 3)
+                new CustomValue("t"),
+                new CustomValue("p"),
+                new CustomValue("c"),
+                new CustomValue("s")
             ),
             settings.getInt("steps"),
-            getDirection(settings.getString("direction")),
             settings.getInt("copies"),
             settings.getDouble("domain")
         );
@@ -122,6 +129,34 @@ public class PolarSettings
             settings.getDouble("y"),
             settings.getDouble("z")
         );
+    }
+
+    /**
+     * Fetches the trig values for the animation
+     *
+     * @param step animation step
+     *
+     * @return trig values
+     */
+    public Point2D[] getTrig(int step)
+    {
+        return trig[step];
+    }
+
+    /**
+     * @return number of copies
+     */
+    public int getCopies()
+    {
+        return copies;
+    }
+
+    /**
+     * @return number of steps in the formula
+     */
+    public int getSteps()
+    {
+        return steps;
     }
 
     /**
@@ -145,59 +180,47 @@ public class PolarSettings
      *
      * @return shape points
      */
-    public Point3D[] getPoints()
+    public Point3D[] getPoints(DirectionHandler direction)
     {
-        if (!calculated)
-            calculate();
-        return points;
+        if (!points.containsKey(direction))
+            calculate(direction);
+        return points.get(direction);
     }
 
     /**
      * Performs the calculations for the points making up the shape
      */
-    private void calculate()
+    private void calculate(DirectionHandler direction)
     {
-        points = new Point3D[copies * steps];
-        calculated = true;
-        Point2D rot = new Point2D(1, 0);
-        Point2D copy = new Point2D();
-        for (int i = 0; i < points.length; i += copies)
+        Point3D[] points = new Point3D[copies * steps];
+        this.points.put(direction, points);
+        int k = 0;
+        for (int i = 0; i < steps; i++)
         {
-            double t = domain * i / steps;
-            double theta = t * Math.PI * 2;
-            double r = formula.compute(t, theta, rot.x, rot.y);
-
-            copy.x = rot.x;
-            copy.y = rot.y;
+            Point2D rot = trig[i][0];
+            double t = domain * i;
+            double r = formula.compute(t, (double)i / steps, rot.x, rot.y);
             for (int j = 0; j < copies; j++)
             {
-                Point3D p = points[i + j];
-                handler.apply(p, r * copy.x, r * copy.y);
+                Point2D copy = trig[i][j];
+                Point3D p = new Point3D();
+                direction.apply(p, r * copy.x, r * copy.y);
                 p.x += xOff;
                 p.y += yOff;
                 p.z += zOff;
-                copy.rotate(copyCos, copySin);
+                points[k++] = p;
             }
-
-            rot.rotate(cos, sin);
         }
     }
 
     /**
-     * Gets a direction from a config key
+     * Gets the time step value for the animation step
      *
-     * @param key config key
-     * @return direction
+     * @param step animation step
+     * @return time step
      */
-    private static DirectionHandler getDirection(String key)
+    public double getT(int step)
     {
-        if (key == null)
-            return XZHandler.instance;
-        else if (key.equals("XY"))
-            return XYHandler.instance;
-        else if (key.equals("YZ"))
-            return YZHandler.instance;
-        else
-            return XZHandler.instance;
+        return domain * step;
     }
 }

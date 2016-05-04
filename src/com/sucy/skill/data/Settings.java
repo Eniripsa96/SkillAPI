@@ -1425,7 +1425,7 @@ public class Settings
         int z = formula.getInt("z");
         expFormula = new ExpFormula(x, y, z);
 
-        expCustom = new Formula(config.getString(EXP_BASE + "custom-formula"), new CustomValue("lvl", 0));
+        expCustom = new Formula(config.getString(EXP_BASE + "custom-formula"), new CustomValue("lvl"));
         useCustomExp = config.getBoolean(EXP_BASE + "use-custom") && expCustom.isValid();
 
         DataSection yields = config.getSection(EXP_BASE + "yields");

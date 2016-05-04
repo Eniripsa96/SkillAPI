@@ -298,7 +298,7 @@ public class AttributeManager
             if (data.has(key))
             {
                 Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    StatMod: " + key);
-                statModifiers.put(key, new Formula(data.getString(key, "v"), new CustomValue("v", 0), new CustomValue("a", 1)));
+                statModifiers.put(key, new Formula(data.getString(key, "v"), new CustomValue("v"), new CustomValue("a")));
             }
         }
     }
@@ -321,7 +321,7 @@ public class AttributeManager
         public AttributeValue(String data)
         {
             String[] pieces = data.split(":");
-            formula = new Formula(pieces[0], new CustomValue("v", 0), new CustomValue("a", 1));
+            formula = new Formula(pieces[0], new CustomValue("v"), new CustomValue("a"));
             for (int i = 1; i < pieces.length; i++)
             {
                 String[] sides = pieces[i].split("=");

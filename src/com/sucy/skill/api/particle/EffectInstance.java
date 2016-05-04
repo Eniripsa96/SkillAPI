@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.api.particle.target.EntityTarget
+ * com.sucy.skill.api.particle.EffectInstance
  *
  * The MIT License (MIT)
  *
@@ -24,55 +24,69 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.api.particle.target;
+package com.sucy.skill.api.particle;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
+import com.sucy.skill.api.particle.target.EffectTarget;
 
 /**
- * Causes an effect to follow the target entity
+ * An instanced particle effect
  */
-public class EntityTarget implements EffectTarget
+public class EffectInstance
 {
-    private Entity   entity;
-    private Location loc;
+    private ParticleEffect effect;
+    private EffectTarget target;
+
+    private int level;
+    private int life;
+    private int tick;
+    private int frame;
 
     /**
-     * @param target entity to follow
+     * @param effect the effect to play
+     * @param target target to play an effect for
+     * @param level  the level of the effect
      */
-    public EntityTarget(Entity target)
+    public EffectInstance(ParticleEffect effect, EffectTarget target, int level)
     {
-        this.entity = target;
-        this.loc = target.getLocation();
+        this.effect = effect;
+        this.target = target;
+        this.level = level;
+
+        life = 0;
+        tick = -1;
+        frame = 0;
     }
 
     /**
-     * Gets the location to center the effect around
-     *
-     * @return effect location
-     */
-    public Location getLocation()
-    {
-        return entity.getLocation(loc);
-    }
-
-    /**
-     * @return tue if target is still valid, false otherwise
+     * @return true if the target is still valid
      */
     public boolean isValid()
     {
-        return entity.isValid() && !entity.isDead();
+        return target.isValid() && life > 0;
     }
 
     /**
-     * Checks whether or not the target is equivalent to another
+     * Extends the effect duration
      *
-     * @param o object to compare against
-     * @return true if equivalent
+     * @param duration effect duration
      */
-    @Override
-    public boolean equals(Object o)
+    public void extend(int duration)
     {
-        return (o instanceof EntityTarget) && (((EntityTarget) o).entity == entity);
+        life = Math.max(life, duration);
+    }
+
+    /**
+     * Ticks the effect
+     */
+    public void tick()
+    {
+        tick++;
+        if (tick % effect.getInterval() == 0)
+        {
+            effect.play(target.getLocation(), frame, level);
+            frame++;
+            tick = 0;
+        }
+        life--;
     }
 }

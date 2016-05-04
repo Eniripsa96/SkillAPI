@@ -48,4 +48,10 @@ public class Point2D
         y = x * sin + y * cos;
         x = temp;
     }
+
+    @Override
+    public String toString()
+    {
+        return "(" + String.format("%.2f", x) + ", " + String.format("%.2f", y) + ")";
+    }
 }

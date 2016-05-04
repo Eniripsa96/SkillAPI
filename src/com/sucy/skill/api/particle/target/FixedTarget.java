@@ -40,7 +40,7 @@ public class FixedTarget implements EffectTarget
      */
     public FixedTarget(Location loc)
     {
-        this.loc = loc;
+        this.loc = loc.clone();
     }
 
     /**
@@ -59,5 +59,11 @@ public class FixedTarget implements EffectTarget
     public boolean isValid()
     {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return (o instanceof FixedTarget) && ((FixedTarget) o).loc.equals(loc);
     }
 }

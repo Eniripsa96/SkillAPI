@@ -108,6 +108,53 @@ public class Particle
     }
 
     /**
+     * Sends a list of packets to a player
+     *
+     * @param player  player to send to
+     * @param packets packets to send
+     * @throws Exception
+     */
+    public static void send(Player player, Object[] packets)
+        throws Exception
+    {
+        Object network = connection.get(getHandle.invoke(player));
+        for (Object packet : packets)
+            sendPacket.invoke(network, packet);
+    }
+
+    /**
+     * Sends packets to all players within a range
+     *
+     * @param loc     location of the effect
+     * @param packets packets from the effect
+     * @param range   range to play for
+     */
+    public static void send(Location loc, List<Object> packets, int range)
+        throws Exception
+    {
+        range *= range;
+        for (Player player : loc.getWorld().getPlayers())
+            if (player.getLocation().distanceSquared(loc) < range)
+                send(player, packets);
+    }
+
+    /**
+     * Sends packets to all players within a range
+     *
+     * @param loc     location of the effect
+     * @param packets packets from the effect
+     * @param range   range to play for
+     */
+    public static void send(Location loc, Object[] packets, int range)
+        throws Exception
+    {
+        range *= range;
+        for (Player player : loc.getWorld().getPlayers())
+            if (player.getLocation().distanceSquared(loc) < range)
+                send(player, packets);
+    }
+
+    /**
      * Make a particle packet using the given data
      *
      * @param settings particle details

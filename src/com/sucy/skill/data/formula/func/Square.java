@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.api.particle.direction.DirectionHandler
+ * com.sucy.skill.data.formula.func.Square
  *
  * The MIT License (MIT)
  *
@@ -24,49 +24,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.api.particle.direction;
+package com.sucy.skill.data.formula.func;
 
-import com.sucy.skill.data.Point2D;
-import com.sucy.skill.data.Point3D;
+import com.sucy.skill.data.formula.IValue;
 
 /**
- * Handles the directional application
+ * Squares a number
  */
-public interface DirectionHandler
+public class Square implements IValue
 {
-    /**
-     * Applies the two results from the polar calculation to a point
-     *
-     * @param point the point to apply it to
-     * @param n1    first value
-     * @param n2    second value
-     */
-    public void apply(Point3D point, double n1, double n2);
+    private IValue formula;
 
     /**
-     * Calculates the X value of a point after rotation
-     *
-     * @param p    original point
-     * @param trig trig data
-     * @return rotation
+     * @param formula wrapped formula
      */
-    public double rotateX(Point3D p, Point2D trig);
+    public Square(IValue formula)
+    {
+        this.formula = formula;
+    }
 
     /**
-     * Calculates the Y value of a point after rotation
+     * Gets the value using the inputs
      *
-     * @param p    original point
-     * @param trig trig data
-     * @return rotation
+     * @param input the input data
+     * @return result value
      */
-    public double rotateY(Point3D p, Point2D trig);
-
-    /**
-     * Calculates the Z value of a point after rotation
-     *
-     * @param p    original point
-     * @param trig trig data
-     * @return rotation
-     */
-    public double rotateZ(Point3D p, Point2D trig);
+    @Override
+    public double compute(double ... input)
+    {
+        double val = formula.compute(input);
+        return val * val;
+    }
 }

@@ -45,7 +45,7 @@ import java.util.List;
 
 public class Psykin extends RPGClass implements Listener
 {
-    public static String OFFENDER = "offender";
+    public static final String OFFENDER = "offender";
 
     public Psykin()
     {
@@ -55,12 +55,13 @@ public class Psykin extends RPGClass implements Listener
         settings.set(ClassAttribute.MANA, 30, 4);
 
         setPrefix(ChatColor.DARK_PURPLE + "Psykin");
-        setManaName("Capacity");
+        setManaName(ChatColor.DARK_GREEN + "Capacity");
         setManaRegen(2);
         setAllowedExpSources(ExpSource.MOB, ExpSource.QUEST, ExpSource.COMMAND);
 
         addSkills(
-            Retribution.NAME
+            Retribution.NAME,
+            Rupture.NAME
         );
     }
 

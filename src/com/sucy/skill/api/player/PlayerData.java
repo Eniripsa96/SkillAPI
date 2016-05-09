@@ -1112,7 +1112,7 @@ public final class PlayerData
             RPGClass data = playerClass.getData();
             for (Skill skill : data.getSkills())
             {
-                PlayerSkill ps = skills.remove(skill.getName());
+                PlayerSkill ps = skills.remove(skill.getName().toLowerCase());
                 if (ps != null && ps.isUnlocked() && ps.getData() instanceof PassiveSkill)
                     ((PassiveSkill) ps.getData()).stopEffects(getPlayer(), ps.getLevel());
                 combos.removeSkill(skill);

@@ -151,7 +151,7 @@ public class ParticleHelper
         {
             int level = settings.getInt(LEVEL, 1);
             double radius = settings.getAttr(RADIUS_KEY, level, 3.0);
-            int amount = (int) settings.getAttr(PARTICLES_KEY, level, settings.getAttr(AMOUNT_KEY, level, 10));
+            int amount = (int) settings.getAttr(PARTICLES_KEY, level, 10);
 
             String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
             if (arrangement.equals("circle"))
@@ -214,7 +214,8 @@ public class ParticleHelper
         // Reflection particles
         else if (REFLECT_PARTICLES.containsKey(particle))
         {
-            Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), 1);
+            int num = settings.getInt(AMOUNT_KEY, 1);
+            Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), num);
         }
 
         // Block break particle
@@ -248,7 +249,8 @@ public class ParticleHelper
         // 1.9+ particles
         else
         {
-            Particle.play(particle, loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), 1);
+            int num = settings.getInt(AMOUNT_KEY, 1);
+            Particle.play(particle, loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), num);
         }
     }
 

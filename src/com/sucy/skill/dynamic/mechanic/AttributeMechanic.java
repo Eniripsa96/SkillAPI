@@ -33,6 +33,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -40,6 +41,8 @@ import java.util.List;
  */
 public class AttributeMechanic extends EffectComponent
 {
+    private HashMap<String, AttribTask> tasks = new HashMap<String, AttribTask>();
+
     private static final String KEY     = "key";
     private static final String AMOUNT  = "amount";
     private static final String SECONDS = "seconds";
@@ -73,8 +76,20 @@ public class AttributeMechanic extends EffectComponent
             {
                 worked = true;
                 PlayerData data = SkillAPI.getPlayerData((Player) target);
-                data.addBonusAttributes(key, amount);
-                SkillAPI.schedule(new AttribTask(data, key, amount), ticks);
+
+                if (tasks.containsKey(data.getPlayerName()))
+                {
+                    AttribTask old = tasks.remove(data.getPlayerName());
+                    if (amount != old.amount)
+                        data.addBonusAttributes(key, amount - old.amount);
+                    old.cancel();
+                }
+                else
+                    data.addBonusAttributes(key, amount);
+
+                AttribTask task = new AttribTask(data, key, amount);
+                tasks.put(data.getPlayerName(), task);
+                SkillAPI.schedule(task, ticks);
             }
         }
         return worked;
@@ -97,6 +112,7 @@ public class AttributeMechanic extends EffectComponent
         public void run()
         {
             data.addBonusAttributes(attrib, -amount);
+            tasks.remove(data.getPlayerName());
         }
     }
 }

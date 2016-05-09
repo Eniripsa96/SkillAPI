@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.tools.GUIType
+ * com.sucy.skill.tools.IconHolder
  *
  * The MIT License (MIT)
  *
@@ -26,42 +26,10 @@
  */
 package com.sucy.skill.tools;
 
-public enum GUIType
+import com.sucy.skill.api.player.PlayerData;
+import org.bukkit.inventory.ItemStack;
+
+public interface IconHolder
 {
-    CLASS_SELECTION(0, "cs"),
-    CLASS_DETAILS(1, "cd"),
-    SKILL_TREE(2, "st"),
-    ATTRIBUTES(3, "a");
-
-    private int id;
-    private String prefix;
-
-    private GUIType(int id, String prefix)
-    {
-        this.id = id;
-        this.prefix = prefix;
-    }
-
-    public GUIType next()
-    {
-        return ORDERED[(id + 1) % ORDERED.length];
-    }
-
-    public GUIType prev()
-    {
-        return ORDERED[(id + ORDERED.length - 1) % ORDERED.length];
-    }
-
-    public String getPrefix()
-    {
-        return prefix;
-    }
-
-    private static final GUIType[] ORDERED = new GUIType[]
-    {
-        CLASS_SELECTION,
-        CLASS_DETAILS,
-        SKILL_TREE,
-        ATTRIBUTES
-    };
+    public ItemStack getIcon(PlayerData player);
 }

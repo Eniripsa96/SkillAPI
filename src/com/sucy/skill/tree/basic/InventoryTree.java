@@ -37,6 +37,9 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.language.GUINodes;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.tools.GUIData;
+import com.sucy.skill.tools.GUIPage;
+import com.sucy.skill.tools.GUITool;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -88,6 +91,7 @@ public abstract class InventoryTree extends SkillTree
      */
     public Inventory getInventory(PlayerData player)
     {
+        GUITool.getSkillTree(tree);
         Inventory inv = InventoryManager.createInventory(
             INVENTORY_KEY,
             height,
@@ -176,6 +180,16 @@ public abstract class InventoryTree extends SkillTree
         if (height > 6)
         {
             throw new SkillTreeException("Error generating the skill tree: " + tree.getName() + " - too large of a tree!");
+        }
+
+        // Apply to GUI editor if not set up already
+        GUIData data = GUITool.getSkillTree(tree);
+        if (!data.isValid())
+        {
+            GUIPage page = data.getPage(0);
+            for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())
+                page.set(entry.getKey(), entry.getValue().getName());
+            data.resize(height);
         }
     }
 

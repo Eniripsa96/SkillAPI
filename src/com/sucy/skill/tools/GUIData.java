@@ -27,6 +27,10 @@
 package com.sucy.skill.tools;
 
 import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.api.player.PlayerData;
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -49,7 +53,7 @@ public class GUIData
 
     public GUIData()
     {
-        pageMap.add(new GUIPage());
+        pageMap.add(new GUIPage(this));
     }
 
     public GUIData(DataSection data)
@@ -61,10 +65,24 @@ public class GUIData
             DataSection pages = data.getSection(SLOTS);
             if (pages != null)
                 for (String page : pages.keys())
-                    this.pageMap.add(new GUIPage(pages.getSection(page)));
+                    this.pageMap.add(new GUIPage(this, pages.getSection(page)));
         }
         while (pageMap.size() < pages)
-            pageMap.add(new GUIPage());
+            pageMap.add(new GUIPage(this));
+    }
+
+    public void show(GUIHolder handler, PlayerData player, String title, HashMap<String, ? extends IconHolder> data)
+    {
+        Inventory inv = Bukkit.getServer().createInventory(handler, rows, title);
+        ItemStack[] contents = pageMap.get(0).instance(player, data);
+        inv.setContents(contents);
+        handler.set(this, player, data);
+        player.getPlayer().openInventory(inv);
+    }
+
+    public GUIPage getPage(int page)
+    {
+        return pageMap.get(page % pages);
     }
 
     public GUIPage getPage()
@@ -110,7 +128,7 @@ public class GUIData
 
     public void addPage()
     {
-        pageMap.add(new GUIPage());
+        pageMap.add(new GUIPage(this));
         pages += 1;
         nav++;
         if (pages == 2)
@@ -123,6 +141,11 @@ public class GUIData
         pageMap.remove(nav);
         pages -= 1;
         nav = Math.min(nav, pages - 1);
+    }
+
+    public void resize(int rows)
+    {
+        this.rows = Math.max(Math.min(rows, 6), 1);
     }
 
     public void shrink()

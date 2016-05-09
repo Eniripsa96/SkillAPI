@@ -503,7 +503,7 @@ public final class PlayerData
             int i = 0;
             for (String key : manager.getKeys())
             {
-                ItemStack icon = manager.getAttribute(key).getIcon().clone();
+                ItemStack icon = manager.getAttribute(key).getIcon();
                 ItemMeta meta = icon.getItemMeta();
                 meta.setDisplayName(filter(meta.getDisplayName(), key));
                 List<String> lore = meta.getLore();
@@ -871,7 +871,7 @@ public final class PlayerData
         }
 
         // Show only class's skill tree otherwise
-        else return showSkills(player, classes.get(classes.keySet().toArray(new String[1])[0]));
+        else return showSkills(player, classes.values().iterator().next());
     }
 
     /**

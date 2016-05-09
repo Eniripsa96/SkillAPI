@@ -34,6 +34,7 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.manager.AttributeManager;
 import com.sun.org.apache.bcel.internal.generic.GOTO;
 import net.minecraft.server.v1_9_R1.Item;
 import org.bukkit.ChatColor;
@@ -172,6 +173,33 @@ public class GUITool implements ToolMenu
         return setups.containsKey(key) && setups.get(key).isValid();
     }
 
+    public static GUIData getSkillTree(RPGClass rpgClass)
+    {
+        return get(GUIType.SKILL_TREE.getPrefix() + rpgClass.getName());
+    }
+
+    public static GUIData getProfessMenu(RPGClass current)
+    {
+        return get(current == null ? GUIType.CLASS_SELECTION.name() : GUIType.CLASS_SELECTION.getPrefix() + current.getName());
+    }
+
+    public static GUIData getDetailsMenu()
+    {
+        return get(GUIType.CLASS_DETAILS.name());
+    }
+
+    public static GUIData getAttributesMenu()
+    {
+        return get(GUIType.ATTRIBUTES.name());
+    }
+
+    private static GUIData get(String key)
+    {
+        if (!setups.containsKey(key))
+            setups.put(key, new GUIData());
+        return setups.get(key);
+    }
+
     public static GUIData getActiveData()
     {
         String key = type.getPrefix();
@@ -188,10 +216,12 @@ public class GUITool implements ToolMenu
                 break;
             case SKILL_TREE:
                 key += availableClasses[classId].getName();
+                break;
+            case ATTRIBUTES:
+                key = type.name();
         }
-        if (!setups.containsKey(key))
-            setups.put(key, new GUIData());
-        return setups.get(key);
+
+        return get(key);
     }
 
     private static ItemStack make(Material mat, String name, String... lore)
@@ -276,7 +306,7 @@ public class GUITool implements ToolMenu
         playerContents[4] = ADD_PAGE;
         playerContents[5] = DEL_PAGE;
 
-        String name;
+        String name = null;
 
         switch (type)
         {
@@ -286,8 +316,11 @@ public class GUITool implements ToolMenu
             case SKILL_TREE:
                 name = populateSkillTree();
                 break;
-            default: // CLASS_SELECTION
+            case CLASS_SELECTION:
                 name = populateClassSelection();
+                break;
+            case ATTRIBUTES:
+                name = populateAttributes();
                 break;
         }
 
@@ -395,6 +428,25 @@ public class GUITool implements ToolMenu
         }
 
         return "GUI Editor - " + availableClasses[classId].getName() + " Skill Tree";
+    }
+
+    private String populateAttributes()
+    {
+        i = 9;
+        GUIPage page = guiData.getPage();
+        for (String key : SkillAPI.getAttributeManager().getKeys())
+        {
+            AttributeManager.Attribute attr = SkillAPI.getAttributeManager().getAttribute(key);
+            int index = page.getIndex(attr.getKey());
+            if (index != -1)
+                inventoryContents[index] = attr.getToolIcon();
+            else if (!guiData.has(attr.getKey()) && i < playerContents.length)
+            {
+                playerContents[i++] = attr.getToolIcon();
+            }
+        }
+
+        return "GUI Editor - Attributes";
     }
 
     @Override

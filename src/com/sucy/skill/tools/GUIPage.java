@@ -28,7 +28,11 @@ package com.sucy.skill.tools;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
+import org.bukkit.Bukkit;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -39,10 +43,17 @@ public class GUIPage
     private HashMap<String, Integer> slots  = new HashMap<String, Integer>();
     private HashMap<Integer, String> lookup = new HashMap<Integer, String>();
 
-    public GUIPage() { }
+    private GUIData parent;
 
-    public GUIPage(DataSection data)
+    public GUIPage(GUIData parent)
     {
+        this.parent = parent;
+    }
+
+    public GUIPage(GUIData parent, DataSection data)
+    {
+        this(parent);
+
         for (String key : data.keys())
         {
             slots.put(key, data.getInt(key));
@@ -52,6 +63,12 @@ public class GUIPage
     public String get(int index)
     {
         return lookup.get(index);
+    }
+
+    public void set(int index, String value)
+    {
+        slots.put(value, index);
+        lookup.put(index, value);
     }
 
     public int getIndex(String item)
@@ -112,6 +129,22 @@ public class GUIPage
             slots.put(key, i);
             lookup.put(i, key);
         }
+    }
+
+    public ItemStack[] instance(PlayerData player, HashMap<String, ? extends IconHolder> data)
+    {
+        ItemStack[] contents = new ItemStack[parent.getSize()];
+
+        for (Map.Entry<Integer, String> entry : lookup.entrySet())
+        {
+            IconHolder holder = data.get(entry.getValue());
+            if (holder != null)
+            {
+                contents[entry.getKey()] = holder.getIcon(player);
+            }
+        }
+
+        return contents;
     }
 
     public void save(DataSection data)

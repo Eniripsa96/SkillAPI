@@ -35,10 +35,15 @@ import com.sucy.skill.data.formula.value.CustomValue;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.tools.GUIData;
+import com.sucy.skill.tools.GUIPage;
+import com.sucy.skill.tools.GUITool;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -110,6 +115,17 @@ public class AttributeManager
         {
             Logger.log(LogType.ATTRIBUTE_LOAD, 2, "  - " + key);
             attributes.put(key.toLowerCase(), new Attribute(data.getSection(key), key));
+        }
+
+        GUIData attribs = GUITool.getAttributesMenu();
+        if (!attribs.isValid())
+        {
+            int i = 0;
+            GUIPage page = attribs.getPage(0);
+            for (String key : attributes.keySet())
+                if (i < 54)
+                    page.set(i++, key);
+            attribs.resize((attributes.size() + 8) / 9);
         }
     }
 
@@ -205,6 +221,20 @@ public class AttributeManager
          */
         public ItemStack getIcon()
         {
+            return icon.clone();
+        }
+
+        /**
+         * @return icon for the attribute for use in the GUI editor
+         */
+        public ItemStack getToolIcon()
+        {
+            ItemStack icon = getIcon();
+            ItemMeta meta = icon.getItemMeta();
+            List<String> lore = meta.getLore();
+            lore.add(key);
+            meta.setLore(lore);
+            icon.setItemMeta(meta);
             return icon;
         }
 

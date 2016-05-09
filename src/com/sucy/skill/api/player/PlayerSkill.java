@@ -31,8 +31,10 @@ import com.sucy.skill.api.enums.SkillStatus;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorSettings;
+import com.sucy.skill.tools.IconHolder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ import java.util.List;
  * Represents player-specific data for a skill such as the player's
  * current level for the skill, the cooldown, and other related data.
  */
-public final class PlayerSkill
+public final class PlayerSkill implements IconHolder
 {
     protected final List<IIndicator> indicators = new ArrayList<IIndicator>();
 
@@ -384,5 +386,11 @@ public final class PlayerSkill
         for (IIndicator indicator : indicators)
             indicator.makePackets(packets, IndicatorSettings.particle, step);
         return packets;
+    }
+
+    @Override
+    public ItemStack getIcon(PlayerData player)
+    {
+        return skill.getIndicator(this);
     }
 }

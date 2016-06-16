@@ -50,6 +50,8 @@ import java.util.regex.Pattern;
  */
 public class InventoryTask extends BukkitRunnable
 {
+    private static InventoryTask instance;
+
     private static Pattern levelRegex;
     private static Pattern classRegex;
     private static Pattern excludeRegex;
@@ -69,6 +71,8 @@ public class InventoryTask extends BukkitRunnable
      */
     public InventoryTask(SkillAPI p, int playersPerCheck)
     {
+        instance = this;
+
         this.playersPerCheck = playersPerCheck;
         if (plugin != null) return;
         plugin = p;
@@ -103,44 +107,65 @@ public class InventoryTask extends BukkitRunnable
 
             // Get the player data
             Player player = players[index];
-            if (player.getGameMode() == GameMode.CREATIVE) continue;
-            PlayerData data = SkillAPI.getPlayerData(player);
+            _check(player);
+        }
+    }
 
-            // Check for lore strings
-            int index = 0;
-            tempAttribs.clear();
-            for (ItemStack item : player.getInventory().getArmorContents())
-            {
-                if (cannotUse(data, item)) removeArmor(player, index);
-                index++;
-            }
-            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
-            {
-                if (cannotUse(data, player.getInventory().getItemInOffHand()))
-                {
-                    player.getInventory().addItem(player.getInventory().getItemInOffHand());
-                    player.getInventory().setItemInOffHand(null);
-                }
-            }
-            if (SkillAPI.getSettings().isDropWeapon()
-                || SkillAPI.getSettings().isCheckAttributes())
-            {
-                if (cannotUse(data, player.getItemInHand())
-                    && SkillAPI.getSettings().isDropWeapon())
-                {
-                    player.getWorld().dropItem(player.getLocation(), player.getItemInHand());
-                    player.setItemInHand(null);
-                }
-            }
+    /**
+     * Checks a player for item requirements and stat bonuses
+     *
+     * @param player player to check
+     */
+    private void _check(Player player)
+    {
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+        PlayerData data = SkillAPI.getPlayerData(player);
 
-            // Give attributes
-            if (SkillAPI.getSettings().isCheckAttributes())
+        // Check for lore strings
+        int index = 0;
+        tempAttribs.clear();
+        for (ItemStack item : player.getInventory().getArmorContents())
+        {
+            if (cannotUse(data, item)) removeArmor(player, index);
+            index++;
+        }
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
+        {
+            if (cannotUse(data, player.getInventory().getItemInOffHand()))
             {
-                if (!attribs.containsKey(player.getUniqueId()))
-                    attribs.put(player.getUniqueId(), new AttribBuffs());
-                attribs.get(player.getUniqueId()).apply(data);
+                player.getInventory().addItem(player.getInventory().getItemInOffHand());
+                player.getInventory().setItemInOffHand(null);
             }
         }
+        if (SkillAPI.getSettings().isDropWeapon()
+            || SkillAPI.getSettings().isCheckAttributes())
+        {
+            if (cannotUse(data, player.getItemInHand())
+                && SkillAPI.getSettings().isDropWeapon())
+            {
+                player.getWorld().dropItem(player.getLocation(), player.getItemInHand());
+                player.setItemInHand(null);
+            }
+        }
+
+        // Give attributes
+        if (SkillAPI.getSettings().isCheckAttributes())
+        {
+            if (!attribs.containsKey(player.getUniqueId()))
+                attribs.put(player.getUniqueId(), new AttribBuffs());
+            attribs.get(player.getUniqueId()).apply(data);
+        }
+    }
+
+    /**
+     * Checks a player for item requirements and stat bonuses
+     *
+     * @param player player to check
+     */
+    public static void check(Player player)
+    {
+        if (instance != null)
+            instance._check(player);
     }
 
     /**

@@ -100,14 +100,7 @@ public class MainListener implements Listener
     public void onJoin(PlayerJoinEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-
-        // Apply player data as long as they have a class
-        data.updateHealthAndMana(event.getPlayer());
-        if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-        {
-            data.startPassives(event.getPlayer());
-            data.updateScoreboard();
-        }
+        data.init(event.getPlayer());
     }
 
     /**
@@ -118,6 +111,13 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event)
     {
+        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        {
+            data.stopPassives(event.getPlayer());
+            data.record(event.getPlayer());
+        }
+
         FlagManager.clearFlags(event.getPlayer());
         BuffManager.clearData(event.getPlayer());
         Combat.clearData(event.getPlayer());
@@ -125,11 +125,6 @@ public class MainListener implements Listener
 
         event.getPlayer().setDisplayName(event.getPlayer().getName());
         event.getPlayer().setMaxHealth(20);
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-        {
-            data.stopPassives(event.getPlayer());
-        }
         SkillAPI.unloadPlayerData(event.getPlayer());
     }
 

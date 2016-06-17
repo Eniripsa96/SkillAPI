@@ -76,7 +76,7 @@ public class GUIData
         Inventory inv = Bukkit.getServer().createInventory(handler, rows, title);
         ItemStack[] contents = pageMap.get(0).instance(player, data);
         inv.setContents(contents);
-        handler.set(this, player, data);
+        handler.set(this, player, inv, data);
         player.getPlayer().openInventory(inv);
     }
 

@@ -54,7 +54,7 @@ public class ProjectileMechanic extends EffectComponent
     private static final String AMOUNT     = "amount";
     private static final String LEVEL      = "skill_level";
     private static final String HEIGHT     = "height";
-    private static final String RADIUS     = "radius";
+    private static final String RADIUS     = "rain-radius";
     private static final String SPREAD     = "spread";
     private static final String COST       = "cost";
     private static final String RANGE      = "range";

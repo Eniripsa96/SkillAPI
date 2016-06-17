@@ -51,6 +51,7 @@ import com.sucy.skill.listener.TreeListener;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
+import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ScoreboardTask;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
@@ -91,6 +92,7 @@ public final class PlayerData
     private double         maxMana;
     private double         bonusHealth;
     private double         bonusMana;
+    private double         lastHealth;
     private boolean        init;
     private boolean        passive;
     private int            attribPoints;
@@ -175,6 +177,24 @@ public final class PlayerData
     public PlayerEquips getEquips()
     {
         return equips;
+    }
+
+    /**
+     * @return health during last logout
+     */
+    public double getLastHealth()
+    {
+        return lastHealth;
+    }
+
+    /**
+     * Used by the API for restoring health - do not use this.
+     *
+     * @param health health logged off with
+     */
+    public void setLastHealth(double health)
+    {
+        lastHealth = health;
     }
 
     /**
@@ -1424,6 +1444,16 @@ public final class PlayerData
     }
 
     /**
+     * Sets the player's amount of mana without launching events
+     *
+     * @param amount current mana
+     */
+    public void setMana(double amount)
+    {
+        this.mana = amount;
+    }
+
+    /**
      * Gives mana to the player from an unknown source. This will not
      * cause the player's mana to go above their max amount.
      *
@@ -1645,6 +1675,16 @@ public final class PlayerData
     //                     Functions                     //
     //                                                   //
     ///////////////////////////////////////////////////////
+
+    /**
+     * Records any data to save with class data
+     *
+     * @param player player to record for
+     */
+    public void record(Player player)
+    {
+        this.lastHealth = player.getHealth();
+    }
 
     /**
      * Updates the scoreboard with the player's current class.
@@ -1879,5 +1919,21 @@ public final class PlayerData
         }
 
         else return true;
+    }
+
+    /**
+     * Initializes the application of the data for the player
+     *
+     * @param player player to set up for
+     */
+    public void init(Player player)
+    {
+        AttributeListener.updatePlayer(this);
+        InventoryTask.check(player);
+        this.updateHealthAndMana(player);
+        if (this.getLastHealth() > 0)
+            player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
+        this.startPassives(player);
+        this.updateScoreboard();
     }
 }

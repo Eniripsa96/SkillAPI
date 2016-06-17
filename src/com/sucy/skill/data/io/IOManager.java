@@ -51,6 +51,8 @@ public abstract class IOManager
         ACTIVE         = "active",
         ACCOUNTS       = "accounts",
         ACCOUNT_PREFIX = "acc",
+        HEALTH         = "health",
+        MANA           = "mana",
         CLASSES        = "classes",
         SKILLS         = "skills",
         BINDS          = "binds",
@@ -264,6 +266,8 @@ public abstract class IOManager
             acc.autoLevel();
         }
         data.setAccount(file.getInt(ACTIVE, data.getActiveId()), false);
+        data.getActiveData().setLastHealth(file.getDouble(HEALTH));
+        data.getActiveData().setMana(file.getDouble(MANA, data.getActiveData().getMana()));
 
         return data;
     }
@@ -275,6 +279,8 @@ public abstract class IOManager
             DataSection file = new DataSection();
             file.set(LIMIT, data.getAccountLimit());
             file.set(ACTIVE, data.getActiveId());
+            file.set(HEALTH, data.getActiveData().getLastHealth());
+            file.set(MANA, data.getActiveData().getMana());
             DataSection accounts = file.createSection(ACCOUNTS);
             for (Map.Entry<Integer, PlayerData> entry : data.getAllData().entrySet())
             {

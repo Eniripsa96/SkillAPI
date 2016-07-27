@@ -68,9 +68,11 @@
             <version>9.0.9</version>
         </dependency>
         <dependency>
-            <groupId>com.github.NoCheatPlus.NoCheatPlus</groupId>
-            <artifactId>ncpbuildbase</artifactId>
-            <version>7243ab7538</version>
+            <groupId>com.github.NoCheatPlus</groupId>
+            <artifactId>NoCheatPlus</artifactId>
+            <version>3.13.7-RC-sMD5NET-b925</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/modules/NoCheatPlus.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

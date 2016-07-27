@@ -68,8 +68,8 @@
             <version>9.0.9</version>
         </dependency>
         <dependency>
-            <groupId>com.github.NoCheatPlus</groupId>
-            <artifactId>NoCheatPlus</artifactId>
+            <groupId>com.github.NoCheatPlus.NoCheatPlus</groupId>
+            <artifactId>ncpbuildbase</artifactId>
             <version>7243ab7538</version>
         </dependency>
     </dependencies>

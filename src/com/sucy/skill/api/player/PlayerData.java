@@ -43,6 +43,9 @@ import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.gui.AttributeHandler;
+import com.sucy.skill.gui.DetailsHandler;
+import com.sucy.skill.gui.SkillHandler;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.GUINodes;
 import com.sucy.skill.language.RPGFilter;
@@ -52,6 +55,7 @@ import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.task.ScoreboardTask;
+import com.sucy.skill.tools.GUITool;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -317,8 +321,9 @@ public final class PlayerData
      * has no remaining points, this will do nothing.
      *
      * @param key attribute key
+     * @return whether or not it was successfully upgraded
      */
-    public void upAttribute(String key)
+    public boolean upAttribute(String key)
     {
         key = key.toLowerCase();
         int current = getInvestedAttribute(key);
@@ -335,7 +340,10 @@ public final class PlayerData
                 attributes.put(key, current);
                 attribPoints++;
             }
+            else
+                return true;
         }
+        return false;
     }
 
     /**
@@ -381,7 +389,7 @@ public final class PlayerData
      *
      * @param key attribute key
      */
-    public void refundAttribute(String key)
+    public boolean refundAttribute(String key)
     {
         key = key.toLowerCase();
         int current = getInvestedAttribute(key);
@@ -389,13 +397,16 @@ public final class PlayerData
         {
             PlayerRefundAttributeEvent event = new PlayerRefundAttributeEvent(this, key);
             Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled()) return;
+            if (event.isCancelled()) return false;
 
             attribPoints += 1;
             attributes.put(key, current - 1);
             if (current - 1 <= 0) attributes.remove(key);
             AttributeListener.updatePlayer(this);
+
+            return true;
         }
+        return false;
     }
 
     /**
@@ -500,47 +511,30 @@ public final class PlayerData
     }
 
     /**
-     * Opens the attribute menu
+     * Opens the attribute menu for the player
+     *
+     * @return true if successfully opened, false if conditions weren't met
      */
-    public void openAttributeMenu()
+    public boolean openAttributeMenu()
     {
         Player player = getPlayer();
         if (SkillAPI.getSettings().isAttributesEnabled() && player != null)
         {
-            AttributeManager manager = SkillAPI.getAttributeManager();
-            Inventory inv = InventoryManager.createInventory(
-                AttributeListener.MENU_KEY,
-                (manager.getKeys().size() + 8) / 9,
+            GUITool.getAttributesMenu().show(
+                new AttributeHandler(),
+                this,
                 SkillAPI.getLanguage().getMessage(
                     GUINodes.ATTRIB_TITLE,
                     true,
                     FilterType.COLOR,
                     RPGFilter.POINTS.setReplacement(attribPoints + ""),
                     Filter.PLAYER.setReplacement(player.getName())
-                ).get(0)
+                ).get(0),
+                SkillAPI.getAttributeManager().getAttributes()
             );
-            int i = 0;
-            for (String key : manager.getKeys())
-            {
-                ItemStack icon = manager.getAttribute(key).getIcon();
-                ItemMeta meta = icon.getItemMeta();
-                meta.setDisplayName(filter(meta.getDisplayName(), key));
-                List<String> lore = meta.getLore();
-                for (int j = 0; j < lore.size(); j++)
-                    lore.set(j, filter(lore.get(j), key));
-
-                icon.setItemMeta(meta);
-                inv.setItem(i++, icon);
-            }
-            player.openInventory(inv);
+            return true;
         }
-    }
-
-    private String filter(String text, String key)
-    {
-        return text
-            .replace("{amount}", "" + getInvestedAttribute(key))
-            .replace("{total}", "" + getAttribute(key));
+        return false;
     }
 
     /**
@@ -853,6 +847,63 @@ public final class PlayerData
     }
 
     /**
+     * Shows the class details for the player
+     *
+     * @param player player to show to
+     * @return true if shown, false if nothing to show
+     */
+    public boolean showDetails(Player player)
+    {
+        if (classes.size() > 0 && player != null)
+        {
+            GUITool.getDetailsMenu().show(
+                new DetailsHandler(),
+                this,
+                SkillAPI.getLanguage().getMessage(
+                    GUINodes.CLASS_LIST,
+                    true,
+                    FilterType.COLOR,
+                    Filter.PLAYER.setReplacement(player.getName())
+                ).get(0),
+                classes
+            );
+            return true;
+        }
+        else return false;
+    }
+
+    /**
+     * Shows profession options of the first class group available
+     *
+     * @param player player to show profession options for
+     * @return true if shown profession options, false if none available
+     */
+    public boolean showProfession(Player player)
+    {
+        for (String group : SkillAPI.getGroups())
+        {
+            PlayerClass c = getClass(group);
+            if (c == null || (c.getLevel() == c.getData().getMaxLevel() && c.getData().getOptions().size() > 0))
+            {
+                GUITool.getProfessMenu(c == null ? null : c.getData()).show(
+                    new DetailsHandler(),
+                    this,
+                    SkillAPI.getLanguage().getMessage(
+                        GUINodes.PROFESS_TITLE,
+                        true,
+                        FilterType.COLOR,
+                        Filter.PLAYER.setReplacement(player.getName()),
+                        RPGFilter.GROUP.setReplacement(group)
+                    ).get(0),
+                    SkillAPI.getClasses()
+                );
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Shows the skill tree for the player. If the player has multiple trees,
      * this will show the list of skill trees they can view.
      *
@@ -871,22 +922,7 @@ public final class PlayerData
         // Show list of classes that have skill trees
         if (classes.size() > 1)
         {
-            Inventory inv = InventoryManager.createInventory(
-                TreeListener.CLASS_LIST_KEY,
-                (classes.size() + 8) / 9,
-                SkillAPI.getLanguage().getMessage(
-                    GUINodes.CLASS_LIST,
-                    true,
-                    FilterType.COLOR,
-                    Filter.PLAYER.setReplacement(player.getName())
-                ).get(0)
-            );
-            for (PlayerClass c : classes.values())
-            {
-                inv.addItem(c.getData().getIcon());
-            }
-            player.openInventory(inv);
-            return true;
+            return showDetails(player);
         }
 
         // Show only class's skill tree otherwise
@@ -911,6 +947,18 @@ public final class PlayerData
 
         // Show skill tree of the class
         this.menuClass = playerClass.getData().getName();
+        GUITool.getSkillTree(playerClass.getData()).show(
+            new SkillHandler(),
+            this,
+            SkillAPI.getLanguage().getMessage(
+                GUINodes.SKILL_TREE,
+                true,
+                FilterType.COLOR,
+                RPGFilter.CLASS.setReplacement(playerClass.getData().getName()),
+                Filter.PLAYER.setReplacement(getPlayerName())
+            ).get(0),
+            playerClass.getData().getSkillMap()
+        );
         player.openInventory(((InventoryTree) playerClass.getData().getSkillTree()).getInventory(this));
         return true;
     }

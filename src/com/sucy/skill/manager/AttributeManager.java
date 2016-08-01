@@ -29,6 +29,7 @@ package com.sucy.skill.manager;
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.formula.Formula;
 import com.sucy.skill.data.formula.value.CustomValue;
@@ -38,6 +39,7 @@ import com.sucy.skill.log.Logger;
 import com.sucy.skill.tools.GUIData;
 import com.sucy.skill.tools.GUIPage;
 import com.sucy.skill.tools.GUITool;
+import com.sucy.skill.tools.IconHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -62,7 +64,7 @@ public class AttributeManager
     public static final String SKILL_DEFENSE    = "skill-defense";
     public static final String MOVE_SPEED       = "move-speed";
 
-    private LinkedHashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
+    private HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
 
     /**
      * Sets up the attribute manager, loading the attribute
@@ -87,6 +89,19 @@ public class AttributeManager
     public Attribute getAttribute(String key)
     {
         return attributes.get(key.toLowerCase());
+    }
+
+    /**
+     * Unsafe getter for the attribute data.
+     *
+     * Do not use this method or modify it's return value unless
+     * you know exactly what you are doing.
+     *
+     * @return attributes map
+     */
+    public HashMap<String, Attribute> getAttributes()
+    {
+        return attributes;
     }
 
     /**
@@ -132,7 +147,7 @@ public class AttributeManager
     /**
      * A single attribute template
      */
-    public class Attribute
+    public class Attribute implements IconHolder
     {
         private static final String DISPLAY   = "display";
         private static final String GLOBAL    = "global";
@@ -219,9 +234,32 @@ public class AttributeManager
          *
          * @return icon of the attribute
          */
-        public ItemStack getIcon()
+        @Override
+        public ItemStack getIcon(PlayerData data)
         {
-            return icon.clone();
+            ItemStack item = icon.clone();
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(filter(data, meta.getDisplayName()));
+            List<String> lore = meta.getLore();
+            for (int j = 0; j < lore.size(); j++)
+                lore.set(j, filter(data, lore.get(j)));
+
+            item.setItemMeta(meta);
+            return item;
+        }
+
+        /**
+         * Filters a line of the icon according to the player data
+         *
+         * @param data player data to use
+         * @param text line of text to filter
+         * @return filtered line
+         */
+        private String filter(PlayerData data, String text)
+        {
+            return text
+                .replace("{amount}", "" + data.getInvestedAttribute(key))
+                .replace("{total}", "" + getAttribute(key));
         }
 
         /**
@@ -229,11 +267,9 @@ public class AttributeManager
          */
         public ItemStack getToolIcon()
         {
-            ItemStack icon = getIcon();
+            ItemStack icon = this.icon.clone();
             ItemMeta meta = icon.getItemMeta();
-            List<String> lore = meta.getLore();
-            lore.add(key);
-            meta.setLore(lore);
+            meta.setDisplayName(key);
             icon.setItemMeta(meta);
             return icon;
         }

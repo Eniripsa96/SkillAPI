@@ -39,6 +39,7 @@ import com.sucy.skill.api.particle.*;
 import com.sucy.skill.api.particle.direction.Directions;
 import com.sucy.skill.api.particle.target.EffectTarget;
 import com.sucy.skill.api.player.PlayerCombos;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.*;
 import com.sucy.skill.cast.IIndicator;
@@ -49,6 +50,7 @@ import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.language.SkillNodes;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.tools.IconHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -67,7 +69,7 @@ import java.util.List;
  * Represents a template for a skill used in the RPG system. This is
  * the class to extend when creating your own custom skills.
  */
-public abstract class Skill
+public abstract class Skill implements IconHolder
 {
     private static final DecimalFormat FORMAT = new DecimalFormat("#########0.0#");
 
@@ -454,6 +456,22 @@ public abstract class Skill
         item.setItemMeta(meta);
 
         return item;
+    }
+
+    /**
+     * Fetches the icon for the skill for the player
+     *
+     * @param data player to get for
+     * @return the skill icon
+     */
+    @Override
+    public ItemStack getIcon(PlayerData data)
+    {
+        PlayerSkill skill = data.getSkill(name);
+        if (skill != null)
+            return getIndicator(skill);
+        else
+            return getIndicator();
     }
 
     /**

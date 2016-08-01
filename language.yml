@@ -20,6 +20,7 @@ Errors:
   cannot-use: '&4You cannot equip that item'
 GUI:
   attribute-title: 'Attributes ({points} points)'
+  profess-title: 'Profess'
   skill-tree: '{class}'
   skill-class-list: '{player}'
 Skill Tree:

@@ -41,7 +41,9 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.manager.TitleManager;
+import com.sucy.skill.tools.IconHolder;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * <p>Represents a player's class progress.</p>
@@ -52,7 +54,7 @@ import org.bukkit.Bukkit;
  * rather what the player has within the class. For more general information
  * about the class, you should use the RPGClass class.</p>
  */
-public final class PlayerClass
+public final class PlayerClass implements IconHolder
 {
     private PlayerData player;
     private RPGClass   classData;
@@ -489,5 +491,17 @@ public final class PlayerClass
     public void setClassData(RPGClass classData)
     {
         this.classData = classData;
+    }
+
+    /**
+     * Gets the icon for the class
+     *
+     * @param player player to get for
+     * @return icon data
+     */
+    @Override
+    public ItemStack getIcon(PlayerData player)
+    {
+        return getData().getIcon();
     }
 }

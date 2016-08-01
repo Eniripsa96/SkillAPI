@@ -32,11 +32,13 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+import com.sucy.skill.tools.IconHolder;
 import com.sucy.skill.tree.SkillTree;
 import com.sucy.skill.tree.map.MapTree;
 import org.bukkit.Bukkit;
@@ -47,13 +49,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Represents a template for a class used in the RPG system. This is
  * the class to extend when creating your own classes.
  */
-public abstract class RPGClass
+public abstract class RPGClass implements IconHolder
 {
+    private final HashMap<String, Skill> skillMap = new HashMap<String, Skill>();
     private final ArrayList<Skill> skills = new ArrayList<Skill>();
 
     private OfflinePlayer manaPlayer;
@@ -264,6 +268,26 @@ public abstract class RPGClass
     }
 
     /**
+     * @return map of skills for use in menus
+     */
+    public HashMap<String, Skill> getSkillMap()
+    {
+        return skillMap;
+    }
+
+    /**
+     * Retrieves the icon representing this class for menus
+     *
+     * @param data player to get the icon for
+     * @return icon representation of the class
+     */
+    @Override
+    public ItemStack getIcon(PlayerData data)
+    {
+        return getIcon();
+    }
+
+    /**
      * Gets the indicator for the class for the GUI tools
      *
      * @return GUI tool indicator
@@ -463,12 +487,8 @@ public abstract class RPGClass
     {
         ArrayList<RPGClass> list = new ArrayList<RPGClass>();
         for (RPGClass c : SkillAPI.getClasses().values())
-        {
             if (c.getParent() == this)
-            {
                 list.add(c);
-            }
-        }
         return list;
     }
 
@@ -674,6 +694,8 @@ public abstract class RPGClass
                 else Logger.invalid("Invalid skill for class " + this.name + " - " + name);
             }
         }
+        for (Skill skill : skills)
+            skillMap.put(skill.getName(), skill);
 
         if (SkillAPI.getSettings().isMapTreeEnabled())
         {

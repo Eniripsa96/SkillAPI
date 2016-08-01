@@ -196,7 +196,11 @@ public class GUITool implements ToolMenu
     private static GUIData get(String key)
     {
         if (!setups.containsKey(key))
+        {
+            Logger.log("GUI data not found for key=" + key);
             setups.put(key, new GUIData());
+        }
+        else Logger.log("Found GUI data for key=" + key);
         return setups.get(key);
     }
 

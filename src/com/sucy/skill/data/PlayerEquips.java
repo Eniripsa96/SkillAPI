@@ -203,6 +203,10 @@ public class PlayerEquips
             if (!item.hasItemMeta())
                 return;
 
+            List<String> lore = item.getItemMeta().getLore();
+            if (lore == null)
+                return;
+
             Settings settings = SkillAPI.getSettings();
             String classText = settings.getLoreClassText();
             String excludeText = settings.getLoreExcludeText();
@@ -210,7 +214,6 @@ public class PlayerEquips
             boolean skills = settings.isCheckSkillLore();
             boolean attributes = settings.isAttributesEnabled();
 
-            List<String> lore = item.getItemMeta().getLore();
             for (String line : lore)
             {
                 String lower = ChatColor.stripColor(line).toLowerCase();

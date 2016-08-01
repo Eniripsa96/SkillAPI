@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.cmd;
 
-import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.sucy.skill.SkillAPI;
@@ -48,6 +47,7 @@ public class CmdProfess implements IFunction
     private static final String PROFESSED      = "professed";
     private static final String CANNOT_PROFESS = "cannot-profess";
     private static final String DISABLED       = "world-disabled";
+    private static final String NOT_AVAILABLE  = "not-available";
 
     /**
      * Runs the command
@@ -69,16 +69,18 @@ public class CmdProfess implements IFunction
         // Only players have profession options
         else if (sender instanceof Player)
         {
+            PlayerData data = SkillAPI.getPlayerData((Player) sender);
+
             if (args.length == 0)
             {
-                CommandManager.displayUsage(cmd, sender);
+                if (!data.showProfession((Player) sender))
+                    cmd.sendMessage(sender, NOT_AVAILABLE, ChatColor.RED + "There's no profession available at this time");
             }
             else
             {
                 String name = args[0];
                 for (int i = 1; i < args.length; i++) name += ' ' + args[i];
 
-                PlayerData data = SkillAPI.getPlayerData((Player) sender);
                 RPGClass target = SkillAPI.getClass(name);
 
                 // Invalid class

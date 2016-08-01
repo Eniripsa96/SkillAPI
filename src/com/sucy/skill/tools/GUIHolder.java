@@ -39,19 +39,21 @@ import java.util.HashMap;
 
 public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
 {
-    private HashMap<String, ? extends IconHolder> data = new HashMap<String, IconHolder>();
+    protected HashMap<String, ? extends IconHolder> data = new HashMap<String, IconHolder>();
 
     protected GUIData    gui;
     protected PlayerData player;
     protected Inventory  inventory;
     protected int        page;
 
-    public void set(GUIData gui, PlayerData player, Inventory inv, HashMap<String, ? extends IconHolder> data)
+    public void set(GUIData gui, PlayerData player, Inventory inv, HashMap<String, T> data)
     {
         this.gui = gui;
         this.player = player;
         this.inventory = inv;
         this.data = data;
+
+        onSetup();
     }
 
     public void next()
@@ -62,7 +64,6 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
     public void prev()
     {
         setPage((page + gui.getPages() - 1) % gui.getPages());
-
     }
 
     public void setPage(int page)
@@ -85,7 +86,7 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
         String result = gui.getPage(page).get(event.getSlot());
         if (top && result != null && data.containsKey(result))
         {
-            onClick((T)data.get(result), event.getSlot());
+            onClick((T)data.get(result), event.getSlot(), event.isLeftClick(), event.isShiftClick());
         }
     }
 
@@ -94,9 +95,11 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
         onClose((Player)event.getPlayer());
     }
 
-    public abstract void onClick(T type, int slot);
+    protected abstract void onClick(T type, int slot, boolean left, boolean shift);
 
-    public abstract void onClose(Player player);
+    protected void onSetup() { }
+
+    protected void onClose(Player player) { }
 
     @Override
     public Inventory getInventory()

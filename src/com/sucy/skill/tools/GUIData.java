@@ -28,6 +28,7 @@ package com.sucy.skill.tools;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -69,11 +70,15 @@ public class GUIData
         }
         while (pageMap.size() < pages)
             pageMap.add(new GUIPage(this));
+
+        Logger.log("Loaded GUI Data:");
+        Logger.log("  size=" + rows);
+        Logger.log("  pages=" + pages);
     }
 
     public void show(GUIHolder handler, PlayerData player, String title, HashMap<String, ? extends IconHolder> data)
     {
-        Inventory inv = Bukkit.getServer().createInventory(handler, rows, title);
+        Inventory inv = Bukkit.getServer().createInventory(handler, rows * 9, title);
         ItemStack[] contents = pageMap.get(0).instance(player, data);
         inv.setContents(contents);
         handler.set(this, player, inv, data);

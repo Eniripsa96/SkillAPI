@@ -31,5 +31,5 @@ import org.bukkit.inventory.ItemStack;
 
 public interface IconHolder
 {
-    public ItemStack getIcon(PlayerData player);
+    ItemStack getIcon(PlayerData player);
 }

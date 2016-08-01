@@ -30,7 +30,9 @@ import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -54,9 +56,12 @@ public class GUIPage
     {
         this(parent);
 
+        Logger.log("Found page:");
         for (String key : data.keys())
         {
             slots.put(key, data.getInt(key));
+            lookup.put(data.getInt(key), key);
+            Logger.log("  " + key + "=" + data.getInt(key));
         }
     }
 
@@ -73,6 +78,7 @@ public class GUIPage
 
     public int getIndex(String item)
     {
+        item = item.toLowerCase();
         if (!slots.containsKey(item))
             return -1;
         else
@@ -122,27 +128,34 @@ public class GUIPage
             if (item == null)
                 continue;
 
-            String key = data[i].getItemMeta().getDisplayName();
-            if (key.equals(GUITool.PREV_PAGE) || key.equals(GUITool.NEXT_PAGE))
+            String key = ChatColor.stripColor(data[i].getItemMeta().getDisplayName()).toLowerCase();
+            if (key.equals("next page") || key.equals("prev page"))
                 continue;
 
-            slots.put(key, i);
-            lookup.put(i, key);
+            slots.put(key.toLowerCase(), i);
+            lookup.put(i, key.toLowerCase());
         }
     }
 
     public ItemStack[] instance(PlayerData player, HashMap<String, ? extends IconHolder> data)
     {
+        Logger.log("Lookup:");
+
         ItemStack[] contents = new ItemStack[parent.getSize()];
 
         for (Map.Entry<Integer, String> entry : lookup.entrySet())
         {
+            Logger.log("  - " + entry.getKey() + " / " + entry.getValue());
             IconHolder holder = data.get(entry.getValue());
             if (holder != null)
             {
                 contents[entry.getKey()] = holder.getIcon(player);
             }
         }
+
+        Logger.log("Data:");
+        for (String key : data.keySet())
+            Logger.log("  - " + key);
 
         return contents;
     }

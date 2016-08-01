@@ -43,7 +43,7 @@ import java.util.List;
  * Represents player-specific data for a skill such as the player's
  * current level for the skill, the cooldown, and other related data.
  */
-public final class PlayerSkill implements IconHolder
+public final class PlayerSkill
 {
     protected final List<IIndicator> indicators = new ArrayList<IIndicator>();
 
@@ -386,11 +386,5 @@ public final class PlayerSkill implements IconHolder
         for (IIndicator indicator : indicators)
             indicator.makePackets(packets, IndicatorSettings.particle, step);
         return packets;
-    }
-
-    @Override
-    public ItemStack getIcon(PlayerData player)
-    {
-        return skill.getIndicator(this);
     }
 }

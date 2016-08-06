@@ -44,7 +44,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rupture extends Skill implements SkillShot
+public final class Rupture extends Skill implements SkillShot
 {
     public static final String NAME = "Rupture";
 
@@ -91,7 +91,7 @@ public class Rupture extends Skill implements SkillShot
     {
         final double radius = settings.getAttr(RADIUS, level);
         final double damage = settings.getAttr(DAMAGE, level);
-        int interval = (int)(20 * settings.getAttr(INTERVAL, level));
+        final int interval = (int)(20 * settings.getAttr(INTERVAL, level));
 
         final Location target = user.getLocation();
         final Vector direction = target.getDirection();
@@ -107,7 +107,7 @@ public class Rupture extends Skill implements SkillShot
                     spikes--;
                     target.add(direction);
                     playEffect(new FixedTarget(target), SPIKE, 10, level);
-                    List<LivingEntity> targets = Nearby.getLivingNearby(target, radius);
+                    final List<LivingEntity> targets = Nearby.getLivingNearby(target, radius);
                     for (LivingEntity entity : targets)
                         if (SkillAPI.getSettings().canAttack(user, entity))
                             Rupture.this.damage(entity, damage, user);

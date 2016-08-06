@@ -47,17 +47,22 @@ import java.util.List;
  */
 public class ProjectileMechanic extends EffectComponent
 {
+    private static final Vector UP = new Vector(0, 1, 0);
+
     private static final String PROJECTILE = "projectile";
     private static final String SPEED      = "velocity";
-    private static final String ANGLE      = "angle";
-    private static final String AMOUNT     = "amount";
-    private static final String LEVEL      = "skill_level";
-    private static final String HEIGHT     = "height";
-    private static final String RADIUS     = "rain-radius";
-    private static final String SPREAD     = "spread";
-    private static final String COST       = "cost";
-    private static final String RANGE      = "range";
-    private static final String FLAMING    = "flaming";
+    private static final String ANGLE    = "angle";
+    private static final String AMOUNT   = "amount";
+    private static final String LEVEL   = "skill_level";
+    private static final String HEIGHT  = "height";
+    private static final String RADIUS  = "rain-radius";
+    private static final String SPREAD  = "spread";
+    private static final String COST    = "cost";
+    private static final String RANGE   = "range";
+    private static final String FLAMING = "flaming";
+    private static final String RIGHT   = "right";
+    private static final String UPWARD  = "upward";
+    private static final String FORWARD = "forward";
 
     /**
      * Executes the component
@@ -136,13 +141,21 @@ public class ProjectileMechanic extends EffectComponent
                     dir.normalize();
                 }
                 double angle = attr(caster, ANGLE, level, 30.0, true);
+                double right = attr(caster, RIGHT, level, 0, true);
+                double upward = attr(caster, UPWARD, level, 0, true);
+                double forward = attr(caster, FORWARD, level, 0, true);
+
+                Vector looking = target.getLocation().getDirection().setY(0).normalize();
+                Vector normal = looking.clone().crossProduct(UP);
+                looking.multiply(forward).add(normal.multiply(right));
+
                 ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
                 for (Vector d : dirs)
                 {
                     Projectile p = caster.launchProjectile(type);
                     if (type != Arrow.class)
                     {
-                        p.teleport(target.getLocation().add(0, 0.5, 0).add(p.getVelocity()).setDirection(d));
+                        p.teleport(target.getLocation().add(looking).add(0, upward + 0.5, 0).add(p.getVelocity()).setDirection(d));
                     }
                     p.setVelocity(d.multiply(speed));
                     SkillAPI.setMeta(p, MechanicListener.P_CALL, this);

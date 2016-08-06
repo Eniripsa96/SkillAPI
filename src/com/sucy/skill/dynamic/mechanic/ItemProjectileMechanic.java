@@ -46,7 +46,8 @@ import java.util.List;
  */
 public class ItemProjectileMechanic extends EffectComponent implements ProjectileCallback
 {
-    private static final String POSITION = "position";
+    private static final Vector UP = new Vector(0, 1, 0);
+
     private static final String ITEM     = "item";
     private static final String DATA     = "item-data";
     private static final String SPEED    = "velocity";
@@ -57,6 +58,9 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
     private static final String RADIUS   = "rain-radius";
     private static final String SPREAD   = "spread";
     private static final String ALLY     = "group";
+    private static final String RIGHT   = "right";
+    private static final String UPWARD  = "upward";
+    private static final String FORWARD = "forward";
 
     /**
      * Executes the component
@@ -87,7 +91,6 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
-        double position = settings.getDouble(POSITION);
 
         // Fire from each target
         for (LivingEntity target : targets)
@@ -105,6 +108,15 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
             else
             {
                 Vector dir = target.getLocation().getDirection();
+
+                double right = attr(caster, RIGHT, level, 0, true);
+                double upward = attr(caster, UPWARD, level, 0, true);
+                double forward = attr(caster, FORWARD, level, 0, true);
+
+                Vector looking = dir.clone().setY(0).normalize();
+                Vector normal = looking.clone().crossProduct(UP);
+                looking.multiply(forward).add(normal.multiply(right));
+
                 if (spread.equals("horizontal cone"))
                 {
                     dir.setY(0);
@@ -112,7 +124,15 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
                 }
                 dir.multiply(speed);
                 double angle = attr(caster, ANGLE, level, 30.0, true);
-                list = ItemProjectile.spread(caster, dir, loc.add(0, 0.5 + position, 0), item, angle, amount, this);
+                list = ItemProjectile.spread(
+                    caster,
+                    dir,
+                    loc.add(looking).add(0, 0.5 + upward, 0),
+                    item,
+                    angle,
+                    amount,
+                    this
+                );
             }
 
             // Set metadata for when the callback happens

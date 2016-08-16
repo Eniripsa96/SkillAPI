@@ -27,12 +27,12 @@
 package com.sucy.skill.example.psykin;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.particle.EffectPlayer;
 import com.sucy.skill.api.particle.target.FixedTarget;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillAttribute;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.util.Nearby;
-import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -55,6 +55,8 @@ public final class Rupture extends Skill implements SkillShot
     private static final String INTERVAL = "interval";
     private static final String RANGE = "range";
 
+    private EffectPlayer player;
+
     public Rupture()
     {
         super(NAME, "Delayed AOE", makeIcon(), 10);
@@ -69,21 +71,23 @@ public final class Rupture extends Skill implements SkillShot
         settings.set(INTERVAL, 5, 0);
         settings.set(RANGE, 6, 1);
 
-        settings.set(SPIKE + SHAPE, "one-circle");
-        settings.set(SPIKE + SHAPE_DIR, "XZ");
-        settings.set(SPIKE + SHAPE_SIZE, "sq(1-p*2)");
-        settings.set(SPIKE + ANIMATION, "linear-quick");
-        settings.set(SPIKE + ANIM_DIR, "YZ");
-        settings.set(SPIKE + ANIM_SIZE, "4*p");
-        settings.set(SPIKE + INTERVAL, 1);
-        settings.set(SPIKE + VIEW_RANGE, 25);
+        settings.set(SPIKE + EffectPlayer.SHAPE, "one-circle");
+        settings.set(SPIKE + EffectPlayer.SHAPE_DIR, "XZ");
+        settings.set(SPIKE + EffectPlayer.SHAPE_SIZE, "sq(1-p*2)");
+        settings.set(SPIKE + EffectPlayer.ANIMATION, "linear-quick");
+        settings.set(SPIKE + EffectPlayer.ANIM_DIR, "YZ");
+        settings.set(SPIKE + EffectPlayer.ANIM_SIZE, "4*p");
+        settings.set(SPIKE + EffectPlayer.INTERVAL, 1);
+        settings.set(SPIKE + EffectPlayer.VIEW_RANGE, 25);
 
-        settings.set(SPIKE + P_TYPE, "CRIT");
-        settings.set(SPIKE + AMOUNT, 1);
-        settings.set(SPIKE + DX, 0);
-        settings.set(SPIKE + DY, 0);
-        settings.set(SPIKE + DZ, 0);
-        settings.set(SPIKE + SPEED, 0);
+        settings.set(SPIKE + EffectPlayer.P_TYPE, "CRIT");
+        settings.set(SPIKE + EffectPlayer.AMOUNT, 1);
+        settings.set(SPIKE + EffectPlayer.DX, 0);
+        settings.set(SPIKE + EffectPlayer.DY, 0);
+        settings.set(SPIKE + EffectPlayer.DZ, 0);
+        settings.set(SPIKE + EffectPlayer.SPEED, 0);
+
+        player = new EffectPlayer(settings);
     }
 
     @Override
@@ -106,7 +110,7 @@ public final class Rupture extends Skill implements SkillShot
                 {
                     spikes--;
                     target.add(direction);
-                    playEffect(new FixedTarget(target), SPIKE, 10, level);
+                    player.start(new FixedTarget(target), SPIKE, 10, level);
                     final List<LivingEntity> targets = Nearby.getLivingNearby(target, radius);
                     for (LivingEntity entity : targets)
                         if (SkillAPI.getSettings().canAttack(user, entity))

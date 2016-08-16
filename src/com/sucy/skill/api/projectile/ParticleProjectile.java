@@ -97,6 +97,7 @@ public class ParticleProjectile extends CustomProjectile
      *
      * @return location of the projectile
      */
+    @Override
     public Location getLocation()
     {
         return loc;

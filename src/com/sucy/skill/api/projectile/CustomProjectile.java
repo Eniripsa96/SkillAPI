@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.projectile;
 
+import com.sucy.skill.api.particle.target.Followable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -42,7 +43,7 @@ import java.util.List;
 /**
  * Base class for custom projectiles
  */
-public abstract class CustomProjectile extends BukkitRunnable implements Metadatable
+public abstract class CustomProjectile extends BukkitRunnable implements Metadatable, Followable
 {
     private final HashMap<String, List<MetadataValue>> metadata = new HashMap<String, List<MetadataValue>>();
 
@@ -50,6 +51,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     protected LivingEntity       thrower;
     protected boolean enemy = true;
     protected boolean ally  = false;
+    protected boolean valid = true;
 
     /**
      * Constructs a new custom projectile and starts its timer task
@@ -85,11 +87,25 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     }
 
     /**
-     * Retrieves the location of the projectile
-     *
-     * @return location of the projectile
+     * Marks the projectile as invalid when the associated task is cancelled
      */
-    public abstract Location getLocation();
+    @Override
+    public void cancel()
+    {
+        super.cancel();
+        valid = false;
+    }
+
+    /**
+     * Checks whether or not the projectile is still active
+     *
+     * @return true if active, false otherwise
+     */
+    @Override
+    public boolean isValid()
+    {
+        return valid;
+    }
 
     /**
      * <p>Sets a bit of metadata onto the projectile.</p>

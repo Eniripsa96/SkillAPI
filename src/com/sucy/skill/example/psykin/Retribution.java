@@ -27,6 +27,7 @@
 package com.sucy.skill.example.psykin;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.particle.EffectPlayer;
 import com.sucy.skill.api.particle.target.FixedTarget;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillAttribute;
@@ -54,6 +55,8 @@ public class Retribution extends Skill implements SkillShot
     private static final String RADIUS = "radius";
     private static final String DELAY  = "delay";
 
+    private EffectPlayer player;
+
     public Retribution()
     {
         super(NAME, "Delayed AOE", makeIcon(), 10);
@@ -67,37 +70,39 @@ public class Retribution extends Skill implements SkillShot
         settings.set(RADIUS, 1, 0.1);
         settings.set(DELAY, 2, -0.1);
 
-        settings.set(CHARGE + SHAPE, "three-point");
-        settings.set(CHARGE + SHAPE_DIR, "XZ");
-        settings.set(CHARGE + SHAPE_SIZE, "1-p");
-        settings.set(CHARGE + ANIMATION, "linear");
-        settings.set(CHARGE + ANIM_DIR, "YZ");
-        settings.set(CHARGE + ANIM_SIZE, "1-p");
-        settings.set(CHARGE + INTERVAL, 2);
-        settings.set(CHARGE + VIEW_RANGE, 25);
+        settings.set(CHARGE + EffectPlayer.SHAPE, "three-point");
+        settings.set(CHARGE + EffectPlayer.SHAPE_DIR, "XZ");
+        settings.set(CHARGE + EffectPlayer.SHAPE_SIZE, "1-p");
+        settings.set(CHARGE + EffectPlayer.ANIMATION, "linear");
+        settings.set(CHARGE + EffectPlayer.ANIM_DIR, "YZ");
+        settings.set(CHARGE + EffectPlayer.ANIM_SIZE, "1-p");
+        settings.set(CHARGE + EffectPlayer.INTERVAL, 2);
+        settings.set(CHARGE + EffectPlayer.VIEW_RANGE, 25);
 
-        settings.set(CHARGE + P_TYPE, "SPELL");
-        settings.set(CHARGE + AMOUNT, 1);
-        settings.set(CHARGE + DX, 0);
-        settings.set(CHARGE + DY, 0);
-        settings.set(CHARGE + DZ, 0);
-        settings.set(CHARGE + SPEED, 0);
+        settings.set(CHARGE + EffectPlayer.P_TYPE, "SPELL");
+        settings.set(CHARGE + EffectPlayer.AMOUNT, 1);
+        settings.set(CHARGE + EffectPlayer.DX, 0);
+        settings.set(CHARGE + EffectPlayer.DY, 0);
+        settings.set(CHARGE + EffectPlayer.DZ, 0);
+        settings.set(CHARGE + EffectPlayer.SPEED, 0);
 
-        settings.set(SPIKE + SHAPE, "one-circle");
-        settings.set(SPIKE + SHAPE_DIR, "XZ");
-        settings.set(SPIKE + SHAPE_SIZE, "sq(1-p*(v*0.1+0.9))");
-        settings.set(SPIKE + ANIMATION, "linear-quick");
-        settings.set(SPIKE + ANIM_DIR, "YZ");
-        settings.set(SPIKE + ANIM_SIZE, "4*p");
-        settings.set(SPIKE + INTERVAL, 1);
-        settings.set(SPIKE + VIEW_RANGE, 25);
+        settings.set(SPIKE + EffectPlayer.SHAPE, "one-circle");
+        settings.set(SPIKE + EffectPlayer.SHAPE_DIR, "XZ");
+        settings.set(SPIKE + EffectPlayer.SHAPE_SIZE, "sq(1-p*(v*0.1+0.9))");
+        settings.set(SPIKE + EffectPlayer.ANIMATION, "linear-quick");
+        settings.set(SPIKE + EffectPlayer.ANIM_DIR, "YZ");
+        settings.set(SPIKE + EffectPlayer.ANIM_SIZE, "4*p");
+        settings.set(SPIKE + EffectPlayer.INTERVAL, 1);
+        settings.set(SPIKE + EffectPlayer.VIEW_RANGE, 25);
 
-        settings.set(SPIKE + P_TYPE, "CRIT");
-        settings.set(SPIKE + AMOUNT, 1);
-        settings.set(SPIKE + DX, 0);
-        settings.set(SPIKE + DY, 0);
-        settings.set(SPIKE + DZ, 0);
-        settings.set(SPIKE + SPEED, 0);
+        settings.set(SPIKE + EffectPlayer.P_TYPE, "CRIT");
+        settings.set(SPIKE + EffectPlayer.AMOUNT, 1);
+        settings.set(SPIKE + EffectPlayer.DX, 0);
+        settings.set(SPIKE + EffectPlayer.DY, 0);
+        settings.set(SPIKE + EffectPlayer.DZ, 0);
+        settings.set(SPIKE + EffectPlayer.SPEED, 0);
+
+        player = new EffectPlayer(settings);
     }
 
     @Override
@@ -110,7 +115,7 @@ public class Retribution extends Skill implements SkillShot
         int ticks = (int) (20 * settings.getAttr(DELAY, level));
 
         final Location target = ((LivingEntity) offender).getLocation();
-        playEffect(new FixedTarget(target), CHARGE, ticks, level);
+        player.start(new FixedTarget(target), CHARGE, ticks, level);
         SkillAPI.schedule(
             new BukkitRunnable()
             {
@@ -119,7 +124,7 @@ public class Retribution extends Skill implements SkillShot
                 {
                     double damage = settings.getAttr(DAMAGE, level);
                     double radius = settings.getAttr(RADIUS, level);
-                    playEffect(new FixedTarget(target), SPIKE, 10, level);
+                    player.start(new FixedTarget(target), SPIKE, 10, level);
                     List<LivingEntity> targets = Nearby.getLivingNearby(target, radius);
                     for (LivingEntity entity : targets)
                         if (SkillAPI.getSettings().canAttack(user, entity))

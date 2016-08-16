@@ -27,6 +27,8 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.particle.EffectPlayer;
+import com.sucy.skill.api.particle.target.EntityTarget;
 import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.cast.*;
 import com.sucy.skill.dynamic.EffectComponent;
@@ -59,6 +61,9 @@ public class ProjectileMechanic extends EffectComponent
     private static final String COST       = "cost";
     private static final String RANGE      = "range";
     private static final String FLAMING    = "flaming";
+
+    private static final String USE_EFFECT = "use-effect";
+    private static final String EFFECT_KEY = "effect-key";
 
     /**
      * Creates the list of indicators for the skill
@@ -221,9 +226,15 @@ public class ProjectileMechanic extends EffectComponent
                 }
             }
         }
+        if (settings.getBool(USE_EFFECT, false))
+        {
+            EffectPlayer player = new EffectPlayer(settings);
+            for (Entity p : projectiles)
+                player.start(new EntityTarget(p), settings.getString(EFFECT_KEY, skill.getName()), 9999, level);
+        }
         new RemoveTask(projectiles, (int) Math.ceil(range / Math.abs(speed)));
 
-        return targets.size() > 0;
+        return projectiles.size() > 0;
     }
 
     /**

@@ -29,6 +29,7 @@ package com.sucy.skill.dynamic;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.api.particle.ParticleEffect;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.NumberParser;
@@ -229,7 +230,6 @@ public abstract class EffectComponent
      */
     protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        passed = true;
         boolean worked = false;
         for (EffectComponent child : children)
         {
@@ -458,6 +458,7 @@ public abstract class EffectComponent
             put("message", MessageMechanic.class);
             put("particle", ParticleMechanic.class);
             put("particle animation", ParticleAnimationMechanic.class);
+            put("particle effect", ParticleEffectMechanic.class);
             put("particle projectile", ParticleProjectileMechanic.class);
             put("passive", PassiveMechanic.class);
             put("permission", PermissionMechanic.class);

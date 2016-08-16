@@ -79,6 +79,7 @@ public class ItemProjectile extends CustomProjectile
      *
      * @return location of the projectile
      */
+    @Override
     public Location getLocation()
     {
         return item.getLocation();

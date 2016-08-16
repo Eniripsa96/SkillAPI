@@ -27,6 +27,9 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.particle.EffectPlayer;
+import com.sucy.skill.api.particle.target.EntityTarget;
+import com.sucy.skill.api.particle.target.FollowTarget;
 import com.sucy.skill.api.projectile.CustomProjectile;
 import com.sucy.skill.api.projectile.ParticleProjectile;
 import com.sucy.skill.api.projectile.ProjectileCallback;
@@ -53,6 +56,9 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
     private static final String RADIUS   = "rain-radius";
     private static final String SPREAD   = "spread";
     private static final String ALLY     = "group";
+
+    private static final String USE_EFFECT = "use-effect";
+    private static final String EFFECT_KEY = "effect-key";
 
     /**
      * Creates the list of indicators for the skill
@@ -160,6 +166,13 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
             {
                 SkillAPI.setMeta(p, LEVEL, level);
                 p.setAllyEnemy(ally, !ally);
+            }
+
+            if (settings.getBool(USE_EFFECT, false))
+            {
+                EffectPlayer player = new EffectPlayer(settings);
+                for (CustomProjectile p : list)
+                    player.start(new FollowTarget(p), settings.getString(EFFECT_KEY, skill.getName()), 9999, level);
             }
         }
 

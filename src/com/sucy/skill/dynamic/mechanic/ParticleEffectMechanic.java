@@ -47,7 +47,7 @@ public class ParticleEffectMechanic extends EffectComponent
         EffectPlayer player = new EffectPlayer(settings);
         for (LivingEntity target : targets)
         {
-            player.start(new EntityTarget(target), key, duration, level);
+            player.start(new EntityTarget(target), key, duration, level, true);
         }
 
         return targets.size() > 0;

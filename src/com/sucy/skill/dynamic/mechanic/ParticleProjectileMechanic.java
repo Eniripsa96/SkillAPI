@@ -172,7 +172,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
             {
                 EffectPlayer player = new EffectPlayer(settings);
                 for (CustomProjectile p : list)
-                    player.start(new FollowTarget(p), settings.getString(EFFECT_KEY, skill.getName()), 9999, level);
+                    player.start(new FollowTarget(p), settings.getString(EFFECT_KEY, skill.getName()), 9999, level, true);
             }
         }
 

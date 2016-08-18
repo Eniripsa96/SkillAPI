@@ -74,8 +74,23 @@ public class EffectPlayer
      * @param target target to play for
      * @param key    effect key to use
      * @param ticks  duration of effect in ticks
+     * @param level  level of the effect
      */
     public void start(EffectTarget target, String key, int ticks, int level)
+    {
+        start(target, key, ticks, level, false);
+    }
+
+    /**
+     * Plays a particle effect, grabbing values from the settings data
+     *
+     * @param target   target to play for
+     * @param key      effect key to use
+     * @param ticks    duration of effect in ticks
+     * @param level    level of the effect
+     * @param noPrefix exclude prefix when grabbing settings
+     */
+    public void start(EffectTarget target, String key, int ticks, int level, boolean noPrefix)
     {
         // If the effect is already running, just refresh it
         EffectInstance instance = EffectManager.getEffect(target, key);
@@ -87,7 +102,7 @@ public class EffectPlayer
 
         // If the effect is not registered, make it
         if (EffectManager.getEffect(key) == null)
-            makeEffect(key);
+            makeEffect(key, noPrefix);
 
         // Play the effect
         EffectManager.runEffect(EffectManager.getEffect(key), target, ticks, level);
@@ -96,12 +111,15 @@ public class EffectPlayer
     /**
      * Creates and registers an effect
      *
-     * @param key effect key
+     * @param key      effect key
+     * @param noPrefix exclude prefix when grabbing settings
      */
-    private void makeEffect(String key)
+    private void makeEffect(String key, boolean noPrefix)
     {
+        String keyMod = noPrefix ? "" : key;
+
         // Grab the particle type
-        ParticleType particleType = ParticleLookup.find(settings.getString(key + P_TYPE, "SPELL"));
+        ParticleType particleType = ParticleLookup.find(settings.getString(keyMod + P_TYPE, "SPELL"));
         ParticleSettings particle;
 
         // Block Crack and the related use materials
@@ -111,18 +129,18 @@ public class EffectPlayer
             {
                 particle = new ParticleSettings(
                     particleType,
-                    (float) settings.getDouble(key + DX),
-                    (float) settings.getDouble(key + DY),
-                    (float) settings.getDouble(key + DZ),
-                    (float) settings.getDouble(key + SPEED, 1),
-                    settings.getInt(key + AMOUNT, 1),
-                    Material.valueOf(settings.getString(key + MAT, "DIRT")),
-                    settings.getInt(key + DATA)
+                    (float) settings.getDouble(keyMod + DX),
+                    (float) settings.getDouble(keyMod + DY),
+                    (float) settings.getDouble(keyMod + DZ),
+                    (float) settings.getDouble(keyMod + SPEED, 1),
+                    settings.getInt(keyMod + AMOUNT, 1),
+                    Material.valueOf(settings.getString(keyMod + MAT, "DIRT")),
+                    settings.getInt(keyMod + DATA)
                 );
             }
             catch (Exception ex)
             {
-                Logger.invalid("Bad material for particle effect - " + settings.getString(key + MAT));
+                Logger.invalid("Bad material for particle effect - " + settings.getString(keyMod + MAT));
                 return;
             }
         }
@@ -131,25 +149,25 @@ public class EffectPlayer
         else
             particle = new ParticleSettings(
                 particleType,
-                (float) settings.getDouble(key + DX),
-                (float) settings.getDouble(key + DY),
-                (float) settings.getDouble(key + DZ),
-                (float) settings.getDouble(key + SPEED, 1),
-                settings.getInt(key + AMOUNT, 1)
+                (float) settings.getDouble(keyMod + DX),
+                (float) settings.getDouble(keyMod + DY),
+                (float) settings.getDouble(keyMod + DZ),
+                (float) settings.getDouble(keyMod + SPEED, 1),
+                settings.getInt(keyMod + AMOUNT, 1)
             );
 
         // Make the effect
         ParticleEffect effect = new ParticleEffect(
             key,
-            EffectManager.getFormula(settings.getString(key + SHAPE, "single")),
-            EffectManager.getFormula(settings.getString(key + ANIMATION, "single")),
+            EffectManager.getFormula(settings.getString(keyMod + SHAPE, "single")),
+            EffectManager.getFormula(settings.getString(keyMod + ANIMATION, "single")),
             particle,
-            Directions.byName(settings.getString(key + SHAPE_DIR, "XZ")),
-            Directions.byName(settings.getString(key + ANIM_DIR, "XZ")),
-            settings.getString(key + SHAPE_SIZE, "1"),
-            settings.getString(key + ANIM_SIZE, "1"),
-            settings.getInt(key + INTERVAL, 1),
-            settings.getInt(key + VIEW_RANGE, 25)
+            Directions.byName(settings.getString(keyMod + SHAPE_DIR, "XZ")),
+            Directions.byName(settings.getString(keyMod + ANIM_DIR, "XZ")),
+            settings.getString(keyMod + SHAPE_SIZE, "1"),
+            settings.getString(keyMod + ANIM_SIZE, "1"),
+            settings.getInt(keyMod + INTERVAL, 1),
+            settings.getInt(keyMod + VIEW_RANGE, 25)
         );
 
         // Register the effect

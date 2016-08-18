@@ -29,7 +29,7 @@ package com.sucy.skill.api.particle;
 public enum ParticleType
 {
     BARRIER("barrier"),
-    BLOCK_CRACK("block crack", "blackcrack_"),
+    BLOCK_CRACK("block crack", "blackcrack_", true),
     CLOUD("cloud", "cloud"),
     CRIT("crit", "crit"),
     CRIT_MAGIC("magic crit", "magicCrit"),
@@ -41,8 +41,8 @@ public enum ParticleType
     END_ROD("end rod"),
     EXPLOSION_HUGE("huge explosion", "hugeexplosion"),
     EXPLOSION_LARGE("large explode", "largeexplode"),
-    EXPLODSION_NORMAL("explode", "explode"),
-    FIREWORDS_SPARK("firework spark", "fireworksSpark"),
+    EXPLOSION_NORMAL("explode", "explode"),
+    FIREWORKS_SPARK("firework spark", "fireworksSpark"),
     FLAME("flame", "flame"),
     FOOTSTEP("footstep", "footstep"),
     HEART("heart", "heart"),
@@ -75,20 +75,20 @@ public enum ParticleType
     private String old;
     private boolean mat;
 
-    private ParticleType(String editorKey)
+    ParticleType(String editorKey)
     {
         editor = editorKey;
         ParticleLookup.register(this);
     }
 
-    private ParticleType(String editorKey, String oldName)
+    ParticleType(String editorKey, String oldName)
     {
         editor = editorKey;
         old = oldName;
         ParticleLookup.register(this);
     }
 
-    private ParticleType(String editorKey, String oldName, boolean usesMat)
+    ParticleType(String editorKey, String oldName, boolean usesMat)
     {
         this(editorKey, oldName);
         mat = usesMat;

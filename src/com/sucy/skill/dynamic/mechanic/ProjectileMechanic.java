@@ -230,7 +230,7 @@ public class ProjectileMechanic extends EffectComponent
         {
             EffectPlayer player = new EffectPlayer(settings);
             for (Entity p : projectiles)
-                player.start(new EntityTarget(p), settings.getString(EFFECT_KEY, skill.getName()), 9999, level);
+                player.start(new EntityTarget(p), settings.getString(EFFECT_KEY, skill.getName()), 9999, level, true);
         }
         new RemoveTask(projectiles, (int) Math.ceil(range / Math.abs(speed)));
 

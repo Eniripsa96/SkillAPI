@@ -46,7 +46,7 @@ public enum Click
 
     private int id;
 
-    private Click(int id)
+    Click(int id)
     {
         this.id = id;
     }

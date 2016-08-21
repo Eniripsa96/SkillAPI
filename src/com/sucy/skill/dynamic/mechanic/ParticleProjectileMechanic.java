@@ -48,6 +48,8 @@ import java.util.List;
  */
 public class ParticleProjectileMechanic extends EffectComponent implements ProjectileCallback
 {
+    private static final Vector UP = new Vector(0, 1, 0);
+
     private static final String POSITION = "position";
     private static final String ANGLE    = "angle";
     private static final String AMOUNT   = "amount";
@@ -56,6 +58,9 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
     private static final String RADIUS   = "rain-radius";
     private static final String SPREAD   = "spread";
     private static final String ALLY     = "group";
+    private static final String RIGHT   = "right";
+    private static final String UPWARD  = "upward";
+    private static final String FORWARD = "forward";
 
     private static final String USE_EFFECT = "use-effect";
     private static final String EFFECT_KEY = "effect-key";
@@ -152,13 +157,31 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
             else
             {
                 Vector dir = target.getLocation().getDirection();
+
+                double right = attr(caster, RIGHT, level, 0, true);
+                double upward = attr(caster, UPWARD, level, 0, true);
+                double forward = attr(caster, FORWARD, level, 0, true);
+
+                Vector looking = dir.clone().setY(0).normalize();
+                Vector normal = looking.clone().crossProduct(UP);
+                looking.multiply(forward).add(normal.multiply(right));
+
                 if (spread.equals("horizontal cone"))
                 {
                     dir.setY(0);
                     dir.normalize();
                 }
                 double angle = attr(caster, ANGLE, level, 30.0, isSelf);
-                list = ParticleProjectile.spread(caster, level, dir, loc.add(0, 0.5 + position, 0), settings, angle, amount, this);
+                list = ParticleProjectile.spread(
+                    caster,
+                    level,
+                    dir,
+                    loc.add(looking).add(0, upward + 0.5, 0),
+                    settings,
+                    angle,
+                    amount,
+                    this
+                );
             }
 
             // Set metadata for when the callback happens

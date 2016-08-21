@@ -27,10 +27,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.particle.EffectPlayer;
-import com.sucy.skill.api.particle.target.EntityTarget;
 import com.sucy.skill.api.projectile.CustomProjectile;
-import com.sucy.skill.cast.*;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
@@ -50,92 +47,22 @@ import java.util.List;
  */
 public class ProjectileMechanic extends EffectComponent
 {
+    private static final Vector UP = new Vector(0, 1, 0);
+
     private static final String PROJECTILE = "projectile";
     private static final String SPEED      = "velocity";
-    private static final String ANGLE      = "angle";
-    private static final String AMOUNT     = "amount";
-    private static final String LEVEL      = "skill_level";
-    private static final String HEIGHT     = "height";
-    private static final String RADIUS     = "rain-radius";
-    private static final String SPREAD     = "spread";
-    private static final String COST       = "cost";
-    private static final String RANGE      = "range";
-    private static final String FLAMING    = "flaming";
-
-    private static final String USE_EFFECT = "use-effect";
-    private static final String EFFECT_KEY = "effect-key";
-
-    /**
-     * Creates the list of indicators for the skill
-     *
-     * @param list   list to store indicators in
-     * @param caster caster reference
-     * @param target location to base location on
-     * @param level  the level of the skill to create for
-     */
-    @Override
-    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
-    {
-        // Get common values
-        String spread = settings.getString(SPREAD, "cone").toLowerCase();
-
-        // Apply the spread type
-        if (spread.equals("rain"))
-        {
-            double radius = attr(caster, RADIUS, level, 2.0, true);
-
-            if (indicatorType == IndicatorType.DIM_2)
-            {
-                IIndicator indicator = new CircleIndicator(radius);
-                indicator.moveTo(target.getLocation().add(0, 0.1, 0));
-                list.add(indicator);
-            }
-            else
-            {
-                double height = attr(caster, HEIGHT, level, 8.0, true);
-                IIndicator indicator = new CylinderIndicator(radius, height);
-                indicator.moveTo(target.getLocation());
-                list.add(indicator);
-            }
-        }
-        else
-        {
-            // Get common values
-            int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
-            double speed = attr(caster, SPEED, level, 2.0, true);
-            String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
-            Class<? extends Projectile> type = PROJECTILES.get(projectile);
-            if (type == null)
-            {
-                type = Arrow.class;
-            }
-
-            double g;
-            if (type == Arrow.class)
-                g = 0.05;
-            else if (type == LargeFireball.class)
-                g = 0;
-            else
-                g = 0.03;
-
-            Vector dir = target.getLocation().getDirection();
-            if (spread.equals("horizontal cone"))
-            {
-                dir.setY(0);
-                dir.normalize();
-            }
-            double angle = attr(caster, ANGLE, level, 30.0, true);
-            ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
-            Location loc = caster.getLocation().add(0, caster.getEyeHeight(), 0);
-            for (Vector d : dirs)
-            {
-                ProjectileIndicator indicator = new ProjectileIndicator(speed, g);
-                indicator.setDirection(d);
-                indicator.moveTo(loc);
-                list.add(indicator);
-            }
-        }
-    }
+    private static final String ANGLE    = "angle";
+    private static final String AMOUNT   = "amount";
+    private static final String LEVEL   = "skill_level";
+    private static final String HEIGHT  = "height";
+    private static final String RADIUS  = "rain-radius";
+    private static final String SPREAD  = "spread";
+    private static final String COST    = "cost";
+    private static final String RANGE   = "range";
+    private static final String FLAMING = "flaming";
+    private static final String RIGHT   = "right";
+    private static final String UPWARD  = "upward";
+    private static final String FORWARD = "forward";
 
     /**
      * Executes the component
@@ -214,10 +141,22 @@ public class ProjectileMechanic extends EffectComponent
                     dir.normalize();
                 }
                 double angle = attr(caster, ANGLE, level, 30.0, true);
+                double right = attr(caster, RIGHT, level, 0, true);
+                double upward = attr(caster, UPWARD, level, 0, true);
+                double forward = attr(caster, FORWARD, level, 0, true);
+
+                Vector looking = target.getLocation().getDirection().setY(0).normalize();
+                Vector normal = looking.clone().crossProduct(UP);
+                looking.multiply(forward).add(normal.multiply(right));
+
                 ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
                 for (Vector d : dirs)
                 {
                     Projectile p = caster.launchProjectile(type);
+                    if (type != Arrow.class)
+                    {
+                        p.teleport(target.getLocation().add(looking).add(0, upward + 0.5, 0).add(p.getVelocity()).setDirection(d));
+                    }
                     p.setVelocity(d.multiply(speed));
                     SkillAPI.setMeta(p, MechanicListener.P_CALL, this);
                     SkillAPI.setMeta(p, LEVEL, level);
@@ -226,15 +165,9 @@ public class ProjectileMechanic extends EffectComponent
                 }
             }
         }
-        if (settings.getBool(USE_EFFECT, false))
-        {
-            EffectPlayer player = new EffectPlayer(settings);
-            for (Entity p : projectiles)
-                player.start(new EntityTarget(p), settings.getString(EFFECT_KEY, skill.getName()), 9999, level, true);
-        }
         new RemoveTask(projectiles, (int) Math.ceil(range / Math.abs(speed)));
 
-        return projectiles.size() > 0;
+        return targets.size() > 0;
     }
 
     /**

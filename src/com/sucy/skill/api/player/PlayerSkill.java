@@ -154,6 +154,23 @@ public final class PlayerSkill
     }
 
     /**
+     * @return total invested cost in the skill
+     */
+    public int getInvestedCost()
+    {
+        int total = 0;
+        for (int i = 0; i < level; i++)
+            total += skill.getCost(i);
+        return total;
+
+        /* Could assume the linearly scaling cost, but API allows overrides
+        int x0 = skill.getCost(0);
+        int dx = skill.getCost(1) - x0;
+        return (x0 - dx) * level + dx * (level - 1) * level / 2;
+        */
+    }
+
+    /**
      * @return mana cost to use the skill
      */
     public double getManaCost()

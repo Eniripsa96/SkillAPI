@@ -33,6 +33,7 @@ import com.rit.sucy.config.Filter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.language.RPGFilter;
@@ -72,7 +73,7 @@ public class CmdExp implements IFunction
         }
 
         // Only can show info of a player so console needs to provide a name
-        else if (args.length >= 1 && (args.length >= 2 || sender instanceof Player))
+        else if (args.length >= 2 || (args.length >= 1 && sender instanceof Player))
         {
             // Get the player data
             OfflinePlayer target = args.length == 1 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
@@ -81,6 +82,7 @@ public class CmdExp implements IFunction
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");
                 return;
             }
+            PlayerData data = SkillAPI.getPlayerData(target);
 
             // Parse the experience
             double amount;
@@ -101,9 +103,19 @@ public class CmdExp implements IFunction
                 return;
             }
 
+            // Give experience to a specific class group
+            if (args.length == 3)
+            {
+                PlayerClass playerClass = data.getClass(args[2]);
+                if (playerClass == null)
+                    return;
+
+                playerClass.giveExp(amount, ExpSource.COMMAND);
+            }
+
             // Give experience
-            PlayerData data = SkillAPI.getPlayerData(target);
-            data.giveExp(amount, ExpSource.COMMAND);
+            else
+                data.giveExp(amount, ExpSource.COMMAND);
 
             // Messages
             if (target != sender)

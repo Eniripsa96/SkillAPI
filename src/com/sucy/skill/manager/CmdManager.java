@@ -64,7 +64,7 @@ public class CmdManager
             new ConfigurableCommand(api, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "Casts a skill", "<skill>", Permissions.BASIC),
             new ConfigurableCommand(api, "clearbind", SenderType.PLAYER_ONLY, new CmdClearBinds(), "Clears skill binds", "", Permissions.BASIC),
             new ConfigurableCommand(api, "customize", SenderType.PLAYER_ONLY, new CmdCustomize(), "Opens GUI editor", "", Permissions.GUI),
-            new ConfigurableCommand(api, "exp", SenderType.ANYONE, new CmdExp(), "Gives players exp", "[player] <amount>", Permissions.LVL),
+            new ConfigurableCommand(api, "exp", SenderType.ANYONE, new CmdExp(), "Gives players exp", "[player] <amount> [group]", Permissions.LVL),
             new ConfigurableCommand(api, "info", SenderType.ANYONE, new CmdInfo(), "Shows class info", "[player]", Permissions.BASIC),
             new ConfigurableCommand(api, "level", SenderType.ANYONE, new CmdLevel(), "Gives players levels", "[player] <amount>", Permissions.LVL),
             new ConfigurableCommand(api, "list", SenderType.ANYONE, new CmdList(), "Displays accounts", "[player]", Permissions.BASIC),

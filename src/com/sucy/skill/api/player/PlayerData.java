@@ -838,6 +838,28 @@ public final class PlayerData
     }
 
     /**
+     * Refunds all skills for the player
+     */
+    public void refundSkills()
+    {
+        Player player = getPlayer();
+
+        for (PlayerSkill skill : skills.values())
+        {
+            if (skill.getCost() == 0 || skill.getLevel() == 0)
+                continue;
+
+            skill.getPlayerClass().givePoints(skill.getInvestedCost(), PointSource.REFUND);
+            skill.setLevel(0);
+
+            if (player != null && (skill.getData() instanceof PassiveSkill))
+                ((PassiveSkill) skill.getData()).stopEffects(player, 1);
+        }
+
+        clearAllBinds();
+    }
+
+    /**
      * Shows the skill tree for the player. If the player has multiple trees,
      * this will show the list of skill trees they can view.
      */

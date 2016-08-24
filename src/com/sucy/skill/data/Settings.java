@@ -1518,7 +1518,14 @@ public class Settings
         unassigned.setData(new MaterialData(mat, (byte) icon.getInt("data", 0)));
 
         ItemMeta meta = unassigned.getItemMeta();
-        meta.setDisplayName(TextFormatter.colorString(icon.getString("text", "&7Unassigned")));
+        if (icon.isList("text"))
+        {
+            List<String> format = TextFormatter.colorStringList(icon.getList("text"));
+            meta.setDisplayName(format.remove(0));
+            meta.setLore(format);
+        }
+        else
+            meta.setDisplayName(TextFormatter.colorString(icon.getString("text", "&7Unassigned")));
         unassigned.setItemMeta(meta);
 
         DataSection layout = bar.getSection("layout");

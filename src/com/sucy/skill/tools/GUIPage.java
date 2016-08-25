@@ -56,12 +56,10 @@ public class GUIPage
     {
         this(parent);
 
-        Logger.log("Found page:");
         for (String key : data.keys())
         {
             slots.put(key, data.getInt(key));
             lookup.put(data.getInt(key), key);
-            Logger.log("  " + key + "=" + data.getInt(key));
         }
     }
 
@@ -139,23 +137,16 @@ public class GUIPage
 
     public ItemStack[] instance(PlayerData player, HashMap<String, ? extends IconHolder> data)
     {
-        Logger.log("Lookup:");
-
         ItemStack[] contents = new ItemStack[parent.getSize()];
 
         for (Map.Entry<Integer, String> entry : lookup.entrySet())
         {
-            Logger.log("  - " + entry.getKey() + " / " + entry.getValue());
             IconHolder holder = data.get(entry.getValue());
             if (holder != null)
             {
                 contents[entry.getKey()] = holder.getIcon(player);
             }
         }
-
-        Logger.log("Data:");
-        for (String key : data.keySet())
-            Logger.log("  - " + key);
 
         return contents;
     }

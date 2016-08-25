@@ -276,7 +276,6 @@ public class Formula implements IValue
         // always be one more value than operators
         if (values.length != operations.length + 1)
         {
-            System.out.println("Values: " + values.length + ", Operations: " + operations.length + ", Text: " + equation);
             return false;
         }
 

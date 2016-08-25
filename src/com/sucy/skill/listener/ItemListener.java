@@ -179,7 +179,6 @@ public class ItemListener implements Listener
     @EventHandler
     public void onDrag(InventoryDragEvent event)
     {
-        System.out.println("Drag");
         SkillAPI.schedule(new UpdateTask((Player)event.getWhoClicked(), 2), 1);
     }
 

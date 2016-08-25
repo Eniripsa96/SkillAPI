@@ -70,10 +70,6 @@ public class GUIData
         }
         while (pageMap.size() < pages)
             pageMap.add(new GUIPage(this));
-
-        Logger.log("Loaded GUI Data:");
-        Logger.log("  size=" + rows);
-        Logger.log("  pages=" + pages);
     }
 
     public void show(GUIHolder handler, PlayerData player, String title, HashMap<String, ? extends IconHolder> data)

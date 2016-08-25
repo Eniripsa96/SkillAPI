@@ -56,7 +56,6 @@ public class EffectManager
         DataSection data = config.getConfig();
         for (String key : data.keys())
         {
-            System.out.println("Formula: " + key);
             formulas.put(key, new PolarSettings(data.getSection(key)));
             if (key.equals("one-circle"))
                 formulas.get(key).getPoints(XZHandler.instance);

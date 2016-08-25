@@ -390,7 +390,17 @@ public final class PlayerClass
         {
             exp -= classData.getRequiredExp(i);
         }
-        checkLevelUp();
+        int required = getRequiredExp();
+        if (exp < 0)
+        {
+            totalExp += exp;
+            exp = 0;
+        }
+        else if (exp >= required)
+        {
+            totalExp -= exp + required - 1;
+            exp = required - 1;
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 3.90
+version: 3.91
 author: Eniripsa96
 depend: [MCCore]
 softdepend: [Vault]
@@ -10,6 +10,9 @@ permissions:
   skillapi.basic:
     description: access to skill trees and using skills
     default: true
+  skillapi.backup:
+    dscription: allows backing up the SQL database
+    default: op
   skillapi.reset:
     description: access to resetting your class
     default: true

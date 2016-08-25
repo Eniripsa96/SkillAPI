@@ -85,6 +85,10 @@ public class CmdManager
             new ConfigurableCommand(api, "forceprofess", SenderType.CONSOLE_ONLY, new CmdForceProfess(), "Professes a player", "<player> <class>", Permissions.FORCE),
             new ConfigurableCommand(api, "forcereset", SenderType.CONSOLE_ONLY, new CmdForceReset(), "Resets player data", "<player> [account]", Permissions.FORCE)
         );
+        if (SkillAPI.getSettings().isUseSql())
+        {
+            root.addSubCommand(new ConfigurableCommand(api, "backup", SenderType.ANYONE, new CmdBackup(), "Backs up SQL data", "", Permissions.BACKUP));
+        }
         if (SkillAPI.getSettings().isSkillBarEnabled())
         {
             root.addSubCommand(new ConfigurableCommand(api, "bar", SenderType.PLAYER_ONLY, new CmdBar(), "Toggles skill bar", "", Permissions.BASIC));

@@ -66,9 +66,9 @@ public final class Rupture extends Skill implements SkillShot
         settings.set(SkillAttribute.COOLDOWN, 7, -0.5);
         settings.set(SkillAttribute.MANA, 8, 0);
 
-        settings.set(DAMAGE, 6, 2);
+        settings.set(DAMAGE, 12, 2);
         settings.set(RADIUS, 2, 0);
-        settings.set(INTERVAL, 5, 0);
+        settings.set(INTERVAL, 1, 0);
         settings.set(RANGE, 6, 1);
 
         settings.set(SPIKE + EffectPlayer.SHAPE, "one-circle");

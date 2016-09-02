@@ -155,8 +155,10 @@ public class SkillAPI extends JavaPlugin
             new ClickListener(this);
         if (settings.isAttributesEnabled())
             new AttributeListener(this);
-        if (settings.isCastEnabled())
+        if (settings.isCastEnabled() && settings.isUsingBars())
             new CastListener(this);
+        if (settings.isCastEnabled() && !settings.isUsingBars())
+            new CastItemListener(this);
 
         // Set up tasks
         if (settings.isManaEnabled())

@@ -1106,6 +1106,7 @@ public class Settings
 
     private static final String CAST_BASE      = "Casting.";
     private static final String CAST_ENABLED   = CAST_BASE + "enabled";
+    private static final String CAST_BARS      = CAST_BASE + "bars";
     private static final String CAST_INDICATOR = CAST_BASE + "cast-indicator";
     private static final String CAST_SLOT      = CAST_BASE + "slot";
     private static final String CAST_ITEM      = CAST_BASE + "item";
@@ -1114,6 +1115,7 @@ public class Settings
     private static final String CAST_INSTANT   = CAST_BASE + "instant-item";
 
     private boolean   castEnabled;
+    private boolean   castBars;
     private int       castSlot;
     private long      castCooldown;
     private ItemStack castItem;
@@ -1126,6 +1128,14 @@ public class Settings
     public boolean isCastEnabled()
     {
         return castEnabled;
+    }
+
+    /**
+     * @return true if using bar format, false otherwise
+     */
+    public boolean isUsingBars()
+    {
+        return castBars;
     }
 
     /**
@@ -1165,6 +1175,7 @@ public class Settings
     private void loadCastSettings()
     {
         castEnabled = config.getBoolean(CAST_ENABLED);
+        castBars = config.getBoolean(CAST_BARS);
         castSlot = config.getInt(CAST_SLOT) - 1;
         castCooldown = (long)(config.getDouble(CAST_COOLDOWN) * 1000);
         castItem = GUITool.parseItem(config.getSection(CAST_ITEM));

@@ -254,6 +254,18 @@ Casting:
   # Whether or not the main casting option is enabled
   enabled: true
   #
+  # Whether or not to use the mult-bar implementation.
+  # When enabled:
+  # - Left/Right clicking on item opens skill bars
+  # - Skills assigned through tree
+  # - Preview when hovering in the skill bar
+  # - Limited number of skills can be put on skill bars
+  # When disabled:
+  # - Left/Right clicking on item cycles through skills
+  # - Preview when hovering the item
+  # - No limit on skills (though makes cycling hard to find skills)
+  bars: true
+  #
   # Global cooldown between skill casts in seconds
   cooldown: 0
   #
@@ -288,7 +300,9 @@ Casting:
   # The slot the item is kept in, must be in the range 1-9
   slot: 9
   #
-  # The item to use in the cast slot
+  # The item to use in the cast slot.
+  # When not using bars, this only shows up when no skills
+  # are available for use.
   item:
     type: BOOK
     data: 0
@@ -313,6 +327,8 @@ Casting:
     - 'the cast item and will let'
     - 'you see where they will hit'
     - 'before casting them.'
+  #
+  # The item used in the bar GUI to describe the instant bar
   instant-item:
     type: BOOKSHELF
     data: 0

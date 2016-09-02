@@ -41,24 +41,14 @@ public enum Trigger
     CAST,
 
     /**
+     * Trigger effects when the player quits or unlearns the skill
+     */
+    CLEANUP,
+
+    /**
      * Trigger effects when the player crouches
      */
     CROUCH,
-
-    /**
-     * Trigger effects when the player takes environmental damage
-     */
-    ENVIRONMENT_DAMAGE,
-
-    /**
-     * Trigger effects when the player inflicts non-skill damage
-     */
-    PHYSICAL_DAMAGE,
-
-    /**
-     * Trigger effects when the player inflicts skill damage
-     */
-    SKILL_DAMAGE,
 
     /**
      * Trigger effects when the player dies
@@ -66,14 +56,14 @@ public enum Trigger
     DEATH,
 
     /**
+     * Trigger effects when the player takes environmental damage
+     */
+    ENVIRONMENT_DAMAGE,
+
+    /**
      * Trigger effects when the player falls to a certain health percentage
      */
     //HEALTH,
-
-    /**
-     * Trigger effects when launching a projectile
-     */
-    LAUNCH,
 
     /**
      * Trigger effects when the skill is available
@@ -91,6 +81,21 @@ public enum Trigger
     LAND,
 
     /**
+     * Trigger effects when launching a projectile
+     */
+    LAUNCH,
+
+    /**
+     * Trigger effects when the player inflicts non-skill damage
+     */
+    PHYSICAL_DAMAGE,
+
+    /**
+     * Trigger effects when the player inflicts skill damage
+     */
+    SKILL_DAMAGE,
+
+    /**
      * Trigger effects when taking non-skill damage
      */
     TOOK_PHYSICAL_DAMAGE,
@@ -98,12 +103,7 @@ public enum Trigger
     /**
      * Trigger effects when taking skill damage
      */
-    TOOK_SKILL_DAMAGE,
-
-    /**
-     * Trigger effects when the player quits or unlearns the skill
-     */
-    CLEANUP;
+    TOOK_SKILL_DAMAGE;
 
     /**
      * Retrieves a new component for the trigger

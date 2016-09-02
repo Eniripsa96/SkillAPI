@@ -36,10 +36,10 @@ public interface IThreadTask extends Runnable
      *
      * @return true if expired, false otherwise
      */
-    public boolean tick();
+    boolean tick();
 
     /**
      * Runs the functions of the task
      */
-    public void run();
+    void run();
 }

@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.listener.CastListener
+ * com.sucy.skill.listener.CastItemListener
  *
  * The MIT License (MIT)
  *
@@ -26,59 +26,74 @@
  */
 package com.sucy.skill.listener;
 
+import com.rit.sucy.player.PlayerUUIDs;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
-import com.sucy.skill.cast.PlayerCastBars;
-import com.sucy.skill.thread.MainThread;
-import com.sucy.skill.thread.ThreadTask;
-import org.bukkit.Bukkit;
+import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkillSlot;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
- * Listener for the main casting system
+ * Handles the alternate casting option for casting via a cycling slot
  */
-public class CastListener implements Listener
+public class CastItemListener implements Listener
 {
+    private HashMap<UUID, PlayerSkillSlot> data = new HashMap<UUID, PlayerSkillSlot>();
+
     private int slot;
 
     /**
      * @param plugin API reference
      */
-    public CastListener(SkillAPI plugin)
+    public CastItemListener(SkillAPI plugin)
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         slot = SkillAPI.getSettings().getCastSlot();
     }
 
+    /**
+     * Re-initializes cast data on class change
+     *
+     * @param event event details
+     */
     @EventHandler
     public void onClassChange(PlayerClassChangeEvent event)
     {
-        event.getPlayerData().getCastBars().reset();
+        data.get(event.getPlayerData().getPlayer().getUniqueId()).init(event.getPlayerData());
     }
 
+    /**
+     * Initializes cast data on join
+     *
+     * @param event event details
+     */
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        {
+            data.get(event.getPlayer().getUniqueId()).init(SkillAPI.getPlayerData(event.getPlayer()));
             addCastItem(event.getPlayer());
+        }
     }
 
+    /**
+     * Enables/disables cast when changing worlds
+     *
+     * @param event event details
+     */
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
@@ -90,16 +105,36 @@ public class CastListener implements Listener
             addCastItem(event.getPlayer());
     }
 
+    private PlayerSkillSlot get(Player player)
+    {
+        return data.get(player.getUniqueId());
+    }
+
+    private PlayerSkillSlot get(PlayerData data)
+    {
+        return this.data.get(PlayerUUIDs.getUUID(data.getPlayerName()));
+    }
+
+    /**
+     * Gives the player the cast item
+     *
+     * @param player player to give to
+     */
     private void addCastItem(Player player)
     {
         PlayerInventory inv = player.getInventory();
         int slot = SkillAPI.getSettings().getCastSlot();
         ItemStack item = inv.getItem(slot);
-        inv.setItem(slot, SkillAPI.getSettings().getCastItem());
+        data.get(player.getUniqueId()).updateItem(player);
         if (item != null && item.getType() != Material.AIR)
             inv.addItem(item);
-        inv.getItem(slot).setAmount(1);
     }
+
+    /**
+     * Removes the cast item on quit
+     *
+     * @param event event details
+     */
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
@@ -107,20 +142,7 @@ public class CastListener implements Listener
         if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
             return;
 
-        SkillAPI.getPlayerData(event.getPlayer()).getCastBars().restore(event.getPlayer());
         event.getPlayer().getInventory().setItem(slot, null);
-    }
-
-    @EventHandler
-    public void onOpen(InventoryOpenEvent event)
-    {
-        SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().handleOpen((Player)event.getPlayer());
-    }
-
-    @EventHandler
-    public void onClose(InventoryCloseEvent event)
-    {
-        SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().restore((Player)event.getPlayer());
     }
 
     /**
@@ -131,10 +153,14 @@ public class CastListener implements Listener
     @EventHandler
     public void onUnlock(PlayerSkillUnlockEvent event)
     {
-        if (event.getUnlockedSkill().getData().canCast() && event.getPlayerData().getPlayer() != null)
-            event.getPlayerData().getCastBars().unlock(event.getUnlockedSkill());
+        get(event.getPlayerData()).unlock(event.getUnlockedSkill());
     }
 
+    /**
+     * Prevents moving the cast item
+     *
+     * @param event event details
+     */
     @EventHandler
     public void onClick(InventoryClickEvent event)
     {
@@ -142,64 +168,39 @@ public class CastListener implements Listener
             event.setCancelled(true);
     }
 
+    /**
+     * Casts a skill when dropping the cast item
+     *
+     * @param event event details
+     */
     @EventHandler
     public void onDrop(PlayerDropItemEvent event)
     {
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            return;
-
-        if (SkillAPI.getPlayerData(event.getPlayer()).getCastBars().handleInteract(event.getPlayer()))
-            event.setCancelled(true);
-
-        else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())
+            && event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
             event.setCancelled(true);
-            MainThread.register(new OrganizerTask(event.getPlayer()));
+            get(event.getPlayer()).activate();
         }
     }
 
+    /**
+     * Cycles through skills upon interact
+     *
+     * @param event event details
+     */
     @EventHandler
     public void onInteract(PlayerInteractEvent event)
     {
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            return;
-
-        PlayerCastBars bars = SkillAPI.getPlayerData(event.getPlayer()).getCastBars();
-
-        // Interaction while in a view
-        if (bars.handleInteract(event.getPlayer()))
-        {
-            event.setCancelled(true);
-        }
-
-        // Entering a view
-        else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
+        // Cycling skills
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())
+            && event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
             event.setCancelled(true);
             if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
-                bars.showHoverBar(event.getPlayer());
+                get(event.getPlayer()).next();
             else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-                bars.showInstantBar(event.getPlayer());
-        }
-    }
-
-    @EventHandler
-    public void onHeld(PlayerItemHeldEvent event)
-    {
-        SkillAPI.getPlayerData(event.getPlayer()).getCastBars().handle(event);
-    }
-
-    private class OrganizerTask extends ThreadTask
-    {
-        private Player player;
-        public OrganizerTask(Player player)
-        {
-            this.player = player;
-        }
-        @Override
-        public void run()
-        {
-            SkillAPI.getPlayerData(player).getCastBars().showOrganizer(player);
+                get(event.getPlayer()).prev();
         }
     }
 }

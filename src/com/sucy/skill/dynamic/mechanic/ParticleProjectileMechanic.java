@@ -58,9 +58,9 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
     private static final String RADIUS   = "rain-radius";
     private static final String SPREAD   = "spread";
     private static final String ALLY     = "group";
-    private static final String RIGHT   = "right";
-    private static final String UPWARD  = "upward";
-    private static final String FORWARD = "forward";
+    private static final String RIGHT    = "right";
+    private static final String UPWARD   = "upward";
+    private static final String FORWARD  = "forward";
 
     private static final String USE_EFFECT = "use-effect";
     private static final String EFFECT_KEY = "effect-key";

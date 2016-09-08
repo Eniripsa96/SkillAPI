@@ -52,7 +52,7 @@ public class CmdBackup implements IFunction
 {
     private static final String BACKUP = "backup";
     private static final String FAILED = "failed";
-    private static final String DONE = "done";
+    private static final String DONE   = "done";
 
     /**
      * Executes the command
@@ -76,8 +76,8 @@ public class CmdBackup implements IFunction
     private class BackupTask extends BukkitRunnable
     {
         private final ConfigurableCommand cmd;
-        private final SkillAPI api;
-        private final CommandSender sender;
+        private final SkillAPI            api;
+        private final CommandSender       sender;
 
         /**
          * @param api SkillAPI reference

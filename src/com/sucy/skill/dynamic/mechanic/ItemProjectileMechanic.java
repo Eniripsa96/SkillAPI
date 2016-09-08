@@ -52,16 +52,16 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
 {
     private static final Vector UP = new Vector(0, 1, 0);
 
-    private static final String ITEM     = "item";
-    private static final String DATA     = "item-data";
-    private static final String SPEED    = "velocity";
-    private static final String ANGLE    = "angle";
-    private static final String AMOUNT   = "amount";
-    private static final String LEVEL    = "skill_level";
-    private static final String HEIGHT   = "height";
-    private static final String RADIUS   = "rain-radius";
-    private static final String SPREAD   = "spread";
-    private static final String ALLY     = "group";
+    private static final String ITEM    = "item";
+    private static final String DATA    = "item-data";
+    private static final String SPEED   = "velocity";
+    private static final String ANGLE   = "angle";
+    private static final String AMOUNT  = "amount";
+    private static final String LEVEL   = "skill_level";
+    private static final String HEIGHT  = "height";
+    private static final String RADIUS  = "rain-radius";
+    private static final String SPREAD  = "spread";
+    private static final String ALLY    = "group";
     private static final String RIGHT   = "right";
     private static final String UPWARD  = "upward";
     private static final String FORWARD = "forward";

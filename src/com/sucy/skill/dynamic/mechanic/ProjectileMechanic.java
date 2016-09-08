@@ -51,18 +51,18 @@ public class ProjectileMechanic extends EffectComponent
 
     private static final String PROJECTILE = "projectile";
     private static final String SPEED      = "velocity";
-    private static final String ANGLE    = "angle";
-    private static final String AMOUNT   = "amount";
-    private static final String LEVEL   = "skill_level";
-    private static final String HEIGHT  = "height";
-    private static final String RADIUS  = "rain-radius";
-    private static final String SPREAD  = "spread";
-    private static final String COST    = "cost";
-    private static final String RANGE   = "range";
-    private static final String FLAMING = "flaming";
-    private static final String RIGHT   = "right";
-    private static final String UPWARD  = "upward";
-    private static final String FORWARD = "forward";
+    private static final String ANGLE      = "angle";
+    private static final String AMOUNT     = "amount";
+    private static final String LEVEL      = "skill_level";
+    private static final String HEIGHT     = "height";
+    private static final String RADIUS     = "rain-radius";
+    private static final String SPREAD     = "spread";
+    private static final String COST       = "cost";
+    private static final String RANGE      = "range";
+    private static final String FLAMING    = "flaming";
+    private static final String RIGHT      = "right";
+    private static final String UPWARD     = "upward";
+    private static final String FORWARD    = "forward";
 
     /**
      * Executes the component
@@ -190,16 +190,16 @@ public class ProjectileMechanic extends EffectComponent
 
     private static final HashMap<String, Class<? extends Projectile>> PROJECTILES = new HashMap<String, Class<? extends Projectile>>()
     {{
-            put("arrow", Arrow.class);
-            put("egg", Egg.class);
-            put("ghast fireball", LargeFireball.class);
-            put("snowball", Snowball.class);
-        }};
+        put("arrow", Arrow.class);
+        put("egg", Egg.class);
+        put("ghast fireball", LargeFireball.class);
+        put("snowball", Snowball.class);
+    }};
 
     private static final HashMap<String, Material> MATERIALS = new HashMap<String, Material>()
     {{
-            put("arrow", Material.ARROW);
-            put("egg", Material.EGG);
-            put("snowball", Material.SNOW_BALL);
-        }};
+        put("arrow", Material.ARROW);
+        put("egg", Material.EGG);
+        put("snowball", Material.SNOW_BALL);
+    }};
 }

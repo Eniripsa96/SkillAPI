@@ -251,17 +251,25 @@ public class SkillAPI extends JavaPlugin
     }
 
     /**
+     * @return SkillAPI singleton if available
+     *
+     * @throws IllegalStateException if SkillAPI isn't enabled
+     */
+    private static SkillAPI singleton()
+    {
+        if (singleton == null)
+            throw new IllegalStateException("Cannot use SkillAPI methods before it is enabled - add it to your plugin.yml as a dependency");
+        return singleton;
+    }
+
+    /**
      * Retrieves the settings data controlling SkillAPI
      *
      * @return SkillAPI settings data
      */
     public static Settings getSettings()
     {
-        if (singleton == null)
-        {
-            return null;
-        }
-        return singleton.settings;
+        return singleton().settings;
     }
 
     /**
@@ -271,11 +279,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static CommentedLanguageConfig getLanguage()
     {
-        if (singleton == null)
-        {
-            return null;
-        }
-        return singleton.language;
+        return singleton().language;
     }
 
     /**
@@ -285,11 +289,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static ComboManager getComboManager()
     {
-        if (singleton == null)
-        {
-            return null;
-        }
-        return singleton.comboManager;
+        return singleton().comboManager;
     }
 
     /**
@@ -299,11 +299,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static AttributeManager getAttributeManager()
     {
-        if (singleton == null)
-        {
-            return null;
-        }
-        return singleton.attributeManager;
+        return singleton().attributeManager;
     }
 
     /**
@@ -316,11 +312,9 @@ public class SkillAPI extends JavaPlugin
      */
     public static Skill getSkill(String name)
     {
-        if (name == null || singleton == null)
-        {
+        if (name == null)
             return null;
-        }
-        return singleton.skills.get(name.toLowerCase());
+        return singleton().skills.get(name.toLowerCase());
     }
 
     /**
@@ -331,11 +325,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static HashMap<String, Skill> getSkills()
     {
-        if (singleton == null)
-        {
-            return null;
-        }
-        return singleton.skills;
+        return singleton().skills;
     }
 
     /**
@@ -384,11 +374,9 @@ public class SkillAPI extends JavaPlugin
      */
     public static RPGClass getClass(String name)
     {
-        if (name == null || singleton == null)
-        {
+        if (name == null)
             return null;
-        }
-        return singleton.classes.get(name.toLowerCase());
+        return singleton().classes.get(name.toLowerCase());
     }
 
     /**
@@ -399,11 +387,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static HashMap<String, RPGClass> getClasses()
     {
-        if (singleton == null)
-        {
-            return null;
-        }
-        return singleton.classes;
+        return singleton().classes;
     }
 
     /**
@@ -470,10 +454,8 @@ public class SkillAPI extends JavaPlugin
      */
     public static PlayerData getPlayerData(OfflinePlayer player)
     {
-        if (singleton == null || player == null)
-        {
+        if (player == null)
             return null;
-        }
         return getPlayerAccountData(player).getActiveData();
     }
 
@@ -487,14 +469,12 @@ public class SkillAPI extends JavaPlugin
      */
     public static PlayerAccounts loadPlayerData(OfflinePlayer player)
     {
-        if (singleton == null || player == null)
-        {
+        if (player == null)
             return null;
-        }
 
         // Already loaded for some reason, no need to load again
         String id = new VersionPlayer(player).getIdString();
-        if (singleton.players.containsKey(id)) return singleton.players.get(id);
+        if (singleton().players.containsKey(id)) return singleton.players.get(id);
 
         // Load the data
         PlayerAccounts data = singleton.io.loadData(player);
@@ -509,11 +489,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static void saveData()
     {
-        if (singleton == null)
-        {
-            return;
-        }
-        singleton.io.saveAll();
+        singleton().io.saveAll();
     }
 
     /**
@@ -540,9 +516,7 @@ public class SkillAPI extends JavaPlugin
     public static void unloadPlayerData(final OfflinePlayer player)
     {
         if (singleton == null || player == null || !singleton.players.containsKey(new VersionPlayer(player).getIdString()))
-        {
             return;
-        }
 
         singleton.getServer().getScheduler().runTaskAsynchronously(
             singleton, new Runnable()
@@ -569,12 +543,12 @@ public class SkillAPI extends JavaPlugin
      */
     public static PlayerAccounts getPlayerAccountData(OfflinePlayer player)
     {
-        if (singleton == null || player == null)
+        if (player == null)
         {
             return null;
         }
         String id = new VersionPlayer(player).getIdString();
-        if (!singleton.players.containsKey(id))
+        if (!singleton().players.containsKey(id))
         {
             PlayerAccounts data = loadPlayerData(player);
             singleton.players.put(id, data);
@@ -594,11 +568,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static HashMap<String, PlayerAccounts> getPlayerAccountData()
     {
-        if (singleton == null)
-        {
-            return null;
-        }
-        return singleton.players;
+        return singleton().players;
     }
 
     /**
@@ -609,11 +579,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static List<String> getGroups()
     {
-        if (singleton == null)
-        {
-            return null;
-        }
-        return singleton.groups;
+        return singleton().groups;
     }
 
     /**
@@ -711,10 +677,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static void schedule(BukkitRunnable runnable, int delay)
     {
-        if (singleton != null)
-        {
-            runnable.runTaskLater(singleton, delay);
-        }
+        runnable.runTaskLater(singleton(), delay);
     }
 
     /**
@@ -726,10 +689,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static void schedule(BukkitRunnable runnable, int delay, int period)
     {
-        if (singleton != null)
-        {
-            runnable.runTaskTimer(singleton, delay, period);
-        }
+        runnable.runTaskTimer(singleton(), delay, period);
     }
 
     /**
@@ -741,8 +701,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static void setMeta(Metadatable target, String key, Object value)
     {
-        if (singleton == null) return;
-        target.setMetadata(key, new FixedMetadataValue(singleton, value));
+        target.setMetadata(key, new FixedMetadataValue(singleton(), value));
     }
 
     /**
@@ -792,8 +751,7 @@ public class SkillAPI extends JavaPlugin
      */
     public static void removeMeta(Metadatable target, String key)
     {
-        if (singleton == null) return;
-        target.removeMetadata(key, singleton);
+        target.removeMetadata(key, singleton());
     }
 
     /**
@@ -812,11 +770,8 @@ public class SkillAPI extends JavaPlugin
      */
     public static void reload()
     {
-        if (singleton != null)
-        {
-            SkillAPI inst = singleton;
-            inst.onDisable();
-            inst.onEnable();
-        }
+        SkillAPI inst = singleton();
+        inst.onDisable();
+        inst.onEnable();
     }
 }

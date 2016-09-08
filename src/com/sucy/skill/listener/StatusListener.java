@@ -63,21 +63,21 @@ public class StatusListener implements Listener
 
     private static final HashSet<String> interrupts = new HashSet<String>()
     {{
-            add(StatusFlag.STUN);
-            add(StatusFlag.SILENCE);
-        }};
+        add(StatusFlag.STUN);
+        add(StatusFlag.SILENCE);
+    }};
 
     private static final HashMap<String, String> messageMap = new HashMap<String, String>()
     {{
-            put(StatusFlag.STUN, "stunned");
-            put(StatusFlag.ROOT, "rooted");
-            put(StatusFlag.INVINCIBLE, "invincible");
-            put(StatusFlag.ABSORB, "absorbed");
-            put(StatusFlag.DISARM, "disarmed");
-            put(StatusFlag.SILENCE, "silenced");
-            put(StatusFlag.CHANNELING, "channeling");
-            put(StatusFlag.CHANNEL, "channeling");
-        }};
+        put(StatusFlag.STUN, "stunned");
+        put(StatusFlag.ROOT, "rooted");
+        put(StatusFlag.INVINCIBLE, "invincible");
+        put(StatusFlag.ABSORB, "absorbed");
+        put(StatusFlag.DISARM, "disarmed");
+        put(StatusFlag.SILENCE, "silenced");
+        put(StatusFlag.CHANNELING, "channeling");
+        put(StatusFlag.CHANNEL, "channeling");
+    }};
 
     private final Vector ZERO = new Vector(0, 0, 0);
 

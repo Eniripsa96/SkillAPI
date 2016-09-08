@@ -109,7 +109,7 @@ public class RemoveTask extends BukkitRunnable
                     }
                 }
 
-                DynamicSkill.clearCastData((LivingEntity)entity);
+                DynamicSkill.clearCastData((LivingEntity) entity);
             }
 
             // Remove entity

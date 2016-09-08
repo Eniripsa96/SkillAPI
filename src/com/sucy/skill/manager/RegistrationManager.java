@@ -54,7 +54,10 @@ public class RegistrationManager
      */
     public enum Mode
     {
-        STARTUP, SKILL, CLASS, DONE
+        STARTUP,
+        SKILL,
+        CLASS,
+        DONE
     }
 
     private static final String SKILL_FOLDER = "dynamic" + File.separator + "skill";

@@ -28,9 +28,9 @@ package com.sucy.skill.data;
 
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.scoreboard.StatHolder;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
@@ -136,6 +136,6 @@ public class PlayerStats implements StatHolder
 
     private static void load(String key, String node)
     {
-        statPlayers.put(key, Bukkit.getServer().getOfflinePlayer(SkillAPI.getLanguage().getMessage(node, true, FilterType.COLOR).get(0)));
+        statPlayers.put(key, VersionManager.getOfflinePlayer(SkillAPI.getLanguage().getMessage(node, true, FilterType.COLOR).get(0)));
     }
 }

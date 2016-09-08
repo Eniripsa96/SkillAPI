@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.api.util.Combat;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

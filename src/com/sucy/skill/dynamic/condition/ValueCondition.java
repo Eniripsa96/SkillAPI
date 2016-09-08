@@ -26,12 +26,10 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,7 +60,7 @@ public class ValueCondition extends EffectComponent
 
         if (data != null)
         {
-            double value = (Double)data;
+            double value = (Double) data;
             return value >= min && value <= max && executeChildren(caster, level, targets);
         }
 

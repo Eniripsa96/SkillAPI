@@ -69,7 +69,7 @@ public class NearestTarget extends EffectComponent
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
-            int prevSize = targets.size();
+            int prevSize = list.size();
 
             List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
             if (self)
@@ -99,24 +99,24 @@ public class NearestTarget extends EffectComponent
             // Take only the closest
             // TODO optimize getting the nearest ones
             Location casterLoc = caster.getLocation();
-            while (targets.size() > max && targets.size() > 0)
+            while (list.size() > max && list.size() > 0)
             {
                 double dSq = -1;
                 int index = 0;
-                for (int i = 0; i < targets.size(); i++)
+                for (int i = 0; i < list.size(); i++)
                 {
-                    double d = targets.get(i).getLocation().distanceSquared(casterLoc);
+                    double d = list.get(i).getLocation().distanceSquared(casterLoc);
                     if (d > dSq)
                     {
                         dSq = d;
                         index = i;
                     }
                 }
-                targets.remove(index);
+                list.remove(index);
             }
 
-            max += targets.size() - prevSize;
+            max += list.size() - prevSize;
         }
-        return targets.size() > 0 && executeChildren(caster, level, list);
+        return list.size() > 0 && executeChildren(caster, level, list);
     }
 }

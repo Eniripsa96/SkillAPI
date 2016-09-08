@@ -294,7 +294,7 @@ public class BuffData
     private class BuffTask extends BukkitRunnable
     {
         private BuffType type;
-        private int id;
+        private int      id;
 
         public BuffTask(BuffType type, int id)
         {

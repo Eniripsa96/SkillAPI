@@ -28,6 +28,7 @@ package com.sucy.skill.api.classes;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
@@ -642,7 +643,7 @@ public abstract class RPGClass
         manaRegen = config.getDouble(REGEN, manaRegen);
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
         tree = DefaultTreeType.getByName(config.getString(TREE, "requirement"));
-        manaPlayer = Bukkit.getServer().getOfflinePlayer(TextFormatter.colorString(mana));
+        manaPlayer = VersionManager.getOfflinePlayer(TextFormatter.colorString(mana));
 
         settings.load(config.getSection(ATTR));
 

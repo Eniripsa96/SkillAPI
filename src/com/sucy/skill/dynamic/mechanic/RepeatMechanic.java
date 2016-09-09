@@ -131,12 +131,8 @@ public class RepeatMechanic extends EffectComponent
         public void run()
         {
             for (int i = 0; i < targets.size(); i++)
-            {
                 if (targets.get(i).isDead() || !targets.get(i).isValid())
-                {
                     targets.remove(i);
-                }
-            }
 
             if (!skill.isActive(caster) || targets.size() == 0)
             {
@@ -147,8 +143,8 @@ public class RepeatMechanic extends EffectComponent
 
             level = skill.getActiveLevel(caster);
 
-            executeChildren(caster, level, targets);
-            if (--count <= 0)
+            boolean success = executeChildren(caster, level, targets);
+            if (--count <= 0 || !success)
             {
                 cancel();
                 TASKS.get(skill.getName()).remove(this);

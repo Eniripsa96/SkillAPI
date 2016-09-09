@@ -44,11 +44,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Listener for the main casting system
@@ -64,6 +59,27 @@ public class CastListener implements Listener
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         slot = SkillAPI.getSettings().getCastSlot();
+
+        for (Player player : Bukkit.getOnlinePlayers())
+            init(player);
+    }
+
+    /**
+     * Cleans up
+     */
+    public void cleanup()
+    {
+        for (Player player : Bukkit.getOnlinePlayers())
+            cleanup(player);
+    }
+
+    private void cleanup(Player player)
+    {
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+        {
+            SkillAPI.getPlayerData(player).getCastBars().restore(player);
+            player.getInventory().setItem(slot, null);
+        }
     }
 
     @EventHandler
@@ -75,8 +91,7 @@ public class CastListener implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            addCastItem(event.getPlayer());
+        init(event.getPlayer());
     }
 
     @EventHandler
@@ -87,28 +102,27 @@ public class CastListener implements Listener
         if (from && !to)
             event.getPlayer().getInventory().setItem(SkillAPI.getSettings().getCastSlot(), null);
         else
-            addCastItem(event.getPlayer());
+            init(event.getPlayer());
     }
 
-    private void addCastItem(Player player)
+    private void init(Player player)
     {
-        PlayerInventory inv = player.getInventory();
-        int slot = SkillAPI.getSettings().getCastSlot();
-        ItemStack item = inv.getItem(slot);
-        inv.setItem(slot, SkillAPI.getSettings().getCastItem());
-        if (item != null && item.getType() != Material.AIR)
-            inv.addItem(item);
-        inv.getItem(slot).setAmount(1);
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+        {
+            PlayerInventory inv = player.getInventory();
+            int slot = SkillAPI.getSettings().getCastSlot();
+            ItemStack item = inv.getItem(slot);
+            inv.setItem(slot, SkillAPI.getSettings().getCastItem());
+            if (item != null && item.getType() != Material.AIR)
+                inv.addItem(item);
+            inv.getItem(slot).setAmount(1);
+        }
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            return;
-
-        SkillAPI.getPlayerData(event.getPlayer()).getCastBars().restore(event.getPlayer());
-        event.getPlayer().getInventory().setItem(slot, null);
+        cleanup(event.getPlayer());
     }
 
     @EventHandler

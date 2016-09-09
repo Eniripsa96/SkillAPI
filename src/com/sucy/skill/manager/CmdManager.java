@@ -83,7 +83,8 @@ public class CmdManager
             new ConfigurableCommand(api, "forceattr", SenderType.CONSOLE_ONLY, new CmdForceAttr(), "Refunds/gives attributes", "<player> [attr] [amount]", Permissions.FORCE),
             new ConfigurableCommand(api, "forcecast", SenderType.CONSOLE_ONLY, new CmdForceCast(), "Player casts the skill", "<player> <skill> [level]", Permissions.FORCE),
             new ConfigurableCommand(api, "forceprofess", SenderType.CONSOLE_ONLY, new CmdForceProfess(), "Professes a player", "<player> <class>", Permissions.FORCE),
-            new ConfigurableCommand(api, "forcereset", SenderType.CONSOLE_ONLY, new CmdForceReset(), "Resets player data", "<player> [account]", Permissions.FORCE)
+            new ConfigurableCommand(api, "forcereset", SenderType.CONSOLE_ONLY, new CmdForceReset(), "Resets player data", "<player> [account]", Permissions.FORCE),
+            new ConfigurableCommand(api, "forceskill", SenderType.CONSOLE_ONLY, new CmdForceSkill(), "Modifies skill levels", "<player> <up|down|reset> <skill>", Permissions.FORCE)
         );
         if (SkillAPI.getSettings().isUseSql())
         {

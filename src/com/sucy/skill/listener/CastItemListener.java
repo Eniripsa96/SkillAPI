@@ -32,6 +32,7 @@ import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillSlot;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,6 +62,21 @@ public class CastItemListener implements Listener
     {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         slot = SkillAPI.getSettings().getCastSlot();
+
+        for (Player player : Bukkit.getOnlinePlayers())
+            init(player);
+    }
+
+    public void cleanup()
+    {
+        for (Player player : Bukkit.getOnlinePlayers())
+            cleanup(player);
+    }
+
+    private void cleanup(Player player)
+    {
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+            player.getInventory().setItem(slot, null);
     }
 
     /**
@@ -82,11 +98,7 @@ public class CastItemListener implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-        {
-            data.get(event.getPlayer().getUniqueId()).init(SkillAPI.getPlayerData(event.getPlayer()));
-            addCastItem(event.getPlayer());
-        }
+        init(event.getPlayer());
     }
 
     /**
@@ -102,7 +114,7 @@ public class CastItemListener implements Listener
         if (from && !to)
             event.getPlayer().getInventory().setItem(SkillAPI.getSettings().getCastSlot(), null);
         else
-            addCastItem(event.getPlayer());
+            init(event.getPlayer());
     }
 
     private PlayerSkillSlot get(Player player)
@@ -120,14 +132,21 @@ public class CastItemListener implements Listener
      *
      * @param player player to give to
      */
-    private void addCastItem(Player player)
+    private void init(Player player)
     {
-        PlayerInventory inv = player.getInventory();
-        int slot = SkillAPI.getSettings().getCastSlot();
-        ItemStack item = inv.getItem(slot);
-        data.get(player.getUniqueId()).updateItem(player);
-        if (item != null && item.getType() != Material.AIR)
-            inv.addItem(item);
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+        {
+            PlayerSkillSlot slotData = new PlayerSkillSlot();
+            data.put(player.getUniqueId(), slotData);
+            slotData.init(SkillAPI.getPlayerData(player));
+
+            PlayerInventory inv = player.getInventory();
+            int slot = SkillAPI.getSettings().getCastSlot();
+            ItemStack item = inv.getItem(slot);
+            slotData.updateItem(player);
+            if (item != null && item.getType() != Material.AIR)
+                inv.addItem(item);
+        }
     }
 
     /**
@@ -139,10 +158,7 @@ public class CastItemListener implements Listener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            return;
-
-        event.getPlayer().getInventory().setItem(slot, null);
+        cleanup(event.getPlayer());
     }
 
     /**

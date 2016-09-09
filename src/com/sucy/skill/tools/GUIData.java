@@ -66,7 +66,8 @@ public class GUIData
             DataSection pages = data.getSection(SLOTS);
             if (pages != null)
                 for (String page : pages.keys())
-                    this.pageMap.add(new GUIPage(this, pages.getSection(page)));
+                    if (pages.isSection(page))
+                        this.pageMap.add(new GUIPage(this, pages.getSection(page)));
         }
         while (pageMap.size() < pages)
             pageMap.add(new GUIPage(this));

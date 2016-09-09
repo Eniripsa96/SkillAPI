@@ -90,6 +90,9 @@ public class SkillAPI extends JavaPlugin
 
     private MainThread mainThread;
 
+    private CastListener     castListener;
+    private CastItemListener castItemListener;
+
     private boolean loaded = false;
 
     /**
@@ -156,9 +159,9 @@ public class SkillAPI extends JavaPlugin
         if (settings.isAttributesEnabled())
             new AttributeListener(this);
         if (settings.isCastEnabled() && settings.isUsingBars())
-            new CastListener(this);
+            castListener = new CastListener(this);
         if (settings.isCastEnabled() && !settings.isUsingBars())
-            new CastItemListener(this);
+            castItemListener = new CastItemListener(this);
 
         // Set up tasks
         if (settings.isManaEnabled())
@@ -199,6 +202,17 @@ public class SkillAPI extends JavaPlugin
 
         mainThread.disable();
         mainThread = null;
+
+        if (castListener != null)
+        {
+            castListener.cleanup();
+            castItemListener = null;
+        }
+        if (castItemListener != null)
+        {
+            castItemListener.cleanup();
+            castItemListener = null;
+        }
 
         // Clear tasks
         WolfMechanic.removeWolves();

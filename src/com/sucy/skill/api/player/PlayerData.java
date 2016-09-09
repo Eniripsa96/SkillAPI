@@ -718,37 +718,48 @@ public final class PlayerData
 
             // Apply upgrade
             data.getPlayerClass().usePoints(cost);
-            data.addLevels(1);
-
-            // Passive calls
-            if (passive)
-            {
-                Player player = getPlayer();
-                if (player != null && skill instanceof PassiveSkill)
-                {
-                    if (data.getLevel() == 1)
-                    {
-                        ((PassiveSkill) skill).initialize(player, data.getLevel());
-                    }
-                    else
-                    {
-                        ((PassiveSkill) skill).update(player, data.getLevel() - 1, data.getLevel());
-                    }
-                }
-
-                // Unlock event
-                if (data.getLevel() == 1)
-                {
-                    Bukkit.getPluginManager().callEvent(new PlayerSkillUnlockEvent(this, data));
-                    this.autoLevel();
-                }
-            }
+            forceUpSkill(data);
 
             return true;
         }
         else
         {
             return false;
+        }
+    }
+
+    /**
+     * Forcefully upgrades a skill, not letting other plugins
+     * cancel it and ignoring any requirements to do so
+     *
+     * @param skill skill to forcefully upgrade
+     */
+    public void forceUpSkill(PlayerSkill skill)
+    {
+        skill.addLevels(1);
+
+        // Passive calls
+        if (passive)
+        {
+            Player player = getPlayer();
+            if (player != null && skill.getData() instanceof PassiveSkill)
+            {
+                if (skill.getLevel() == 1)
+                {
+                    ((PassiveSkill) skill.getData()).initialize(player, skill.getLevel());
+                }
+                else
+                {
+                    ((PassiveSkill) skill.getData()).update(player, skill.getLevel() - 1, skill.getLevel());
+                }
+            }
+
+            // Unlock event
+            if (skill.getLevel() == 1)
+            {
+                Bukkit.getPluginManager().callEvent(new PlayerSkillUnlockEvent(this, skill));
+                this.autoLevel();
+            }
         }
     }
 
@@ -807,27 +818,7 @@ public final class PlayerData
 
             // Apply upgrade
             data.getPlayerClass().givePoints(cost, PointSource.REFUND);
-            data.addLevels(-1);
-
-            // Passive calls
-            Player player = getPlayer();
-            if (player != null && skill instanceof PassiveSkill)
-            {
-                if (data.getLevel() == 0)
-                {
-                    ((PassiveSkill) skill).stopEffects(player, 1);
-                }
-                else
-                {
-                    ((PassiveSkill) skill).update(player, data.getLevel() + 1, data.getLevel());
-                }
-            }
-
-            // Clear bindings
-            if (data.getLevel() == 0)
-            {
-                clearBinds(skill);
-            }
+            forceDownSkill(data);
 
             return true;
         }
@@ -838,23 +829,63 @@ public final class PlayerData
     }
 
     /**
+     * Forcefully downgrades a skill, not letting other plugins
+     * stop it and ignoring any skill requirements to do so.
+     *
+     * @param skill skill to forcefully downgrade
+     */
+    public void forceDownSkill(PlayerSkill skill)
+    {
+        skill.addLevels(-1);
+
+        // Passive calls
+        Player player = getPlayer();
+        if (player != null && skill.getData() instanceof PassiveSkill)
+        {
+            if (skill.getLevel() == 0)
+            {
+                ((PassiveSkill) skill.getData()).stopEffects(player, 1);
+            }
+            else
+            {
+                ((PassiveSkill) skill.getData()).update(player, skill.getLevel() + 1, skill.getLevel());
+            }
+        }
+
+        // Clear bindings
+        if (skill.getLevel() == 0)
+        {
+            clearBinds(skill.getData());
+        }
+    }
+
+    /**
+     * Refunds a skill for the player, resetting it down
+     * to level 0 and giving back any invested skill points.
+     *
+     * @param skill skill to refund
+     */
+    public void refundSkill(PlayerSkill skill)
+    {
+        Player player = getPlayer();
+
+        if (skill.getCost() == 0 || skill.getLevel() == 0)
+            return;
+
+        skill.getPlayerClass().givePoints(skill.getInvestedCost(), PointSource.REFUND);
+        skill.setLevel(0);
+
+        if (player != null && (skill.getData() instanceof PassiveSkill))
+            ((PassiveSkill) skill.getData()).stopEffects(player, 1);
+    }
+
+    /**
      * Refunds all skills for the player
      */
     public void refundSkills()
     {
-        Player player = getPlayer();
-
         for (PlayerSkill skill : skills.values())
-        {
-            if (skill.getCost() == 0 || skill.getLevel() == 0)
-                continue;
-
-            skill.getPlayerClass().givePoints(skill.getInvestedCost(), PointSource.REFUND);
-            skill.setLevel(0);
-
-            if (player != null && (skill.getData() instanceof PassiveSkill))
-                ((PassiveSkill) skill.getData()).stopEffects(player, 1);
-        }
+            refundSkill(skill);
 
         clearAllBinds();
     }

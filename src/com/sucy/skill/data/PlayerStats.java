@@ -28,13 +28,13 @@ package com.sucy.skill.data;
 
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.scoreboard.StatHolder;
-import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Stat provider for the MCCore stat scoreboard
@@ -57,20 +57,18 @@ public class PlayerStats implements StatHolder
      * @return map of stats for the scoreboard
      */
     @Override
-    public ArrayList<OfflinePlayer> getStats()
+    public List<String> getNames()
     {
-        ArrayList<OfflinePlayer> stats = new ArrayList<OfflinePlayer>();
-        stats.add(statPlayers.get(HEALTH));
+        List<String> stats = new ArrayList<String>();
+        stats.add(statMap.get(HEALTH));
         if (SkillAPI.getSettings().isManaEnabled())
-        {
-            stats.add(player.getData().getManaPlayer());
-        }
-        stats.add(statPlayers.get(POINTS));
-        stats.add(statPlayers.get(LEVEL));
-        stats.add(statPlayers.get(EXP));
+            stats.add(player.getData().getManaName());
+        stats.add(statMap.get(POINTS));
+        stats.add(statMap.get(LEVEL));
+        stats.add(statMap.get(EXP));
         if (SkillAPI.getSettings().isAttributesEnabled())
         {
-            stats.add(statPlayers.get(ATTRIB));
+            stats.add(statMap.get(ATTRIB));
         }
 
         return stats;
@@ -82,20 +80,15 @@ public class PlayerStats implements StatHolder
     @Override
     public ArrayList<Integer> getValues()
     {
-        double health = player.getPlayerData().getPlayer().getHealth();
         ArrayList<Integer> values = new ArrayList<Integer>();
-        values.add((int) health);
+        values.add((int) Math.ceil(player.getPlayerData().getPlayer().getHealth()));
         if (SkillAPI.getSettings().isManaEnabled())
-        {
             values.add((int) player.getPlayerData().getMana());
-        }
         values.add(player.getPoints());
         values.add(player.getLevel());
         values.add((int) player.getExp());
         if (SkillAPI.getSettings().isAttributesEnabled())
-        {
             values.add(player.getPlayerData().getAttributePoints());
-        }
 
         return values;
     }
@@ -107,7 +100,7 @@ public class PlayerStats implements StatHolder
     private static final String POINTS = "points";
     private static final String ATTRIB = "attrib";
 
-    private static final HashMap<String, OfflinePlayer> statPlayers = new HashMap<String, OfflinePlayer>();
+    private static final HashMap<String, String> statMap = new HashMap<String, String>();
 
     /**
      * Initializes the offline players used by the scoreboard. This is done
@@ -115,7 +108,7 @@ public class PlayerStats implements StatHolder
      */
     public static void init()
     {
-        if (statPlayers.size() == 0)
+        if (statMap.size() == 0)
         {
             load(EXP, BASE + EXP);
             load(HEALTH, BASE + HEALTH);
@@ -131,11 +124,11 @@ public class PlayerStats implements StatHolder
      */
     public static void clear()
     {
-        statPlayers.clear();
+        statMap.clear();
     }
 
     private static void load(String key, String node)
     {
-        statPlayers.put(key, VersionManager.getOfflinePlayer(SkillAPI.getLanguage().getMessage(node, true, FilterType.COLOR).get(0)));
+        statMap.put(key, SkillAPI.getLanguage().getMessage(node, true, FilterType.COLOR).get(0));
     }
 }

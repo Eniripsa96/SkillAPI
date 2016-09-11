@@ -242,6 +242,10 @@ GUI:
   # Whether or not to display a player's level below their name
   show-class-level: true
   #
+  # The text to show with the player's level when enabled.
+  # This always appears as {level} {text}
+  class-level-text: 'Level'
+  #
   # Whether or not to use map trees instead of the regular ones
   # View map.yml for further customization for this option
   # Also add more schemes by adding folders in the "img" folder

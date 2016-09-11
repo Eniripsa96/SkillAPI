@@ -61,7 +61,6 @@ public abstract class RPGClass implements IconHolder
     private final HashMap<String, Skill> skillMap = new HashMap<String, Skill>();
     private final ArrayList<Skill> skills = new ArrayList<Skill>();
 
-    private OfflinePlayer manaPlayer;
     private SkillTree     skillTree;
     private String        parent;
     private ItemStack     icon;
@@ -435,17 +434,6 @@ public abstract class RPGClass implements IconHolder
     }
 
     /**
-     * Retrieves the offline player used by this class for scoreboard stats
-     * to show a player's current mana.
-     *
-     * @return scoreboard offline player for mana displays
-     */
-    public OfflinePlayer getManaPlayer()
-    {
-        return manaPlayer;
-    }
-
-    /**
      * Retrieves the list of skills this class provides a player
      *
      * @return list of skills provided by the class
@@ -626,7 +614,7 @@ public abstract class RPGClass implements IconHolder
         config.set(NAME, name);
         config.set(PREFIX, prefix.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(GROUP, group);
-        config.set(MANA, mana);
+        config.set(MANA, mana.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(MAX, maxLevel);
         config.set(PARENT, parent);
         config.set(PERM, needsPermission);
@@ -672,13 +660,12 @@ public abstract class RPGClass implements IconHolder
         name = config.getString(NAME, name);
         prefix = TextFormatter.colorString(config.getString(PREFIX, prefix));
         group = config.getString(GROUP, "class");
-        mana = config.getString(MANA, mana);
+        mana = TextFormatter.colorString(config.getString(MANA, mana));
         maxLevel = config.getInt(MAX, maxLevel);
         expSources = config.getInt(EXP, expSources);
         manaRegen = config.getDouble(REGEN, manaRegen);
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
         tree = DefaultTreeType.getByName(config.getString(TREE, "requirement"));
-        manaPlayer = VersionManager.getOfflinePlayer(TextFormatter.colorString(mana));
 
         settings.load(config.getSection(ATTR));
 

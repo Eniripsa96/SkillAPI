@@ -888,6 +888,7 @@ public class Settings
         GUI_BOARD  = GUI_BASE + "scoreboard-enabled",
         GUI_NAME   = GUI_BASE + "show-class-name",
         GUI_LEVEL  = GUI_BASE + "show-class-level",
+        GUI_LVLTXT = GUI_BASE + "class-level-text",
         GUI_MAP    = GUI_BASE + "map-tree-enabled",
         GUI_TITLE  = GUI_BASE + "title-enabled",
         GUI_DUR    = GUI_BASE + "title-duration",
@@ -901,6 +902,7 @@ public class Settings
     private boolean forceScaling;
     private String  levelBar;
     private String  foodBar;
+    private String  levelText;
     private boolean useActionBar;
     private String  actionText;
     private boolean showScoreboard;
@@ -1004,6 +1006,14 @@ public class Settings
     }
 
     /**
+     * @return text shown alongside the class level
+     */
+    public String getLevelText()
+    {
+        return levelText;
+    }
+
+    /**
      * Checks whether or not map trees are enabled on the server
      *
      * @return true if enabled, false otherwise
@@ -1065,6 +1075,7 @@ public class Settings
         oldHealth = config.getBoolean(GUI_OLD);
         forceScaling = config.getBoolean(GUI_FORCE);
         levelBar = config.getString(GUI_LVLBAR);
+        levelText = TextFormatter.colorString(config.getString(GUI_LVLTXT, "Level"));
         foodBar = config.getString(GUI_FOOD);
         useActionBar = config.getBoolean(GUI_ACTION);
         actionText = config.getString(GUI_TEXT);

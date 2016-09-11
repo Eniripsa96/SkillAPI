@@ -26,9 +26,12 @@
  */
 package com.sucy.skill.dynamic.condition;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
+import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -52,10 +55,16 @@ public class ClassLevelCondition extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        if (!(caster instanceof Player))
+            return false;
+
         int min = settings.getInt(MIN_LEVEL);
         int max = settings.getInt(MAX_LEVEL);
 
-        PlayerClass data = getSkillData(caster).getPlayerClass();
+        PlayerSkill skill = getSkillData(caster);
+        PlayerClass data = skill == null
+            ? SkillAPI.getPlayerData((Player) caster).getMainClass()
+            : skill.getPlayerClass();
         return data.getLevel() >= min
                && data.getLevel() <= max
                && executeChildren(caster, level, targets);

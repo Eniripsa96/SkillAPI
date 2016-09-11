@@ -152,7 +152,7 @@ public class ClassBoardManager
     {
         if (SkillAPI.getSettings().isShowClassLevel())
         {
-            BoardManager.setTextBelowNames("Level");
+            BoardManager.setTextBelowNames(SkillAPI.getSettings().getLevelText());
         }
     }
 }

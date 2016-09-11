@@ -417,6 +417,7 @@ public abstract class EffectComponent
         put("mana", ManaCondition.class);
         put("name", NameCondition.class);
         put("offhand", OffhandCondition.class);
+        put("permission", PermissionCondition.class);
         put("potion", PotionCondition.class);
         put("skill level", SkillLevelCondition.class);
         put("status", StatusCondition.class);

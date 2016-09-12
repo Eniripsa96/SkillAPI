@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="UTF-8"/>
+	<title>SkillAPI - Dynamic Editor</title>
+	
+	<!-- other scripts are loaded in main.js -->
+	<script src="js/loader.js"></script>
+	<script src="js/main.js"></script>
+	
+	<link rel="stylesheet" href="builderStyle.css" />
+	<link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="tooltips.css" />
+	
+</head>
+
+<body>
+
+	<!-- Site header -->
+	<header>
+		<h1>Skill API</h1>
+		<h2>Dynamic Editor</h2>
+	</header>
+	
+	<!-- IO Buttons -->
+	<div id="io">
+		<p class="ioText">Drop file anywhere to load</p>
+		<button id="saveButton" class="ioButton">Save</button>
+	</div>
+	
+	<!-- Display when the window is too small -->
+	<div id="small">
+		<p>Please enlarge your browser window or zoom out</p>
+	</div>
+	
+	<div id="main">
+		
+		<!-- Skill/Class Tabs -->
+		<div id="tabSpacer"></div>
+		<div id="skillTab" class="tab tabLeft tabActive">
+			Skills
+		</div>
+		<div  id="classTab" class="tab tabRight">
+			Classes
+		</div>
+		
+		<!-- Skill Content -->
+		<div id="skills">
+			
+			<!-- Skill list -->
+			<select id="skillList" size="30">
+				<option selected="selected">Skill 1</option>
+				<option>+ New Skill</option>
+			</select>
+			
+			<!-- Effect builder -->
+			<div id="builder">
+				<h6 id="skillDetails">Details</h6>
+				<h6 id="addTrigger">Triggers</h6>
+				<h6 id="saveSkill">Save</h6>
+				<h6 id="deleteSkill" class="cancelButton">Delete</h6>
+				<div id="builderContent"></div>
+			</div>
+			
+			<!-- Component editor -->
+			<div id="skillForm">
+			</div>
+			
+			<!-- Trigger selection -->
+			<div id="triggerChooser">
+				<h4>Triggers</h4>
+				
+				<div id="triggerOptions"></div>
+				
+				<h5 class="cancelButton">Cancel</h5>
+			</div>
+			
+			<!-- Component selection -->
+			<div id="componentChooser">
+			
+				<h4>Targets</h4>
+				<div id="targetOptions"></div>
+				
+				<h4>Conditions</h4>
+				<div id="conditionOptions"></div>
+				
+				<h4>Mechanics</h4>
+				<div id="mechanicOptions"></div>
+				
+				<hr/>
+				<h5 class="cancelButton">Cancel</h5>
+				
+			</div>
+		</div>
+		
+		<!-- Class Content -->
+		<div id="classes">
+		
+			<!-- Class list -->
+			<select id="classList" size="30">
+				<option selected="selected">Class 1</option>
+				<option>+ New Class</option>
+			</select>
+			
+			<div id="classForm"></div>
+		</div>
+		
+	</div>
+	
+	<!-- Site footer -->
+	<footer>
+		<a id="bukkit" href="https://www.spigotmc.org/resources/skillapi.4824/" target="_blank">Spigot</a>
+		<a id="profile" href="https://github.com/Eniripsa96/SkillAPI/wiki" target="_blank">Wiki</a>
+		<a id="source" href="https://github.com/Eniripsa96/SkillAPI-Dynamic-Editor" target="_blank">Source Code</a>
+        <a id="irc" href="https://skillapi.herokuapp.com/" target="_blank">IRC Help</a>
+	</footer>
+   
+    <div id="badBrowser">
+        <p>Get a real browser! (Use Chrome or Firefox)</p>
+    </div>
+</body>
+
+</html>

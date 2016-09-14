@@ -54,19 +54,6 @@ import java.util.HashSet;
 public class ItemListener implements Listener
 {
     /**
-     * Sets up the listener. This should not be used
-     * by other plugins as it is already handled by
-     * the API. Creating another one would cause
-     * duplicated checks.
-     *
-     * @param api API reference
-     */
-    public ItemListener(SkillAPI api)
-    {
-        api.getServer().getPluginManager().registerEvents(this, api);
-    }
-
-    /**
      * Removes weapon bonuses when dropped
      *
      * @param event event details

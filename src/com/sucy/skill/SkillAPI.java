@@ -140,18 +140,18 @@ public class SkillAPI extends JavaPlugin
         settings.loadGroupSettings();
 
         // Set up listeners
-        listen(new BindListener(this), true);
+        listen(new BindListener(), true);
         listen(new MainListener(), true);
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);
-        listen(new ToolListener(this), true);
+        listen(new ToolListener(), true);
         listen(new TreeListener(), !settings.isMapTreeEnabled());
-        listen(new ItemListener(this), settings.isCheckLore());
+        listen(new ItemListener(), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());
         listen(new ClickListener(), settings.isCombosEnabled());
         listen(new AttributeListener(), settings.isAttributesEnabled());
-        listen(new CastListener(this), settings.isCastEnabled() && settings.isUsingBars());
-        listen(new CastItemListener(this), settings.isCastEnabled() && !settings.isUsingBars());
+        listen(new CastListener(), settings.isCastEnabled() && settings.isUsingBars());
+        listen(new CastItemListener(), settings.isCastEnabled() && !settings.isUsingBars());
 
         if (settings.isMapTreeAvailable())
             Menu.initialize(this);

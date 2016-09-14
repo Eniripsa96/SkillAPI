@@ -55,12 +55,8 @@ public class CastItemListener implements Listener
 
     private static int slot;
 
-    /**
-     * @param plugin API reference
-     */
-    public CastItemListener(SkillAPI plugin)
+    public CastItemListener()
     {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
         slot = SkillAPI.getSettings().getCastSlot();
 
         for (Player player : Bukkit.getOnlinePlayers())
@@ -188,8 +184,12 @@ public class CastItemListener implements Listener
     @EventHandler
     public void onClick(InventoryClickEvent event)
     {
-        if (event.getInventory() == event.getWhoClicked().getInventory() && event.getSlot() == slot)
+        if (SkillAPI.getSettings().isWorldEnabled(event.getWhoClicked().getWorld())
+            && event.getSlot() == slot)
+        {
             event.setCancelled(true);
+        }
+        System.out.println(event.getSlot() + " ~ " + slot);
     }
 
     /**

@@ -52,12 +52,8 @@ public class CastListener implements Listener
 {
     private static int slot = -1;
 
-    /**
-     * @param plugin API reference
-     */
-    public CastListener(SkillAPI plugin)
+    public CastListener()
     {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
         slot = SkillAPI.getSettings().getCastSlot();
 
         for (Player player : Bukkit.getOnlinePlayers())
@@ -166,11 +162,11 @@ public class CastListener implements Listener
             return;
 
         if (SkillAPI.getPlayerData(event.getPlayer()).getCastBars().handleInteract(event.getPlayer()))
-            event.setCancelled(true);
+            event.getItemDrop().remove();
 
         else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
-            event.setCancelled(true);
+            event.getItemDrop().remove();
             MainThread.register(new OrganizerTask(event.getPlayer()));
         }
     }
@@ -185,9 +181,7 @@ public class CastListener implements Listener
 
         // Interaction while in a view
         if (bars.handleInteract(event.getPlayer()))
-        {
             event.setCancelled(true);
-        }
 
         // Entering a view
         else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)

@@ -43,14 +43,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class BindListener implements Listener
 {
     /**
-     * @param plugin plugin reference
-     */
-    public BindListener(SkillAPI plugin)
-    {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
-    /**
      * Handles interact events to check when a player right clicks with
      * a bound item to cast a skill.
      *

@@ -38,17 +38,6 @@ import org.bukkit.inventory.InventoryView;
 
 public class ToolListener implements Listener
 {
-    /**
-     * Initializes a new ToolListener. Do not use this constructor
-     * as the API already handles it.
-     *
-     * @param plugin API plugin reference
-     */
-    public ToolListener(SkillAPI plugin)
-    {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
     @EventHandler
     public void onClick(InventoryClickEvent event)
     {

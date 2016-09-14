@@ -50,7 +50,7 @@ import org.bukkit.inventory.PlayerInventory;
  */
 public class CastListener implements Listener
 {
-    private int slot;
+    private static int slot = -1;
 
     /**
      * @param plugin API reference
@@ -67,13 +67,16 @@ public class CastListener implements Listener
     /**
      * Cleans up
      */
-    public void cleanup()
+    public static void cleanup()
     {
+        if (slot == -1)
+            return;
+
         for (Player player : Bukkit.getOnlinePlayers())
             cleanup(player);
     }
 
-    private void cleanup(Player player)
+    private static void cleanup(Player player)
     {
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {

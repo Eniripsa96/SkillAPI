@@ -50,17 +50,6 @@ public class TreeListener implements Listener
     public static final String CLASS_LIST_KEY = "sapiClassInv";
 
     /**
-     * Initializes a new listener for skill trees. You should not
-     * use this as it is handled by the API.
-     *
-     * @param plugin API plugin reference
-     */
-    public TreeListener(SkillAPI plugin)
-    {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
-    /**
      * Handles skill tree interaction
      *
      * @param event event details

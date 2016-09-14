@@ -35,9 +35,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
-import com.sucy.skill.api.particle.*;
-import com.sucy.skill.api.particle.direction.Directions;
-import com.sucy.skill.api.particle.target.EffectTarget;
+import com.sucy.skill.api.event.TrueDamageEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
@@ -57,7 +55,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -707,23 +704,12 @@ public abstract class Skill implements IconHolder
      */
     public void trueDamage(LivingEntity target, double damage, LivingEntity source)
     {
-        if (FlagManager.hasFlag(target, StatusFlag.ABSORB))
-            target.setHealth(Math.min(target.getHealth() + damage, target.getMaxHealth()));
-        else if (!FlagManager.hasFlag(target, StatusFlag.INVINCIBLE))
-        {
-            if (target != source)
-            {
-                target.setLastDamageCause(
-                    new EntityDamageEvent(
-                        source,
-                        EntityDamageEvent.DamageCause.CUSTOM,
-                        damage
-                    )
-                );
-            }
-            target.setLastDamage(damage);
-            target.setHealth(Math.max(0, target.getHealth() - damage));
-        }
+        if (target instanceof TempEntity) return;
+
+        TrueDamageEvent event = new TrueDamageEvent(source, target, damage);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled() && event.getDamage() != 0)
+            target.setHealth(Math.max(Math.min(target.getHealth() - event.getDamage(), target.getMaxHealth()), 0));
     }
 
     /**

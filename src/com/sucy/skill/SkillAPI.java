@@ -53,10 +53,12 @@ import com.sucy.skill.manager.*;
 import com.sucy.skill.task.*;
 import com.sucy.skill.thread.MainThread;
 import com.sucy.skill.tools.GUITool;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -89,9 +91,6 @@ public class SkillAPI extends JavaPlugin
     private AttributeManager    attributeManager;
 
     private MainThread mainThread;
-
-    private CastListener     castListener;
-    private CastItemListener castItemListener;
 
     private boolean loaded = false;
 
@@ -141,27 +140,21 @@ public class SkillAPI extends JavaPlugin
         settings.loadGroupSettings();
 
         // Set up listeners
-        new BindListener(this);
-        new MainListener(this);
-        new MechanicListener(this);
-        new StatusListener(this);
-        new ToolListener(this);
+        listen(new BindListener(this), true);
+        listen(new MainListener(), true);
+        listen(new MechanicListener(), true);
+        listen(new StatusListener(), true);
+        listen(new ToolListener(this), true);
+        listen(new TreeListener(), !settings.isMapTreeEnabled());
+        listen(new ItemListener(this), settings.isCheckLore());
+        listen(new BarListener(), settings.isSkillBarEnabled());
+        listen(new ClickListener(), settings.isCombosEnabled());
+        listen(new AttributeListener(), settings.isAttributesEnabled());
+        listen(new CastListener(this), settings.isCastEnabled() && settings.isUsingBars());
+        listen(new CastItemListener(this), settings.isCastEnabled() && !settings.isUsingBars());
+
         if (settings.isMapTreeAvailable())
             Menu.initialize(this);
-        if (!settings.isMapTreeEnabled())
-            new TreeListener(this);
-        if (settings.isCheckLore())
-            new ItemListener(this);
-        if (settings.isSkillBarEnabled())
-            new BarListener(this);
-        if (settings.isCombosEnabled())
-            new ClickListener(this);
-        if (settings.isAttributesEnabled())
-            new AttributeListener(this);
-        if (settings.isCastEnabled() && settings.isUsingBars())
-            castListener = new CastListener(this);
-        if (settings.isCastEnabled() && !settings.isUsingBars())
-            castItemListener = new CastItemListener(this);
 
         // Set up tasks
         if (settings.isManaEnabled())
@@ -185,6 +178,12 @@ public class SkillAPI extends JavaPlugin
         loaded = true;
     }
 
+    private void listen(Listener listener, boolean enabled)
+    {
+        if (enabled)
+            Bukkit.getPluginManager().registerEvents(listener, this);
+    }
+
     /**
      * <p>Disables SkillAPI, saving data before unloading everything and disconnecting
      * listeners. This should not be called by other plugins.</p>
@@ -203,22 +202,13 @@ public class SkillAPI extends JavaPlugin
         mainThread.disable();
         mainThread = null;
 
-        if (castListener != null)
-        {
-            castListener.cleanup();
-            castItemListener = null;
-        }
-        if (castItemListener != null)
-        {
-            castItemListener.cleanup();
-            castItemListener = null;
-        }
-
         // Clear tasks
         WolfMechanic.removeWolves();
         BlockMechanic.revertAll();
         PassiveMechanic.stopAll();
         RepeatMechanic.stopAll();
+        CastListener.cleanup();
+        CastItemListener.cleanup();
 
         // Clear scoreboards
         ClassBoardManager.clearAll();
@@ -692,6 +682,17 @@ public class SkillAPI extends JavaPlugin
     public static void schedule(BukkitRunnable runnable, int delay)
     {
         runnable.runTaskLater(singleton(), delay);
+    }
+
+    /**
+     * Schedules a delayed task
+     *
+     * @param runnable the task to schedule
+     * @param delay    the delay in ticks
+     */
+    public static void schedule(Runnable runnable, int delay)
+    {
+        Bukkit.getScheduler().runTaskLater(singleton, runnable, delay);
     }
 
     /**

@@ -76,18 +76,6 @@ public class AttributeListener implements Listener
     }
 
     /**
-     * Initializes the listener. This is automatically
-     * handled by SkillAPI and shouldn't be
-     * instantiated by other plugins.
-     *
-     * @param api SkillAPI reference
-     */
-    public AttributeListener(SkillAPI api)
-    {
-        api.getServer().getPluginManager().registerEvents(this, api);
-    }
-
-    /**
      * Gives players bonus stats on login
      */
     @EventHandler(priority = EventPriority.HIGH)

@@ -51,9 +51,9 @@ import java.util.UUID;
  */
 public class CastItemListener implements Listener
 {
-    private HashMap<UUID, PlayerSkillSlot> data = new HashMap<UUID, PlayerSkillSlot>();
+    private static HashMap<UUID, PlayerSkillSlot> data = new HashMap<UUID, PlayerSkillSlot>();
 
-    private int slot;
+    private static int slot;
 
     /**
      * @param plugin API reference
@@ -67,14 +67,22 @@ public class CastItemListener implements Listener
             init(player);
     }
 
-    public void cleanup()
+    /**
+     * Cleans up the listener functions
+     */
+    public static void cleanup()
     {
+        if (slot == -1)
+            return;
+
         for (Player player : Bukkit.getOnlinePlayers())
             cleanup(player);
+        slot = -1;
     }
 
-    private void cleanup(Player player)
+    private static void cleanup(Player player)
     {
+        data.remove(player.getUniqueId());
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
             player.getInventory().setItem(slot, null);
     }

@@ -30,6 +30,7 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
+import com.sucy.skill.api.event.TrueDamageEvent;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
 import com.sucy.skill.data.TitleType;
@@ -87,17 +88,6 @@ public class StatusListener implements Listener
     public static void cleanup()
     {
         messageTimers.clear();
-    }
-
-    /**
-     * Initializes a new StatusListener. Do not use this constructor
-     * as the API already handles it.
-     *
-     * @param plugin API plugin reference
-     */
-    public StatusListener(SkillAPI plugin)
-    {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     /**
@@ -169,9 +159,7 @@ public class StatusListener implements Listener
     public void onDamage(EntityDamageByEntityEvent event)
     {
         if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM)
-        {
             return;
-        }
 
         LivingEntity damager = ListenerUtil.getDamager(event);
         check(event, damager, damager, StatusFlag.STUN, StatusFlag.DISARM, StatusFlag.CHANNEL);
@@ -185,23 +173,36 @@ public class StatusListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDamaged(EntityDamageEvent event)
     {
-        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM)
-        {
+        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
+            || !(event.getEntity() instanceof LivingEntity))
             return;
-        }
 
-        if (event.getEntity() instanceof LivingEntity)
-        {
-            LivingEntity entity = (LivingEntity) event.getEntity();
-            if (check(event, entity, null, StatusFlag.ABSORB))
-            {
-                VersionManager.heal(entity, event.getDamage());
-            }
-            else
-            {
-                check(event, entity, null, StatusFlag.INVINCIBLE);
-            }
-        }
+        checkAbsorbAndInvincible((LivingEntity)event.getEntity(), event, event.getDamage());
+    }
+
+    /**
+     * Cancels damage when a defender is invincible or inverting damage
+     *
+     * @param event event details
+     */
+    public void onTrueDamage(TrueDamageEvent event)
+    {
+        checkAbsorbAndInvincible(event.getTarget(), event, event.getDamage());
+    }
+
+    /**
+     * Shared code for true damage and regular damage events for absorb/invincible
+     *
+     * @param entity entity being hit
+     * @param event  event details
+     * @param damage damage amount
+     */
+    private void checkAbsorbAndInvincible(LivingEntity entity, Cancellable event, double damage)
+    {
+        if (check(event, entity, null, StatusFlag.ABSORB))
+            VersionManager.heal(entity, damage);
+        else
+            check(event, entity, null, StatusFlag.INVINCIBLE);
     }
 
     /**

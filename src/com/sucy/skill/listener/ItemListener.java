@@ -32,7 +32,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.language.ErrorNodes;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -107,6 +106,7 @@ public class ItemListener implements Listener
 
     /**
      * Updates weapon on pickup
+     * Clear attribute buff data on quit
      *
      * @param event event details
      */

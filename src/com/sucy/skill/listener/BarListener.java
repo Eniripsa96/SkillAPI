@@ -61,25 +61,13 @@ import org.bukkit.event.player.*;
  */
 public class BarListener implements Listener
 {
-    private final SkillAPI plugin;
-
-    /**
-     * Initializes a new BarListener. Do not use this constructor as
-     * the API handles it already.
-     *
-     * @param plugin plugin
-     */
-    public BarListener(SkillAPI plugin)
+    public BarListener()
     {
-        this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
         for (Player player : VersionManager.getOnlinePlayers())
         {
             PlayerData data = SkillAPI.getPlayerData(player);
             if (data.hasClass())
-            {
                 data.getSkillBar().setup(player);
-            }
         }
     }
 
@@ -168,16 +156,14 @@ public class BarListener implements Listener
         final Player player = event.getPlayerData().getPlayer();
         if (player != null)
         {
-            Bukkit.getServer().getScheduler().runTaskLater(
-                plugin, new Runnable()
+            SkillAPI.schedule(new Runnable()
+            {
+                @Override
+                public void run()
                 {
-                    @Override
-                    public void run()
-                    {
-                        SkillAPI.getPlayerData(player).getSkillBar().update(player);
-                    }
-                }, 0
-            );
+                    SkillAPI.getPlayerData(player).getSkillBar().update(player);
+                }
+            }, 0);
         }
     }
 
@@ -189,16 +175,14 @@ public class BarListener implements Listener
     @EventHandler
     public void onDowngrade(final PlayerSkillDowngradeEvent event)
     {
-        plugin.getServer().getScheduler().runTaskLater(
-            plugin, new Runnable()
+        SkillAPI.schedule(new Runnable()
+        {
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
-                {
-                    SkillAPI.getPlayerData(event.getPlayerData().getPlayer()).getSkillBar().update(event.getPlayerData().getPlayer());
-                }
-            }, 1
-        );
+                SkillAPI.getPlayerData(event.getPlayerData().getPlayer()).getSkillBar().update(event.getPlayerData().getPlayer());
+            }
+        }, 1);
 
     }
 
@@ -212,9 +196,7 @@ public class BarListener implements Listener
     {
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
         if (data.hasClass())
-        {
             data.getSkillBar().clear(event);
-        }
     }
 
     /**
@@ -244,16 +226,12 @@ public class BarListener implements Listener
         // Players without a class aren't effected
         PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
         if (!data.hasClass())
-        {
             return;
-        }
 
         // Disabled skill bars aren't affected either
         final PlayerSkillBar skillBar = data.getSkillBar();
         if (!skillBar.isSetup())
-        {
             return;
-        }
 
         boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
 
@@ -261,9 +239,7 @@ public class BarListener implements Listener
         if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
         {
             if (!skillBar.isWeaponSlot(event.getHotbarButton()) || !skillBar.isWeaponSlot(event.getSlot()))
-            {
                 event.setCancelled(true);
-            }
         }
         else if (!top && event.getSlot() < 9)
         {
@@ -287,9 +263,7 @@ public class BarListener implements Listener
 
         // Make sure it's the right type of click action
         if (event.getAction() != InventoryAction.HOTBAR_MOVE_AND_READD && event.getAction() != InventoryAction.HOTBAR_SWAP)
-        {
             return;
-        }
 
         // Must be a skill tree
         if (InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY))
@@ -371,16 +345,14 @@ public class BarListener implements Listener
         else if (event.getPlayer().getGameMode() == GameMode.CREATIVE && data.hasClass())
         {
             final Player player = event.getPlayer();
-            plugin.getServer().getScheduler().runTaskLater(
-                plugin, new Runnable()
+            SkillAPI.schedule(new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        SkillAPI.getPlayerData(player).getSkillBar().setup(player);
-                    }
-                }, 0
-            );
+                    SkillAPI.getPlayerData(player).getSkillBar().setup(player);
+                }
+            }, 0);
         }
     }
 }

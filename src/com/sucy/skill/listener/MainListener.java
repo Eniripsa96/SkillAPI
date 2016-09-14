@@ -59,20 +59,6 @@ import org.bukkit.event.player.*;
  */
 public class MainListener implements Listener
 {
-    private static final String S_TYPE  = "sType";
-    private static final int    SPAWNER = 0, EGG = 1;
-
-    /**
-     * Initializes a new listener for general SkillAPI functions. This is
-     * handled by the API and should not be used by other plugins.
-     *
-     * @param plugin SkillAPI plugin reference
-     */
-    public MainListener(SkillAPI plugin)
-    {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
     /**
      * Loads player data asynchronously when a player tries to log in
      *
@@ -145,75 +131,6 @@ public class MainListener implements Listener
         {
             data.stopPassives(event.getEntity());
             data.loseExp();
-        }
-    }
-
-    /**
-     * Grants experience upon killing a monster and blocks experience when
-     * the monster originated from a blocked source.
-     *
-     * @param event event details
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onKill(EntityDeathEvent event)
-    {
-        FlagManager.clearFlags(event.getEntity());
-        BuffManager.clearData(event.getEntity());
-
-        // Disabled world
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
-        {
-            return;
-        }
-
-        // Cancel experience when applicable
-        if (event.getEntity().hasMetadata(S_TYPE))
-        {
-            int value = SkillAPI.getMetaInt(event.getEntity(), S_TYPE);
-
-            // Block spawner mob experience
-            if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner())
-            {
-                return;
-            }
-
-            // Block egg mob experience
-            else if (value == EGG && SkillAPI.getSettings().isBlockEgg())
-            {
-                return;
-            }
-        }
-
-        // Summons don't give experience
-        if (event.getEntity().hasMetadata(MechanicListener.SUMMON_DAMAGE))
-        {
-            return;
-        }
-
-        Player k = event.getEntity().getKiller();
-        if (k != null && k.hasPermission(Permissions.EXP))
-        {
-            // Block creative experience
-            if (k.getGameMode() == GameMode.CREATIVE && SkillAPI.getSettings().isBlockCreative())
-            {
-                return;
-            }
-
-            PlayerData player = SkillAPI.getPlayerData(k);
-
-            // Give experience based on orbs when enabled
-            if (SkillAPI.getSettings().isUseOrbs())
-            {
-                player.giveExp(event.getDroppedExp(), ExpSource.MOB);
-            }
-
-            // Give experience based on config when not using orbs
-            else
-            {
-                String name = ListenerUtil.getName(event.getEntity());
-                double yield = SkillAPI.getSettings().getYield(name);
-                player.giveExp(yield, ExpSource.MOB);
-            }
         }
     }
 
@@ -297,24 +214,6 @@ public class MainListener implements Listener
         {
             data.startPassives(event.getPlayer());
             data.updateScoreboard();
-        }
-    }
-
-    /**
-     * Marks spawned entities with how they spawned to block experience from certain methods
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onSpawn(CreatureSpawnEvent event)
-    {
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER)
-        {
-            SkillAPI.setMeta(event.getEntity(), S_TYPE, SPAWNER);
-        }
-        else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
-        {
-            SkillAPI.setMeta(event.getEntity(), S_TYPE, EGG);
         }
     }
 

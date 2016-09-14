@@ -69,17 +69,6 @@ public class MechanicListener implements Listener
     private static HashMap<UUID, Double> flying = new HashMap<UUID, Double>();
 
     /**
-     * Initializes a new listener for dynamic mechanic related events.
-     * This is handled by the API and shouldn't be used by other plugins.
-     *
-     * @param api api reference
-     */
-    public MechanicListener(SkillAPI api)
-    {
-        api.getServer().getPluginManager().registerEvents(this, api);
-    }
-
-    /**
      * Cleans up listener data on shutdown
      */
     public static void cleanup()

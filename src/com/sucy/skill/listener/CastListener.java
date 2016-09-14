@@ -43,17 +43,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class CastListener implements Listener
 {
     /**
-     * Initializes a new Castlistener. Do not use this constructor as
-     * the API handles it already.
-     *
-     * @param plugin plugin reference
-     */
-    public CastListener(SkillAPI plugin)
-    {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
-    /**
      * Handles interact events to check when a player right clicks with
      * a bound item to cast a skill.
      *

@@ -48,10 +48,12 @@ import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
 import com.sucy.skill.task.*;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -135,52 +137,29 @@ public class SkillAPI extends JavaPlugin
         settings.loadGroupSettings();
 
         // Set up listeners
-        new CastListener(this);
-        new MainListener(this);
-        new MechanicListener(this);
-        new StatusListener(this);
+        listen(new CastListener(), true);
+        listen(new MainListener(), true);
+        listen(new MechanicListener(), true);
+        listen(new StatusListener(), true);
+        listen(new KillListener(), true);
+        listen(new TreeListener(), !settings.isMapTreeEnabled());
+        listen(new ItemListener(), settings.isCheckLore());
+        listen(new BarListener(), settings.isSkillBarEnabled());
+        listen(new ClickListener(), settings.isCombosEnabled());
+        listen(new AttributeListener(), settings.isAttributesEnabled());
+
         if (settings.isMapTreeAvailable())
-        {
             Menu.initialize(this);
-        }
-        if (!settings.isMapTreeEnabled())
-        {
-            new TreeListener(this);
-        }
-        if (settings.isCheckLore())
-        {
-            new ItemListener(this);
-        }
-        if (settings.isSkillBarEnabled())
-        {
-            new BarListener(this);
-        }
-        if (settings.isCombosEnabled())
-        {
-            new ClickListener(this);
-        }
-        if (settings.isAttributesEnabled())
-        {
-            new AttributeListener(this);
-        }
 
         // Set up tasks
         if (settings.isManaEnabled())
-        {
             manaTask = new ManaTask(this);
-        }
         if (settings.isSkillBarCooldowns())
-        {
             cdTask = new CooldownTask(this);
-        }
         if (settings.isCheckLore())
-        {
             invTask = new InventoryTask(this, settings.getPlayersPerCheck());
-        }
         if (settings.isAutoSave())
-        {
             saveTask = new SaveTask(this);
-        }
         guiTask = new GUITask(this);
 
         // Load player data
@@ -192,6 +171,12 @@ public class SkillAPI extends JavaPlugin
         if (settings.isUseSql()) ((SQLIO) io).cleanup();
 
         loaded = true;
+    }
+
+    private void listen(Listener listener, boolean enabled)
+    {
+        if (enabled)
+            Bukkit.getPluginManager().registerEvents(listener, this);
     }
 
     /**
@@ -232,7 +217,7 @@ public class SkillAPI extends JavaPlugin
             saveTask.cancel();
             saveTask = null;
         }
-        if (guiTask.isRunning())
+        if (guiTask != null && guiTask.isRunning())
         {
             guiTask.cancel();
             guiTask = null;
@@ -708,6 +693,17 @@ public class SkillAPI extends JavaPlugin
     public static void schedule(BukkitRunnable runnable, int delay)
     {
         runnable.runTaskLater(singleton(), delay);
+    }
+
+    /**
+     * Schedules a delayed task
+     *
+     * @param runnable the task to schedule
+     * @param delay    the delay in ticks
+     */
+    public static void schedule(Runnable runnable, int delay)
+    {
+        Bukkit.getScheduler().runTaskLater(singleton, runnable, delay);
     }
 
     /**

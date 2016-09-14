@@ -35,6 +35,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
+import com.sucy.skill.api.event.TrueDamageEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.*;
@@ -664,23 +665,12 @@ public abstract class Skill
      */
     public void trueDamage(LivingEntity target, double damage, LivingEntity source)
     {
-        if (FlagManager.hasFlag(target, StatusFlag.ABSORB))
-            target.setHealth(Math.min(target.getHealth() + damage, target.getMaxHealth()));
-        else if (!FlagManager.hasFlag(target, StatusFlag.INVINCIBLE))
-        {
-            if (target != source)
-            {
-                target.setLastDamageCause(
-                    new EntityDamageEvent(
-                        source,
-                        EntityDamageEvent.DamageCause.CUSTOM,
-                        damage
-                    )
-                );
-            }
-            target.setLastDamage(damage);
-            target.setHealth(Math.max(0, target.getHealth() - damage));
-        }
+        if (target instanceof TempEntity) return;
+
+        TrueDamageEvent event = new TrueDamageEvent(source, target, damage);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled() && event.getDamage() != 0)
+            target.setHealth(Math.max(Math.min(target.getHealth() - event.getDamage(), target.getMaxHealth()), 0));
     }
 
     private static boolean skillDamage = false;

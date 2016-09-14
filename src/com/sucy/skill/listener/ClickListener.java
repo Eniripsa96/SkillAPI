@@ -41,19 +41,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
  */
 public class ClickListener implements Listener
 {
-
-    /**
-     * Sets up the listener. This should not be used by other plugins
-     * as it is handled by the API. Duplicate listeners will cause
-     * click registrations to double up, causing a lot of problems.
-     *
-     * @param api API reference
-     */
-    public ClickListener(SkillAPI api)
-    {
-        api.getServer().getPluginManager().registerEvents(this, api);
-    }
-
     /**
      * Registers clicks as they happen
      *

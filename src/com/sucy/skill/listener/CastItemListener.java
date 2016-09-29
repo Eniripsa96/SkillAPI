@@ -189,7 +189,6 @@ public class CastItemListener implements Listener
         {
             event.setCancelled(true);
         }
-        System.out.println(event.getSlot() + " ~ " + slot);
     }
 
     /**

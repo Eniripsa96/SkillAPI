@@ -38,7 +38,9 @@ import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.event.TrueDamageEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.util.*;
+import com.sucy.skill.api.util.DamageLoreRemover;
+import com.sucy.skill.api.util.Data;
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.hook.NoCheatHook;
 import com.sucy.skill.hook.PluginChecker;
@@ -52,7 +54,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 

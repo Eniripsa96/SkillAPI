@@ -102,9 +102,7 @@ public class SkillAPI extends JavaPlugin
     {
         // Set up the singleton
         if (singleton != null)
-        {
             throw new IllegalStateException("Cannot enable SkillAPI twice!");
-        }
         singleton = this;
 
         // Load settings
@@ -126,9 +124,7 @@ public class SkillAPI extends JavaPlugin
         ClassBoardManager.registerText();
         ResourceManager.copyQuestsModule();
         if (settings.isAttributesEnabled())
-        {
             attributeManager = new AttributeManager(this);
-        }
 
         // Load classes and skills
         registrationManager.initialize();
@@ -188,9 +184,7 @@ public class SkillAPI extends JavaPlugin
     {
         // Validate instance
         if (singleton != this)
-        {
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
-        }
 
         // Clear tasks
         WolfMechanic.removeWolves();
@@ -414,12 +408,8 @@ public class SkillAPI extends JavaPlugin
     {
         ArrayList<RPGClass> list = new ArrayList<RPGClass>();
         for (RPGClass c : singleton.classes.values())
-        {
             if (!c.hasParent() && c.getGroup().equals(group))
-            {
                 list.add(c);
-            }
-        }
         return list;
     }
 
@@ -559,9 +549,8 @@ public class SkillAPI extends JavaPlugin
     public static PlayerAccounts getPlayerAccountData(OfflinePlayer player)
     {
         if (player == null)
-        {
             return null;
-        }
+
         String id = new VersionPlayer(player).getIdString();
         if (!singleton().players.containsKey(id))
         {
@@ -570,9 +559,7 @@ public class SkillAPI extends JavaPlugin
             return data;
         }
         else
-        {
             return singleton.players.get(id);
-        }
     }
 
     /**
@@ -608,9 +595,7 @@ public class SkillAPI extends JavaPlugin
     {
         skill = registrationManager.validate(skill);
         if (skill != null)
-        {
             skills.put(skill.getName().toLowerCase(), skill);
-        }
     }
 
     /**
@@ -623,9 +608,7 @@ public class SkillAPI extends JavaPlugin
     public void addSkills(Skill... skills)
     {
         for (Skill skill : skills)
-        {
             addSkill(skill);
-        }
     }
 
     /**
@@ -643,9 +626,7 @@ public class SkillAPI extends JavaPlugin
             classes.put(rpgClass.getName().toLowerCase(), rpgClass);
             ClassBoardManager.registerClass(rpgClass);
             if (!groups.contains(rpgClass.getGroup()))
-            {
                 groups.add(rpgClass.getGroup());
-            }
         }
     }
 
@@ -663,9 +644,7 @@ public class SkillAPI extends JavaPlugin
             classes.put(key, rpgClass);
             ClassBoardManager.registerClass(rpgClass);
             if (!groups.contains(rpgClass.getGroup()))
-            {
                 groups.add(rpgClass.getGroup());
-            }
         }
     }
 
@@ -679,9 +658,7 @@ public class SkillAPI extends JavaPlugin
     public void addClasses(RPGClass... classes)
     {
         for (RPGClass rpgClass : classes)
-        {
             addClass(rpgClass);
-        }
     }
 
     /**

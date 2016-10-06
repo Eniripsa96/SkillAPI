@@ -52,6 +52,6 @@ public class TimeCondition extends EffectComponent
     {
         boolean night = settings.getString(TIME).toLowerCase().equals("night");
         return night == (caster.getWorld().getTime() >= 12300 && caster.getWorld().getTime() <= 23850)
-               && executeChildren(caster, level, targets);
+            && executeChildren(caster, level, targets);
     }
 }

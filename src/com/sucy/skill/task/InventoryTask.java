@@ -126,27 +126,27 @@ public class InventoryTask extends BukkitRunnable
         tempAttribs.clear();
         for (ItemStack item : player.getInventory().getArmorContents())
         {
-            if (cannotUse(data, item)) removeArmor(player, index);
+            if (cannotUse(data, item))
+                removeArmor(player, index);
             index++;
         }
-        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
+            && cannotUse(data, player.getInventory().getItemInOffHand()))
         {
-            if (cannotUse(data, player.getInventory().getItemInOffHand()))
-            {
-                player.getInventory().addItem(player.getInventory().getItemInOffHand());
-                player.getInventory().setItemInOffHand(null);
-            }
+            player.getInventory().addItem(player.getInventory().getItemInOffHand());
+            player.getInventory().setItemInOffHand(null);
         }
-        if (SkillAPI.getSettings().isDropWeapon()
-            || SkillAPI.getSettings().isCheckAttributes())
+
+        if (SkillAPI.getSettings().isDropWeapon())
         {
-            if (cannotUse(data, player.getItemInHand())
-                && SkillAPI.getSettings().isDropWeapon())
+            if (cannotUse(data, player.getItemInHand()))
             {
                 player.getWorld().dropItem(player.getLocation(), player.getItemInHand());
                 player.setItemInHand(null);
             }
         }
+        else if (SkillAPI.getSettings().isCheckAttributes())
+            cannotUse(data, player.getItemInHand());
 
         // Give attributes
         if (SkillAPI.getSettings().isCheckAttributes())
@@ -199,6 +199,7 @@ public class InventoryTask extends BukkitRunnable
         if (item.hasItemMeta() && item.getItemMeta().hasLore())
         {
             List<String> lore = item.getItemMeta().getLore();
+            HashMap<String, Integer> itemAttribs = new HashMap<String, Integer>();
 
             // Check each line of the lore
             for (String line : lore)
@@ -308,15 +309,25 @@ public class InventoryTask extends BukkitRunnable
                                 if (lower.startsWith(check))
                                 {
                                     int amount = Integer.parseInt(colorless.substring(check.length()));
-                                    if (tempAttribs.containsKey(attr.getKey()))
-                                        tempAttribs.put(attr.getKey(), tempAttribs.get(attr.getKey()) + amount);
+                                    if (itemAttribs.containsKey(attr.getKey()))
+                                        itemAttribs.put(attr.getKey(), itemAttribs.get(attr.getKey()) + amount);
                                     else
-                                        tempAttribs.put(attr.getKey(), amount);
+                                        itemAttribs.put(attr.getKey(), amount);
                                 }
                             }
                         }
                     }
                 }
+            }
+
+            // Add attributes to the result afterwards so when the item isn't usable,
+            // this part is skipped.
+            for (Map.Entry<String, Integer> entry : itemAttribs.entrySet())
+            {
+                if (tempAttribs.containsKey(entry.getKey()))
+                    tempAttribs.put(entry.getKey(), tempAttribs.get(entry.getKey()) + entry.getValue());
+                else
+                    tempAttribs.put(entry.getKey(), entry.getValue());
             }
         }
         return needsRequirement != hasRequirement;

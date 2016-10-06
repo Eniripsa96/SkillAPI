@@ -71,7 +71,7 @@ public class ValueLoreMechanic extends EffectComponent
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
-                          && settings.getString(HAND).equalsIgnoreCase("offhand");
+            && settings.getString(HAND).equalsIgnoreCase("offhand");
 
         String regex = settings.getString(REGEX, "Damage: {value}");
         regex = regex.replace("{value}", "([0-9]+)");

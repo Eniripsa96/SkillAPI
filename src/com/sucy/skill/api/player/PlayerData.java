@@ -1747,28 +1747,22 @@ public final class PlayerData
     {
         // Invalid skill
         if (skill == null)
-        {
             throw new IllegalArgumentException("Skill cannot be null");
-        }
 
         int level = skill.getLevel();
 
-        // Not unlocked
-        if (level <= 0)
-        {
+        // Not unlocked or on cooldown
+        if (level <= 0 || !check(skill, true, true))
             return false;
-        }
 
-        // Check cooldowns and mana requirements
-        if (!check(skill, true, true))
-        {
+        // Dead players can't cast skills
+        Player p = getPlayer();
+        if (p.isDead())
             return false;
-        }
 
         // Skill Shots
-        else if (skill.getData() instanceof SkillShot)
+        if (skill.getData() instanceof SkillShot)
         {
-            Player p = getPlayer();
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
             Bukkit.getPluginManager().callEvent(event);
 
@@ -1802,15 +1796,11 @@ public final class PlayerData
         // Target Skills
         else if (skill.getData() instanceof TargetSkill)
         {
-
-            Player p = getPlayer();
             LivingEntity target = TargetHelper.getLivingTarget(p, skill.getData().getRange(level));
 
             // Must have a target
             if (target == null)
-            {
                 return false;
-            }
 
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
             Bukkit.getPluginManager().callEvent(event);

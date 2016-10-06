@@ -66,7 +66,7 @@ public class ClassLevelCondition extends EffectComponent
             ? SkillAPI.getPlayerData((Player) caster).getMainClass()
             : skill.getPlayerClass();
         return data.getLevel() >= min
-               && data.getLevel() <= max
-               && executeChildren(caster, level, targets);
+            && data.getLevel() <= max
+            && executeChildren(caster, level, targets);
     }
 }

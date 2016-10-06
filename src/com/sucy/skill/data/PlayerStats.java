@@ -30,7 +30,6 @@ import com.rit.sucy.config.FilterType;
 import com.rit.sucy.scoreboard.StatHolder;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
-import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;

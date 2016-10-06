@@ -92,7 +92,7 @@ public class Title
      * @param fadeOutTime Fade out time
      */
     public Title(String title, String subtitle, int fadeInTime, int stayTime,
-                 int fadeOutTime)
+        int fadeOutTime)
     {
         this.title = title;
         this.subtitle = subtitle;
@@ -488,7 +488,7 @@ public class Title
     }
 
     private Method getMethod(String name, Class<?> clazz,
-                             Class<?>... paramTypes)
+        Class<?>... paramTypes)
     {
         Class<?>[] t = toPrimitiveTypeArray(paramTypes);
         for (Method m : clazz.getMethods())

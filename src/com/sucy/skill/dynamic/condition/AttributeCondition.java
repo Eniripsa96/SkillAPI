@@ -75,6 +75,6 @@ public class AttributeCondition extends EffectComponent
             }
         }
         return list.size() > 0
-               && executeChildren(caster, level, list);
+            && executeChildren(caster, level, list);
     }
 }

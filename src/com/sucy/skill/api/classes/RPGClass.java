@@ -28,7 +28,6 @@ package com.sucy.skill.api.classes;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
-import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.ReadOnlySettings;
 import com.sucy.skill.api.Settings;
@@ -44,7 +43,6 @@ import com.sucy.skill.tree.SkillTree;
 import com.sucy.skill.tree.map.MapTree;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -61,17 +59,17 @@ public abstract class RPGClass implements IconHolder
     private final HashMap<String, Skill> skillMap = new HashMap<String, Skill>();
     private final ArrayList<Skill> skills = new ArrayList<Skill>();
 
-    private SkillTree     skillTree;
-    private String        parent;
-    private ItemStack     icon;
-    private TreeType      tree;
-    private String        name;
-    private String        prefix;
-    private String        group;
-    private String        mana;
-    private int           maxLevel;
-    private int           expSources;
-    private double        manaRegen;
+    private SkillTree skillTree;
+    private String    parent;
+    private ItemStack icon;
+    private TreeType  tree;
+    private String    name;
+    private String    prefix;
+    private String    group;
+    private String    mana;
+    private int       maxLevel;
+    private int       expSources;
+    private double    manaRegen;
 
     /**
      * Whether or not the class requires permissions

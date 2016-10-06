@@ -136,10 +136,10 @@ public class ItemChecker
         String display = settings.getString(NAME, "");
 
         return item != null
-               && (!mat || item.getType().name().equals(material))
-               && (!data || item.getDurability() == dur)
-               && (!lore || checkLore(item, text, regex))
-               && (!name || checkName(item, display, regex));
+            && (!mat || item.getType().name().equals(material))
+            && (!data || item.getDurability() == dur)
+            && (!lore || checkLore(item, text, regex))
+            && (!name || checkName(item, display, regex));
     }
 
     /**

@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.api.projectile;
 
-import com.rit.sucy.player.Protection;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.ParticleProjectileExpireEvent;
 import com.sucy.skill.api.event.ParticleProjectileHitEvent;
@@ -36,6 +35,7 @@ import com.sucy.skill.api.util.ParticleHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -104,6 +104,44 @@ public class ParticleProjectile extends CustomProjectile
     }
 
     /**
+     * Handles expiring due to range or leaving loaded chunks
+     */
+    @Override
+    protected Event expire()
+    {
+        return new ParticleProjectileExpireEvent(this);
+    }
+
+    /**
+     * Handles landing on terrain
+     */
+    @Override
+    protected Event land()
+    {
+        return new ParticleProjectileLandEvent(this);
+    }
+
+    /**
+     * Handles hitting an entity
+     *
+     * @param entity entity the projectile hit
+     */
+    @Override
+    protected Event hit(LivingEntity entity)
+    {
+        return new ParticleProjectileHitEvent(this, entity);
+    }
+
+    /**
+     * @return squared radius for colliding
+     */
+    @Override
+    protected double getCollisionRadius()
+    {
+        return 1.5;
+    }
+
+    /**
      * @return velocity of the projectile
      */
     public Vector getVelocity()
@@ -137,55 +175,15 @@ public class ParticleProjectile extends CustomProjectile
     @Override
     public void run()
     {
-        List<LivingEntity> list = loc.getWorld().getLivingEntities();
-
         // Go through multiple steps to avoid tunneling
         for (int i = 0; i < steps; i++)
         {
             loc.add(vel);
 
-            // Leaving a loaded chunk
-            if (!loc.getChunk().isLoaded())
-            {
-                cancel();
-                Bukkit.getPluginManager().callEvent(new ParticleProjectileExpireEvent(this));
+            if (!isTraveling())
                 return;
-            }
 
-            // Hitting a solid block
-            if (loc.getBlock().getType().isSolid())
-            {
-                cancel();
-                Bukkit.getPluginManager().callEvent(new ParticleProjectileLandEvent(this));
-                if (callback != null)
-                {
-                    callback.callback(this, null);
-                }
-                return;
-            }
-
-            // Hitting an enemy
-            for (LivingEntity entity : list)
-            {
-                if (entity == thrower)
-                {
-                    continue;
-                }
-                if (entity.getLocation().distanceSquared(loc) < 2.25)
-                {
-                    boolean ally = Protection.isAlly(getShooter(), entity);
-                    if (ally && !this.ally) continue;
-                    if (!ally && !this.enemy) continue;
-
-                    cancel();
-                    Bukkit.getPluginManager().callEvent(new ParticleProjectileHitEvent(this, entity));
-                    if (callback != null)
-                    {
-                        callback.callback(this, entity);
-                    }
-                    return;
-                }
-            }
+            checkCollision();
         }
 
         // Particle along path

@@ -66,7 +66,7 @@ public class DamageLoreMechanic extends EffectComponent
         double m = attr(caster, MULTIPLIER, level, 1.0, isSelf);
         boolean worked = false;
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
-                          && settings.getString(HAND).equalsIgnoreCase("offhand");
+            && settings.getString(HAND).equalsIgnoreCase("offhand");
         boolean trueDmg = settings.getBool(TRUE, false);
 
         if (caster.getEquipment() == null)

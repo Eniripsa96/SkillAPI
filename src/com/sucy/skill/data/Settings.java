@@ -310,7 +310,7 @@ public class Settings
             if (tameable.isTamed() && (tameable.getOwner() instanceof LivingEntity))
             {
                 return (tameable.getOwner() != target)
-                       && canAttack((LivingEntity) tameable.getOwner(), target);
+                    && canAttack((LivingEntity) tameable.getOwner(), target);
             }
         }
         boolean canAttack;

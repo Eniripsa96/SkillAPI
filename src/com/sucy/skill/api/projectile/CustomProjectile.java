@@ -27,9 +27,12 @@
 package com.sucy.skill.api.projectile;
 
 import com.sucy.skill.api.particle.target.Followable;
+import com.rit.sucy.player.Protection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.Plugin;
@@ -62,6 +65,139 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     {
         this.thrower = thrower;
         runTaskTimer(Bukkit.getPluginManager().getPlugin("SkillAPI"), 1, 1);
+    }
+
+    /**
+     * Retrieves the location of the projectile
+     *
+     * @return location of the projectile
+     */
+    public abstract Location getLocation();
+
+    /**
+     * Handles expiring due to range or leaving loaded chunks
+     */
+    protected abstract Event expire();
+
+    /**
+     * Handles landing on terrain
+     */
+    protected abstract Event land();
+
+    /**
+     * Handles hitting an entity
+     *
+     * @param entity entity the projectile hit
+     */
+    protected abstract Event hit(LivingEntity entity);
+
+    /**
+     * @return squared radius for colliding
+     */
+    protected abstract double getCollisionRadius();
+
+    /**
+     * Checks whether or not the projectile is still valid.
+     * Invalid would mean landing on the ground or leaving the loaded chunks.
+     */
+    protected boolean isTraveling()
+    {
+        // Leaving a loaded chunk
+        if (!getLocation().getChunk().isLoaded())
+        {
+            cancel();
+            Bukkit.getPluginManager().callEvent(expire());
+            return false;
+        }
+
+        // Hitting a solid block
+        if (getLocation().getBlock().getType().isSolid())
+        {
+            cancel();
+            Bukkit.getPluginManager().callEvent(land());
+            if (callback != null)
+                callback.callback(this, null);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the projectile collides with a given list of entities
+     */
+    protected void checkCollision()
+    {
+        double radiusSq = getCollisionRadius();
+        radiusSq *= radiusSq;
+
+        for (LivingEntity entity : getNearbyEntities())
+        {
+            if (entity == thrower)
+                continue;
+
+            if (dSq(getLocation(), entity.getLocation(), entity.getLocation().add(0, entity.getEyeHeight(), 0)) < radiusSq)
+            {
+                boolean ally = Protection.isAlly(getShooter(), entity);
+                if (ally && !this.ally) continue;
+                if (!ally && !this.enemy) continue;
+
+                cancel();
+                Bukkit.getPluginManager().callEvent(hit(entity));
+                if (callback != null)
+                {
+                    callback.callback(this, entity);
+                }
+                return;
+            }
+        }
+    }
+
+    /**
+     * @return list of nearby living entities
+     */
+    protected List<LivingEntity> getNearbyEntities()
+    {
+        List<LivingEntity> list = new ArrayList<LivingEntity>();
+        Location loc = getLocation();
+        double radius = getCollisionRadius();
+        int minX = (int) (loc.getX() - radius) >> 4;
+        int maxX = (int) (loc.getX() + radius) >> 4;
+        int minZ = (int) (loc.getZ() - radius) >> 4;
+        int maxZ = (int) (loc.getZ() + radius) >> 4;
+        for (int i = minX; i <= maxX; i++)
+            for (int j = minZ; j < maxZ; j++)
+                for (Entity entity : loc.getWorld().getChunkAt(i, j).getEntities())
+                    if (entity instanceof LivingEntity)
+                        list.add((LivingEntity) entity);
+        return list;
+    }
+
+    /**
+     * Segment distance squared
+     *
+     * @param p some point
+     * @param a first point of the segment
+     * @param b second point of the segment
+     *
+     * @return segment distance to the point squared
+     */
+    public static double dSq(Location p, Location a, Location b)
+    {
+        Vector av = a.toVector();
+
+        Vector ab = b.toVector().subtract(av);
+        Vector ap = p.toVector().subtract(av);
+
+        if (ap.dot(ab) < 0)
+            return ap.lengthSquared();
+
+        Vector bp = p.toVector().subtract(b.toVector());
+
+        if (bp.dot(ab) > 0)
+            return bp.lengthSquared();
+
+        return ab.crossProduct(ap).lengthSquared() / ab.lengthSquared();
     }
 
     /**

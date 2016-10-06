@@ -27,7 +27,6 @@
 package com.sucy.skill.listener;
 
 import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.api.event.TrueDamageEvent;
@@ -177,7 +176,7 @@ public class StatusListener implements Listener
             || !(event.getEntity() instanceof LivingEntity))
             return;
 
-        checkAbsorbAndInvincible((LivingEntity)event.getEntity(), event, event.getDamage());
+        checkAbsorbAndInvincible((LivingEntity) event.getEntity(), event, event.getDamage());
     }
 
     /**

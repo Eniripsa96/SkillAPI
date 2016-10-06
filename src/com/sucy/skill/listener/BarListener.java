@@ -42,7 +42,6 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.gui.SkillDetailMenu;
 import com.sucy.skill.gui.SkillListMenu;
 import com.sucy.skill.tree.basic.InventoryTree;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -346,10 +345,10 @@ public class BarListener implements Listener
         {
             final Player player = event.getPlayer();
             SkillAPI.schedule(new Runnable()
+            {
+                @Override
+                public void run()
                 {
-                    @Override
-                    public void run()
-                    {
                     SkillAPI.getPlayerData(player).getSkillBar().setup(player);
                 }
             }, 0);

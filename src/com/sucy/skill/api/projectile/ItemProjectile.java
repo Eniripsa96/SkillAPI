@@ -26,15 +26,14 @@
  */
 package com.sucy.skill.api.projectile;
 
-import com.rit.sucy.player.Protection;
 import com.sucy.skill.api.event.ItemProjectileHitEvent;
 import com.sucy.skill.api.event.ItemProjectileLandEvent;
 import com.sucy.skill.api.event.ItemProjectileLaunchEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
@@ -86,6 +85,44 @@ public class ItemProjectile extends CustomProjectile
     }
 
     /**
+     * Handles expiring due to range or leaving loaded chunks
+     */
+    @Override
+    protected Event expire()
+    {
+        return land();
+    }
+
+    /**
+     * Handles landing on terrain
+     */
+    @Override
+    protected Event land()
+    {
+        return new ItemProjectileLandEvent(this);
+    }
+
+    /**
+     * Handles hitting an entity
+     *
+     * @param entity entity the projectile hit
+     */
+    @Override
+    protected Event hit(LivingEntity entity)
+    {
+        return new ItemProjectileHitEvent(this, entity);
+    }
+
+    /**
+     * @return squared radius for colliding
+     */
+    @Override
+    protected double getCollisionRadius()
+    {
+        return item.getVelocity().length() / 2;
+    }
+
+    /**
      * <p>Updates the projectile's position.</p>
      * <p>This is for the repeating task and if you call it yourself, it
      * will move faster than it should.</p>
@@ -93,41 +130,18 @@ public class ItemProjectile extends CustomProjectile
     @Override
     public void run()
     {
-        //if (item.getLocation().add(0, -0.2, 0).getBlock().getType().isSolid())
-        if (item.isOnGround())
-        {
-            cancel();
-            Bukkit.getPluginManager().callEvent(new ItemProjectileLandEvent(this));
-            if (callback != null)
-            {
-                callback.callback(this, null);
-            }
-            item.remove();
-        }
-        else
-        {
-            double halfSpeed = item.getVelocity().length() / 2;
-            for (Entity entity : item.getNearbyEntities(halfSpeed, halfSpeed, halfSpeed))
-            {
-                if (entity instanceof LivingEntity)
-                {
-                    LivingEntity target = (LivingEntity) entity;
-                    boolean ally = Protection.isAlly(getShooter(), target);
-                    if (ally && !this.ally) continue;
-                    if (!ally && !this.enemy) continue;
+        if (isTraveling())
+            checkCollision();
+    }
 
-                    cancel();
-                    ItemProjectileHitEvent event = new ItemProjectileHitEvent(this, target);
-                    Bukkit.getPluginManager().callEvent(event);
-                    if (callback != null)
-                    {
-                        callback.callback(this, target);
-                    }
-                    item.remove();
-                    return;
-                }
-            }
-        }
+    /**
+     * Removes the item on cancelling the task
+     */
+    @Override
+    public void cancel()
+    {
+        super.cancel();
+        item.remove();
     }
 
     /**

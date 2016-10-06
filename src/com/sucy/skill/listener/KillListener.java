@@ -153,7 +153,7 @@ public class KillListener implements Listener
     public void onPhysical(PhysicalDamageEvent event)
     {
         if (event.getDamager() instanceof Player)
-            killers.put(event.getTarget().getEntityId(), (Player)event.getDamager());
+            killers.put(event.getTarget().getEntityId(), (Player) event.getDamager());
     }
 
     /**
@@ -165,7 +165,7 @@ public class KillListener implements Listener
     public void onSpell(SkillDamageEvent event)
     {
         if (event.getDamager() instanceof Player)
-            killers.put(event.getTarget().getEntityId(), (Player)event.getDamager());
+            killers.put(event.getTarget().getEntityId(), (Player) event.getDamager());
     }
 
     /**
@@ -177,7 +177,7 @@ public class KillListener implements Listener
     public void onTrue(TrueDamageEvent event)
     {
         if (event.getDamager() instanceof Player)
-            killers.put(event.getTarget().getEntityId(), (Player)event.getDamager());
+            killers.put(event.getTarget().getEntityId(), (Player) event.getDamager());
     }
 
     /**

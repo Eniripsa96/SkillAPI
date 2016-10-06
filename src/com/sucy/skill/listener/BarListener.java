@@ -58,9 +58,10 @@ import org.bukkit.event.player.*;
  * Handles interactions with skill bars. This shouldn't be
  * use by other plugins as it is handled by the API.
  */
-public class BarListener implements Listener
+public class BarListener extends SkillAPIListener
 {
-    public BarListener()
+    @Override
+    public void init()
     {
         for (Player player : VersionManager.getOnlinePlayers())
         {

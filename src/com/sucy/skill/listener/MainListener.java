@@ -56,7 +56,7 @@ import org.bukkit.event.player.*;
  * such as loading/clearing data, controlling experience gains, and
  * enabling/disabling passive abilities.
  */
-public class MainListener implements Listener
+public class MainListener extends SkillAPIListener
 {
     /**
      * Loads player data asynchronously when a player tries to log in

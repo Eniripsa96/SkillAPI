@@ -58,7 +58,7 @@ import java.util.UUID;
 /**
  * The listener for handling events related to dynamic mechanics
  */
-public class MechanicListener implements Listener
+public class MechanicListener extends SkillAPIListener
 {
     public static final String SUMMON_DAMAGE     = "sapiSumDamage";
     public static final String P_CALL            = "pmCallback";

@@ -48,7 +48,7 @@ import java.util.HashMap;
 /**
  * Listener for managing applying attribute bonuses for players
  */
-public class AttributeListener implements Listener
+public class AttributeListener extends SkillAPIListener
 {
     public static final String MENU_KEY = "skillAPIAttrMenu";
 

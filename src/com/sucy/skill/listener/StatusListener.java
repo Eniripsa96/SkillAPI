@@ -57,7 +57,7 @@ import java.util.HashSet;
  * Listener for applying default status flags for the API. You should
  * not use this class as it is already set up by the API.
  */
-public class StatusListener implements Listener
+public class StatusListener extends SkillAPIListener
 {
     private static final HashMap<String, Long> messageTimers = new HashMap<String, Long>();
 

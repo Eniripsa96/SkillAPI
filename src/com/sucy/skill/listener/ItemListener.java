@@ -51,7 +51,7 @@ import java.util.HashSet;
 /**
  * Listener that handles weapon item lore requirements
  */
-public class ItemListener implements Listener
+public class ItemListener extends SkillAPIListener
 {
     /**
      * Removes weapon bonuses when dropped

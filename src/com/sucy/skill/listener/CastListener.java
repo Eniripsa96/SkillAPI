@@ -48,11 +48,11 @@ import org.bukkit.inventory.PlayerInventory;
 /**
  * Listener for the main casting system
  */
-public class CastListener implements Listener
+public class CastListener extends SkillAPIListener
 {
     private static int slot = -1;
 
-    public CastListener()
+    public void init()
     {
         slot = SkillAPI.getSettings().getCastSlot();
 
@@ -70,6 +70,7 @@ public class CastListener implements Listener
 
         for (Player player : Bukkit.getOnlinePlayers())
             cleanup(player);
+        slot = -1;
     }
 
     private static void cleanup(Player player)

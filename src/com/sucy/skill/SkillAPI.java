@@ -176,10 +176,13 @@ public class SkillAPI extends JavaPlugin
         loaded = true;
     }
 
-    private void listen(Listener listener, boolean enabled)
+    private void listen(SkillAPIListener listener, boolean enabled)
     {
         if (enabled)
+        {
             Bukkit.getPluginManager().registerEvents(listener, this);
+            listener.init();
+        }
     }
 
     /**
@@ -216,9 +219,7 @@ public class SkillAPI extends JavaPlugin
             data.stopPassives(player);
             data.getCastBars().restore(player);
             if (player.getGameMode() != GameMode.CREATIVE && !player.isDead())
-            {
                 data.getSkillBar().clear(player);
-            }
             player.setMaxHealth(20);
             player.setWalkSpeed(0.2f);
         }

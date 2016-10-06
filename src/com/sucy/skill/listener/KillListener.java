@@ -50,7 +50,7 @@ import java.util.HashMap;
 /**
  * Tracks who kills what entities and awards experience accordingly
  */
-public class KillListener implements Listener
+public class KillListener extends SkillAPIListener
 {
     private static final HashMap<Integer, Player> killers = new HashMap<Integer, Player>();
 

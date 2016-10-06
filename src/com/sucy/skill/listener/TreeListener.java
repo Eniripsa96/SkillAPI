@@ -45,7 +45,7 @@ import java.util.Collection;
 /**
  * Listener for Skill Tree click events
  */
-public class TreeListener implements Listener
+public class TreeListener extends SkillAPIListener
 {
     public static final String CLASS_LIST_KEY = "sapiClassInv";
 

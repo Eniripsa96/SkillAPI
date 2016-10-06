@@ -49,13 +49,14 @@ import java.util.UUID;
 /**
  * Handles the alternate casting option for casting via a cycling slot
  */
-public class CastItemListener implements Listener
+public class CastItemListener extends SkillAPIListener
 {
     private static HashMap<UUID, PlayerSkillSlot> data = new HashMap<UUID, PlayerSkillSlot>();
 
     private static int slot;
 
-    public CastItemListener()
+    @Override
+    public void init()
     {
         slot = SkillAPI.getSettings().getCastSlot();
 

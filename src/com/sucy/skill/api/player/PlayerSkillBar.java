@@ -59,12 +59,8 @@ public class PlayerSkillBar
     {
         this.player = player;
         for (int i = 1; i <= 9; i++)
-        {
             if (SkillAPI.getSettings().getDefaultBarLayout()[i - 1])
-            {
                 slots.put(i, UNASSIGNED);
-            }
-        }
     }
 
     /**
@@ -111,12 +107,9 @@ public class PlayerSkillBar
     public int getFirstWeaponSlot()
     {
         for (int i = 0; i < 9; i++)
-        {
             if (isWeaponSlot(i))
-            {
                 return i;
-            }
-        }
+
         return -1;
     }
 
@@ -131,16 +124,12 @@ public class PlayerSkillBar
         int count = 0;
         Player p = player.getPlayer();
         if (p == null)
-        {
             return -1;
-        }
+
         for (int slot : slots.keySet())
-        {
             if (slot > 0 && slot < 10 && p.getInventory().getItem(slot - 1) != null)
-            {
                 count++;
-            }
-        }
+
         return count;
     }
 
@@ -156,17 +145,13 @@ public class PlayerSkillBar
         int count = 0;
         Player p = player.getPlayer();
         if (p == null)
-        {
             return -1;
-        }
+
         ItemStack[] items = p.getInventory().getContents();
         for (int i = 0; i < items.length; i++)
-        {
             if (items[i] == null && !slots.containsKey(i + 1))
-            {
                 count++;
-            }
-        }
+
         return count;
     }
 
@@ -195,34 +180,26 @@ public class PlayerSkillBar
     public void toggleSlot(int slot)
     {
         if (!isEnabled() || SkillAPI.getSettings().getLockedSlots()[slot])
-        {
             return;
-        }
+
         slot++;
 
         // Make sure there is always at least one weapon slot
         if (!slots.containsKey(slot) && (slots.size() == 8 || countOpenSlots() == 0))
-        {
             return;
-        }
 
         // Cannot have item in cursor
         Player p = player.getPlayer();
         if (p == null || (p.getItemOnCursor() != null && p.getItemOnCursor().getType() != Material.AIR))
-        {
             return;
-        }
 
         // Toggle the slot
         clear(p);
         if (slots.containsKey(slot))
-        {
             slots.remove(slot);
-        }
         else
-        {
             slots.put(slot, UNASSIGNED);
-        }
+
         setup(p);
     }
 
@@ -233,24 +210,13 @@ public class PlayerSkillBar
      */
     public void apply(int slot)
     {
-        if (getPlayer() == null || getPlayer().getGameMode() == GameMode.CREATIVE)
-        {
+        if (getPlayer() == null || getPlayer().getGameMode() == GameMode.CREATIVE
+            || !isEnabled() || isWeaponSlot(slot))
             return;
-        }
-        if (!isEnabled())
-        {
-            return;
-        }
-        if (isWeaponSlot(slot))
-        {
-            return;
-        }
+
         PlayerSkill skill = player.getSkill(slots.get(slot + 1));
-        if (skill == null)
-        {
-            return;
-        }
-        player.cast(skill);
+        if (skill != null)
+            player.cast(skill);
     }
 
     /**
@@ -261,15 +227,13 @@ public class PlayerSkillBar
     public void clear(HumanEntity player)
     {
         if (player == null || !setup)
-        {
             return;
-        }
+
         for (int i = 0; i < 9; i++)
         {
             if (isWeaponSlot(i))
-            {
                 continue;
-            }
+
             player.getInventory().setItem(i, null);
         }
         setup = false;
@@ -283,15 +247,13 @@ public class PlayerSkillBar
     public void clear(PlayerDeathEvent event)
     {
         if (event == null || !setup)
-        {
             return;
-        }
+
         for (int i = 0; i < 9; i++)
         {
             if (isWeaponSlot(i))
-            {
                 continue;
-            }
+
             event.getDrops().remove(event.getEntity().getInventory().getItem(i));
             event.getEntity().getInventory().setItem(i, null);
         }
@@ -306,9 +268,8 @@ public class PlayerSkillBar
         for (int i = 0; i < 9; i++)
         {
             if (isWeaponSlot(i))
-            {
                 continue;
-            }
+
             slots.put(i + 1, UNASSIGNED);
         }
         update(getPlayer());
@@ -322,9 +283,7 @@ public class PlayerSkillBar
     public void setup(HumanEntity player)
     {
         if (player == null || !enabled || player.getGameMode() == GameMode.CREATIVE || setup)
-        {
             return;
-        }
 
         // Disable the skill bar if there isn't enough space
         if (countOpenSlots() < getItemsInSkillSlots())
@@ -349,15 +308,12 @@ public class PlayerSkillBar
         for (int i = 0; i < 9; i++)
         {
             if (isWeaponSlot(i))
-            {
                 continue;
-            }
+
             ItemStack item = player.getInventory().getItem(i);
             player.getInventory().setItem(i, SkillAPI.getSettings().getUnassigned());
             if (item != null)
-            {
                 player.getInventory().addItem(item);
-            }
         }
 
         // Update the slots
@@ -392,9 +348,8 @@ public class PlayerSkillBar
     public void assign(PlayerSkill skill, int slot)
     {
         if (isWeaponSlot(slot))
-        {
             return;
-        }
+
         for (Map.Entry<Integer, String> entry : slots.entrySet())
         {
             if (entry.getValue().equals(skill.getData().getName()))
@@ -421,9 +376,7 @@ public class PlayerSkillBar
         {
             int index = i - 1;
             if (isWeaponSlot(index))
-            {
                 continue;
-            }
 
             PlayerSkill skill = this.player.getSkill(slots.get(i));
             if (skill == null || !skill.isUnlocked())
@@ -436,9 +389,7 @@ public class PlayerSkillBar
                 }
             }
             else if (isEnabled() && player != null)
-            {
                 player.getInventory().setItem(index, skill.getData().getIndicator(skill));
-            }
         }
     }
 
@@ -515,14 +466,10 @@ public class PlayerSkillBar
                 if (layout[i - 1])
                 {
                     if (!slots.containsKey(i))
-                    {
                         slots.put(i, UNASSIGNED);
-                    }
                 }
                 else if (slots.containsKey(i))
-                {
                     slots.remove(i);
-                }
             }
         }
     }

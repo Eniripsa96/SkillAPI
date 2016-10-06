@@ -36,7 +36,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryView;
 
-public class ToolListener implements Listener
+public class ToolListener extends SkillAPIListener
 {
     @EventHandler
     public void onClick(InventoryClickEvent event)

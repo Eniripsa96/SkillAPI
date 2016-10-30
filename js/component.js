@@ -82,6 +82,7 @@ var Condition = {
     PERMISSION:  { name: 'Permission',  container: true, construct: ConditionPermission,premium: true },
     POTION:      { name: 'Potion',      container: true, construct: ConditionPotion     },
     SKILL_LEVEL: { name: 'Skill Level', container: true, construct: ConditionSkillLevel },
+    SLOT:        { name: 'Slot',        container: true, construct: ConditionSlot,      premium: true },
     STATUS:      { name: 'Status',      container: true, construct: ConditionStatus     },
     TIME:        { name: 'Time',        container: true, construct: ConditionTime       },
     TOOL:        { name: 'Tool',        container: true, construct: ConditionTool       },
@@ -112,6 +113,7 @@ var Mechanic = {
     FLAG_CLEAR:          { name: 'Flag Clear',          container: false, construct: MechanicFlagClear          },
     FLAG_TOGGLE:         { name: 'Flag Toggle',         container: false, construct: MechanicFlagToggle         },
     HEAL:                { name: 'Heal',                container: false, construct: MechanicHeal               },
+    HELD_ITEM:           { name: 'Held Item',           container: false, construct: MechanicHeldItem,          premium: true },
     IMMUNITY:            { name: 'Immunity',            container: false, construct: MechanicImmunity           },
     INTERRUPT:           { name: 'Interrupt',           container: false, construct: MechanicInterrupt          },
     ITEM:                { name: 'Item',                container: false, construct: MechanicItem               },
@@ -143,6 +145,7 @@ var Mechanic = {
     VALUE_HEALTH:        { name: 'Value Health',        container: false, construct: MechanicValueHealth,       premium: true },
     VALUE_LOCATION:      { name: 'Value Location',      container: false, construct: MechanicValueLocation      },
     VALUE_LORE:          { name: 'Value Lore',          container: false, construct: MechanicValueLore          },
+    VALUE_LORE_SLOT:     { name: 'Value Lore Slot',     container: false, construct: MechanicValueLoreSlot,     premium: true},
     VALUE_MANA:          { name: 'Value Mana',          container: false, construct: MechanicValueMana,         premium: true },
     VALUE_MULTIPLY:      { name: 'Value Multiply',      container: false, construct: MechanicValueMultiply      },
     VALUE_RANDOM:        { name: 'Value Random',        container: false, construct: MechanicValueRandom        },
@@ -1223,6 +1226,19 @@ function ConditionSkillLevel(skill)
     );
 }
 
+extend('ConditionSlot', 'Component');
+function ConditionSlot()
+{
+    this.super('Slot', Type.CONDITION, true);
+    this.description = "Applies child components when the target player has a matching item in the given slot.";
+    
+    this.data.push(new IntValue('Slot', 'slot', 9)
+        .setTooltip('The slot to look at. Slots 0-8 are the hot bar, 9-35 are the main inventory, 36-39 are armor, and 40 is the offhand slot.')
+    );
+    
+    addItemOptions(this);
+}
+
 extend('ConditionStatus', 'Component');
 function ConditionStatus()
 {
@@ -1647,6 +1663,18 @@ function MechanicHeal()
     );
     this.data.push(new AttributeValue("Value", "value", 3, 1)
         .setTooltip('The amount of health to restore')
+    );
+}
+
+extend('MechanicHeldItem', 'Component');
+function MechanicHeldItem()
+{
+    this.super('Held Item', Type.MECHANIC, false);
+    
+    this.description = 'Sets the held item slot of the target player. This will do nothing if trying to set it to a skill slot.';
+    
+    this.data.push(new AttributeValue("Slot", "slot", 0, 0)
+        .setTooltip('The slot to set it to')
     );
 }
 
@@ -2172,6 +2200,27 @@ function MechanicValueLore()
     );
     this.data.push(new ListValue("Hand", "hand", [ 'Main', 'Offhand' ], 'Main')
         .setTooltip('The hand to check for the item. Offhand items are MC 1.9+ only.')
+    );
+    this.data.push(new StringValue('Regex', 'regex', 'Damage: {value}')
+        .setTooltip('The regex string to look for, using {value} as the number to store. If you do not know about regex, consider looking it up on Wikipedia or avoid using major characters such as [ ] { } ( ) . + ? * ^ \\ |')
+    );
+    this.data.push(new AttributeValue('Multiplier', 'multiplier', 1, 0)
+        .setTooltip('The multiplier for the acquired value. If you want the value to remain unchanged, leave this value at 1.')
+    );
+}
+
+extend('MechanicValueLoreSlot', 'Component');
+function MechanicValueLoreSlot()
+{
+    this.super('Value Lore Slot', Type.MECHANIC, false);
+    
+    this.description = 'Loads a value from an item\'s lore into a stored value under the given unique key for the caster.';
+    
+    this.data.push(new StringValue('Key', 'key', 'lore')
+        .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
+    );
+    this.data.push(new IntValue("Slot", "slot", 9)
+        .setTooltip('The slot of the inventory to fetch the item from. Slots 0-8 are the hotbar, 9-35 are the main inventory, 36-39 are armor, and 40 is the offhand slot.')
     );
     this.data.push(new StringValue('Regex', 'regex', 'Damage: {value}')
         .setTooltip('The regex string to look for, using {value} as the number to store. If you do not know about regex, consider looking it up on Wikipedia or avoid using major characters such as [ ] { } ( ) . + ? * ^ \\ |')

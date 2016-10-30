@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.listener;
 
+import com.sucy.skill.tools.GUIHolder;
 import com.sucy.skill.tools.ToolMenu;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -46,6 +47,8 @@ public class ToolListener extends SkillAPIListener
             else
                 ((ToolMenu) event.getInventory().getHolder()).handleClick(event);
         }
+        else if (event.getInventory().getHolder() instanceof GUIHolder)
+            ((GUIHolder) event.getInventory().getHolder()).handleClick(event);
     }
 
     @EventHandler
@@ -53,6 +56,8 @@ public class ToolListener extends SkillAPIListener
     {
         if (event.getInventory().getHolder() instanceof ToolMenu)
             event.setCancelled(true);
+        else if (event.getInventory().getHolder() instanceof GUIHolder)
+            ((GUIHolder) event.getInventory().getHolder()).handleDrag(event);
     }
 
     @EventHandler
@@ -63,6 +68,8 @@ public class ToolListener extends SkillAPIListener
             event.getPlayer().setItemOnCursor(null);
             ((ToolMenu) event.getInventory().getHolder()).restore();
         }
+        else if (event.getInventory().getHolder() instanceof GUIHolder)
+            ((GUIHolder) event.getInventory().getHolder()).handleClose(event);
     }
 
     @EventHandler

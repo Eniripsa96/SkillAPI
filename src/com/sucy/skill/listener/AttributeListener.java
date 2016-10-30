@@ -31,6 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.gui.AttributeHandler;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
@@ -267,55 +268,5 @@ public class AttributeListener extends SkillAPIListener
             return updated - current;
         }
         return 0;
-    }
-
-    /**
-     * Handles attribute menu interaction
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onClick(InventoryClickEvent event)
-    {
-        // Class selection
-        if (InventoryManager.isMatching(event.getInventory(), MENU_KEY))
-        {
-            // Do nothing when clicking outside the inventory
-            if (event.getSlot() == -999)
-            {
-                return;
-            }
-
-            boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
-            AttributeManager manager = SkillAPI.getAttributeManager();
-
-            // Interact with the skill tree when clicking in the top region
-            if (top)
-            {
-                if (event.getSlot() < manager.getKeys().size() || event.getCursor() != null)
-                {
-                    event.setCancelled(true);
-
-                    PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
-                    if (event.isRightClick() && SkillAPI.getSettings().isAttributesDowngrade())
-                    {
-                        data.refundAttribute(manager.getKeys().toArray()[event.getSlot()].toString());
-                    }
-                    else if (event.isLeftClick())
-                    {
-
-                        Object[] keys = manager.getKeys().toArray();
-                        data.upAttribute(keys[event.getSlot()].toString());
-                    }
-                    data.openAttributeMenu();
-                }
-            }
-
-            // Do not allow shift clicking items into the inventory
-            else if (event.isShiftClick())
-            {
-                event.setCancelled(true);
-            }
-        }
     }
 }

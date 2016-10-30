@@ -28,8 +28,10 @@ package com.sucy.skill.data;
 
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
+import com.rit.sucy.config.parse.NumberParser;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.text.TextFormatter;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IndicatorSettings;
@@ -748,6 +750,7 @@ public class Settings
     private static final String ITEM_ATTR    = ITEM_BASE + "lore-attribute-text";
     private static final String ITEM_STATS   = ITEM_BASE + "attribute-text";
     private static final String ITEM_CHECK   = ITEM_BASE + "players-per-check";
+    private static final String ITEM_SLOTS   = ITEM_BASE + "slots";
 
     private boolean checkLore;
     private boolean checkAttribs;
@@ -756,7 +759,7 @@ public class Settings
     private String  loreClassText;
     private String  loreLevelText;
     private String  loreExcludeText;
-    private int     playersPerCheck;
+    private int[]   slots;
 
     private String skillPre, skillPost;
     private String attrReqPre, attrReqPost;
@@ -853,13 +856,11 @@ public class Settings
     }
 
     /**
-     * Retrieves the number of players checked each update
-     *
-     * @return number of players checked each update
+     * @return slots checked for requirements and attributes
      */
-    public int getPlayersPerCheck()
+    public int[] getSlots()
     {
-        return playersPerCheck;
+        return slots;
     }
 
     private void loadItemSettings()
@@ -871,7 +872,6 @@ public class Settings
         loreClassText = config.getString(ITEM_CLASS).toLowerCase();
         loreLevelText = config.getString(ITEM_LEVEL).toLowerCase();
         loreExcludeText = config.getString(ITEM_EXCLUDE).toLowerCase();
-        playersPerCheck = config.getInt(ITEM_CHECK);
 
         String temp = config.getString(ITEM_SKILL).toLowerCase();
         int index = temp.indexOf('{');
@@ -887,6 +887,13 @@ public class Settings
         index = temp.indexOf('{');
         attrPre = temp.substring(0, index);
         attrPost = temp.substring(index + 6);
+
+        List<String> slotList = config.getList(ITEM_SLOTS);
+        if (!VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
+            slotList.remove("40");
+        slots = new int[slotList.size()];
+        for (int i = 0; i < slots.length; i++)
+            slots[i] = NumberParser.parseInt(slotList.get(i));
     }
 
     ///////////////////////////////////////////////////////

@@ -420,6 +420,7 @@ public abstract class EffectComponent
         put("permission", PermissionCondition.class);
         put("potion", PotionCondition.class);
         put("skill level", SkillLevelCondition.class);
+        put("slot", SlotCondition.class);
         put("status", StatusCondition.class);
         put("time", TimeCondition.class);
         put("tool", ToolCondition.class);
@@ -448,6 +449,7 @@ public abstract class EffectComponent
         put("flag clear", FlagClearMechanic.class);
         put("flag toggle", FlagToggleMechanic.class);
         put("heal", HealMechanic.class);
+        put("held item", HeldItemMechanic.class);
         put("immunity", ImmunityMechanic.class);
         put("interrupt", InterruptMechanic.class);
         put("item", ItemMechanic.class);
@@ -478,6 +480,7 @@ public abstract class EffectComponent
         put("value attribute", ValueAttributeMechanic.class);
         put("value location", ValueLocationMechanic.class);
         put("value lore", ValueLoreMechanic.class);
+        put("value lore slot", ValueLoreSlotMechanic.class);
         put("value multiply", ValueMultiplyMechanic.class);
         put("value random", ValueRandomMechanic.class);
         put("value set", ValueSetMechanic.class);

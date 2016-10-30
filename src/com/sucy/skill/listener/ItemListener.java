@@ -34,15 +34,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -73,10 +69,8 @@ public class ItemListener extends SkillAPIListener
     @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(PlayerItemBreakEvent event)
     {
-        if (ARMOR.contains(event.getBrokenItem().getType()))
-            check(event.getPlayer(), event.getBrokenItem().getType());
-        else
-            SkillAPI.schedule(new UpdateTask(event.getPlayer(), 0), 1);
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
     }
 
     /**
@@ -100,8 +94,8 @@ public class ItemListener extends SkillAPIListener
     @EventHandler
     public void onPickup(PlayerPickupItemEvent event)
     {
-        if (event.getPlayer().getItemInHand() == null)
-            SkillAPI.schedule(new UpdateTask(event.getPlayer(), 0), 1);
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
     }
 
     /**
@@ -120,66 +114,27 @@ public class ItemListener extends SkillAPIListener
     @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHeld(PlayerItemHeldEvent event)
     {
-        SkillAPI.schedule(new UpdateTask(event.getPlayer(), 0), 1);
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), true), 1);
     }
 
-    /**
-     * Updates equip data when clicking on important slots
-     *
-     * @param event event details
-     */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onClick(InventoryClickEvent event)
+    @EventHandler
+    public void onClose(InventoryCloseEvent event)
     {
-        if (event.getSlotType() == InventoryType.SlotType.ARMOR)
-            SkillAPI.schedule(new ArmorTask((Player) event.getWhoClicked(), 39 - event.getSlot()), 1);
-        else if (event.getSlotType() == InventoryType.SlotType.QUICKBAR
-            && event.getSlot() == event.getWhoClicked().getInventory().getHeldItemSlot())
-            SkillAPI.schedule(new UpdateTask((Player) event.getWhoClicked(), 0), 1);
-        else if (event.getSlotType() == InventoryType.SlotType.QUICKBAR
-            && event.getSlot() == 9)
-            SkillAPI.schedule(new UpdateTask((Player) event.getWhoClicked(), 1), 1);
-        else if (event.getClick() == ClickType.SHIFT_LEFT)
-        {
-            if (event.getClickedInventory() == event.getWhoClicked().getInventory()
-                && ARMOR.contains(event.getCurrentItem().getType()))
-                check((Player)event.getWhoClicked(), event.getCurrentItem().getType());
-            else if (event.getClickedInventory() != event.getWhoClicked().getInventory()
-                && event.getWhoClicked().getItemInHand() == null)
-                SkillAPI.schedule(new UpdateTask((Player) event.getWhoClicked(), 0), 1);
-        }
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            SkillAPI.schedule(new UpdateTask((Player)event.getPlayer(), false), 1);
     }
 
     @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event)
     {
-        Material type;
-        if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())
+            && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
             && event.getPlayer().getItemInHand() != null
-            && ARMOR.contains(type = event.getPlayer().getItemInHand().getType()))
+            && ARMOR.contains(event.getPlayer().getItemInHand().getType()))
         {
-            check(event.getPlayer(), type);
-            SkillAPI.schedule(new UpdateTask(event.getPlayer(), 0), 1);
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
         }
-    }
-
-    @EventHandler
-    public void onDrag(InventoryDragEvent event)
-    {
-        SkillAPI.schedule(new UpdateTask((Player)event.getWhoClicked(), 2), 1);
-    }
-
-    private void check(Player player, Material type)
-    {
-        String name = type.name();
-        if (name.endsWith("HELMET"))
-            SkillAPI.schedule(new ArmorTask(player, 0), 1);
-        else if (name.endsWith("CHESTPLATE"))
-            SkillAPI.schedule(new ArmorTask(player, 1), 1);
-        else if (name.endsWith("LEGGINGS"))
-            SkillAPI.schedule(new ArmorTask(player, 2), 1);
-        else if (name.endsWith("BOOTS"))
-            SkillAPI.schedule(new ArmorTask(player, 3), 1);
     }
 
     /**
@@ -259,46 +214,19 @@ public class ItemListener extends SkillAPIListener
     /**
      * Handles updating equipped armor
      */
-    private class ArmorTask extends BukkitRunnable
-    {
-        private Player player;
-        private int    slot;
-
-        /**
-         * @param player player reference
-         * @param slot   armor slot
-         */
-        public ArmorTask(Player player, int slot)
-        {
-            this.player = player;
-            this.slot = slot;
-        }
-
-        /**
-         * Applies the update
-         */
-        @Override
-        public void run()
-        {
-            SkillAPI.getPlayerData(player).getEquips().updateArmor(player.getInventory(), slot);
-        }
-    }
-
-    /**
-     * Handles updating equipped armor
-     */
     private class UpdateTask extends BukkitRunnable
     {
         private Player player;
-        private int    type;
+
+        private boolean weaponOnly;
 
         /**
          * @param player player reference
          */
-        public UpdateTask(Player player, int type)
+        UpdateTask(Player player, boolean weaponOnly)
         {
             this.player = player;
-            this.type = type;
+            this.weaponOnly = weaponOnly;
         }
 
         /**
@@ -307,10 +235,8 @@ public class ItemListener extends SkillAPIListener
         @Override
         public void run()
         {
-            if (type == 0)
+            if (weaponOnly)
                 SkillAPI.getPlayerData(player).getEquips().updateWeapon(player.getInventory());
-            else if (type == 1)
-                SkillAPI.getPlayerData(player).getEquips().updateOffhand(player.getInventory());
             else
                 SkillAPI.getPlayerData(player).getEquips().update(player);
         }

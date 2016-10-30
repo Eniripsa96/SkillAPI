@@ -27,12 +27,15 @@
 package com.sucy.skill.dynamic;
 
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.api.util.NumberParser;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -206,5 +209,36 @@ public class ItemChecker
         }
 
         return false;
+    }
+
+    public static boolean findLore(LivingEntity caster, ItemStack item, String regex, String key, double multiplier) {
+        regex = regex.replace("{value}", "([0-9]+)");
+        Pattern pattern = Pattern.compile(regex);
+
+        if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore())
+            return false;
+
+        List<String> lore = item.getItemMeta().getLore();
+        for (String line : lore)
+        {
+            line = ChatColor.stripColor(line);
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find())
+            {
+                String value = matcher.group(1);
+                try
+                {
+                    double base = NumberParser.parseDouble(value);
+                    DynamicSkill.getCastData(caster).put(key, base * multiplier);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    // Not a valid value
+                }
+            }
+        }
+
+        return true;
     }
 }

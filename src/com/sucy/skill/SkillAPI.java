@@ -143,6 +143,7 @@ public class SkillAPI extends JavaPlugin
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);
         listen(new ToolListener(), true);
+        listen(new KillListener(), true);
         listen(new TreeListener(), !settings.isMapTreeEnabled());
         listen(new ItemListener(), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());

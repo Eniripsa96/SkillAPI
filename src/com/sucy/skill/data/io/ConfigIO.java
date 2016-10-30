@@ -69,9 +69,7 @@ public class ConfigIO extends IOManager
         {
             DataSection old = nameConfig.getConfig();
             for (String key : old.keys())
-            {
                 config.getConfig().set(key, old.get(key));
-            }
             nameConfig.getConfigFile().delete();
         }
         DataSection file = config.getConfig();
@@ -112,8 +110,6 @@ public class ConfigIO extends IOManager
         HashMap<String, PlayerAccounts> data = SkillAPI.getPlayerAccountData();
         ArrayList<String> keys = new ArrayList<String>(data.keySet());
         for (String key : keys)
-        {
             saveData(data.get(key));
-        }
     }
 }

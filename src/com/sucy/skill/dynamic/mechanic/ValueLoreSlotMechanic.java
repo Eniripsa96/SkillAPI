@@ -1,13 +1,13 @@
 /**
  * SkillAPI
- * com.sucy.skill.dynamic.mechanic.ValueLoreMechanic
+ * com.sucy.skill.dynamic.mechanic.ValueLoreSlot
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software") to deal
+ * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
@@ -26,29 +26,20 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.api.util.NumberParser;
-import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.ItemChecker;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-/**
- * Adds to a cast data value
- */
-public class ValueLoreMechanic extends EffectComponent
+public class ValueLoreSlotMechanic extends EffectComponent
 {
     private static final String KEY        = "key";
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
-    private static final String HAND       = "hand";
+    private static final String SLOT       = "slot";
 
     /**
      * Executes the component
@@ -62,23 +53,17 @@ public class ValueLoreMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        if (targets.size() == 0 || !settings.has(KEY))
+        if (targets.size() == 0 || !settings.has(KEY) || !(caster instanceof Player))
             return false;
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
         double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
-        boolean offhand = settings.getString(HAND).equalsIgnoreCase("offhand");
+        int slot = settings.getInt(SLOT);
         String regex = settings.getString(REGEX, "Damage: {value}");
 
-        if (caster.getEquipment() == null)
-            return false;
+        ItemStack item = ((Player) caster).getInventory().getItem(slot);
 
-        ItemStack hand;
-        if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
-            hand = caster.getEquipment().getItemInOffHand();
-        else hand = caster.getEquipment().getItemInHand();
-
-        return ItemChecker.findLore(caster, hand, regex, key, multiplier);
+        return ItemChecker.findLore(caster, item, regex, key, multiplier);
     }
 }

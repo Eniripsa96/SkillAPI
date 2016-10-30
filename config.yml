@@ -166,10 +166,22 @@ Items:
   # The text used for providing attributes
   attribute-text: '{attr}: '
   #
-  # How many players to check for the requirements each tick
-  # This should be increased on larger servers to prevent
-  # large delays before the same player is checked again
-  players-per-check: 1
+  # The slots to check for items in and apply requirements to.
+  # This does not include held item, as that fluctuates and is assumed
+  # Slots are based on the following:
+  # 0-8 = hot bar
+  # 9-35 = main inventory
+  # 36 = boots
+  # 37 = leggings
+  # 38 = chestplate
+  # 39 = helmet
+  # 40 = off hand
+  slots:
+  - 36
+  - 37
+  - 38
+  - 39
+  - 40
 #
 GUI:
   #

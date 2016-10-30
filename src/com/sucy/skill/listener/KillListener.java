@@ -40,7 +40,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -82,39 +81,29 @@ public class KillListener extends SkillAPIListener
 
             // Block spawner mob experience
             if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner())
-            {
                 return;
-            }
 
             // Block egg mob experience
             else if (value == EGG && SkillAPI.getSettings().isBlockEgg())
-            {
                 return;
-            }
         }
 
         // Summons don't give experience
         if (event.getEntity().hasMetadata(MechanicListener.SUMMON_DAMAGE))
-        {
             return;
-        }
 
         Player killer = killers.get(event.getEntity().getEntityId());
         if (killer != null && killer.hasPermission(Permissions.EXP))
         {
             // Block creative experience
             if (killer.getGameMode() == GameMode.CREATIVE && SkillAPI.getSettings().isBlockCreative())
-            {
                 return;
-            }
 
             PlayerData player = SkillAPI.getPlayerData(killer);
 
             // Give experience based on orbs when enabled
             if (SkillAPI.getSettings().isUseOrbs())
-            {
                 player.giveExp(event.getDroppedExp(), ExpSource.MOB);
-            }
 
             // Give experience based on config when not using orbs
             else

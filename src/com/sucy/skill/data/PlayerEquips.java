@@ -26,15 +26,14 @@
  */
 package com.sucy.skill.data;
 
-import com.rit.sucy.version.VersionManager;
+import com.google.common.base.Objects;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.NumberParser;
-import com.sucy.skill.manager.AttributeManager;
-import fr.neatmonster.nocheatplus.checks.inventory.Items;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -47,13 +46,13 @@ import java.util.*;
  */
 public class PlayerEquips
 {
+    private static final ItemStack TEMP = new ItemStack(Material.BEDROCK);
+
     private PlayerData player;
 
     private EquipData   empty   = new EquipData();
-
     private EquipData   weapon  = empty;
-    private EquipData   offhand = empty;
-    private EquipData[] armor   = new EquipData[] { empty, empty, empty, empty };
+    private EquipData[] other;
 
     /**
      * @param player player data reference
@@ -61,6 +60,9 @@ public class PlayerEquips
     public PlayerEquips(PlayerData player)
     {
         this.player = player;
+        other = new EquipData[SkillAPI.getSettings().getSlots().length];
+        for (int i = 0; i < other.length; i++)
+            other[i] = empty;
     }
 
     /**
@@ -79,12 +81,9 @@ public class PlayerEquips
     public void update(Player player)
     {
         PlayerInventory inv = player.getInventory();
-
-        weapon = swap(inv, -1, weapon, make(inv.getItemInHand()));
-        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
-            offhand = swap(inv, -2, offhand, make(inv.getItemInOffHand()));
-        for (int i = 0; i < 4; i++)
-            armor[i] = swap(inv, i, armor[i], make(inv.getItem(39 - i)));
+        weapon = swap(inv, inv.getHeldItemSlot(), weapon);
+        for (int i = 0; i < other.length; i++)
+            other[i] = swap(inv, SkillAPI.getSettings().getSlots()[i], other[i]);
     }
 
     /**
@@ -93,21 +92,22 @@ public class PlayerEquips
      * @param inv   inventory to manage
      * @param index related index
      * @param from  old equip data
-     * @param to    new equip data
      * @return the used equip data
      */
-    private EquipData swap(PlayerInventory inv, int index, EquipData from, EquipData to)
+    private EquipData swap(PlayerInventory inv, int index, EquipData from)
     {
+        EquipData to = make(inv.getItem(index));
+        if (Objects.equal(from.item, to.item))
+        {
+            return to;
+        }
+
         from.revert();
         if (!to.isMet())
         {
+            inv.setItem(index, TEMP);
             inv.addItem(to.item);
-            if (index == -2)
-                inv.setItemInOffHand(null);
-            else if (index == -1)
-                inv.setItemInHand(null);
-            else
-                inv.setItem(39 - index, null);
+            inv.setItem(index, null);
             return from;
         }
         else
@@ -133,28 +133,7 @@ public class PlayerEquips
      */
     public void updateWeapon(PlayerInventory inv)
     {
-        weapon = swap(inv, -1, weapon, make(inv.getItemInHand()));
-    }
-
-    /**
-     * Updates the equipped offhand item
-     *
-     * @param inv inventory data
-     */
-    public void updateOffhand(PlayerInventory inv)
-    {
-        offhand = swap(inv, -2, offhand, make(inv.getItemInOffHand()));
-    }
-
-    /**
-     * Updates an armor index
-     *
-     * @param inv   inventory to manage
-     * @param index armor slot
-     */
-    public void updateArmor(PlayerInventory inv, int index)
-    {
-        armor[index] = swap(inv, index, armor[index], make(inv.getItem(39 - index)));
+        weapon = swap(inv, inv.getHeldItemSlot(), weapon);
     }
 
     /**

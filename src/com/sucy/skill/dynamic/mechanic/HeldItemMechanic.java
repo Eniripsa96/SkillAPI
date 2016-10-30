@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.tools.GUIType
+ * com.sucy.skill.dynamic.mechanic.HeldItemMechanic
  *
  * The MIT License (MIT)
  *
@@ -24,53 +24,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.tools;
+package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
-public enum GUIType
+import java.util.List;
+
+public class HeldItemMechanic extends EffectComponent
 {
-    CLASS_SELECTION(0, "cs"),
-    CLASS_DETAILS(1, "cd"),
-    SKILL_TREE(2, "st"),
-    ATTRIBUTES(3, "a");
+    private static final String SLOT = "slot";
 
-    private int id;
-    private String prefix;
-
-    GUIType(int id, String prefix)
+    /**
+     * Executes the component
+     *
+     * @param caster  caster of the skill
+     * @param level   level of the skill
+     * @param targets targets to apply to
+     *
+     * @return true if applied to something, false otherwise
+     */
+    @Override
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        this.id = id;
-        this.prefix = prefix;
-    }
+        int slot = (int)attr(caster, SLOT, level, 0, false);
 
-    public GUIType next()
-    {
-        return cycle(1);
-    }
+        boolean worked = false;
+        for (LivingEntity target : targets)
+        {
+            if (!(target instanceof Player))
+                continue;
 
-    public GUIType prev()
-    {
-        return cycle(-1);
-    }
+            worked = true;
+            Player player = (Player)target;
+            if (SkillAPI.getSettings().isSkillBarEnabled() && SkillAPI.getPlayerData(player).getSkillBar().isWeaponSlot(slot))
+                player.getInventory().setHeldItemSlot(slot);
+        }
 
-    private GUIType cycle(int direction) {
-        GUIType type = ORDERED[(id + ORDERED.length + direction) % ORDERED.length];
-        if (type == ATTRIBUTES && !SkillAPI.getSettings().isAttributesEnabled())
-            return ORDERED[(id + ORDERED.length + 2 * direction) % ORDERED.length];
-        return type;
+        return worked;
     }
-
-    public String getPrefix()
-    {
-        return prefix;
-    }
-
-    private static final GUIType[] ORDERED = new GUIType[]
-    {
-        CLASS_SELECTION,
-        CLASS_DETAILS,
-        SKILL_TREE,
-        ATTRIBUTES
-    };
 }

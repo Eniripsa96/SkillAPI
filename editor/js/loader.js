@@ -108,7 +108,7 @@ function depend(script, callback) {
     }
 	
 	else {
-		var src = 'js/' + script + '.js';
+		var src = 'editor/js/' + script + '.js';
 		var scripts = document.querySelectorAll('script');
 		for (var i = 0; i < scripts.length; i++) 
 		{
@@ -126,7 +126,7 @@ function depend(script, callback) {
         if (callback) scriptTag.addEventListener('load', callback);
         scriptTag.addEventListener('load', SCRIPT_TAGS.onload);
         SCRIPT_TAGS[script] = {tag: scriptTag, loaded: false};
-        scriptTag.src = 'js/' + script + '.js';
+        scriptTag.src = 'editor/js/' + script + '.js';
         document.querySelector('head').appendChild(scriptTag);
         SCRIPT_TAGS.scriptCount++;
     }

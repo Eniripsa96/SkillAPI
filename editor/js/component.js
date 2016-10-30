@@ -265,19 +265,19 @@ Component.prototype.createBuilderHTML = function(target)
         var vision = document.createElement('div');
         vision.title = 'Hide Children';
         vision.className = 'builderButton smallButton';
-        vision.style.background = 'url("img/eye.png") no-repeat center #222';
+        vision.style.background = 'url("editor/img/eye.png") no-repeat center #222';
         vision.component = this;
         vision.addEventListener('click', function(e) {
             var comp = this.component;
             if (comp.childrenHidden)
             {
                 comp.childDiv.style.display = 'block';
-                this.style.backgroundImage = 'url("img/eye.png")';
+                this.style.backgroundImage = 'url("editor/img/eye.png")';
             }
             else 
             {
                 comp.childDiv.style.display = 'none';
-                this.style.backgroundImage = 'url("img/eyeShaded.png")';
+                this.style.backgroundImage = 'url("editor/img/eyeShaded.png")';
             }
             comp.childrenHidden = !comp.childrenHidden;
         });
@@ -291,7 +291,7 @@ Component.prototype.createBuilderHTML = function(target)
         var duplicate = document.createElement('div');
         duplicate.className = 'builderButton smallButton';
         duplicate.title = 'Duplicate';
-        duplicate.style.background = 'url("img/duplicate.png") no-repeat center #222';
+        duplicate.style.background = 'url("editor/img/duplicate.png") no-repeat center #222';
         duplicate.component = this;
         duplicate.addEventListener('click', function(e) {
             var comp = this.component;
@@ -306,7 +306,7 @@ Component.prototype.createBuilderHTML = function(target)
     var remove = document.createElement('div');
     remove.title = 'Remove';
     remove.className = 'builderButton smallButton cancelButton';
-    remove.style.background = 'url("img/delete.png") no-repeat center #f00';
+    remove.style.background = 'url("editor/img/delete.png") no-repeat center #f00';
     remove.component = this;
     remove.addEventListener('click', function(e) {
         var list = this.component.parent.components;

@@ -134,9 +134,9 @@ public class RegistrationManager
                 if (!SkillAPI.isSkillRegistered(key))
                 {
                     DynamicSkill skill = new DynamicSkill(key);
-                    skill.registerEvents(api);
                     api.skills.put(key.toLowerCase(), skill);
                     skill.load(skillConfig.getConfig().getSection(key));
+                    skill.registerEvents(api);
                     CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + key);
                     sConfig.clear();
                     skill.save(sConfig.getConfig().createSection(key));
@@ -172,9 +172,9 @@ public class RegistrationManager
                         {
                             CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + name);
                             DynamicSkill skill = new DynamicSkill(name);
-                            skill.registerEvents(api);
                             api.skills.put(name.toLowerCase(), skill);
                             skill.load(sConfig.getConfig().getSection(name));
+                            skill.registerEvents(api);
                             sConfig.clear();
                             skill.save(sConfig.getConfig().createSection(name));
                             skill.save(skillConfig.getConfig().createSection(name));

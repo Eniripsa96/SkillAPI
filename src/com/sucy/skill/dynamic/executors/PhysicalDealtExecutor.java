@@ -37,7 +37,7 @@ import org.bukkit.plugin.EventExecutor;
  */
 public class PhysicalDealtExecutor implements EventExecutor
 {
-    public static final LaunchExecutor instance = new LaunchExecutor();
+    public static final PhysicalDealtExecutor instance = new PhysicalDealtExecutor();
 
     /**
      * Executes the event for the skill

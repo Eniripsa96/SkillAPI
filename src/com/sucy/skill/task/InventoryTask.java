@@ -322,12 +322,15 @@ public class InventoryTask extends BukkitRunnable
 
             // Add attributes to the result afterwards so when the item isn't usable,
             // this part is skipped.
-            for (Map.Entry<String, Integer> entry : itemAttribs.entrySet())
+            if (needsRequirement == hasRequirement)
             {
-                if (tempAttribs.containsKey(entry.getKey()))
-                    tempAttribs.put(entry.getKey(), tempAttribs.get(entry.getKey()) + entry.getValue());
-                else
-                    tempAttribs.put(entry.getKey(), entry.getValue());
+                for (Map.Entry<String, Integer> entry : itemAttribs.entrySet())
+                {
+                    if (tempAttribs.containsKey(entry.getKey()))
+                        tempAttribs.put(entry.getKey(), tempAttribs.get(entry.getKey()) + entry.getValue());
+                    else
+                        tempAttribs.put(entry.getKey(), entry.getValue());
+                }
             }
         }
         return needsRequirement != hasRequirement;

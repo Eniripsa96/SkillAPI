@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.listener;
 
+import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
@@ -36,26 +37,44 @@ import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
 import org.bukkit.GameMode;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 
-import java.util.HashMap;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Tracks who kills what entities and awards experience accordingly
  */
 public class KillListener implements Listener
 {
-    private static final HashMap<Integer, Player> killers = new HashMap<Integer, Player>();
-
     private static final String S_TYPE  = "sType";
     private static final int    SPAWNER = 0, EGG = 1;
+
+    private Method handle;
+    private Field  killer;
+    private Field  damageTime;
+
+    public KillListener()
+    {
+        try
+        {
+            Class<?> living = Reflection.getNMSClass("EntityLiving");
+            handle = Reflection.getCraftClass("entity.CraftEntity").getDeclaredMethod("getHandle");
+            killer = living.getDeclaredField("killer");
+            damageTime = living.getDeclaredField("lastDamageByPlayerTime");
+            damageTime.setAccessible(true);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
     /**
      * Grants experience upon killing a monster and blocks experience when
@@ -71,9 +90,7 @@ public class KillListener implements Listener
 
         // Disabled world
         if (!SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
-        {
             return;
-        }
 
         // Cancel experience when applicable
         if (event.getEntity().hasMetadata(S_TYPE))
@@ -99,7 +116,7 @@ public class KillListener implements Listener
             return;
         }
 
-        Player killer = killers.get(event.getEntity().getEntityId());
+        Player killer = event.getEntity().getKiller();
         if (killer != null && killer.hasPermission(Permissions.EXP))
         {
             // Block creative experience
@@ -153,7 +170,7 @@ public class KillListener implements Listener
     public void onPhysical(PhysicalDamageEvent event)
     {
         if (event.getDamager() instanceof Player)
-            killers.put(event.getTarget().getEntityId(), (Player) event.getDamager());
+            setKiller(event.getTarget(), (Player) event.getDamager());
     }
 
     /**
@@ -165,7 +182,7 @@ public class KillListener implements Listener
     public void onSpell(SkillDamageEvent event)
     {
         if (event.getDamager() instanceof Player)
-            killers.put(event.getTarget().getEntityId(), (Player) event.getDamager());
+            setKiller(event.getTarget(), (Player) event.getDamager());
     }
 
     /**
@@ -177,18 +194,21 @@ public class KillListener implements Listener
     public void onTrue(TrueDamageEvent event)
     {
         if (event.getDamager() instanceof Player)
-            killers.put(event.getTarget().getEntityId(), (Player) event.getDamager());
+            setKiller(event.getTarget(), (Player) event.getDamager());
     }
 
-    /**
-     * Removes entities from the map on unload
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onUnload(ChunkUnloadEvent event)
+    private void setKiller(LivingEntity entity, Player player)
     {
-        for (Entity entity : event.getChunk().getEntities())
-            killers.remove(entity.getEntityId());
+        try
+        {
+            Object hit = handle.invoke(entity);
+            Object source = handle.invoke(player);
+            killer.set(hit, source);
+            damageTime.set(hit, 100);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 }

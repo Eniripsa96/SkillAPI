@@ -56,14 +56,15 @@ public class Formula implements IValue
 
     private static final HashMap<String, Class<? extends IValue>> FUNCS = new HashMap<String, Class<? extends IValue>>()
     {{
-            put("cos", Cos.class);
-            put("sin", Sin.class);
-            put("tan", Tan.class);
+            put("abs", Abs.class);
             put("ceil", Ceil.class);
+            put("cos", Cos.class);
             put("floor", Floor.class);
-            put("sq", Square.class);
             put("sqrt", Root.class);
             put("sign", Sign.class);
+            put("sin", Sin.class);
+            put("sq", Square.class);
+            put("tan", Tan.class);
         }};
 
     private IValue[]    values;

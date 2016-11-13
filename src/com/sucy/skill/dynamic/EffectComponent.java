@@ -448,6 +448,7 @@ public abstract class EffectComponent
         put("flag", FlagMechanic.class);
         put("flag clear", FlagClearMechanic.class);
         put("flag toggle", FlagToggleMechanic.class);
+        put("forget targets", ForgetTargetsMechanic.class);
         put("heal", HealMechanic.class);
         put("held item", HeldItemMechanic.class);
         put("immunity", ImmunityMechanic.class);

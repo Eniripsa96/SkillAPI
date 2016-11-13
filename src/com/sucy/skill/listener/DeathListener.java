@@ -33,11 +33,10 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 
 import java.lang.reflect.Method;
 
-public class DeathListener implements Listener
+public class DeathListener extends SkillAPIListener
 {
     private Method handle;
     private Method playerAttack;

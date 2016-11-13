@@ -252,7 +252,7 @@ public class PlayerEquips
                                 if (attribs == null)
                                     attribs = new HashMap<String, Integer>();
 
-                                attribs.put(attr, NumberParser.parseInt(lower.substring(text.length())));
+                                attribs.put(attr, NumberParser.parseInt(lower.substring(text.length()).replace("%", "")));
                                 break;
                             }
                         }

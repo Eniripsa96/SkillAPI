@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.rit.sucy.mobs.MobManager;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
@@ -71,7 +72,12 @@ public class MessageMechanic extends EffectComponent
             String key = message.substring(i + 1, j);
             if (data.containsKey(key))
             {
-                message = message.substring(0, i) + data.get(key) + message.substring(j + 1);
+                Object obj = data.get(key);
+                if (obj instanceof Player)
+                    obj = ((Player) obj).getName();
+                else if (obj instanceof LivingEntity)
+                    obj = MobManager.getName((LivingEntity) obj);
+                message = message.substring(0, i) + obj + message.substring(j + 1);
             }
             i = message.indexOf('{', j);
         }
@@ -82,7 +88,7 @@ public class MessageMechanic extends EffectComponent
         {
             if (target instanceof Player)
             {
-                ((Player) target).sendMessage(message);
+                target.sendMessage(message);
                 worked = true;
             }
         }

@@ -88,7 +88,7 @@ public enum ExpSource
      *
      * @param id ID of the experience source (should use a unique bit)
      */
-    private ExpSource(int id)
+    ExpSource(int id)
     {
         this.id = id;
     }

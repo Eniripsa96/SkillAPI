@@ -46,7 +46,7 @@ public interface PassiveSkill
      * @param prevLevel previous skill level
      * @param newLevel  new skill level
      */
-    public void update(LivingEntity user, int prevLevel, int newLevel);
+    void update(LivingEntity user, int prevLevel, int newLevel);
 
     /**
      * <p>Applies effects when the API starts up or when
@@ -58,7 +58,7 @@ public interface PassiveSkill
      * @param user  user to initialize the effects for
      * @param level skill level
      */
-    public void initialize(LivingEntity user, int level);
+    void initialize(LivingEntity user, int level);
 
     /**
      * <p>Stops the effects when the player goes offline
@@ -70,5 +70,5 @@ public interface PassiveSkill
      * @param user  user to stop the effects for
      * @param level skill level
      */
-    public void stopEffects(LivingEntity user, int level);
+    void stopEffects(LivingEntity user, int level);
 }

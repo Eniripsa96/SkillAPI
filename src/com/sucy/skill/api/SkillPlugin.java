@@ -45,12 +45,12 @@ public interface SkillPlugin
      *
      * @param api the api reference
      */
-    public void registerSkills(SkillAPI api);
+    void registerSkills(SkillAPI api);
 
     /**
      * <p>Method to add new classes to the game</p>
      * <p>Use api.addClasses(RPGClass ... classes) to add them</p>
      * <p>This is called after registerSkills</p>
      */
-    public void registerClasses(SkillAPI api);
+    void registerClasses(SkillAPI api);
 }

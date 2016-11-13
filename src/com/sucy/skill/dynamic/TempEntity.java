@@ -565,7 +565,7 @@ public class TempEntity implements LivingEntity
     @Override
     public String getName()
     {
-        return null;
+        return "Location";
     }
 
     @Override

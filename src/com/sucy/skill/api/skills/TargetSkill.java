@@ -44,5 +44,5 @@ public interface TargetSkill
      *
      * @return true if could cast, false otherwise
      */
-    public boolean cast(LivingEntity user, LivingEntity target, int level, boolean ally);
+    boolean cast(LivingEntity user, LivingEntity target, int level, boolean ally);
 }

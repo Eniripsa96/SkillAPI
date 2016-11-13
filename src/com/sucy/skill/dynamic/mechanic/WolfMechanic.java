@@ -79,7 +79,7 @@ public class WolfMechanic extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String color = settings.getString(COLOR);
         double health = attr(caster, HEALTH, level, 10.0, isSelf);
-        String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", ((Player) caster).getName()));
+        String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", caster.getName()));
         double damage = attr(caster, DAMAGE, level, 3.0, isSelf);
         List<String> skills = settings.getStringList(SKILLS);
 

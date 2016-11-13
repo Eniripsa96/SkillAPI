@@ -63,4 +63,14 @@ public class PluginChecker
     {
         return Bukkit.getPluginManager().getPlugin("NoCheatPlus") != null;
     }
+
+    /**
+     * Checks whether or not RPGInventory is active on the server
+     *
+     * @return true if active, false otherwise
+     */
+    public static boolean isRPGInventoryActive()
+    {
+        return Bukkit.getPluginManager().getPlugin("RPGInventory") != null;
+    }
 }

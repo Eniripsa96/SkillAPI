@@ -47,9 +47,10 @@ public class OffsetTarget extends EffectComponent
 {
     private static Vector up = new Vector(0, 1, 0);
 
-    private static final String FORWARD = "forward";
-    private static final String UPWARD  = "upward";
-    private static final String RIGHT   = "right";
+    private static final String FORWARD    = "forward";
+    private static final String UPWARD     = "upward";
+    private static final String RIGHT      = "right";
+    private static final String HORIZONTAL = "horizontal";
 
     /**
      * Creates the list of indicators for the skill
@@ -103,11 +104,14 @@ public class OffsetTarget extends EffectComponent
     private TempEntity getTargetLoc(LivingEntity caster, int level, LivingEntity t)
     {
         boolean isSelf = t == caster;
+        boolean horizontal = settings.getBool(HORIZONTAL, false);
         double forward = attr(caster, FORWARD, level, 0, isSelf);
         double upward = attr(caster, UPWARD, level, 0, isSelf);
         double right = attr(caster, RIGHT, level, 0, isSelf);
 
         Vector dir = t.getLocation().getDirection().setY(0).normalize();
+        if (horizontal)
+            dir = dir.setY(0).normalize();
         Vector nor = dir.clone().crossProduct(up);
         dir.multiply(forward);
         dir.add(nor.multiply(right)).setY(upward);

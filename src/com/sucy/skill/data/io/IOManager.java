@@ -58,7 +58,7 @@ public abstract class IOManager
         BINDS          = "binds",
         LEVEL          = "level",
         SCHEME         = "scheme",
-        TOTAL_EXP      = "total-exp",
+        EXP            = "exp",
         POINTS         = "points",
         SKILL_BAR      = "bar",
         HOVER          = "hover",
@@ -151,11 +151,12 @@ public abstract class IOManager
                         DataSection classData = classes.getSection(classKey);
                         int levels = classData.getInt(LEVEL);
                         if (levels > 0)
-                        {
                             c.setLevel(levels);
-                        }
                         c.setPoints(classData.getInt(POINTS));
-                        c.setTotalExp(classData.getDouble(TOTAL_EXP));
+                        if (classData.has("total-exp"))
+                            c.setExp(classData.getDouble("total-exp") - c.getTotalExp());
+                        else
+                            c.setExp(classData.getDouble(EXP));
                     }
                 }
             }
@@ -298,7 +299,7 @@ public abstract class IOManager
                     DataSection classSection = classes.createSection(c.getData().getName());
                     classSection.set(LEVEL, c.getLevel());
                     classSection.set(POINTS, c.getPoints());
-                    classSection.set(TOTAL_EXP, c.getTotalExp());
+                    classSection.set(EXP, c.getExp());
                 }
 
                 // Save skills

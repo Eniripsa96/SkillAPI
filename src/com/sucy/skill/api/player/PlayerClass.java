@@ -61,7 +61,6 @@ public final class PlayerClass implements IconHolder
     private int        level;
     private int        points;
     private double     exp;
-    private double     totalExp;
 
     ///////////////////////////////////////////////////////
     //                                                   //
@@ -84,7 +83,6 @@ public final class PlayerClass implements IconHolder
         this.level = 1;
         this.points = SkillAPI.getSettings().getGroupSettings(classData.getGroup()).getStartingPoints();
         this.exp = 0;
-        this.totalExp = 0;
 
         for (Skill skill : classData.getSkills())
         {
@@ -147,7 +145,10 @@ public final class PlayerClass implements IconHolder
      */
     public double getTotalExp()
     {
-        return totalExp;
+        double exp = this.exp;
+        for (int i = 1; i < level; i++)
+            exp += classData.getRequiredExp(i);
+        return exp;
     }
 
     /**
@@ -337,7 +338,6 @@ public final class PlayerClass implements IconHolder
             }
 
             exp += amount;
-            totalExp += amount;
             checkLevelUp();
         }
     }
@@ -375,33 +375,6 @@ public final class PlayerClass implements IconHolder
                     Filter.AMOUNT.setReplacement((int) amount + "")
                 );
             }
-        }
-    }
-
-    /**
-     * <p>Sets the total experience the player has gained.</p>
-     * <p>This should only be used when loading player data.</p>
-     *
-     * @param total total amount of experience the player has earned
-     */
-    public void setTotalExp(double total)
-    {
-        totalExp = total;
-        exp = totalExp;
-        for (int i = 1; i < level; i++)
-        {
-            exp -= classData.getRequiredExp(i);
-        }
-        int required = getRequiredExp();
-        if (exp < 0)
-        {
-            totalExp += exp;
-            exp = 0;
-        }
-        else if (exp >= required)
-        {
-            totalExp -= exp + required - 1;
-            exp = required - 1;
         }
     }
 
@@ -490,6 +463,16 @@ public final class PlayerClass implements IconHolder
             throw new IllegalArgumentException("Cannot be a level less than 0");
 
         this.level = level;
+    }
+
+    /**
+     * Sets the current experience for the player
+     *
+     * @param exp experience to set to
+     */
+    public void setExp(double exp)
+    {
+        this.exp = Math.max(Math.min(exp, getRequiredExp() - 1), 0);
     }
 
     /**

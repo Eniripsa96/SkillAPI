@@ -42,5 +42,5 @@ public interface ProjectileCallback
      * @param projectile projectile calling back for
      * @param hit        the entity hit by the projectile, if any
      */
-    public void callback(CustomProjectile projectile, LivingEntity hit);
+    void callback(CustomProjectile projectile, LivingEntity hit);
 }

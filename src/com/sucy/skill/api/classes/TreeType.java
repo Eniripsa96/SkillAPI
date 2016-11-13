@@ -45,5 +45,5 @@ public interface TreeType
      *
      * @return skill tree instance
      */
-    public InventoryTree getTree(SkillAPI api, RPGClass parent);
+    InventoryTree getTree(SkillAPI api, RPGClass parent);
 }

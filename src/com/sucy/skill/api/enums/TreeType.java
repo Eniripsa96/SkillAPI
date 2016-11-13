@@ -72,7 +72,7 @@ public enum TreeType
      *
      * @param key skill tree arrangement configuration key
      */
-    private TreeType(String key)
+    TreeType(String key)
     {
         this.key = key;
     }

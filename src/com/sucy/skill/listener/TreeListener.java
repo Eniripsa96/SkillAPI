@@ -66,17 +66,11 @@ public class TreeListener extends SkillAPIListener
             boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
             if (classes.size() > event.getSlot() && top && event.getSlot() >= 0)
             {
-
                 PlayerClass c = classes.toArray(new PlayerClass[classes.size()])[event.getSlot()];
-                data.showSkills(data.getPlayer(), c);
-                if (c.getData().getSkills().size() > 0)
-                {
-
-                }
+                if (c.getData().getSkills().size() == 0)
+                    SkillAPI.getLanguage().sendMessage(ErrorNodes.NO_SKILLS, event.getWhoClicked(), FilterType.COLOR);
                 else
-                {
-                    SkillAPI.getLanguage().sendMessage(ErrorNodes.NO_SKILLS, (Player) event.getWhoClicked(), FilterType.COLOR);
-                }
+                    data.showSkills(data.getPlayer(), c);
             }
         }
 

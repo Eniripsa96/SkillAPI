@@ -34,9 +34,10 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.example.Examples;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -58,6 +59,7 @@ public class RegistrationManager
         STARTUP,
         SKILL,
         CLASS,
+        DYNAMIC,
         DONE
     }
 
@@ -109,7 +111,6 @@ public class RegistrationManager
 
         // Request plugin skills
         mode = Mode.SKILL;
-        Examples.registerSkills(api);
         for (Plugin plugin : api.getServer().getPluginManager().getPlugins())
         {
             if (plugin instanceof SkillPlugin)
@@ -120,6 +121,7 @@ public class RegistrationManager
         }
 
         // Load dynamic skills from skills.yml
+        mode = Mode.DYNAMIC;
         if (!skillConfig.getConfig().getBoolean("loaded", false))
         {
             Logger.log(LogType.REGISTRATION, 1, "Loading dynamic skills from skills.yml...");
@@ -134,9 +136,9 @@ public class RegistrationManager
                 if (!SkillAPI.isSkillRegistered(key))
                 {
                     DynamicSkill skill = new DynamicSkill(key);
-                    api.skills.put(key.toLowerCase(), skill);
+                    api.getServer().getPluginManager().registerEvents(skill, api);
+                    api.addDynamicSkill(skill);
                     skill.load(skillConfig.getConfig().getSection(key));
-                    skill.registerEvents(api);
                     CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + key);
                     sConfig.clear();
                     skill.save(sConfig.getConfig().createSection(key));
@@ -172,9 +174,9 @@ public class RegistrationManager
                         {
                             CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + name);
                             DynamicSkill skill = new DynamicSkill(name);
-                            api.skills.put(name.toLowerCase(), skill);
+                            api.getServer().getPluginManager().registerEvents(skill, api);
+                            api.addDynamicSkill(skill);
                             skill.load(sConfig.getConfig().getSection(name));
-                            skill.registerEvents(api);
                             sConfig.clear();
                             skill.save(sConfig.getConfig().createSection(name));
                             skill.save(skillConfig.getConfig().createSection(name));
@@ -202,7 +204,6 @@ public class RegistrationManager
 
         // Request plugin classes
         mode = Mode.CLASS;
-        Examples.registerClasses(api);
         for (Plugin plugin : api.getServer().getPluginManager().getPlugins())
         {
             if (plugin instanceof SkillPlugin)
@@ -353,6 +354,9 @@ public class RegistrationManager
                 skill.save(config);
                 singleFile.save();
 
+                if (skill instanceof Listener)
+                    Bukkit.getServer().getPluginManager().registerEvents((Listener) skill, api);
+
                 // Skill is ready to be registered
                 return skill;
             }
@@ -427,5 +431,13 @@ public class RegistrationManager
         }
 
         return null;
+    }
+
+    /**
+     * @return true if registering dynamic skills, false otherwise
+     */
+    public boolean isAddingDynamicSkills()
+    {
+        return mode == Mode.DYNAMIC;
     }
 }

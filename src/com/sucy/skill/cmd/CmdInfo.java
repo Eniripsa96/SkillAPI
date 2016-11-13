@@ -114,7 +114,7 @@ public class CmdInfo implements IFunction
                     else
                     {
                         cmd.sendMessage(sender, PROFESSION, ChatColor.AQUA + "Lv{level} " + ChatColor.DARK_GREEN + "{profession}", RPGFilter.LEVEL.setReplacement(profession.getLevel() + ""), RPGFilter.PROFESSION.setReplacement(profession.getData().getName()));
-                        cmd.sendMessage(sender, EXP, ChatColor.AQUA + "Exp " + ChatColor.DARK_GREEN + "{exp}", RPGFilter.EXP.setReplacement((int) profession.getExp() + "/" + (int) profession.getRequiredExp()));
+                        cmd.sendMessage(sender, EXP, ChatColor.AQUA + "Exp " + ChatColor.DARK_GREEN + "{exp}", RPGFilter.EXP.setReplacement((int) profession.getExp() + "/" + profession.getRequiredExp()));
                     }
                 }
             }

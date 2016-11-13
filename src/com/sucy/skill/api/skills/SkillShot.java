@@ -43,5 +43,5 @@ public interface SkillShot
      *
      * @return true if could cast, false otherwise
      */
-    public boolean cast(LivingEntity user, int level);
+    boolean cast(LivingEntity user, int level);
 }

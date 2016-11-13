@@ -42,6 +42,7 @@ import com.sucy.skill.data.io.ConfigIO;
 import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.data.io.SQLIO;
 import com.sucy.skill.dynamic.DynamicClass;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
@@ -76,10 +77,10 @@ public class SkillAPI extends JavaPlugin
 {
     private static SkillAPI singleton;
 
-    public final HashMap<String, Skill>          skills  = new HashMap<String, Skill>();
-    public final HashMap<String, RPGClass>       classes = new HashMap<String, RPGClass>();
-    public final HashMap<String, PlayerAccounts> players = new HashMap<String, PlayerAccounts>();
-    public final ArrayList<String>               groups  = new ArrayList<String>();
+    private final HashMap<String, Skill>          skills  = new HashMap<String, Skill>();
+    private final HashMap<String, RPGClass>       classes = new HashMap<String, RPGClass>();
+    private final HashMap<String, PlayerAccounts> players = new HashMap<String, PlayerAccounts>();
+    private final ArrayList<String>               groups  = new ArrayList<String>();
 
     private CommentedLanguageConfig language;
     private Settings                settings;
@@ -575,6 +576,20 @@ public class SkillAPI extends JavaPlugin
     public static List<String> getGroups()
     {
         return singleton().groups;
+    }
+
+    /**
+     * This adds a dynamic skill to the skill list. This should
+     * not be called by other plugins.
+     *
+     * @param skill the dynamic skill to register
+     */
+    public void addDynamicSkill(DynamicSkill skill)
+    {
+        if (registrationManager.isAddingDynamicSkills())
+            skills.put(skill.getName().toLowerCase(), skill);
+        else
+            throw new IllegalStateException("Cannot add dynamic skills from outside SkillAPI");
     }
 
     /**

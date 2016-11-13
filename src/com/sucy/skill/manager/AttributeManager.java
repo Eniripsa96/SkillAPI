@@ -332,7 +332,7 @@ public class AttributeManager
         }
 
         /**
-         * Loads a dynamic group globals settings into the given hashmap
+         * Loads a dynamic group globals settings into the given map
          *
          * @param data   config data to load from
          * @param target target map to store the data in

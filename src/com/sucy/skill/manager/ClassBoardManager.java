@@ -87,35 +87,42 @@ public class ClassBoardManager
      */
     public static void update(PlayerData player, String prefix, ChatColor braceColor)
     {
-        // Give a chat prefix
-        Chat.getPlayerData(player.getPlayerName()).setPluginPrefix(
-            new Prefix("SkillAPI", prefix, braceColor)
-        );
-
-        // Clear previous data
-        BoardManager.getPlayerBoards(player.getPlayerName()).removeBoards("SkillAPI");
-        BoardManager.clearTeam(player.getPlayerName());
-
-        // Apply new data
-        if (SkillAPI.getSettings().isShowScoreboard())
+        try
         {
-            for (PlayerClass c : player.getClasses())
+            // Give a chat prefix
+            Chat.getPlayerData(player.getPlayerName()).setPluginPrefix(
+                new Prefix("SkillAPI", prefix, braceColor)
+            );
+
+            // Clear previous data
+            BoardManager.getPlayerBoards(player.getPlayerName()).removeBoards("SkillAPI");
+            BoardManager.clearTeam(player.getPlayerName());
+
+            // Apply new data
+            if (SkillAPI.getSettings().isShowScoreboard())
             {
-                if (c.getData().getGroupSettings().isShowScoreboard())
+                for (PlayerClass c : player.getClasses())
                 {
-                    StatBoard board = new StatBoard(c.getData().getPrefix(), "SkillAPI");
-                    board.addStats(new PlayerStats(c));
-                    BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
+                    if (c.getData().getGroupSettings().isShowScoreboard())
+                    {
+                        StatBoard board = new StatBoard(c.getData().getPrefix(), "SkillAPI");
+                        board.addStats(new PlayerStats(c));
+                        BoardManager.getPlayerBoards(player.getPlayerName()).addBoard(board);
+                    }
                 }
             }
+            if (SkillAPI.getSettings().isShowClassName())
+            {
+                BoardManager.setTeam(player.getPlayerName(), player.getMainClass().getData().getName());
+            }
+            if (SkillAPI.getSettings().isShowClassLevel())
+            {
+                BoardManager.setBelowNameScore(player.getPlayerName(), player.getMainClass().getLevel());
+            }
         }
-        if (SkillAPI.getSettings().isShowClassName())
+        catch (Exception ex)
         {
-            BoardManager.setTeam(player.getPlayerName(), player.getMainClass().getData().getName());
-        }
-        if (SkillAPI.getSettings().isShowClassLevel())
-        {
-            BoardManager.setBelowNameScore(player.getPlayerName(), player.getMainClass().getLevel());
+            ex.printStackTrace();
         }
     }
 

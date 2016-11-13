@@ -265,7 +265,7 @@ public class BlockMechanic extends EffectComponent
     {
         private ArrayList<Location> locs;
 
-        public RevertTask(ArrayList<Location> locs)
+        RevertTask(ArrayList<Location> locs)
         {
             this.locs = locs;
         }

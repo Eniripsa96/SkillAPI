@@ -144,6 +144,7 @@ public class SkillAPI extends JavaPlugin
         listen(new BarListener(), settings.isSkillBarEnabled());
         listen(new ClickListener(), settings.isCombosEnabled());
         listen(new AttributeListener(), settings.isAttributesEnabled());
+        listen(new DeathListener(), !VersionManager.isVersionAtLeast(11000));
 
         if (settings.isMapTreeAvailable())
             Menu.initialize(this);

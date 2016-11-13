@@ -166,7 +166,7 @@ public class KillListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPhysical(PhysicalDamageEvent event)
     {
         if (event.getDamager() instanceof Player)
@@ -178,7 +178,7 @@ public class KillListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpell(SkillDamageEvent event)
     {
         if (event.getDamager() instanceof Player)
@@ -190,7 +190,7 @@ public class KillListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTrue(TrueDamageEvent event)
     {
         if (event.getDamager() instanceof Player)

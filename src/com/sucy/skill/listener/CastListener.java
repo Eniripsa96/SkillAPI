@@ -135,6 +135,7 @@ public class CastListener extends SkillAPIListener
     public void onClose(InventoryCloseEvent event)
     {
         SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().restore((Player)event.getPlayer());
+        init((Player)event.getPlayer());
     }
 
     /**

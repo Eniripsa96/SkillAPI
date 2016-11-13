@@ -38,15 +38,15 @@ public class Examples
         api.addSkills(
 
             // Psykin skills
-            new Retribution(),
-            new Rupture()
+            //new Retribution(),
+            //new Rupture()
         );
     }
 
     public static void registerClasses(SkillAPI api)
     {
         api.addClasses(
-            new Psykin()
+            //new Psykin()
         );
     }
 }

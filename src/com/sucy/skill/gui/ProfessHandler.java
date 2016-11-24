@@ -27,7 +27,10 @@
 package com.sucy.skill.gui;
 
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.tools.GUIHolder;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ProfessHandler extends GUIHolder<RPGClass>
@@ -41,7 +44,7 @@ public class ProfessHandler extends GUIHolder<RPGClass>
     @Override
     protected void onClick(RPGClass type, int slot, boolean left, boolean shift)
     {
-        player.profess(type);
         player.getPlayer().closeInventory();
+        CmdManager.PROFESS_COMMAND.execute(player.getPlayer(), new String[] { type.getName() });
     }
 }

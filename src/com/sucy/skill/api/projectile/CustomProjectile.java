@@ -136,7 +136,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
             if (entity == thrower)
                 continue;
 
-            if (dSq(getLocation(), entity.getLocation(), entity.getLocation().add(0, entity.getEyeHeight(), 0)) < radiusSq)
+            if (getLocation().distanceSquared(entity.getLocation()) < radiusSq)
             {
                 boolean ally = Protection.isAlly(getShooter(), entity);
                 if (ally && !this.ally) continue;
@@ -144,10 +144,10 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
 
                 cancel();
                 Bukkit.getPluginManager().callEvent(hit(entity));
+
                 if (callback != null)
-                {
                     callback.callback(this, entity);
-                }
+
                 return;
             }
         }
@@ -171,33 +171,6 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
                     if (entity instanceof LivingEntity)
                         list.add((LivingEntity) entity);
         return list;
-    }
-
-    /**
-     * Segment distance squared
-     *
-     * @param p some point
-     * @param a first point of the segment
-     * @param b second point of the segment
-     *
-     * @return segment distance to the point squared
-     */
-    public static double dSq(Location p, Location a, Location b)
-    {
-        Vector av = a.toVector();
-
-        Vector ab = b.toVector().subtract(av);
-        Vector ap = p.toVector().subtract(av);
-
-        if (ap.dot(ab) < 0)
-            return ap.lengthSquared();
-
-        Vector bp = p.toVector().subtract(b.toVector());
-
-        if (bp.dot(ab) > 0)
-            return bp.lengthSquared();
-
-        return ab.crossProduct(ap).lengthSquared() / ab.lengthSquared();
     }
 
     /**

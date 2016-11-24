@@ -681,7 +681,7 @@ public abstract class RPGClass implements IconHolder
             }
         }
         for (Skill skill : skills)
-            skillMap.put(skill.getName(), skill);
+            skillMap.put(skill.getName().toLowerCase(), skill);
 
         if (SkillAPI.getSettings().isMapTreeEnabled())
         {

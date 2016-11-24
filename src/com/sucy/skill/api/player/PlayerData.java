@@ -45,6 +45,7 @@ import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.gui.AttributeHandler;
 import com.sucy.skill.gui.DetailsHandler;
+import com.sucy.skill.gui.ProfessHandler;
 import com.sucy.skill.gui.SkillHandler;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.GUINodes;
@@ -939,7 +940,7 @@ public final class PlayerData
             if (c == null || (c.getLevel() == c.getData().getMaxLevel() && c.getData().getOptions().size() > 0))
             {
                 GUITool.getProfessMenu(c == null ? null : c.getData()).show(
-                    new DetailsHandler(),
+                    new ProfessHandler(),
                     this,
                     SkillAPI.getLanguage().getMessage(
                         GUINodes.PROFESS_TITLE,
@@ -1012,7 +1013,6 @@ public final class PlayerData
             ).get(0),
             playerClass.getData().getSkillMap()
         );
-        player.openInventory(((InventoryTree) playerClass.getData().getSkillTree()).getInventory(this));
         return true;
     }
 

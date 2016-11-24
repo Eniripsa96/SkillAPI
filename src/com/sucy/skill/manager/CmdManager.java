@@ -38,6 +38,8 @@ import com.sucy.skill.data.Permissions;
  */
 public class CmdManager
 {
+    public static ConfigurableCommand PROFESS_COMMAND;
+
     private SkillAPI api;
 
     /**
@@ -72,7 +74,7 @@ public class CmdManager
             new ConfigurableCommand(api, "mana", SenderType.ANYONE, new CmdMana(), "Gives player mana", "[player] <amount>", Permissions.MANA),
             new ConfigurableCommand(api, "options", SenderType.PLAYER_ONLY, new CmdOptions(), "Views profess options", "", Permissions.BASIC),
             new ConfigurableCommand(api, "points", SenderType.ANYONE, new CmdPoints(), "Gives player points", "[player] <amount>", Permissions.POINTS),
-            new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes", "<class>", Permissions.BASIC),
+            PROFESS_COMMAND = new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes", "<class>", Permissions.BASIC),
             new ConfigurableCommand(api, "reload", SenderType.ANYONE, new CmdReload(), "Reloads the plugin", "", Permissions.RELOAD),
             new ConfigurableCommand(api, "reset", SenderType.PLAYER_ONLY, new CmdReset(), "Resets account data", "", Permissions.BASIC),
             new ConfigurableCommand(api, "skill", SenderType.PLAYER_ONLY, new CmdSkill(), "Shows player skills", "", Permissions.BASIC),

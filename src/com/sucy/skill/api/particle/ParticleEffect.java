@@ -147,6 +147,7 @@ public class ParticleEffect
      */
     public void play(Location loc, int frame, int level)
     {
+        frame = frame % animation.getSteps();
         try
         {
             int next = (frame + 1) * animation.getCopies();

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.gui;
 
+import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.tools.GUIHolder;
 import org.bukkit.entity.Player;
@@ -33,7 +34,7 @@ import org.bukkit.entity.Player;
 /**
  * Handles interactions with the class details menu
  */
-public class DetailsHandler extends GUIHolder<PlayerClass>
+public class DetailsHandler extends GUIHolder<RPGClass>
 {
     /**
      * Shows class details when clicked
@@ -42,8 +43,8 @@ public class DetailsHandler extends GUIHolder<PlayerClass>
      * @param slot slot number
      */
     @Override
-    protected void onClick(PlayerClass type, int slot, boolean left, boolean shift)
+    protected void onClick(RPGClass type, int slot, boolean left, boolean shift)
     {
-        player.showSkills(player.getPlayer(), type);
+        player.showSkills(player.getPlayer(), player.getClass(type.getGroup()));
     }
 }

@@ -143,9 +143,7 @@ public class GUIPage
         {
             IconHolder holder = data.get(entry.getValue());
             if (holder != null)
-            {
                 contents[entry.getKey()] = holder.getIcon(player);
-            }
         }
 
         return contents;

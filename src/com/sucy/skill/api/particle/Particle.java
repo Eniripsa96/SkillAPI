@@ -88,7 +88,7 @@ public class Particle
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            System.out.println("Failed to set up particles, are you using Cauldron?");
         }
     }
 

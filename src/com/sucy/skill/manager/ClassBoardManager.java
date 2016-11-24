@@ -159,6 +159,7 @@ public class ClassBoardManager
     {
         if (SkillAPI.getSettings().isShowClassLevel())
         {
+            BoardManager.init();
             BoardManager.setTextBelowNames(SkillAPI.getSettings().getLevelText());
         }
     }

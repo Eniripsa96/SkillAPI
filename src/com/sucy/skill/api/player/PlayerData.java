@@ -975,9 +975,7 @@ public final class PlayerData
 
         // Show list of classes that have skill trees
         if (classes.size() > 1)
-        {
             return showDetails(player);
-        }
 
         // Show only class's skill tree otherwise
         else return showSkills(player, classes.values().iterator().next());

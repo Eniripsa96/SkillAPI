@@ -270,6 +270,16 @@ public abstract class RPGClass implements IconHolder
      */
     public HashMap<String, Skill> getSkillMap()
     {
+        if (skillMap.isEmpty())
+        {
+            RPGClass current = this;
+            while (current != null)
+            {
+                for (Skill skill : current.skills)
+                    skillMap.put(skill.getName().toLowerCase(), skill);
+                current = current.getParent();
+            }
+        }
         return skillMap;
     }
 
@@ -680,17 +690,11 @@ public abstract class RPGClass implements IconHolder
                 else Logger.invalid("Invalid skill for class " + this.name + " - " + name);
             }
         }
-        for (Skill skill : skills)
-            skillMap.put(skill.getName().toLowerCase(), skill);
 
         if (SkillAPI.getSettings().isMapTreeEnabled())
-        {
             this.skillTree = new MapTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
-        }
         else
-        {
             this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
-        }
     }
 
     /**

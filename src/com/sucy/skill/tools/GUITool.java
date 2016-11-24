@@ -120,9 +120,7 @@ public class GUITool implements ToolMenu
         config = SkillAPI.getConfig("gui");
         DataSection data = config.getConfig();
         for (String key : data.keys())
-        {
             setups.put(key, new GUIData(data.getSection(key)));
-        }
 
         CommentedConfig itemFile = SkillAPI.getConfig("tool");
         itemFile.checkDefaults();
@@ -418,15 +416,19 @@ public class GUITool implements ToolMenu
         RPGClass current = availableClasses[classId];
         GUIPage page = guiData.getPage();
         i = 9;
-        for (Skill skill : current.getSkills())
+        while (current != null)
         {
-            int index = page.getIndex(skill.getName());
-            if (index != -1)
-                inventoryContents[index] = skill.getToolIndicator();
-            else if (!guiData.has(skill.getName()) && i < playerContents.length)
+            for (Skill skill : current.getSkills())
             {
-                playerContents[i++] = skill.getToolIndicator();
+                int index = page.getIndex(skill.getName());
+                if (index != -1)
+                    inventoryContents[index] = skill.getToolIndicator();
+                else if (!guiData.has(skill.getName()) && i < playerContents.length)
+                {
+                    playerContents[i++] = skill.getToolIndicator();
+                }
             }
+            current = current.getParent();
         }
 
         return "GUI Editor - " + availableClasses[classId].getName() + " Skill Tree";

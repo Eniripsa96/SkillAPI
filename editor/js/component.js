@@ -2641,6 +2641,9 @@ function addEffectOptions(component, optional)
     component.data.push(opt(new StringValue('Effect Key', 'effect-key', 'default')
         .setTooltip('The key to refer to the effect by. Only one effect of each key can be active at a time.')
     ));
+    component.data.push(opt(new AttributeValue('Duration', 'duration', 1, 0)
+        .setTooltip('The time to play the effect for in seconds')
+    ));
     
     component.data.push(opt(new StringValue('Shape', '-shape', 'hexagon')
         .setTooltip('Key of a formula for deciding where particles are played each iteration. View "effects.yml" for a list of defined formulas and their keys.')

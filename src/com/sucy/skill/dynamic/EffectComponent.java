@@ -27,6 +27,7 @@
 package com.sucy.skill.dynamic;
 
 import com.rit.sucy.config.parse.DataSection;
+import com.rit.sucy.mobs.MobManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.particle.ParticleEffect;
@@ -257,6 +258,39 @@ public abstract class EffectComponent
         {
             return null;
         }
+    }
+
+    protected String filter(LivingEntity caster, String text)
+    {
+        // Grab values
+        StringBuilder builder = new StringBuilder();
+        HashMap<String, Object> data = DynamicSkill.getCastData(caster);
+        int i = text.indexOf('{');
+        int j = -1;
+        while (i >= 0)
+        {
+            j = text.indexOf('}', i);
+            String key = text.substring(i + 1, j);
+            if (data.containsKey(key))
+            {
+                Object obj = data.get(key);
+                if (obj instanceof Player)
+                    obj = ((Player) obj).getName();
+                else if (obj instanceof LivingEntity)
+                    obj = MobManager.getName((LivingEntity) obj);
+                builder.append(text.substring(0, i));
+                builder.append(obj);
+                text = text.substring(0, i) + obj + text.substring(j + 1);
+            }
+            else if (key.equals("player"))
+            {
+                builder.append(text.substring(0, i));
+                builder.append(caster.getName());
+            }
+            i = text.indexOf('{', j);
+        }
+        builder.append(text.substring(j + 1));
+        return builder.toString();
     }
 
     /**

@@ -45,7 +45,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
@@ -96,21 +95,31 @@ public class MainListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event)
     {
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        unload(event.getPlayer());
+    }
+
+    /**
+     * Unloads a player's data from the server
+     *
+     * @param player player to unload
+     */
+    public static void unload(Player player)
+    {
+        PlayerData data = SkillAPI.getPlayerData(player);
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
-            data.stopPassives(event.getPlayer());
-            data.record(event.getPlayer());
+            data.stopPassives(player);
+            data.record(player);
         }
 
-        FlagManager.clearFlags(event.getPlayer());
-        BuffManager.clearData(event.getPlayer());
-        Combat.clearData(event.getPlayer());
-        DynamicSkill.clearCastData(event.getPlayer());
+        FlagManager.clearFlags(player);
+        BuffManager.clearData(player);
+        Combat.clearData(player);
+        DynamicSkill.clearCastData(player);
 
-        event.getPlayer().setDisplayName(event.getPlayer().getName());
-        event.getPlayer().setMaxHealth(20);
-        SkillAPI.unloadPlayerData(event.getPlayer());
+        player.setDisplayName(player.getName());
+        player.setMaxHealth(20);
+        SkillAPI.unloadPlayerData(player);
     }
 
     /**

@@ -56,31 +56,12 @@ public class MessageMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         if (targets.size() == 0 || !settings.has(MESSAGE))
-        {
             return false;
-        }
 
         String message = TextFormatter.colorString(settings.getString(MESSAGE));
         if (message == null) return false;
 
-        // Grab values
-        HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        int i = message.indexOf('{');
-        while (i >= 0)
-        {
-            int j = message.indexOf('}', i);
-            String key = message.substring(i + 1, j);
-            if (data.containsKey(key))
-            {
-                Object obj = data.get(key);
-                if (obj instanceof Player)
-                    obj = ((Player) obj).getName();
-                else if (obj instanceof LivingEntity)
-                    obj = MobManager.getName((LivingEntity) obj);
-                message = message.substring(0, i) + obj + message.substring(j + 1);
-            }
-            i = message.indexOf('{', j);
-        }
+        message = filter(caster, message);
 
         // Display message
         boolean worked = false;

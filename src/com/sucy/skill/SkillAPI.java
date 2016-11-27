@@ -48,6 +48,7 @@ import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.gui.Menu;
+import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
@@ -59,7 +60,6 @@ import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -119,7 +119,8 @@ public class SkillAPI extends JavaPlugin
         language.save();
 
         // Hook plugins
-        PluginChecker.isVaultActive();
+        if (PluginChecker.isBungeeActive())
+            BungeeHook.init(this);
 
         // Set up managers
         comboManager = new ComboManager();

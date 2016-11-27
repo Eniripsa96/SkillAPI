@@ -26,11 +26,14 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.rit.sucy.mobs.MobManager;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -67,18 +70,17 @@ public class CommandMechanic extends EffectComponent
             {
                 Player p = (Player) t;
                 worked = true;
-                String filtered = command.replace("{player}", p.getName());
+
+                command = filter(caster, command);
                 if (type.equals("op"))
                 {
                     boolean op = p.isOp();
                     p.setOp(true);
-                    Bukkit.getServer().dispatchCommand(p, filtered);
+                    Bukkit.getServer().dispatchCommand(p, command);
                     p.setOp(op);
                 }
                 else
-                {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), filtered);
-                }
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
             }
         }
 

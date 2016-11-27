@@ -347,7 +347,7 @@ public final class PlayerSkill
      */
     public void subtractCooldown(double seconds)
     {
-        cooldown -= seconds * 1000;
+       addCooldown(-seconds);
     }
 
     /**

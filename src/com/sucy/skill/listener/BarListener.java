@@ -29,7 +29,6 @@ package com.sucy.skill.listener;
 import com.rit.sucy.gui.MapData;
 import com.rit.sucy.gui.MapMenu;
 import com.rit.sucy.gui.MapMenuManager;
-import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
@@ -38,20 +37,17 @@ import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
-import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.gui.SkillDetailMenu;
 import com.sucy.skill.gui.SkillListMenu;
-import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 
 /**
@@ -221,69 +217,25 @@ public class BarListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onAssign(InventoryClickEvent event)
+    public void onToggle(InventoryClickEvent event)
     {
-        // Players without a class aren't effected
-        PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
-        if (!data.hasClass())
+        if (event.getClick() != ClickType.RIGHT)
             return;
 
-        // Disabled skill bars aren't affected either
+        // Must click on an active skill bar
+        PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
         final PlayerSkillBar skillBar = data.getSkillBar();
         if (!skillBar.isSetup())
             return;
 
-        boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
-
         // Prevent moving skill icons
-        if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
-        {
-            if (!skillBar.isWeaponSlot(event.getHotbarButton()) || !skillBar.isWeaponSlot(event.getSlot()))
-                event.setCancelled(true);
-        }
-        else if (!top && event.getSlot() < 9)
+        if (event.getRawSlot() < 9 && event.getSlotType() != InventoryType.SlotType.OUTSIDE)
         {
             int slot = event.getSlot();
-            if (slot < 9 && slot >= 0)
+            if (!skillBar.isWeaponSlot(slot) || (skillBar.isWeaponSlot(slot) && (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)))
             {
-                if (!skillBar.isWeaponSlot(slot))
-                {
-                    event.setCancelled(true);
-                }
-                if (event.getClick() == ClickType.RIGHT)
-                {
-                    if (!skillBar.isWeaponSlot(slot) || (skillBar.isWeaponSlot(slot) && (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)))
-                    {
-                        event.setCancelled(true);
-                        skillBar.toggleSlot(slot);
-                    }
-                }
-            }
-        }
-
-        // Make sure it's the right type of click action
-        if (event.getAction() != InventoryAction.HOTBAR_MOVE_AND_READD && event.getAction() != InventoryAction.HOTBAR_SWAP)
-            return;
-
-        // Must be a skill tree
-        if (InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY))
-        {
-            InventoryTree tree = (InventoryTree) SkillAPI.getClass(data.getShownClassName()).getSkillTree();
-
-            // Must be hovering over a skill
-            if (tree.isSkill(event.getWhoClicked(), event.getRawSlot()))
-            {
-                Skill skill = tree.getSkill(event.getRawSlot());
-
-                // Must be an active skill
-                if (skill.canCast())
-                {
-                    // Assign the skill if the player has it
-                    if (data.hasSkill(skill.getName()))
-                    {
-                        skillBar.assign(data.getSkill(skill.getName()), event.getHotbarButton());
-                    }
-                }
+                event.setCancelled(true);
+                skillBar.toggleSlot(slot);
             }
         }
     }

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.projectile;
 
+import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.api.particle.target.Followable;
 import com.rit.sucy.player.Protection;
 import org.bukkit.Bukkit;
@@ -39,6 +40,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,13 +51,35 @@ import java.util.List;
  */
 public abstract class CustomProjectile extends BukkitRunnable implements Metadatable, Followable
 {
+    private static Constructor<?> aabbConstructor;
+    private static Method         getEntities;
+    private static Method         getBukkitEntity;
+    private static Method         getHandle;
+
+    static {
+        try
+        {
+            Class<?> aabbClass = Reflection.getNMSClass("AxisAlignedBB");
+            Class<?> entityClass = Reflection.getNMSClass("Entity");
+            aabbConstructor = aabbClass.getConstructor(double.class, double.class, double.class, double.class, double.class, double.class);
+            getEntities = Reflection.getNMSClass("World").getDeclaredMethod("getEntities", entityClass, aabbClass);
+            getBukkitEntity = entityClass.getDeclaredMethod("getBukkitEntity");
+            getHandle = Reflection.getCraftClass("CraftWorld").getDeclaredMethod("getHandle");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
     private final HashMap<String, List<MetadataValue>> metadata = new HashMap<String, List<MetadataValue>>();
 
-    protected ProjectileCallback callback;
-    protected LivingEntity       thrower;
-    protected boolean enemy = true;
-    protected boolean ally  = false;
-    protected boolean valid = true;
+    private ProjectileCallback callback;
+    private LivingEntity       thrower;
+
+    private boolean enemy = true;
+    private boolean ally  = false;
+    private boolean valid = true;
 
     /**
      * Constructs a new custom projectile and starts its timer task
@@ -128,35 +153,74 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
      */
     protected void checkCollision()
     {
-        double radiusSq = getCollisionRadius();
-        radiusSq *= radiusSq;
-
-        for (LivingEntity entity : getNearbyEntities())
+        for (LivingEntity entity : getColliding())
         {
-            if (entity == thrower)
-                continue;
+            boolean ally = Protection.isAlly(getShooter(), entity);
+            if (ally && !this.ally) continue;
+            if (!ally && !this.enemy) continue;
 
-            if (getLocation().distanceSquared(entity.getLocation()) < radiusSq)
+            cancel();
+            Bukkit.getPluginManager().callEvent(hit(entity));
+
+            if (callback != null)
+                callback.callback(this, entity);
+
+            return;
+        }
+    }
+
+    /**
+     * @return list of entities colliding with the projectile
+     */
+    private List<LivingEntity> getColliding()
+    {
+        // Reflection for nms collision
+        List<LivingEntity> result = new ArrayList<LivingEntity>(1);
+        try
+        {
+            Object nmsWorld = getHandle.invoke(getLocation().getWorld());
+            Object list = getEntities.invoke(nmsWorld, null, getBoundingBox());
+            for (Object item : (List) list)
             {
-                boolean ally = Protection.isAlly(getShooter(), entity);
-                if (ally && !this.ally) continue;
-                if (!ally && !this.enemy) continue;
-
-                cancel();
-                Bukkit.getPluginManager().callEvent(hit(entity));
-
-                if (callback != null)
-                    callback.callback(this, entity);
-
-                return;
+                Object bukkit = getBukkitEntity.invoke(item);
+                if (bukkit instanceof LivingEntity)
+                    result.add((LivingEntity) bukkit);
             }
         }
+        // Fallback when reflection fails
+        catch (Exception ex)
+        {
+            double radiusSq = getCollisionRadius();
+            radiusSq *= radiusSq;
+            for (LivingEntity entity : getNearbyEntities())
+            {
+                if (entity == thrower)
+                    continue;
+
+                if (getLocation().distanceSquared(entity.getLocation()) < radiusSq)
+                    result.add(entity);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return NMS bounding box of the projectile
+     */
+    private Object getBoundingBox() throws Exception
+    {
+        Location loc = getLocation();
+        double rad = getCollisionRadius();
+        return aabbConstructor.newInstance(
+            loc.getX() - rad, loc.getY() - rad, loc.getZ() - rad,
+            loc.getX() + rad, loc.getY() + rad, loc.getZ() + rad
+        );
     }
 
     /**
      * @return list of nearby living entities
      */
-    protected List<LivingEntity> getNearbyEntities()
+    private List<LivingEntity> getNearbyEntities()
     {
         List<LivingEntity> list = new ArrayList<LivingEntity>();
         Location loc = getLocation();

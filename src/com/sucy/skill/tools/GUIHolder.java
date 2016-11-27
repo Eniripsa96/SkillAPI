@@ -28,6 +28,7 @@ package com.sucy.skill.tools;
 
 import com.sucy.skill.api.player.PlayerData;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -86,7 +87,10 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
         String result = gui.getPage(page).get(event.getSlot());
         if (top && result != null && data.containsKey(result))
         {
-            onClick((T)data.get(result), event.getSlot(), event.isLeftClick(), event.isShiftClick());
+            if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.HOTBAR_SWAP)
+                onHotBar((T)data.get(result), event.getSlot(), event.getHotbarButton());
+            else
+                onClick((T)data.get(result), event.getSlot(), event.isLeftClick(), event.isShiftClick());
         }
     }
 
@@ -96,6 +100,8 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
     }
 
     protected abstract void onClick(T type, int slot, boolean left, boolean shift);
+
+    protected void onHotBar(T type, int from, int to) { }
 
     protected void onSetup() { }
 

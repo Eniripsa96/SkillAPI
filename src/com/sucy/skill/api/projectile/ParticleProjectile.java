@@ -204,16 +204,6 @@ public class ParticleProjectile extends CustomProjectile
     }
 
     /**
-     * Sets the callback handler for the projectile
-     *
-     * @param callback callback handler
-     */
-    public void setCallback(ProjectileCallback callback)
-    {
-        this.callback = callback;
-    }
-
-    /**
      * Fires a spread of projectiles from the location.
      *
      * @param shooter  entity shooting the projectiles

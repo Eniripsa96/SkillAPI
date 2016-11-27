@@ -53,22 +53,23 @@ public abstract class IOManager
         ACCOUNT_PREFIX = "acc",
         HEALTH         = "health",
         MANA           = "mana",
-        CLASSES        = "classes",
-        SKILLS         = "skills",
-        BINDS          = "binds",
-        LEVEL          = "level",
-        SCHEME         = "scheme",
-        EXP            = "exp",
-        POINTS         = "points",
-        SKILL_BAR      = "bar",
-        HOVER          = "hover",
-        INSTANT        = "instant",
-        ENABLED        = "enabled",
-        SLOTS          = "slots",
-        UNASSIGNED     = "e",
-        COMBOS         = "combos",
-        ATTRIBS        = "attribs",
-        ATTRIB_POINTS  = "attrib-points";
+        CLASSES       = "classes",
+        SKILLS        = "skills",
+        BINDS         = "binds",
+        LEVEL         = "level",
+        SCHEME        = "scheme",
+        EXP           = "exp",
+        POINTS        = "points",
+        SKILL_BAR     = "bar",
+        HOVER         = "hover",
+        INSTANT       = "instant",
+        ENABLED       = "enabled",
+        SLOTS         = "slots",
+        UNASSIGNED    = "e",
+        COMBOS        = "combos",
+        ATTRIBS       = "attribs",
+        COOLDOWN      = "cd",
+        ATTRIB_POINTS = "attrib-points";
 
     /**
      * API reference
@@ -173,6 +174,7 @@ public abstract class IOManager
                     {
                         skillData.addLevels(skill.getInt(LEVEL));
                         skillData.addPoints(skill.getInt(POINTS));
+                        skillData.addCooldown(skill.getInt(COOLDOWN, 0));
                     }
                 }
             }
@@ -309,6 +311,8 @@ public abstract class IOManager
                     DataSection skillSection = skills.createSection(skill.getData().getName());
                     skillSection.set(LEVEL, skill.getLevel());
                     skillSection.set(POINTS, skill.getPoints());
+                    if (skill.isOnCooldown())
+                        skillSection.set(COOLDOWN, skill.getCooldown());
                 }
 
                 // Save binds

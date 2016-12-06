@@ -216,12 +216,9 @@ public class BarListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onToggle(InventoryClickEvent event)
     {
-        if (event.getClick() != ClickType.RIGHT)
-            return;
-
         // Must click on an active skill bar
         PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
         final PlayerSkillBar skillBar = data.getSkillBar();
@@ -229,10 +226,13 @@ public class BarListener extends SkillAPIListener
             return;
 
         // Prevent moving skill icons
-        if (event.getRawSlot() < 9 && event.getSlotType() != InventoryType.SlotType.OUTSIDE)
+        if (event.getSlotType() == InventoryType.SlotType.QUICKBAR)
         {
             int slot = event.getSlot();
-            if (!skillBar.isWeaponSlot(slot) || (skillBar.isWeaponSlot(slot) && (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)))
+            if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT)
+                event.setCancelled(!skillBar.isWeaponSlot(slot));
+            else if ((event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.SHIFT_RIGHT)
+                && (!skillBar.isWeaponSlot(slot) || (skillBar.isWeaponSlot(slot) && (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR))))
             {
                 event.setCancelled(true);
                 skillBar.toggleSlot(slot);

@@ -179,7 +179,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         if (components.containsKey(Trigger.CROUCH))
             manager.registerEvent(PlayerToggleSneakEvent.class, this, p, CrouchExecutor.instance, plugin, true);
         if (components.containsKey(Trigger.DEATH))
-            manager.registerEvent(EntityDeathEvent.class, this, p, CrouchExecutor.instance, plugin, true);
+            manager.registerEvent(EntityDeathEvent.class, this, p, DeathExecutor.instance, plugin, true);
         if (components.containsKey(Trigger.ENVIRONMENT_DAMAGE))
             manager.registerEvent(EntityDamageEvent.class, this, p, EnvironmentExecutor.instance, plugin, true);
         if (components.containsKey(Trigger.KILL))

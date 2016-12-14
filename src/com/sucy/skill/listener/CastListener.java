@@ -36,7 +36,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -128,14 +127,14 @@ public class CastListener extends SkillAPIListener
     @EventHandler
     public void onOpen(InventoryOpenEvent event)
     {
-        SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().handleOpen((Player)event.getPlayer());
+        SkillAPI.getPlayerData((Player) event.getPlayer()).getCastBars().handleOpen((Player) event.getPlayer());
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent event)
     {
-        SkillAPI.getPlayerData((Player)event.getPlayer()).getCastBars().restore((Player)event.getPlayer());
-        init((Player)event.getPlayer());
+        SkillAPI.getPlayerData((Player) event.getPlayer()).getCastBars().restore((Player) event.getPlayer());
+        init((Player) event.getPlayer());
     }
 
     /**
@@ -185,7 +184,7 @@ public class CastListener extends SkillAPIListener
         if (bars.handleInteract(event.getPlayer()))
             event.setCancelled(true);
 
-        // Entering a view
+            // Entering a view
         else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
             event.setCancelled(true);
@@ -205,10 +204,12 @@ public class CastListener extends SkillAPIListener
     private class OrganizerTask extends ThreadTask
     {
         private Player player;
+
         public OrganizerTask(Player player)
         {
             this.player = player;
         }
+
         @Override
         public void run()
         {

@@ -48,6 +48,6 @@ public class LaunchExecutor implements EventExecutor
     @Override
     public void execute(Listener listener, Event event)
     {
-        ((DynamicSkill)listener).onLaunch((ProjectileLaunchEvent)event);
+        ((DynamicSkill) listener).onLaunch((ProjectileLaunchEvent) event);
     }
 }

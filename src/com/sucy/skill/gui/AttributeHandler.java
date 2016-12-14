@@ -50,8 +50,8 @@ public class AttributeHandler extends GUIHolder<AttributeManager.Attribute>
         if (left)
             if (player.upAttribute(type.getKey()))
                 setPage(page);
-        else if ((SkillAPI.getSettings().isAttributesDowngrade() || player.getAttribute(type.getKey()) > start.get(type.getKey()))
+            else if ((SkillAPI.getSettings().isAttributesDowngrade() || player.getAttribute(type.getKey()) > start.get(type.getKey()))
                 && player.refundAttribute(type.getKey()))
-            setPage(page);
+                setPage(page);
     }
 }

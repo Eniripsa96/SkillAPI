@@ -48,10 +48,11 @@ public class Tan implements IValue
      * Gets the value using the inputs
      *
      * @param input the input data
+     *
      * @return result value
      */
     @Override
-    public double compute(double ... input)
+    public double compute(double... input)
     {
         return Math.tan(formula.compute(input) * Formula.DEG_TO_RAD);
     }

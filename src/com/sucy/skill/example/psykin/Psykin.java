@@ -84,6 +84,6 @@ public class Psykin extends RPGClass implements Listener
     {
         LivingEntity offender = ListenerUtil.getDamager(event);
         if (offender != null)
-            DynamicSkill.getCastData((LivingEntity)event.getEntity()).put(OFFENDER, offender);
+            DynamicSkill.getCastData((LivingEntity) event.getEntity()).put(OFFENDER, offender);
     }
 }

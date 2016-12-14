@@ -28,21 +28,17 @@ package com.sucy.skill.tools;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.log.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class GUIData
 {
     private static final String
-        ROWS = "rows",
+        ROWS  = "rows",
         PAGES = "pages",
         SLOTS = "slots";
 

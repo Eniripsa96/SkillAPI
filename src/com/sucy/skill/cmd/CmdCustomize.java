@@ -28,7 +28,6 @@ package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
-import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.tools.GUITool;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,7 +37,7 @@ public class CmdCustomize implements IFunction
 {
     public static final String CUSTOMIZE = "sapiCustomGUI";
 
-    private static final String NOT_PLAYER   = "not-player";
+    private static final String NOT_PLAYER = "not-player";
 
     /**
      * Executes the command
@@ -54,6 +53,6 @@ public class CmdCustomize implements IFunction
         if (!(sender instanceof Player))
             command.sendMessage(sender, NOT_PLAYER, "&4Only players can use this command");
         else
-            new GUITool((Player)sender).open();
+            new GUITool((Player) sender).open();
     }
 }

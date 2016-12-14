@@ -27,9 +27,7 @@
 package com.sucy.skill.gui;
 
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.tools.GUIHolder;
-import org.bukkit.entity.Player;
 
 /**
  * Handles interactions with the class details menu

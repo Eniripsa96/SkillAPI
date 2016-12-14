@@ -48,6 +48,6 @@ public class DeathExecutor implements EventExecutor
     @Override
     public void execute(Listener listener, Event event)
     {
-        ((DynamicSkill)listener).onDeath((EntityDeathEvent)event);
+        ((DynamicSkill) listener).onDeath((EntityDeathEvent) event);
     }
 }

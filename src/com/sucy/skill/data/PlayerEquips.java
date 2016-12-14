@@ -50,8 +50,8 @@ public class PlayerEquips
 
     private PlayerData player;
 
-    private EquipData   empty   = new EquipData();
-    private EquipData   weapon  = empty;
+    private EquipData empty  = new EquipData();
+    private EquipData weapon = empty;
     private EquipData[] other;
 
     /**
@@ -92,6 +92,7 @@ public class PlayerEquips
      * @param inv   inventory to manage
      * @param index related index
      * @param from  old equip data
+     *
      * @return the used equip data
      */
     private EquipData swap(PlayerInventory inv, int index, EquipData from)
@@ -106,7 +107,8 @@ public class PlayerEquips
         if (!to.isMet())
         {
             inv.setItem(index, TEMP);
-            inv.addItem(to.item);
+            for (ItemStack item : inv.addItem(to.item).values())
+                inv.getHolder().getWorld().dropItemNaturally(inv.getHolder().getLocation(), item);
             inv.setItem(index, null);
             return from;
         }
@@ -140,6 +142,7 @@ public class PlayerEquips
      * Makes data for the ItemStack if needed
      *
      * @param item item to make for
+     *
      * @return item data
      */
     private EquipData make(ItemStack item)
@@ -163,19 +166,19 @@ public class PlayerEquips
         private HashSet<String> classExc;
 
         private ItemStack item;
-        private int levelReq;
+        private int       levelReq;
 
         /**
          * Sets up for an empty item slot
          */
-        public EquipData() { }
+        EquipData() { }
 
         /**
          * Scans an items for bonuses or requirements
          *
          * @param item item to grab data from
          */
-        public EquipData(ItemStack item)
+        EquipData(ItemStack item)
         {
             this.item = item;
 
@@ -205,7 +208,7 @@ public class PlayerEquips
                 else if (lower.startsWith(classText))
                     classReq = new HashSet<String>(Arrays.asList(lower.substring(classText.length()).split(", ")));
 
-                // Excluded classes
+                    // Excluded classes
                 else if (lower.startsWith(excludeText))
                     classExc = new HashSet<String>(Arrays.asList(lower.substring(excludeText.length()).split(", ")));
 
@@ -274,7 +277,7 @@ public class PlayerEquips
         /**
          * Reverts bonus attributes for the item
          */
-        public void revert()
+        void revert()
         {
             if (attribs != null)
                 for (Map.Entry<String, Integer> entry : attribs.entrySet())
@@ -286,12 +289,13 @@ public class PlayerEquips
          *
          * @return true if conditions are met
          */
-        public boolean isMet()
+        boolean isMet()
         {
             PlayerClass main = player.getMainClass();
+            String className = main == null ? "null" : main.getData().getName().toLowerCase();
             if ((levelReq > 0 && (main == null || main.getLevel() < levelReq))
-                || (classExc != null && main != null && classExc.contains(main.getData().getName()))
-                || (classReq != null && (main == null || !classReq.contains(main.getData().getName()))))
+                || (classExc != null && main != null && classExc.contains(className))
+                || (classReq != null && (main == null || !classReq.contains(className))))
                 return false;
 
             if (skillReq != null)

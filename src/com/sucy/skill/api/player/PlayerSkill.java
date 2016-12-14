@@ -31,10 +31,8 @@ import com.sucy.skill.api.enums.SkillStatus;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorSettings;
-import com.sucy.skill.tools.IconHolder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -347,7 +345,7 @@ public final class PlayerSkill
      */
     public void subtractCooldown(double seconds)
     {
-       addCooldown(-seconds);
+        addCooldown(-seconds);
     }
 
     /**
@@ -393,7 +391,9 @@ public final class PlayerSkill
      * Makes the packets for active indicators
      *
      * @param step animation step
+     *
      * @return packet list
+     *
      * @throws Exception
      */
     public List<Object> makePackets(int step)

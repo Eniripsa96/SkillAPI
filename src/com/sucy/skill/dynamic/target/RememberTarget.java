@@ -32,7 +32,6 @@ import com.sucy.skill.cast.IndicatorType;
 import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
-import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

@@ -34,7 +34,9 @@ import java.util.List;
 public interface IIndicator
 {
     public void moveTo(Location loc);
+
     public void moveTo(double x, double y, double z);
+
     public void makePackets(List<Object> packets, ParticleSettings particle, int step)
         throws Exception;
 }

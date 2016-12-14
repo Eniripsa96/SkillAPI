@@ -27,9 +27,6 @@
 package com.sucy.skill.example;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.example.psykin.Psykin;
-import com.sucy.skill.example.psykin.Retribution;
-import com.sucy.skill.example.psykin.Rupture;
 
 public class Examples
 {

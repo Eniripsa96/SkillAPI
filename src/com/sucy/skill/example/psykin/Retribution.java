@@ -49,7 +49,7 @@ public class Retribution extends Skill implements SkillShot
     public static final String NAME = "Retribution";
 
     private static final String CHARGE = "retribution-charge";
-    private static final String SPIKE = "retribution-spike";
+    private static final String SPIKE  = "retribution-spike";
 
     private static final String DAMAGE = "damage";
     private static final String RADIUS = "radius";

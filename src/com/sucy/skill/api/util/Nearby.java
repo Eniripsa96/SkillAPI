@@ -44,16 +44,17 @@ public class Nearby
      *
      * @param loc    location centered around
      * @param radius radius to get within
+     *
      * @return nearby entities
      */
     public static List<Entity> getNearby(Location loc, double radius)
     {
         List<Entity> result = new ArrayList<Entity>();
 
-        int minX = (int)(loc.getX() - radius) >> 4;
-        int maxX = (int)(loc.getX() + radius) >> 4;
-        int minZ = (int)(loc.getZ() - radius) >> 4;
-        int maxZ = (int)(loc.getZ() + radius) >> 4;
+        int minX = (int) (loc.getX() - radius) >> 4;
+        int maxX = (int) (loc.getX() + radius) >> 4;
+        int minZ = (int) (loc.getZ() - radius) >> 4;
+        int maxZ = (int) (loc.getZ() + radius) >> 4;
 
         for (int i = minX; i <= maxX; i++)
             for (int j = minZ; j <= maxZ; j++)
@@ -69,16 +70,17 @@ public class Nearby
      *
      * @param loc    location centered around
      * @param radius radius to get within
+     *
      * @return nearby entities
      */
     public static List<LivingEntity> getLivingNearby(Location loc, double radius)
     {
         List<LivingEntity> result = new ArrayList<LivingEntity>();
 
-        int minX = (int)(loc.getX() - radius) >> 4;
-        int maxX = (int)(loc.getX() + radius) >> 4;
-        int minZ = (int)(loc.getZ() - radius) >> 4;
-        int maxZ = (int)(loc.getZ() + radius) >> 4;
+        int minX = (int) (loc.getX() - radius) >> 4;
+        int maxX = (int) (loc.getX() + radius) >> 4;
+        int minZ = (int) (loc.getZ() - radius) >> 4;
+        int maxZ = (int) (loc.getZ() + radius) >> 4;
 
         radius *= radius;
 
@@ -96,6 +98,7 @@ public class Nearby
      *
      * @param entity entity to get nearby ones for
      * @param radius radius to get within
+     *
      * @return nearby entities
      */
     public static List<Entity> getNearby(Entity entity, double radius)
@@ -108,6 +111,7 @@ public class Nearby
      *
      * @param entity entity to get nearby ones for
      * @param radius radius to get within
+     *
      * @return nearby entities
      */
     public static List<LivingEntity> getLivingNearby(Entity entity, double radius)
@@ -119,10 +123,10 @@ public class Nearby
     {
         List<Entity> result = new ArrayList<Entity>();
 
-        int minX = (int)(loc.getX() - radius) >> 4;
-        int maxX = (int)(loc.getX() + radius) >> 4;
-        int minZ = (int)(loc.getZ() - radius) >> 4;
-        int maxZ = (int)(loc.getZ() + radius) >> 4;
+        int minX = (int) (loc.getX() - radius) >> 4;
+        int maxX = (int) (loc.getX() + radius) >> 4;
+        int minZ = (int) (loc.getZ() - radius) >> 4;
+        int maxZ = (int) (loc.getZ() + radius) >> 4;
 
         for (int i = minX; i <= maxX; i++)
             for (int j = minZ; j <= maxZ; j++)
@@ -137,16 +141,16 @@ public class Nearby
     {
         List<LivingEntity> result = new ArrayList<LivingEntity>();
 
-        int minX = (int)(loc.getX() - radius) >> 4;
-        int maxX = (int)(loc.getX() + radius) >> 4;
-        int minZ = (int)(loc.getZ() - radius) >> 4;
-        int maxZ = (int)(loc.getZ() + radius) >> 4;
+        int minX = (int) (loc.getX() - radius) >> 4;
+        int maxX = (int) (loc.getX() + radius) >> 4;
+        int minZ = (int) (loc.getZ() - radius) >> 4;
+        int maxZ = (int) (loc.getZ() + radius) >> 4;
 
         for (int i = minX; i <= maxX; i++)
             for (int j = minZ; j <= maxZ; j++)
                 for (Entity entity : loc.getWorld().getChunkAt(i, j).getEntities())
                     if (entity instanceof LivingEntity && boxDistance(entity.getLocation(), loc) < radius)
-                        result.add((LivingEntity)entity);
+                        result.add((LivingEntity) entity);
 
         return result;
     }

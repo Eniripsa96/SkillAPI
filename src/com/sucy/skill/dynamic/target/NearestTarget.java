@@ -122,7 +122,7 @@ public class NearestTarget extends EffectComponent
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
-        int max = (int)attr(caster, MAX, level, 1, isSelf);
+        int max = (int) attr(caster, MAX, level, 1, isSelf);
         Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         double[] dists = new double[max];

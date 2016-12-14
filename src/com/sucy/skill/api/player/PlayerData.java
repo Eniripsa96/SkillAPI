@@ -28,7 +28,6 @@ package com.sucy.skill.api.player;
 
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
-import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -51,26 +50,20 @@ import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.GUINodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.listener.AttributeListener;
-import com.sucy.skill.listener.TreeListener;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.task.ScoreboardTask;
 import com.sucy.skill.tools.GUITool;
-import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Represents one account for a player which can contain one class from each group
@@ -322,6 +315,7 @@ public final class PlayerData
      * has no remaining points, this will do nothing.
      *
      * @param key attribute key
+     *
      * @return whether or not it was successfully upgraded
      */
     public boolean upAttribute(String key)
@@ -904,6 +898,7 @@ public final class PlayerData
      * Shows the class details for the player
      *
      * @param player player to show to
+     *
      * @return true if shown, false if nothing to show
      */
     public boolean showDetails(Player player)
@@ -930,6 +925,7 @@ public final class PlayerData
      * Shows profession options of the first class group available
      *
      * @param player player to show profession options for
+     *
      * @return true if shown profession options, false if none available
      */
     public boolean showProfession(Player player)
@@ -977,7 +973,7 @@ public final class PlayerData
         if (classes.size() > 1)
             return showDetails(player);
 
-        // Show only class's skill tree otherwise
+            // Show only class's skill tree otherwise
         else return showSkills(player, classes.values().iterator().next());
     }
 

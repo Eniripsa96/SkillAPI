@@ -26,14 +26,11 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.rit.sucy.mobs.MobManager;
-import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**

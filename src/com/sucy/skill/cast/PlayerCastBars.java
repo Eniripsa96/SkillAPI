@@ -30,7 +30,6 @@ import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.task.PreviewTask;
 import com.sucy.skill.thread.MainThread;
 import org.bukkit.entity.Player;
@@ -110,7 +109,9 @@ public class PlayerCastBars implements InventoryHolder
      * Makes the packets for cast previews
      *
      * @param step animation step
+     *
      * @return packet list or null if nothing is hovered
+     *
      * @throws Exception
      */
     public List<Object> getHoverPackets(Player player, int step)
@@ -173,6 +174,7 @@ public class PlayerCastBars implements InventoryHolder
      * Opens the cast bar organizer GUI
      *
      * @param player player to open for
+     *
      * @return true if opened
      */
     public boolean showOrganizer(Player player)
@@ -254,6 +256,7 @@ public class PlayerCastBars implements InventoryHolder
      * Creates an indicator for use in the skill organize display
      *
      * @param skill skill to display
+     *
      * @return makes a skill indicator, appending the skill name to the end for identification
      */
     private ItemStack makeIndicator(String skill)
@@ -413,6 +416,7 @@ public class PlayerCastBars implements InventoryHolder
      *
      * @param bar   bar to add to
      * @param skill skill to add
+     *
      * @return true if added, false if no room
      */
     private boolean addTo(HashMap<Integer, String> bar, PlayerSkill skill)

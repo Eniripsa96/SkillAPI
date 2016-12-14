@@ -49,9 +49,9 @@ public class SkillHandler extends GUIHolder<Skill>
         if (left)
             if (player.upgradeSkill(type))
                 setPage(page);
-        else if ((SkillAPI.getSettings().isAllowDowngrade() || player.getSkillLevel(type.getKey()) > start.get(type.getKey()))
+            else if ((SkillAPI.getSettings().isAllowDowngrade() || player.getSkillLevel(type.getKey()) > start.get(type.getKey()))
                 && player.downgradeSkill(type))
-            setPage(page);
+                setPage(page);
     }
 
     @Override

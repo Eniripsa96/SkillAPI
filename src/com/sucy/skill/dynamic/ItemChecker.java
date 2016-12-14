@@ -211,7 +211,8 @@ public class ItemChecker
         return false;
     }
 
-    public static boolean findLore(LivingEntity caster, ItemStack item, String regex, String key, double multiplier) {
+    public static boolean findLore(LivingEntity caster, ItemStack item, String regex, String key, double multiplier)
+    {
         regex = regex.replace("{value}", "([0-9]+)");
         Pattern pattern = Pattern.compile(regex);
 

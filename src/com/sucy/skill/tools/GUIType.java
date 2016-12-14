@@ -35,7 +35,7 @@ public enum GUIType
     SKILL_TREE(2, "st"),
     ATTRIBUTES(3, "a");
 
-    private int id;
+    private int    id;
     private String prefix;
 
     GUIType(int id, String prefix)
@@ -54,7 +54,8 @@ public enum GUIType
         return cycle(-1);
     }
 
-    private GUIType cycle(int direction) {
+    private GUIType cycle(int direction)
+    {
         GUIType type = ORDERED[(id + ORDERED.length + direction) % ORDERED.length];
         if (type == ATTRIBUTES && !SkillAPI.getSettings().isAttributesEnabled())
             return ORDERED[(id + ORDERED.length + 2 * direction) % ORDERED.length];
@@ -67,10 +68,10 @@ public enum GUIType
     }
 
     private static final GUIType[] ORDERED = new GUIType[]
-    {
-        CLASS_SELECTION,
-        CLASS_DETAILS,
-        SKILL_TREE,
-        ATTRIBUTES
-    };
+        {
+            CLASS_SELECTION,
+            CLASS_DETAILS,
+            SKILL_TREE,
+            ATTRIBUTES
+        };
 }

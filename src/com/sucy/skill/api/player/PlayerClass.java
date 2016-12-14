@@ -490,6 +490,7 @@ public final class PlayerClass implements IconHolder
      * Gets the icon for the class
      *
      * @param player player to get for
+     *
      * @return icon data
      */
     @Override

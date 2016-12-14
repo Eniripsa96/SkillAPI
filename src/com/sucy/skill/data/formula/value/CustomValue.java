@@ -34,7 +34,7 @@ import com.sucy.skill.data.formula.IValue;
 public class CustomValue implements IValue
 {
     private String token;
-    private int index;
+    private int    index;
 
     /**
      * A defined value used in formulas
@@ -70,10 +70,11 @@ public class CustomValue implements IValue
      * Gets the value using the inputs
      *
      * @param input the input data
+     *
      * @return result value
      */
     @Override
-    public double compute(double ... input)
+    public double compute(double... input)
     {
         return input[index];
     }

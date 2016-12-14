@@ -100,7 +100,7 @@ public class KillListener extends SkillAPIListener
             if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner())
                 return;
 
-            // Block egg mob experience
+                // Block egg mob experience
             else if (value == EGG && SkillAPI.getSettings().isBlockEgg())
                 return;
         }
@@ -122,7 +122,7 @@ public class KillListener extends SkillAPIListener
             if (SkillAPI.getSettings().isUseOrbs())
                 player.giveExp(event.getDroppedExp(), ExpSource.MOB);
 
-            // Give experience based on config when not using orbs
+                // Give experience based on config when not using orbs
             else
             {
                 String name = ListenerUtil.getName(event.getEntity());
@@ -141,13 +141,9 @@ public class KillListener extends SkillAPIListener
     public void onSpawn(CreatureSpawnEvent event)
     {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER)
-        {
             SkillAPI.setMeta(event.getEntity(), S_TYPE, SPAWNER);
-        }
         else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
-        {
             SkillAPI.setMeta(event.getEntity(), S_TYPE, EGG);
-        }
     }
 
     /**

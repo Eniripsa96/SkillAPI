@@ -57,7 +57,7 @@ import java.util.HashMap;
 public abstract class RPGClass implements IconHolder
 {
     private final HashMap<String, Skill> skillMap = new HashMap<String, Skill>();
-    private final ArrayList<Skill> skills = new ArrayList<Skill>();
+    private final ArrayList<Skill>       skills   = new ArrayList<Skill>();
 
     private SkillTree skillTree;
     private String    parent;
@@ -287,6 +287,7 @@ public abstract class RPGClass implements IconHolder
      * Retrieves the icon representing this class for menus
      *
      * @param data player to get the icon for
+     *
      * @return icon representation of the class
      */
     @Override

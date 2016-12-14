@@ -30,12 +30,12 @@ import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.particle.EffectManager;
+import com.sucy.skill.api.particle.Particle;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.api.particle.Particle;
 import com.sucy.skill.data.PlayerStats;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.ConfigIO;
@@ -52,7 +52,10 @@ import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
-import com.sucy.skill.task.*;
+import com.sucy.skill.task.CooldownTask;
+import com.sucy.skill.task.GUITask;
+import com.sucy.skill.task.ManaTask;
+import com.sucy.skill.task.SaveTask;
 import com.sucy.skill.thread.MainThread;
 import com.sucy.skill.tools.GUITool;
 import org.bukkit.Bukkit;
@@ -61,6 +64,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -727,7 +731,8 @@ public class SkillAPI extends JavaPlugin
      */
     public static Object getMeta(Metadatable target, String key)
     {
-        return target.getMetadata(key).get(0).value();
+        List<MetadataValue> meta = target.getMetadata(key);
+        return meta == null || meta.size() == 0 ? null : meta.get(0).value();
     }
 
     /**
@@ -771,6 +776,7 @@ public class SkillAPI extends JavaPlugin
      * Grabs a config for SkillAPI
      *
      * @param name config file name
+     *
      * @return config data
      */
     public static CommentedConfig getConfig(String name)

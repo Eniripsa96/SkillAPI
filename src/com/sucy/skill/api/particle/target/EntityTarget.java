@@ -68,6 +68,7 @@ public class EntityTarget implements EffectTarget
      * Checks whether or not the target is equivalent to another
      *
      * @param o object to compare against
+     *
      * @return true if equivalent
      */
     @Override

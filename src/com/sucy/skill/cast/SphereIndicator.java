@@ -42,7 +42,7 @@ public class SphereIndicator implements IIndicator
     private double radius;
     private double sin, cos;
     private double angleStep;
-    private int particles;
+    private int    particles;
 
     /**
      * @param radius radius of the circle
@@ -53,7 +53,7 @@ public class SphereIndicator implements IIndicator
             throw new IllegalArgumentException("Invalid radius - cannot be 0");
 
         this.radius = Math.abs(radius);
-        particles = (int)(IndicatorSettings.density * radius * 2 * Math.PI);
+        particles = (int) (IndicatorSettings.density * radius * 2 * Math.PI);
         angleStep = IndicatorSettings.animation * IndicatorSettings.interval / (20 * this.radius);
 
         double angle = Math.PI * 2 / particles;
@@ -97,6 +97,7 @@ public class SphereIndicator implements IIndicator
      * @param packets  packet list to add to
      * @param particle particle type to use
      * @param step     animation step
+     *
      * @throws Exception
      */
     @Override

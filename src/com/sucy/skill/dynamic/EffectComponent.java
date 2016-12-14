@@ -30,7 +30,6 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.mobs.MobManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
-import com.sucy.skill.api.particle.ParticleEffect;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.util.NumberParser;
@@ -40,7 +39,6 @@ import com.sucy.skill.dynamic.condition.*;
 import com.sucy.skill.dynamic.mechanic.*;
 import com.sucy.skill.dynamic.target.*;
 import com.sucy.skill.log.Logger;
-import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -178,9 +176,8 @@ public abstract class EffectComponent
     {
         String val = settings.getString(key);
         if (val == null)
-        {
             return fallback;
-        }
+
         try
         {
             return NumberParser.parseDouble(val);
@@ -266,10 +263,10 @@ public abstract class EffectComponent
         StringBuilder builder = new StringBuilder();
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         int i = text.indexOf('{');
-        int j = -1;
-        while (i >= 0)
+        int j = text.indexOf('}', i);
+        int k = 0;
+        while (i >= 0 && j > i)
         {
-            j = text.indexOf('}', i);
             String key = text.substring(i + 1, j);
             if (data.containsKey(key))
             {
@@ -278,18 +275,22 @@ public abstract class EffectComponent
                     obj = ((Player) obj).getName();
                 else if (obj instanceof LivingEntity)
                     obj = MobManager.getName((LivingEntity) obj);
-                builder.append(text.substring(0, i));
+                builder.append(text.substring(k, i));
                 builder.append(obj);
-                text = text.substring(0, i) + obj + text.substring(j + 1);
+
+                k = j + 1;
             }
             else if (key.equals("player"))
             {
-                builder.append(text.substring(0, i));
+                builder.append(text.substring(k, i));
                 builder.append(caster.getName());
+
+                k = j + 1;
             }
             i = text.indexOf('{', j);
+            j = text.indexOf('}', i);
         }
-        builder.append(text.substring(j + 1));
+        builder.append(text.substring(k));
         return builder.toString();
     }
 
@@ -319,7 +320,7 @@ public abstract class EffectComponent
                 component.makeIndicators(list, caster, target, level);
     }
 
-    private static final String TYPE = "type";
+    private static final String TYPE      = "type";
     private static final String INDICATOR = "indicator";
 
     /**

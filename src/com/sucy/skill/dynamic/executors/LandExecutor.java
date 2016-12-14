@@ -48,7 +48,7 @@ public class LandExecutor implements EventExecutor
     @Override
     public void execute(Listener listener, Event event)
     {
-        ((DynamicSkill)listener).onLand((PlayerLandEvent) event);
+        ((DynamicSkill) listener).onLand((PlayerLandEvent) event);
     }
 }
 

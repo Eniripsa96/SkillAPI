@@ -32,5 +32,6 @@ import org.bukkit.inventory.InventoryHolder;
 public interface ToolMenu extends InventoryHolder
 {
     void handleClick(InventoryClickEvent event);
+
     void restore();
 }

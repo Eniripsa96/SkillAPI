@@ -35,8 +35,6 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
-import com.sun.org.apache.bcel.internal.generic.GOTO;
-import net.minecraft.server.v1_9_R1.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -235,8 +233,8 @@ public class GUITool implements ToolMenu
     }
 
     private static GUIType type;
-    private static int classId;
-    private static int professId;
+    private static int     classId;
+    private static int     professId;
 
     private final Player player;
 

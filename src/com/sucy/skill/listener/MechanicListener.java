@@ -45,7 +45,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -84,6 +83,9 @@ public class MechanicListener extends SkillAPIListener
     @EventHandler
     public void onMove(PlayerMoveEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         boolean inMap = flying.containsKey(event.getPlayer().getUniqueId());
         if (inMap == ((Entity) event.getPlayer()).isOnGround())
         {
@@ -182,10 +184,19 @@ public class MechanicListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler
-    public void onLand(ProjectileHitEvent event)
+    public void onLand(final ProjectileHitEvent event)
     {
         if (event.getEntity().hasMetadata(P_CALL))
-            ((ProjectileMechanic) SkillAPI.getMeta(event.getEntity(), P_CALL)).callback(event.getEntity(), null);
+            SkillAPI.schedule(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Object obj = SkillAPI.getMeta(event.getEntity(), P_CALL);
+                    if (obj != null)
+                        ((ProjectileMechanic) obj).callback(event.getEntity(), null);
+                }
+            }, 1);
     }
 
     /**

@@ -36,13 +36,13 @@ import java.util.List;
 public class ParticleEffectMechanic extends EffectComponent
 {
     private static final String DURATION = "duration";
-    private static final String KEY = "effect-key";
+    private static final String KEY      = "effect-key";
 
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         String key = settings.getString(KEY, skill.getName());
-        int duration = (int)(20 * attr(caster, DURATION, level, 5, true));
+        int duration = (int) (20 * attr(caster, DURATION, level, 5, true));
 
         EffectPlayer player = new EffectPlayer(settings);
         for (LivingEntity target : targets)

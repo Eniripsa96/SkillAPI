@@ -54,14 +54,15 @@ public class ScoreboardTask extends BukkitRunnable
     public void run()
     {
         Player player = data.getPlayer();
-        if (player != null && data.getMainClass() != null)
+        if (player == null || player.hasMetadata("NPC"))
+            return;
+
+        if (data.getMainClass() != null)
         {
             PlayerClass main = data.getMainClass();
             ClassBoardManager.update(data, main.getData().getPrefix(), main.getData().getPrefixColor());
         }
-        else if (player != null)
-        {
+        else
             ClassBoardManager.clear(new VersionPlayer(player));
-        }
     }
 }

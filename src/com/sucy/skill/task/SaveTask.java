@@ -28,7 +28,6 @@ package com.sucy.skill.task;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.thread.RepeatThreadTask;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Handles auto saving periodically

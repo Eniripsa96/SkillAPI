@@ -1195,7 +1195,7 @@ public class Settings
         castEnabled = config.getBoolean(CAST_ENABLED);
         castBars = config.getBoolean(CAST_BARS);
         castSlot = config.getInt(CAST_SLOT) - 1;
-        castCooldown = (long)(config.getDouble(CAST_COOLDOWN) * 1000);
+        castCooldown = (long) (config.getDouble(CAST_COOLDOWN) * 1000);
         castItem = GUITool.parseItem(config.getSection(CAST_ITEM));
         hoverItem = GUITool.parseItem(config.getSection(CAST_HOVER));
         instantItem = GUITool.parseItem(config.getSection(CAST_INSTANT));

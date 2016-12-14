@@ -28,7 +28,9 @@ package com.sucy.skill.dynamic.target;
 
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.cast.*;
+import com.sucy.skill.cast.ConeIndicator;
+import com.sucy.skill.cast.IIndicator;
+import com.sucy.skill.cast.IndicatorType;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;

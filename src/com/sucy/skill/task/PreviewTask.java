@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.task;
 
-import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.particle.Particle;
 import com.sucy.skill.api.player.PlayerData;
@@ -34,8 +33,6 @@ import com.sucy.skill.cast.IndicatorSettings;
 import com.sucy.skill.thread.RepeatThreadTask;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 
 public class PreviewTask extends RepeatThreadTask

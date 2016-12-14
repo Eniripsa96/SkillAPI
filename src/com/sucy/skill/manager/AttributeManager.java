@@ -253,6 +253,7 @@ public class AttributeManager
          *
          * @param data player data to use
          * @param text line of text to filter
+         *
          * @return filtered line
          */
         private String filter(PlayerData data, String text)

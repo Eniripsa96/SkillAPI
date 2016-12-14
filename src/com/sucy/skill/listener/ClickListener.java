@@ -30,7 +30,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.data.Click;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;

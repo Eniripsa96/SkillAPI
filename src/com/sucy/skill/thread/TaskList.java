@@ -94,10 +94,12 @@ public class TaskList implements Iterable<IThreadTask>, Iterator<IThreadTask>
     private class Entry
     {
         public Entry() { }
+
         public Entry(IThreadTask task)
         {
             this.task = task;
         }
+
         private IThreadTask task;
         private Entry       prev;
         private Entry       next;

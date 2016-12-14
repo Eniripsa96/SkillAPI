@@ -26,9 +26,9 @@
  */
 package com.sucy.skill.api.projectile;
 
+import com.rit.sucy.player.Protection;
 import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.api.particle.target.Followable;
-import com.rit.sucy.player.Protection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -56,7 +56,8 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     private static Method         getBukkitEntity;
     private static Method         getHandle;
 
-    static {
+    static
+    {
         try
         {
             Class<?> aabbClass = Reflection.getNMSClass("AxisAlignedBB");
@@ -117,6 +118,11 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     protected abstract Event hit(LivingEntity entity);
 
     /**
+     * @return true if the projectile has landed on terrain, false otherwise
+     */
+    protected abstract boolean landed();
+
+    /**
      * @return squared radius for colliding
      */
     protected abstract double getCollisionRadius();
@@ -136,7 +142,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         }
 
         // Hitting a solid block
-        if (getLocation().getBlock().getType().isSolid())
+        if (landed())
         {
             cancel();
             Bukkit.getPluginManager().callEvent(land());
@@ -348,9 +354,9 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         this.callback = callback;
     }
 
-    private static final Vector X_VEC         = new Vector(1, 0, 0);
+    private static final Vector X_VEC = new Vector(1, 0, 0);
     private static final double DEGREE_TO_RAD = Math.PI / 180;
-    private static final Vector vel           = new Vector();
+    private static final Vector vel = new Vector();
 
     /**
      * Calculates the directions for projectiles spread from

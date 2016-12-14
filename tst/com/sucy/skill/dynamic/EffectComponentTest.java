@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.listener.RPGInventoryListener
+ * com.sucy.skill.dynamic.EffectComponentTest
  *
  * The MIT License (MIT)
  *
@@ -24,8 +24,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.listener;
+package com.sucy.skill.dynamic;
 
-public class RPGInventoryListener
+import org.bukkit.entity.LivingEntity;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class EffectComponentTest
 {
+    @Spy
+    EffectComponent effectComponent;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testFilter() {
+
+        LivingEntity caster = mock(LivingEntity.class);
+        when(caster.getName()).thenReturn("Dude");
+
+        DynamicSkill.getCastData(caster).put("yup", 12);
+
+        String result = effectComponent.filter(caster, "Hey {nope} {yup} {player} {yup} there");
+        Assert.assertEquals(result, "Hey {nope} 12 Dude 12 there");
+    }
 }

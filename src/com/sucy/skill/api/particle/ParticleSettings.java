@@ -37,12 +37,12 @@ public class ParticleSettings
     private static final String
         PARTICLE_KEY = "particle",
         MATERIAL_KEY = "material",
-        DATA_KEY = "type",
-        AMOUNT_KEY = "amount",
-        DX_KEY = "dx",
-        DY_KEY = "dy",
-        DZ_KEY = "dz",
-        SPEED_KEY = "speed";
+        DATA_KEY     = "type",
+        AMOUNT_KEY   = "amount",
+        DX_KEY       = "dx",
+        DY_KEY       = "dy",
+        DZ_KEY       = "dz",
+        SPEED_KEY    = "speed";
 
     // Particle type
     public final ParticleType type;
@@ -54,7 +54,7 @@ public class ParticleSettings
     public final float speed;
 
     // Particle amount
-    public final int   amount;
+    public final int amount;
 
     // Particle extra data
     public final int[] data;
@@ -148,7 +148,9 @@ public class ParticleSettings
      * @param x X-axis coordinates
      * @param y Y-axis coordinates
      * @param z Z-axis coordinates
+     *
      * @return packet instance
+     *
      * @throws Exception
      */
     public Object instance(double x, double y, double z)

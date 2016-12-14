@@ -88,15 +88,15 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
         if (top && result != null && data.containsKey(result))
         {
             if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.HOTBAR_SWAP)
-                onHotBar((T)data.get(result), event.getSlot(), event.getHotbarButton());
+                onHotBar((T) data.get(result), event.getSlot(), event.getHotbarButton());
             else
-                onClick((T)data.get(result), event.getSlot(), event.isLeftClick(), event.isShiftClick());
+                onClick((T) data.get(result), event.getSlot(), event.isLeftClick(), event.isShiftClick());
         }
     }
 
     public void handleClose(InventoryCloseEvent event)
     {
-        onClose((Player)event.getPlayer());
+        onClose((Player) event.getPlayer());
     }
 
     protected abstract void onClick(T type, int slot, boolean left, boolean shift);

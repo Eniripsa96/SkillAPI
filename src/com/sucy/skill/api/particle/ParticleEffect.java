@@ -157,7 +157,7 @@ public class ParticleEffect
 
             Point2D cs = trig[0];
             double t = animation.getT(frame);
-            double p = (double)frame / animation.getSteps();
+            double p = (double) frame / animation.getSteps();
 
             int j = 0, k = 0;
             for (int i = frame * animation.getCopies(); i < next; i++)

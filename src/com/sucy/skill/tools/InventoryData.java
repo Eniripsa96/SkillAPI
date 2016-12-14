@@ -38,7 +38,7 @@ public class InventoryData
 {
     private ItemStack[] main;
     private ItemStack[] armor;
-    private ItemStack sidearm;
+    private ItemStack   sidearm;
 
     /**
      * Creates a backup of the player's inventory contents

@@ -53,7 +53,7 @@ public class SlotCondition extends EffectComponent
         if (!(caster instanceof Player))
             return false;
 
-        Player player = (Player)caster;
+        Player player = (Player) caster;
         List<String> slots = settings.getStringList(SLOT);
         for (String slot : slots)
             if (ItemChecker.check(player.getInventory().getItem(NumberParser.parseInt(slot)), level, settings))

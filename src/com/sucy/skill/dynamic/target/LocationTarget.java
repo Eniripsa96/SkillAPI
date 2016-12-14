@@ -65,7 +65,7 @@ public class LocationTarget extends EffectComponent
         target = getTargetLoc(caster, level, target);
         if (target == null)
             return;
-        
+
         if (indicatorType == IndicatorType.DIM_3)
         {
             Location loc = target.getLocation();

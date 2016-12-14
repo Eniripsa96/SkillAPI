@@ -39,7 +39,9 @@ import com.sucy.skill.api.event.TrueDamageEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.api.util.*;
+import com.sucy.skill.api.util.DamageLoreRemover;
+import com.sucy.skill.api.util.Data;
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.hook.NoCheatHook;
@@ -459,6 +461,7 @@ public abstract class Skill implements IconHolder
      * Fetches the icon for the skill for the player
      *
      * @param data player to get for
+     *
      * @return the skill icon
      */
     @Override

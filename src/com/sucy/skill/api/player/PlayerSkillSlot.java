@@ -38,7 +38,7 @@ import java.util.ArrayList;
 public class PlayerSkillSlot
 {
     private ArrayList<PlayerSkill> skills = new ArrayList<PlayerSkill>();
-    private int index = 0;
+    private int                    index  = 0;
     private PlayerData player;
 
     /**

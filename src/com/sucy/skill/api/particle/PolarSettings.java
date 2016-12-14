@@ -27,19 +27,13 @@
 package com.sucy.skill.api.particle;
 
 import com.rit.sucy.config.parse.DataSection;
-import com.sucy.skill.api.enums.Direction;
 import com.sucy.skill.api.particle.direction.DirectionHandler;
-import com.sucy.skill.api.particle.direction.XYHandler;
-import com.sucy.skill.api.particle.direction.XZHandler;
-import com.sucy.skill.api.particle.direction.YZHandler;
 import com.sucy.skill.data.Point2D;
 import com.sucy.skill.data.Point3D;
 import com.sucy.skill.data.formula.Formula;
 import com.sucy.skill.data.formula.IValue;
 import com.sucy.skill.data.formula.value.CustomValue;
-import org.bukkit.Location;
 
-import java.awt.*;
 import java.util.HashMap;
 
 /**
@@ -51,17 +45,17 @@ public class PolarSettings
 
     private Point2D[][] trig;
 
-    private IValue  formula;
-    private int     copies;
-    private int     steps;
-    private double  domain;
-    private double  xOff, yOff, zOff;
+    private IValue formula;
+    private int    copies;
+    private int    steps;
+    private double domain;
+    private double xOff, yOff, zOff;
 
     /**
      * Sets up a formula for particle effects
      *
-     * @param formula   formula to use
-     * @param steps     the number of steps to apply
+     * @param formula formula to use
+     * @param steps   the number of steps to apply
      */
     public PolarSettings(IValue formula, int steps)
     {
@@ -71,10 +65,10 @@ public class PolarSettings
     /**
      * Sets up a formula for particle effects
      *
-     * @param formula   formula to use
-     * @param steps     the number of steps to apply
-     * @param copies    number of copies to use rotated about the origin
-     * @param domain    domain of the input values
+     * @param formula formula to use
+     * @param steps   the number of steps to apply
+     * @param copies  number of copies to use rotated about the origin
+     * @param domain  domain of the input values
      */
     public PolarSettings(IValue formula, int steps, int copies, double domain)
     {
@@ -165,6 +159,7 @@ public class PolarSettings
      * @param x X-Axis offset
      * @param y Y-Axis offset
      * @param z Z-Axis offset
+     *
      * @return this
      */
     public PolarSettings setOffset(double x, double y, double z)
@@ -199,7 +194,7 @@ public class PolarSettings
         {
             Point2D rot = trig[i][0];
             double t = domain * i;
-            double r = formula.compute(t, (double)i / steps, rot.x, rot.y);
+            double r = formula.compute(t, (double) i / steps, rot.x, rot.y);
             for (int j = 0; j < copies; j++)
             {
                 Point2D copy = trig[i][j];
@@ -217,6 +212,7 @@ public class PolarSettings
      * Gets the time step value for the animation step
      *
      * @param step animation step
+     *
      * @return time step
      */
     public double getT(int step)

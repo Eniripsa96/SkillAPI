@@ -52,6 +52,7 @@ public class EffectData
      * Checks whether or not an effect is still running
      *
      * @param key effect key
+     *
      * @return true if running
      */
     public static boolean isEffectActive(String key)
@@ -63,6 +64,7 @@ public class EffectData
      * Fetches an active effect by key
      *
      * @param key effect key
+     *
      * @return active effect or null if not found
      */
     public EffectInstance getEffect(String key)

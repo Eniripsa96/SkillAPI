@@ -44,6 +44,7 @@ public enum IndicatorType
      * Gets the indicator type by key
      *
      * @param key key
+     *
      * @return indicator type
      */
     public static IndicatorType getByKey(String key)

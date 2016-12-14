@@ -66,13 +66,9 @@ public class MainListener extends SkillAPIListener
     public void onLogin(AsyncPlayerPreLoginEvent event)
     {
         if (VersionManager.isVersionAtLeast(VersionManager.V1_7_5))
-        {
             SkillAPI.loadPlayerData(Bukkit.getOfflinePlayer(event.getUniqueId()));
-        }
         else
-        {
             SkillAPI.loadPlayerData(VersionManager.getOfflinePlayer(event.getName()));
-        }
     }
 
     /**
@@ -83,6 +79,9 @@ public class MainListener extends SkillAPIListener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         data.init(event.getPlayer());
     }
@@ -105,6 +104,9 @@ public class MainListener extends SkillAPIListener
      */
     public static void unload(Player player)
     {
+        if (player.hasMetadata("NPC"))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(player);
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
@@ -134,6 +136,9 @@ public class MainListener extends SkillAPIListener
         BuffManager.clearData(event.getEntity());
         DynamicSkill.clearCastData(event.getEntity());
 
+        if (event.getEntity().hasMetadata("NPC"))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
         {
@@ -150,11 +155,12 @@ public class MainListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         Player player = event.getPlayer();
         if (SkillAPI.getSettings().isUseOrbs() && player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
-        {
             SkillAPI.getPlayerData(player).giveExp(event.getExpToDrop(), ExpSource.BLOCK_BREAK);
-        }
     }
 
     /**
@@ -167,9 +173,7 @@ public class MainListener extends SkillAPIListener
     {
         Player player = event.getPlayer();
         if (SkillAPI.getSettings().isUseOrbs() && player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
-        {
             SkillAPI.getPlayerData(player).giveExp(event.getExpToDrop(), ExpSource.SMELT);
-        }
     }
 
     /**
@@ -181,14 +185,14 @@ public class MainListener extends SkillAPIListener
     public void onExpBottleBreak(ExpBottleEvent event)
     {
         if (!(event.getEntity().getShooter() instanceof Player) || !SkillAPI.getSettings().isWorldEnabled(((Player) event.getEntity().getShooter()).getWorld()))
-        {
             return;
-        }
+
         Player player = (Player) event.getEntity().getShooter();
+        if (player.hasMetadata("NPC"))
+            return;
+
         if (SkillAPI.getSettings().isUseOrbs())
-        {
             SkillAPI.getPlayerData(player).giveExp(event.getExperience(), ExpSource.EXP_BOTTLE);
-        }
     }
 
     /**
@@ -217,6 +221,9 @@ public class MainListener extends SkillAPIListener
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
@@ -234,9 +241,7 @@ public class MainListener extends SkillAPIListener
     public void onDamage(EntityDamageEvent event)
     {
         if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity) event.getEntity(), "immune:" + event.getCause().name()))
-        {
             event.setCancelled(true);
-        }
     }
 
     /**
@@ -390,6 +395,9 @@ public class MainListener extends SkillAPIListener
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         boolean oldEnabled = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
         boolean newEnabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
         if (oldEnabled && !newEnabled)

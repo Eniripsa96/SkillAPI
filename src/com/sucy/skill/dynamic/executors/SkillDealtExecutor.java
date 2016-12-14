@@ -48,6 +48,6 @@ public class SkillDealtExecutor implements EventExecutor
     @Override
     public void execute(Listener listener, Event event)
     {
-        ((DynamicSkill)listener).onSkillDealt((SkillDamageEvent) event);
+        ((DynamicSkill) listener).onSkillDealt((SkillDamageEvent) event);
     }
 }

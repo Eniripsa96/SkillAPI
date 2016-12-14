@@ -48,6 +48,6 @@ public class PhysicalDealtExecutor implements EventExecutor
     @Override
     public void execute(Listener listener, Event event)
     {
-        ((DynamicSkill)listener).onDealtPhysical((PhysicalDamageEvent) event);
+        ((DynamicSkill) listener).onDealtPhysical((PhysicalDamageEvent) event);
     }
 }

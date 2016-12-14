@@ -40,10 +40,10 @@ public class CylinderIndicator implements IIndicator
     private double height;
     private double sin;
     private double cos;
-    private int particles;
-    private int vertParticles;
+    private int    particles;
+    private int    vertParticles;
     private double vertOffset;
-    private int vert;
+    private int    vert;
 
     /**
      * @param radius radius of the circle
@@ -55,9 +55,9 @@ public class CylinderIndicator implements IIndicator
 
         this.radius = Math.abs(radius);
         this.height = height;
-        particles = (int)(IndicatorSettings.density * radius * 2 * Math.PI);
+        particles = (int) (IndicatorSettings.density * radius * 2 * Math.PI);
         vert = particles / 8;
-        vertParticles = (int)(IndicatorSettings.density * height);
+        vertParticles = (int) (IndicatorSettings.density * height);
         vertOffset = height / vertParticles;
 
         double angle = Math.PI * 2 / particles;
@@ -101,6 +101,7 @@ public class CylinderIndicator implements IIndicator
      * @param packets  packet list to add to
      * @param particle particle type to use
      * @param step     animation step
+     *
      * @throws Exception
      */
     @Override

@@ -85,6 +85,7 @@ public class ToolSettings
      * Gets an icon by key
      *
      * @param key key to use
+     *
      * @return icon or null if not found
      */
     public static ItemStack getIcon(String key)

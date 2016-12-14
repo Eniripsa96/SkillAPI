@@ -47,10 +47,11 @@ public class Ceil implements IValue
      * Gets the value using the inputs
      *
      * @param input the input data
+     *
      * @return result value
      */
     @Override
-    public double compute(double ... input)
+    public double compute(double... input)
     {
         return Math.ceil(formula.compute(input));
     }

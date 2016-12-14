@@ -29,12 +29,7 @@ package com.sucy.skill.tools;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.log.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;

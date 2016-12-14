@@ -27,11 +27,8 @@
 package com.sucy.skill.gui;
 
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.tools.GUIHolder;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class ProfessHandler extends GUIHolder<RPGClass>
 {

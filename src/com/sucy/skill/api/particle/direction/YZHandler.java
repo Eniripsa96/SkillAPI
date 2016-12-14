@@ -55,6 +55,7 @@ public class YZHandler implements DirectionHandler
      *
      * @param p    original point
      * @param trig trig data
+     *
      * @return rotation
      */
     public double rotateX(Point3D p, Point2D trig)
@@ -67,6 +68,7 @@ public class YZHandler implements DirectionHandler
      *
      * @param p    original point
      * @param trig trig data
+     *
      * @return rotation
      */
     public double rotateY(Point3D p, Point2D trig)
@@ -79,6 +81,7 @@ public class YZHandler implements DirectionHandler
      *
      * @param p    original point
      * @param trig trig data
+     *
      * @return rotation
      */
     public double rotateZ(Point3D p, Point2D trig)

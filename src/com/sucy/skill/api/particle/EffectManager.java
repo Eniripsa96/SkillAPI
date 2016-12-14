@@ -92,6 +92,7 @@ public class EffectManager
      * Gets a formula by key
      *
      * @param key formula key
+     *
      * @return formula
      */
     public static PolarSettings getFormula(String key)
@@ -103,6 +104,7 @@ public class EffectManager
      * Fetches an effect by key
      *
      * @param name name of the effect
+     *
      * @return particle effect
      */
     public static ParticleEffect getEffect(String name)
@@ -125,6 +127,7 @@ public class EffectManager
      *
      * @param target target to get the effect for
      * @param key    effect key
+     *
      * @return active effect or null if not found
      */
     public static EffectInstance getEffect(EffectTarget target, String key)

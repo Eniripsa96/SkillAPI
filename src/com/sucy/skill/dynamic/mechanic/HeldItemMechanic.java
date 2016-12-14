@@ -49,7 +49,7 @@ public class HeldItemMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        int slot = (int)attr(caster, SLOT, level, 0, false);
+        int slot = (int) attr(caster, SLOT, level, 0, false);
 
         boolean worked = false;
         for (LivingEntity target : targets)
@@ -58,7 +58,7 @@ public class HeldItemMechanic extends EffectComponent
                 continue;
 
             worked = true;
-            Player player = (Player)target;
+            Player player = (Player) target;
             if (SkillAPI.getSettings().isSkillBarEnabled() && SkillAPI.getPlayerData(player).getSkillBar().isWeaponSlot(slot))
                 player.getInventory().setHeldItemSlot(slot);
         }

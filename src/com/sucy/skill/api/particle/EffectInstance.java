@@ -34,7 +34,7 @@ import com.sucy.skill.api.particle.target.EffectTarget;
 public class EffectInstance
 {
     private ParticleEffect effect;
-    private EffectTarget target;
+    private EffectTarget   target;
 
     private int level;
     private int life;

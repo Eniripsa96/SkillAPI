@@ -39,7 +39,6 @@ import org.bukkit.event.Event;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A fake projectile that plays particles along its path
@@ -130,6 +129,15 @@ public class ParticleProjectile extends CustomProjectile
     protected Event hit(LivingEntity entity)
     {
         return new ParticleProjectileHitEvent(this, entity);
+    }
+
+    /**
+     * @return true if passing through a solid block, false otherwise
+     */
+    @Override
+    protected boolean landed()
+    {
+        return getLocation().getBlock().getType().isSolid();
     }
 
     /**

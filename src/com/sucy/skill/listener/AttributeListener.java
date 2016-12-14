@@ -26,20 +26,16 @@
  */
 package com.sucy.skill.listener;
 
-import com.rit.sucy.items.InventoryManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.gui.AttributeHandler;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -51,8 +47,6 @@ import java.util.HashMap;
  */
 public class AttributeListener extends SkillAPIListener
 {
-    public static final String MENU_KEY = "skillAPIAttrMenu";
-
     private static HashMap<String, Double> bonuses = new HashMap<String, Double>();
 
     /**
@@ -82,6 +76,9 @@ public class AttributeListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(PlayerJoinEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
     }
 
@@ -93,6 +90,9 @@ public class AttributeListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.HIGH)
     public void onRespawn(PlayerRespawnEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
     }
 
@@ -104,6 +104,9 @@ public class AttributeListener extends SkillAPIListener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         clearBonuses(event.getPlayer());
     }
 
@@ -158,6 +161,9 @@ public class AttributeListener extends SkillAPIListener
         if (event.getDamager() instanceof Player)
         {
             Player player = (Player) event.getDamager();
+            if (player.hasMetadata("NPC"))
+                return;
+
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
@@ -168,6 +174,9 @@ public class AttributeListener extends SkillAPIListener
         if (event.getTarget() instanceof Player)
         {
             Player player = (Player) event.getTarget();
+            if (player.hasMetadata("NPC"))
+                return;
+
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage());
@@ -187,6 +196,9 @@ public class AttributeListener extends SkillAPIListener
         if (event.getDamager() instanceof Player)
         {
             Player player = (Player) event.getDamager();
+            if (player.hasMetadata("NPC"))
+                return;
+
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, event.getDamage());
@@ -197,6 +209,9 @@ public class AttributeListener extends SkillAPIListener
         if (event.getTarget() instanceof Player)
         {
             Player player = (Player) event.getTarget();
+            if (player.hasMetadata("NPC"))
+                return;
+
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, event.getDamage());

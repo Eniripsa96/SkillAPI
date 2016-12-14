@@ -55,7 +55,7 @@ public class ValueMana extends EffectComponent
         {
             String key = settings.getString(KEY);
             HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-            data.put(key, SkillAPI.getPlayerData((Player)targets.get(0)).getMana());
+            data.put(key, SkillAPI.getPlayerData((Player) targets.get(0)).getMana());
             return true;
         }
         return false;

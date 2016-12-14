@@ -27,7 +27,6 @@
 package com.sucy.skill.api.particle;
 
 import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.api.particle.ParticleType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -97,6 +96,7 @@ public class Particle
      *
      * @param player  player to send to
      * @param packets packets to send
+     *
      * @throws Exception
      */
     public static void send(Player player, List<Object> packets)
@@ -112,6 +112,7 @@ public class Particle
      *
      * @param player  player to send to
      * @param packets packets to send
+     *
      * @throws Exception
      */
     public static void send(Player player, Object[] packets)
@@ -159,7 +160,9 @@ public class Particle
      *
      * @param settings particle details
      * @param loc      location to play at
+     *
      * @return particle object or null if invalid
+     *
      * @throws Exception
      */
     public static Object make(ParticleSettings settings, Location loc)
@@ -175,7 +178,9 @@ public class Particle
      * @param x        X coordinate
      * @param y        Y coordinate
      * @param z        Z coordinate
+     *
      * @return particle object or null if invalid
+     *
      * @throws Exception
      */
     public static Object make(ParticleSettings settings, double x, double y, double z)
@@ -185,16 +190,16 @@ public class Particle
         if (settings == null || settings.type == null)
             return null;
 
-        // 1.8+ servers use an enum value to validate the particle type
+            // 1.8+ servers use an enum value to validate the particle type
         else if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0))
         {
             Object enumType = particleTypes.get(settings.type.name());
             return packet.newInstance(
                 enumType,
                 true,
-                (float)x,
-                (float)y,
-                (float)z,
+                (float) x,
+                (float) y,
+                (float) z,
                 settings.dx,
                 settings.dy,
                 settings.dz,
@@ -211,9 +216,9 @@ public class Particle
         {
             return packet.newInstance(
                 settings.type.oldName(),
-                (float)x,
-                (float)y,
-                (float)z,
+                (float) x,
+                (float) y,
+                (float) z,
                 settings.dx,
                 settings.dy,
                 settings.dz,

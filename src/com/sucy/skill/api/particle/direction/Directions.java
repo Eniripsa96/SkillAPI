@@ -36,6 +36,7 @@ public class Directions
      * to XZ if invalid
      *
      * @param name XY, XZ, or YZ
+     *
      * @return corresponding handler or XZ if invalid
      */
     public static DirectionHandler byName(String name)

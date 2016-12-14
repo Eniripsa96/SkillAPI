@@ -48,6 +48,6 @@ public class EnvironmentExecutor implements EventExecutor
     @Override
     public void execute(Listener listener, Event event)
     {
-        ((DynamicSkill)listener).onEnvironmental((EntityDamageEvent)event);
+        ((DynamicSkill) listener).onEnvironmental((EntityDamageEvent) event);
     }
 }

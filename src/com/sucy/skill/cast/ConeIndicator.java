@@ -54,7 +54,7 @@ public class ConeIndicator implements IIndicator
         this.arc = arc * Math.PI / 180;
         this.radius = Math.abs(radius);
         double perimeter = radius * arc + 2 * radius;
-        int particles = (int)(IndicatorSettings.density * perimeter);
+        int particles = (int) (IndicatorSettings.density * perimeter);
 
         offset = perimeter / particles;
         angleOffset = offset / radius;
@@ -113,6 +113,7 @@ public class ConeIndicator implements IIndicator
      * @param packets  packet list to add to
      * @param particle particle type to use
      * @param step     animation step
+     *
      * @throws Exception
      */
     @Override

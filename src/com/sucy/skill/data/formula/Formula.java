@@ -28,7 +28,8 @@ package com.sucy.skill.data.formula;
 
 import com.sucy.skill.data.formula.func.*;
 import com.sucy.skill.data.formula.operator.*;
-import com.sucy.skill.data.formula.value.*;
+import com.sucy.skill.data.formula.value.CustomValue;
+import com.sucy.skill.data.formula.value.ValueNum;
 import com.sucy.skill.log.Logger;
 
 import java.util.ArrayList;
@@ -45,27 +46,27 @@ public class Formula implements IValue
 
     private static final HashMap<Character, IOperator> OPS = new HashMap<Character, IOperator>()
     {{
-            put('+', new Addition());
-            put('-', new Subtraction());
-            put('*', new Multiplication());
-            put('/', new Division());
-            put('%', new Modulo());
-            put('^', new Exponent());
-            put('_', new Log());
-        }};
+        put('+', new Addition());
+        put('-', new Subtraction());
+        put('*', new Multiplication());
+        put('/', new Division());
+        put('%', new Modulo());
+        put('^', new Exponent());
+        put('_', new Log());
+    }};
 
     private static final HashMap<String, Class<? extends IValue>> FUNCS = new HashMap<String, Class<? extends IValue>>()
     {{
-            put("abs", Abs.class);
-            put("ceil", Ceil.class);
-            put("cos", Cos.class);
-            put("floor", Floor.class);
-            put("sqrt", Root.class);
-            put("sign", Sign.class);
-            put("sin", Sin.class);
-            put("sq", Square.class);
-            put("tan", Tan.class);
-        }};
+        put("abs", Abs.class);
+        put("ceil", Ceil.class);
+        put("cos", Cos.class);
+        put("floor", Floor.class);
+        put("sqrt", Root.class);
+        put("sign", Sign.class);
+        put("sin", Sin.class);
+        put("sq", Square.class);
+        put("tan", Tan.class);
+    }};
 
     private IValue[]    values;
     private IOperator[] operations;
@@ -202,7 +203,7 @@ public class Formula implements IValue
      *
      * @param defined defined inputs
      */
-    private void invalidate(CustomValue ... defined)
+    private void invalidate(CustomValue... defined)
     {
         Logger.invalid("Invalid equation: " + equation);
         equation = defined[0].getToken();
@@ -211,7 +212,7 @@ public class Formula implements IValue
         valid = false;
     }
 
-    private IValue makeVal(String val, CustomValue ... defined)
+    private IValue makeVal(String val, CustomValue... defined)
     {
         if (negative)
         {
@@ -294,9 +295,10 @@ public class Formula implements IValue
      * If the formula is invalid, this returns the value.
      *
      * @param input the input data
+     *
      * @return computed value
      */
-    public double compute(double ... input)
+    public double compute(double... input)
     {
         double result = values[0].compute(input);
         int i;

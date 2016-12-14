@@ -38,7 +38,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -54,7 +54,7 @@ public class ItemListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
@@ -66,7 +66,7 @@ public class ItemListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(PlayerItemBreakEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
@@ -103,7 +103,7 @@ public class ItemListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onWorld(PlayerChangedWorldEvent event)
     {
         if (!SkillAPI.getSettings().isWorldEnabled(event.getFrom())
@@ -111,7 +111,7 @@ public class ItemListener extends SkillAPIListener
             SkillAPI.getPlayerData(event.getPlayer()).getEquips().update(event.getPlayer());
     }
 
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHeld(PlayerItemHeldEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
@@ -122,10 +122,10 @@ public class ItemListener extends SkillAPIListener
     public void onClose(InventoryCloseEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            SkillAPI.schedule(new UpdateTask((Player)event.getPlayer(), false), 1);
+            SkillAPI.schedule(new UpdateTask((Player) event.getPlayer(), false), 1);
     }
 
-    @EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())
@@ -174,12 +174,12 @@ public class ItemListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onShoot(EntityShootBowEvent event)
     {
         if (event.getEntity() instanceof Player)
         {
-            if (!SkillAPI.getPlayerData((Player)event.getEntity()).getEquips().canHit())
+            if (!SkillAPI.getPlayerData((Player) event.getEntity()).getEquips().canHit())
             {
                 SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, event.getEntity(), FilterType.COLOR);
                 event.setCancelled(true);
@@ -189,27 +189,27 @@ public class ItemListener extends SkillAPIListener
 
     private static final HashSet<Material> ARMOR = new HashSet<Material>()
     {{
-            add(Material.LEATHER_HELMET);
-            add(Material.IRON_HELMET);
-            add(Material.CHAINMAIL_HELMET);
-            add(Material.GOLD_HELMET);
-            add(Material.DIAMOND_HELMET);
-            add(Material.LEATHER_CHESTPLATE);
-            add(Material.IRON_CHESTPLATE);
-            add(Material.CHAINMAIL_CHESTPLATE);
-            add(Material.GOLD_CHESTPLATE);
-            add(Material.DIAMOND_CHESTPLATE);
-            add(Material.LEATHER_LEGGINGS);
-            add(Material.IRON_LEGGINGS);
-            add(Material.CHAINMAIL_LEGGINGS);
-            add(Material.GOLD_LEGGINGS);
-            add(Material.DIAMOND_LEGGINGS);
-            add(Material.LEATHER_BOOTS);
-            add(Material.IRON_BOOTS);
-            add(Material.CHAINMAIL_BOOTS);
-            add(Material.GOLD_BOOTS);
-            add(Material.DIAMOND_BOOTS);
-        }};
+        add(Material.LEATHER_HELMET);
+        add(Material.IRON_HELMET);
+        add(Material.CHAINMAIL_HELMET);
+        add(Material.GOLD_HELMET);
+        add(Material.DIAMOND_HELMET);
+        add(Material.LEATHER_CHESTPLATE);
+        add(Material.IRON_CHESTPLATE);
+        add(Material.CHAINMAIL_CHESTPLATE);
+        add(Material.GOLD_CHESTPLATE);
+        add(Material.DIAMOND_CHESTPLATE);
+        add(Material.LEATHER_LEGGINGS);
+        add(Material.IRON_LEGGINGS);
+        add(Material.CHAINMAIL_LEGGINGS);
+        add(Material.GOLD_LEGGINGS);
+        add(Material.DIAMOND_LEGGINGS);
+        add(Material.LEATHER_BOOTS);
+        add(Material.IRON_BOOTS);
+        add(Material.CHAINMAIL_BOOTS);
+        add(Material.GOLD_BOOTS);
+        add(Material.DIAMOND_BOOTS);
+    }};
 
     /**
      * Handles updating equipped armor

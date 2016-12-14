@@ -71,8 +71,8 @@ public enum ParticleType
     WATER_SPLASH("splash", "splash"),
     WATER_WAKE("water wake");
 
-    private String editor;
-    private String old;
+    private String  editor;
+    private String  old;
     private boolean mat;
 
     ParticleType(String editorKey)

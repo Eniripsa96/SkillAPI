@@ -50,10 +50,10 @@ public final class Rupture extends Skill implements SkillShot
 
     private static final String SPIKE = "rupture";
 
-    private static final String DAMAGE = "damage";
-    private static final String RADIUS = "radius";
+    private static final String DAMAGE   = "damage";
+    private static final String RADIUS   = "radius";
     private static final String INTERVAL = "interval";
-    private static final String RANGE = "range";
+    private static final String RANGE    = "range";
 
     private EffectPlayer player;
 
@@ -95,7 +95,7 @@ public final class Rupture extends Skill implements SkillShot
     {
         final double radius = settings.getAttr(RADIUS, level);
         final double damage = settings.getAttr(DAMAGE, level);
-        final int interval = (int)(20 * settings.getAttr(INTERVAL, level));
+        final int interval = (int) (20 * settings.getAttr(INTERVAL, level));
 
         final Location target = user.getLocation();
         final Vector direction = target.getDirection();
@@ -104,7 +104,8 @@ public final class Rupture extends Skill implements SkillShot
         SkillAPI.schedule(
             new BukkitRunnable()
             {
-                int spikes = (int)Math.ceil(settings.getAttr(RANGE, level) / radius);
+                int spikes = (int) Math.ceil(settings.getAttr(RANGE, level) / radius);
+
                 @Override
                 public void run()
                 {

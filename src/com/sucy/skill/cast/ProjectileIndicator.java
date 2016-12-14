@@ -116,6 +116,7 @@ public class ProjectileIndicator implements IIndicator
      * @param packets  packet list to add to
      * @param particle particle type to use
      * @param step     animation step
+     *
      * @throws Exception
      */
     @Override

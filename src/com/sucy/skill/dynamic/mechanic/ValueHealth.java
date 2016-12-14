@@ -35,7 +35,7 @@ import java.util.List;
 
 public class ValueHealth extends EffectComponent
 {
-    private static final String KEY    = "key";
+    private static final String KEY = "key";
 
     /**
      * Executes the component

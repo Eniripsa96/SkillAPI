@@ -38,7 +38,7 @@ import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
-import com.sucy.skill.tools.IconHolder;
+import com.sucy.skill.gui.tool.IconHolder;
 import com.sucy.skill.tree.SkillTree;
 import com.sucy.skill.tree.map.MapTree;
 import org.bukkit.Bukkit;

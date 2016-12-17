@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.tools.GUITool
+ * com.sucy.skill.gui.tool.GUITool
  *
  * The MIT License (MIT)
  *
@@ -24,7 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.tools;
+package com.sucy.skill.gui.tool;
 
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
@@ -52,8 +52,8 @@ import java.util.Map;
 public class GUITool implements ToolMenu
 {
     // Page buttons
-    public static final String NEXT_PAGE = "NEXT_PAGE";
-    public static final String PREV_PAGE = "PREV_PAGE";
+    private static final String NEXT_PAGE = "NEXT_PAGE";
+    private static final String PREV_PAGE = "PREV_PAGE";
 
     private static boolean inUse = false;
 
@@ -77,9 +77,7 @@ public class GUITool implements ToolMenu
         NEXT_CLASS,
         PREV_CLASS,
         NEXT_PROFESSION,
-        PREV_PROFESSION,
-        NEXT_SKILL,
-        PREV_SKILL;
+        PREV_PROFESSION;
 
     private static RPGClass[] availableClasses;
     private static RPGClass[] availableProfesses;
@@ -153,15 +151,31 @@ public class GUITool implements ToolMenu
         return item;
     }
 
-    public static void save()
+    public static void tearDown()
     {
         config.clear();
         DataSection data = config.getConfig();
         for (Map.Entry<String, GUIData> entry : setups.entrySet())
-        {
             entry.getValue().save(data.createSection(entry.getKey()));
-        }
         config.save();
+
+        setups.clear();
+        items.clear();
+        config = null;
+        NEXT = null;
+        PREV = null;
+        SHRINK = null;
+        GROW = null;
+        ADD_PAGE = null;
+        DEL_PAGE = null;
+        NEXT_CLASS = null;
+        PREV_CLASS = null;
+        NEXT_PROFESSION = null;
+        PREV_PROFESSION = null;
+
+        availableClasses = null;
+        availableProfesses = null;
+        availableGroups = null;
     }
 
     public static boolean hasData(String key)

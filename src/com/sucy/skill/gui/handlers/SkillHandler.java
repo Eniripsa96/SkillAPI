@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.gui.SkillHandler
+ * com.sucy.skill.gui.handlers.SkillHandler
  * <p>
  * The MIT License (MIT)
  * <p>
@@ -24,11 +24,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.gui;
+package com.sucy.skill.gui.handlers;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.tools.GUIHolder;
+import com.sucy.skill.gui.tool.GUIHolder;
 
 import java.util.HashMap;
 

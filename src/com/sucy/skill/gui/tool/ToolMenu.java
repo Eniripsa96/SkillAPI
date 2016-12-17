@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.tools.ToolMenu
+ * com.sucy.skill.gui.tool.ToolMenu
  *
  * The MIT License (MIT)
  *
@@ -24,7 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.tools;
+package com.sucy.skill.gui.tool;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;

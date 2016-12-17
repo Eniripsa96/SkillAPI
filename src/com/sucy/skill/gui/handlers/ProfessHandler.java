@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.gui.DetailsHandler
+ * com.sucy.skill.gui.handlers.ProfessHandler
  * <p>
  * The MIT License (MIT)
  * <p>
@@ -24,18 +24,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.gui;
+package com.sucy.skill.gui.handlers;
 
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.tools.GUIHolder;
+import com.sucy.skill.manager.CmdManager;
+import com.sucy.skill.gui.tool.GUIHolder;
 
-/**
- * Handles interactions with the class details menu
- */
-public class DetailsHandler extends GUIHolder<RPGClass>
+public class ProfessHandler extends GUIHolder<RPGClass>
 {
     /**
-     * Shows class details when clicked
+     * Professes as the clicked class
      *
      * @param type player class clicked on
      * @param slot slot number
@@ -43,6 +41,7 @@ public class DetailsHandler extends GUIHolder<RPGClass>
     @Override
     protected void onClick(RPGClass type, int slot, boolean left, boolean shift)
     {
-        player.showSkills(player.getPlayer(), player.getClass(type.getGroup()));
+        player.getPlayer().closeInventory();
+        CmdManager.PROFESS_COMMAND.execute(player.getPlayer(), new String[] { type.getName() });
     }
 }

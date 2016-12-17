@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.gui.AttributeHandler
+ * com.sucy.skill.gui.handlers.DetailsHandler
  * <p>
  * The MIT License (MIT)
  * <p>
@@ -24,34 +24,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.gui;
+package com.sucy.skill.gui.handlers;
 
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.manager.AttributeManager;
-import com.sucy.skill.tools.GUIHolder;
+import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.gui.tool.GUIHolder;
 
-import java.util.HashMap;
-
-public class AttributeHandler extends GUIHolder<AttributeManager.Attribute>
+/**
+ * Handles interactions with the class details menu
+ */
+public class DetailsHandler extends GUIHolder<RPGClass>
 {
-    private HashMap<String, Integer> start = new HashMap<String, Integer>();
-
+    /**
+     * Shows class details when clicked
+     *
+     * @param type player class clicked on
+     * @param slot slot number
+     */
     @Override
-    protected void onSetup()
+    protected void onClick(RPGClass type, int slot, boolean left, boolean shift)
     {
-        AttributeManager manager = SkillAPI.getAttributeManager();
-        for (String key : manager.getKeys())
-            start.put(key, player.getAttribute(key));
-    }
-
-    @Override
-    public void onClick(AttributeManager.Attribute type, int slot, boolean left, boolean shift)
-    {
-        if (left)
-            if (player.upAttribute(type.getKey()))
-                setPage(page);
-            else if ((SkillAPI.getSettings().isAttributesDowngrade() || player.getAttribute(type.getKey()) > start.get(type.getKey()))
-                && player.refundAttribute(type.getKey()))
-                setPage(page);
+        player.showSkills(player.getPlayer(), player.getClass(type.getGroup()));
     }
 }

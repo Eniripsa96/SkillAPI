@@ -47,7 +47,7 @@ import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
-import com.sucy.skill.gui.Menu;
+import com.sucy.skill.gui.map.Menu;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
@@ -57,7 +57,7 @@ import com.sucy.skill.task.GUITask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.task.SaveTask;
 import com.sucy.skill.thread.MainThread;
-import com.sucy.skill.tools.GUITool;
+import com.sucy.skill.gui.tool.GUITool;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -204,7 +204,7 @@ public class SkillAPI extends JavaPlugin
         if (singleton != this)
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
 
-        GUITool.save();
+        GUITool.tearDown();
 
         mainThread.disable();
         mainThread = null;

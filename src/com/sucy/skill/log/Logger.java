@@ -46,9 +46,7 @@ public class Logger
     public static void loadLevels(DataSection config)
     {
         for (String key : config.keys())
-        {
             setLevel(key, config.getInt(key));
-        }
     }
 
     /**
@@ -73,9 +71,7 @@ public class Logger
     public static void log(String key, int level, String message)
     {
         if (LEVELS.containsKey(key) && LEVELS.get(key) >= level)
-        {
             Bukkit.getLogger().info(message);
-        }
     }
 
     /**

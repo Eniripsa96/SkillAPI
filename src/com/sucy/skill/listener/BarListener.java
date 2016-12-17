@@ -37,10 +37,9 @@ import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
-import com.sucy.skill.gui.SkillDetailMenu;
-import com.sucy.skill.gui.SkillListMenu;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import com.sucy.skill.gui.map.SkillDetailMenu;
+import com.sucy.skill.gui.map.SkillListMenu;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -50,12 +49,17 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 
+import java.util.HashSet;
+import java.util.UUID;
+
 /**
  * Handles interactions with skill bars. This shouldn't be
  * use by other plugins as it is handled by the API.
  */
 public class BarListener extends SkillAPIListener
 {
+    private final HashSet<UUID> ignored = new HashSet<UUID>();
+
     @Override
     public void init()
     {
@@ -208,6 +212,10 @@ public class BarListener extends SkillAPIListener
         {
             data.getSkillBar().setup(event.getPlayer());
             data.getSkillBar().update(event.getPlayer());
+            if (data.getSkillBar().isSetup()
+                && SkillAPI.getSettings().isWorldEnabled(event.getRespawnLocation().getWorld())
+                && !data.getSkillBar().isWeaponSlot(0))
+                ignored.add(event.getPlayer().getUniqueId());
         }
     }
 
@@ -226,9 +234,9 @@ public class BarListener extends SkillAPIListener
             return;
 
         // Prevent moving skill icons
-        if (event.getSlotType() == InventoryType.SlotType.QUICKBAR)
+        int slot = event.getSlot();
+        if (event.getSlotType() == InventoryType.SlotType.QUICKBAR && slot < 9)
         {
-            int slot = event.getSlot();
             if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT)
                 event.setCancelled(!skillBar.isWeaponSlot(slot));
             else if ((event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.SHIFT_RIGHT)
@@ -238,6 +246,19 @@ public class BarListener extends SkillAPIListener
                 skillBar.toggleSlot(slot);
             }
         }
+    }
+
+    /**
+     * Ignores the next cast upon changing worlds due to the forced slot
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onChangeWorld(PlayerChangedWorldEvent event)
+    {
+        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+        if (data.hasClass() && data.getSkillBar().isSetup() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            ignored.add(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -251,15 +272,15 @@ public class BarListener extends SkillAPIListener
         // Doesn't do anything without a class
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (!data.hasClass())
-        {
             return;
-        }
 
         // Must be a skill slot when the bar is set up
         PlayerSkillBar bar = data.getSkillBar();
         if (!bar.isWeaponSlot(event.getNewSlot()) && bar.isSetup())
         {
             event.setCancelled(true);
+            if (ignored.remove(event.getPlayer().getUniqueId()))
+                return;
 
             MapData held = MapMenuManager.getActiveMenuData(event.getPlayer());
             if (held != null)
@@ -271,9 +292,7 @@ public class BarListener extends SkillAPIListener
                 }
             }
             else
-            {
                 bar.apply(event.getNewSlot());
-            }
         }
     }
 
@@ -285,13 +304,10 @@ public class BarListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChangeMode(PlayerGameModeChangeEvent event)
     {
-
         // Clear on entering creative mode
         final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (event.getNewGameMode() == GameMode.CREATIVE && data.hasClass())
-        {
             data.getSkillBar().clear(event.getPlayer());
-        }
 
         // Setup on leaving creative mode
         else if (event.getPlayer().getGameMode() == GameMode.CREATIVE && data.hasClass())

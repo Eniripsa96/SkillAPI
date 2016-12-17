@@ -1,21 +1,21 @@
 /**
  * SkillAPI
- * com.sucy.skill.gui.ProfessHandler
- * <p>
+ * com.sucy.skill.gui.tool.IconHolder
+ *
  * The MIT License (MIT)
- * <p>
+ *
  * Copyright (c) 2016 Steven Sucy
- * <p>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * <p>
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * <p>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,24 +24,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.gui;
+package com.sucy.skill.gui.tool;
 
-import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.manager.CmdManager;
-import com.sucy.skill.tools.GUIHolder;
+import com.sucy.skill.api.player.PlayerData;
+import org.bukkit.inventory.ItemStack;
 
-public class ProfessHandler extends GUIHolder<RPGClass>
+public interface IconHolder
 {
-    /**
-     * Professes as the clicked class
-     *
-     * @param type player class clicked on
-     * @param slot slot number
-     */
-    @Override
-    protected void onClick(RPGClass type, int slot, boolean left, boolean shift)
-    {
-        player.getPlayer().closeInventory();
-        CmdManager.PROFESS_COMMAND.execute(player.getPlayer(), new String[] { type.getName() });
-    }
+    ItemStack getIcon(PlayerData player);
 }

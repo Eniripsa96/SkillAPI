@@ -41,7 +41,7 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.hook.NoCheatHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.log.Logger;
-import com.sucy.skill.tools.GUITool;
+import com.sucy.skill.gui.tool.GUITool;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;

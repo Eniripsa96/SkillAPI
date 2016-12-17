@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.gui.SkillListMenu
+ * com.sucy.skill.gui.map.SkillListMenu
  *
  * The MIT License (MIT)
  *
@@ -24,7 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.gui;
+package com.sucy.skill.gui.map;
 
 import com.rit.sucy.gui.*;
 import com.sucy.skill.SkillAPI;

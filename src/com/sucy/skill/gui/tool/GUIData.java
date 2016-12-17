@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.tools.GUIData
+ * com.sucy.skill.gui.tool.GUIData
  *
  * The MIT License (MIT)
  *
@@ -24,7 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.tools;
+package com.sucy.skill.gui.tool;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.api.player.PlayerData;

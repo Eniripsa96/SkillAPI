@@ -41,7 +41,7 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.manager.TitleManager;
-import com.sucy.skill.tools.IconHolder;
+import com.sucy.skill.gui.tool.IconHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 

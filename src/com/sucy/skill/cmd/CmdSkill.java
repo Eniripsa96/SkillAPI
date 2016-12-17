@@ -31,7 +31,7 @@ import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.gui.MapMenuManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.gui.Menu;
+import com.sucy.skill.gui.map.Menu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;

@@ -26,8 +26,8 @@
  */
 package com.sucy.skill.listener;
 
-import com.sucy.skill.tools.GUIHolder;
-import com.sucy.skill.tools.ToolMenu;
+import com.sucy.skill.gui.tool.GUIHolder;
+import com.sucy.skill.gui.tool.ToolMenu;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;

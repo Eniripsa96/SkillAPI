@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.gui.Menu
+ * com.sucy.skill.gui.map.Menu
  *
  * The MIT License (MIT)
  *
@@ -24,7 +24,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.gui;
+package com.sucy.skill.gui.map;
 
 import com.rit.sucy.gui.MapFont;
 import com.rit.sucy.gui.MapMenuManager;
@@ -43,29 +43,29 @@ public class Menu
     public static final String SKILL_TREE = "sapiSkills";
 
     // Menus
-    public static SkillListMenu   LIST_MENU;
-    public static SkillDetailMenu DETAIL_MENU;
+    static SkillListMenu   LIST_MENU;
+    static SkillDetailMenu DETAIL_MENU;
 
     // Images
-    public static final String BACKGROUND = "background";
-    public static final String TITLE      = "title";
-    public static final String NAMEPLATE  = "nameplate";
-    public static final String SELECTOR   = "selector";
-    public static final String UP_0       = "up0";
-    public static final String UP_1       = "up1";
-    public static final String DOWN_0     = "down0";
-    public static final String DOWN_1     = "down1";
-    public static final String MORE_0     = "more0";
-    public static final String MORE_1     = "more1";
-    public static final String BACK_0     = "back0";
-    public static final String BACK_1     = "back1";
+    static final String BACKGROUND = "background";
+    static final String TITLE      = "title";
+    static final String NAMEPLATE  = "nameplate";
+    static final String SELECTOR   = "selector";
+    static final String UP_0       = "up0";
+    static final String UP_1       = "up1";
+    static final String DOWN_0     = "down0";
+    static final String DOWN_1     = "down1";
+    static final String MORE_0     = "more0";
+    static final String MORE_1     = "more1";
+    static final String BACK_0     = "back0";
+    static final String BACK_1     = "back1";
 
     // Fonts
-    public static final String LIST   = "list";
-    public static final String DETAIL = "detail";
+    static final String LIST   = "list";
+    static final String DETAIL = "detail";
 
     // Colors
-    public static final String FONT = "font";
+    static final String FONT = "font";
 
     /**
      * Sets up the schemes for SkillAPI

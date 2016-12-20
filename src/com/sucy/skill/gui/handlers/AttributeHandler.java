@@ -48,10 +48,12 @@ public class AttributeHandler extends GUIHolder<AttributeManager.Attribute>
     public void onClick(AttributeManager.Attribute type, int slot, boolean left, boolean shift)
     {
         if (left)
+        {
             if (player.upAttribute(type.getKey()))
                 setPage(page);
-            else if ((SkillAPI.getSettings().isAttributesDowngrade() || player.getAttribute(type.getKey()) > start.get(type.getKey()))
-                && player.refundAttribute(type.getKey()))
-                setPage(page);
+        }
+        else if ((SkillAPI.getSettings().isAttributesDowngrade() || player.getAttribute(type.getKey()) > start.get(type.getKey()))
+            && player.refundAttribute(type.getKey()))
+            setPage(page);
     }
 }

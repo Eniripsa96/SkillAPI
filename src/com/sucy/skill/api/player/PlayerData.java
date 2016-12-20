@@ -1002,6 +1002,8 @@ public final class PlayerData
                 GUINodes.SKILL_TREE,
                 true,
                 FilterType.COLOR,
+                RPGFilter.POINTS.setReplacement(playerClass.getPoints() + ""),
+                RPGFilter.LEVEL.setReplacement(playerClass.getLevel() + ""),
                 RPGFilter.CLASS.setReplacement(playerClass.getData().getName()),
                 Filter.PLAYER.setReplacement(getPlayerName())
             ).get(0),

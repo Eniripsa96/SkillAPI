@@ -36,6 +36,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -139,15 +140,15 @@ public class Data
     {
         config.set(MAT, item.getType().name());
         config.set(DATA, item.getData().getData());
-        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().hasLore())
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
         {
             List<String> lore = item.getItemMeta().getLore();
+            if (lore == null)
+                lore = new ArrayList<String>();
             lore.add(0, item.getItemMeta().getDisplayName());
             int count = lore.size();
             for (int i = 0; i < count; i++)
-            {
                 lore.add(lore.remove(0).replace(ChatColor.COLOR_CHAR, '&'));
-            }
             config.set(LORE, lore);
         }
     }

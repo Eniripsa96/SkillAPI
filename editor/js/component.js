@@ -1410,7 +1410,7 @@ function MechanicCleanse()
     
     this.description = 'Cleanses negative potion or status effects from the targets.';
     
-    this.data.push(new ListValue('Potion', 'potion', [ 'None', 'All', 'Blindness', 'Confusion', 'Hunger', 'Poison', 'Slow', 'Slow Digging', 'Weakness', 'Wither' ], 'All')
+    this.data.push(new ListValue('Potion', 'potion', [ 'None', 'All', 'Blindness', 'Confusion', 'Hunger', 'Levitation', 'Poison', 'Slow', 'Slow Digging', 'Weakness', 'Wither' ], 'All')
         .setTooltip('The type of potion effect to remove from the target')
     );
     this.data.push(new ListValue('Status', 'status', [ 'None', 'All', 'Curse', 'Disarm', 'Root', 'Silence', 'Stun' ], 'All')

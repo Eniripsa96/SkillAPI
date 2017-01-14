@@ -179,12 +179,12 @@ public class ProjectileMechanic extends EffectComponent
     public void callback(Projectile projectile, LivingEntity hit)
     {
         if (hit == null)
-        {
             hit = new TempEntity(projectile.getLocation());
-        }
+
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
         executeChildren((LivingEntity) projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
+        SkillAPI.removeMeta(projectile, MechanicListener.P_CALL);
         projectile.remove();
     }
 

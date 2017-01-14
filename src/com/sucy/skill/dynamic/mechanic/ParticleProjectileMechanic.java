@@ -148,5 +148,6 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
         executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
+        projectile.setCallback(null);
     }
 }

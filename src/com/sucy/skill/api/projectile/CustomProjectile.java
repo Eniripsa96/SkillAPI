@@ -27,6 +27,7 @@
 package com.sucy.skill.api.projectile;
 
 import com.rit.sucy.player.Protection;
+import com.rit.sucy.reflect.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -38,6 +39,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,19 +50,42 @@ import java.util.List;
  */
 public abstract class CustomProjectile extends BukkitRunnable implements Metadatable
 {
+    private static Constructor<?> aabbConstructor;
+    private static Method         getEntities;
+    private static Method         getBukkitEntity;
+    private static Method         getHandle;
+
+    static
+    {
+        try
+        {
+            Class<?> aabbClass = Reflection.getNMSClass("AxisAlignedBB");
+            Class<?> entityClass = Reflection.getNMSClass("Entity");
+            aabbConstructor = aabbClass.getConstructor(double.class, double.class, double.class, double.class, double.class, double.class);
+            getEntities = Reflection.getNMSClass("World").getDeclaredMethod("getEntities", entityClass, aabbClass);
+            getBukkitEntity = entityClass.getDeclaredMethod("getBukkitEntity");
+            getHandle = Reflection.getCraftClass("CraftWorld").getDeclaredMethod("getHandle");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
     private final HashMap<String, List<MetadataValue>> metadata = new HashMap<String, List<MetadataValue>>();
 
-    protected ProjectileCallback callback;
-    protected LivingEntity       thrower;
-    protected boolean enemy = true;
-    protected boolean ally  = false;
+    private ProjectileCallback callback;
+    private LivingEntity       thrower;
+
+    private boolean enemy = true;
+    private boolean ally  = false;
 
     /**
      * Constructs a new custom projectile and starts its timer task
      *
      * @param thrower entity firing the projectile
      */
-    public CustomProjectile(LivingEntity thrower)
+    CustomProjectile(LivingEntity thrower)
     {
         this.thrower = thrower;
         runTaskTimer(Bukkit.getPluginManager().getPlugin("SkillAPI"), 1, 1);
@@ -90,6 +116,11 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     protected abstract Event hit(LivingEntity entity);
 
     /**
+     * @return true if the projectile has landed on terrain, false otherwise
+     */
+    protected abstract boolean landed();
+
+    /**
      * @return squared radius for colliding
      */
     protected abstract double getCollisionRadius();
@@ -98,7 +129,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
      * Checks whether or not the projectile is still valid.
      * Invalid would mean landing on the ground or leaving the loaded chunks.
      */
-    protected boolean isValid()
+    protected boolean isTraveling()
     {
         // Leaving a loaded chunk
         if (!getLocation().getChunk().isLoaded())
@@ -109,7 +140,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         }
 
         // Hitting a solid block
-        if (getLocation().getBlock().getType().isSolid())
+        if (landed())
         {
             cancel();
             Bukkit.getPluginManager().callEvent(land());
@@ -126,35 +157,74 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
      */
     protected void checkCollision()
     {
-        double radiusSq = getCollisionRadius();
-        radiusSq *= radiusSq;
-
-        for (LivingEntity entity : getNearbyEntities())
+        for (LivingEntity entity : getColliding())
         {
-            if (entity == thrower)
-                continue;
+            boolean ally = Protection.isAlly(getShooter(), entity);
+            if (ally && !this.ally) continue;
+            if (!ally && !this.enemy) continue;
 
-            if (dSq(getLocation(), entity.getLocation(), entity.getLocation().add(0, entity.getEyeHeight(), 0)) < radiusSq)
+            cancel();
+            Bukkit.getPluginManager().callEvent(hit(entity));
+
+            if (callback != null)
+                callback.callback(this, entity);
+
+            return;
+        }
+    }
+
+    /**
+     * @return list of entities colliding with the projectile
+     */
+    private List<LivingEntity> getColliding()
+    {
+        // Reflection for nms collision
+        List<LivingEntity> result = new ArrayList<LivingEntity>(1);
+        try
+        {
+            Object nmsWorld = getHandle.invoke(getLocation().getWorld());
+            Object list = getEntities.invoke(nmsWorld, null, getBoundingBox());
+            for (Object item : (List) list)
             {
-                boolean ally = Protection.isAlly(getShooter(), entity);
-                if (ally && !this.ally) continue;
-                if (!ally && !this.enemy) continue;
-
-                cancel();
-                Bukkit.getPluginManager().callEvent(hit(entity));
-                if (callback != null)
-                {
-                    callback.callback(this, entity);
-                }
-                return;
+                Object bukkit = getBukkitEntity.invoke(item);
+                if (bukkit instanceof LivingEntity)
+                    result.add((LivingEntity) bukkit);
             }
         }
+        // Fallback when reflection fails
+        catch (Exception ex)
+        {
+            double radiusSq = getCollisionRadius();
+            radiusSq *= radiusSq;
+            for (LivingEntity entity : getNearbyEntities())
+            {
+                if (entity == thrower)
+                    continue;
+
+                if (getLocation().distanceSquared(entity.getLocation()) < radiusSq)
+                    result.add(entity);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return NMS bounding box of the projectile
+     */
+    private Object getBoundingBox() throws Exception
+    {
+        Location loc = getLocation();
+        double rad = getCollisionRadius();
+        return aabbConstructor.newInstance(
+            loc.getX() - rad, loc.getY() - rad, loc.getZ() - rad,
+            loc.getX() + rad, loc.getY() + rad, loc.getZ() + rad
+        );
     }
 
     /**
      * @return list of nearby living entities
      */
-    protected List<LivingEntity> getNearbyEntities()
+    private List<LivingEntity> getNearbyEntities()
     {
         List<LivingEntity> list = new ArrayList<LivingEntity>();
         Location loc = getLocation();
@@ -169,33 +239,6 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
                     if (entity instanceof LivingEntity)
                         list.add((LivingEntity) entity);
         return list;
-    }
-
-    /**
-     * Segment distance squared
-     *
-     * @param p some point
-     * @param a first point of the segment
-     * @param b second point of the segment
-     *
-     * @return segment distance to the point squared
-     */
-    public static double dSq(Location p, Location a, Location b)
-    {
-        Vector av = a.toVector();
-
-        Vector ab = b.toVector().subtract(av);
-        Vector ap = p.toVector().subtract(av);
-
-        if (ap.dot(ab) < 0)
-            return ap.lengthSquared();
-
-        Vector bp = p.toVector().subtract(b.toVector());
-
-        if (bp.dot(ab) > 0)
-            return bp.lengthSquared();
-
-        return ab.crossProduct(ap).lengthSquared() / ab.lengthSquared();
     }
 
     /**
@@ -218,6 +261,15 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     public LivingEntity getShooter()
     {
         return thrower;
+    }
+
+    /**
+     * Marks the projectile as invalid when the associated task is cancelled
+     */
+    @Override
+    public void cancel()
+    {
+        super.cancel();
     }
 
     /**
@@ -288,9 +340,9 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         this.callback = callback;
     }
 
-    private static final Vector X_VEC         = new Vector(1, 0, 0);
+    private static final Vector X_VEC = new Vector(1, 0, 0);
     private static final double DEGREE_TO_RAD = Math.PI / 180;
-    private static final Vector vel           = new Vector();
+    private static final Vector vel = new Vector();
 
     /**
      * Calculates the directions for projectiles spread from

@@ -91,7 +91,7 @@ public class CooldownMechanic extends EffectComponent
                 worked = true;
             }
         }
-        else if (skillData != null && skillData.isOnCooldown() == (value > 0))
+        else if (skillData != null)
         {
             if (type.equals("percent"))
             {

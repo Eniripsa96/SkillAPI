@@ -114,6 +114,15 @@ public class ItemProjectile extends CustomProjectile
     }
 
     /**
+     * @return true if item is on the ground, false otherwise
+     */
+    @Override
+    protected boolean landed()
+    {
+        return item.isOnGround();
+    }
+
+    /**
      * @return squared radius for colliding
      */
     @Override
@@ -130,7 +139,7 @@ public class ItemProjectile extends CustomProjectile
     @Override
     public void run()
     {
-        if (isValid())
+        if (isTraveling())
             checkCollision();
     }
 

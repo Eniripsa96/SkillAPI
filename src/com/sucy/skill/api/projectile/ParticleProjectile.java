@@ -39,7 +39,6 @@ import org.bukkit.event.Event;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A fake projectile that plays particles along its path
@@ -49,17 +48,17 @@ public class ParticleProjectile extends CustomProjectile
     /**
      * Settings key for the projectile speed
      */
-    public static final String SPEED = "velocity";
+    private static final String SPEED = "velocity";
 
     /**
      * Settings key for the projectile lifespan
      */
-    public static final String LIFESPAN = "lifespan";
+    private static final String LIFESPAN = "lifespan";
 
     /**
      * Settings key for the projectile's frequency of playing particles
      */
-    public static final String FREQUENCY = "frequency";
+    private static final String FREQUENCY = "frequency";
 
     private Location loc;
     private Settings settings;
@@ -133,6 +132,15 @@ public class ParticleProjectile extends CustomProjectile
     }
 
     /**
+     * @return true if passing through a solid block, false otherwise
+     */
+    @Override
+    protected boolean landed()
+    {
+        return getLocation().getBlock().getType().isSolid();
+    }
+
+    /**
      * @return squared radius for colliding
      */
     @Override
@@ -175,14 +183,12 @@ public class ParticleProjectile extends CustomProjectile
     @Override
     public void run()
     {
-        List<LivingEntity> list = loc.getWorld().getLivingEntities();
-
         // Go through multiple steps to avoid tunneling
         for (int i = 0; i < steps; i++)
         {
             loc.add(vel);
 
-            if (!isValid())
+            if (!isTraveling())
                 return;
 
             checkCollision();
@@ -203,16 +209,6 @@ public class ParticleProjectile extends CustomProjectile
             cancel();
             Bukkit.getPluginManager().callEvent(new ParticleProjectileExpireEvent(this));
         }
-    }
-
-    /**
-     * Sets the callback handler for the projectile
-     *
-     * @param callback callback handler
-     */
-    public void setCallback(ProjectileCallback callback)
-    {
-        this.callback = callback;
     }
 
     /**

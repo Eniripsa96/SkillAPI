@@ -320,7 +320,7 @@ public final class PlayerSkill
      */
     public void subtractCooldown(double seconds)
     {
-        cooldown -= seconds * 1000;
+        addCooldown(-seconds);
     }
 
     /**
@@ -332,12 +332,8 @@ public final class PlayerSkill
     public void addCooldown(double seconds)
     {
         if (isOnCooldown())
-        {
             cooldown += (int) (seconds * 1000);
-        }
         else
-        {
             cooldown = System.currentTimeMillis() + (int) (seconds * 1000);
-        }
     }
 }

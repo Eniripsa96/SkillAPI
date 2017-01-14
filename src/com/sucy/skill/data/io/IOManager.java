@@ -66,6 +66,7 @@ public abstract class IOManager
         UNASSIGNED     = "e",
         COMBOS         = "combos",
         ATTRIBS        = "attribs",
+        COOLDOWN       = "cd",
         ATTRIB_POINTS  = "attrib-points";
 
     /**
@@ -171,6 +172,7 @@ public abstract class IOManager
                     {
                         skillData.addLevels(skill.getInt(LEVEL));
                         skillData.addPoints(skill.getInt(POINTS));
+                        skillData.addCooldown(skill.getInt(COOLDOWN, 0));
                     }
                 }
             }
@@ -299,6 +301,8 @@ public abstract class IOManager
                     DataSection skillSection = skills.createSection(skill.getData().getName());
                     skillSection.set(LEVEL, skill.getLevel());
                     skillSection.set(POINTS, skill.getPoints());
+                    if (skill.isOnCooldown())
+                        skillSection.set(COOLDOWN, skill.getCooldown());
                 }
 
                 // Save binds

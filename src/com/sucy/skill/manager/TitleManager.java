@@ -26,7 +26,7 @@
  */
 package com.sucy.skill.manager;
 
-import be.maximvdw.titlemotd.ui.Title;
+import com.sucy.skill.api.util.Title;
 import com.rit.sucy.config.CustomFilter;
 import com.rit.sucy.config.FilterType;
 import com.sucy.skill.SkillAPI;
@@ -41,25 +41,19 @@ import java.util.List;
  */
 public class TitleManager
 {
-    private static Title title;
+    private static int fadeIn;
+    private static int duration;
+    private static int fadeOut;
 
     /**
      * Initializes the title object if not done so already
      */
     private static void init()
     {
-        if (title == null)
-        {
-            Settings settings = SkillAPI.getSettings();
-            title = new Title(
-                "",
-                "",
-                settings.getTitleFadeIn(),
-                settings.getTitleDuration(),
-                settings.getTitleFadeOut()
-            );
-            title.setTimingsToTicks();
-        }
+        Settings settings = SkillAPI.getSettings();
+        fadeIn = settings.getTitleFadeIn();
+        duration = settings.getTitleDuration();
+        fadeOut = settings.getTitleFadeOut();
     }
 
     /**
@@ -78,13 +72,9 @@ public class TitleManager
             if (message != null && message.size() > 0)
             {
                 init();
-                title.setTitle(message.get(0));
-                if (message.size() > 1)
-                    title.setSubtitle(message.get(1));
-                else
-                    title.setSubtitle("");
-
-                title.send(player);
+                String title = message.get(0);
+                String subtitle = message.size() > 1 ? message.get(1) : null;
+                Title.send(player, title, subtitle, fadeIn, duration, fadeOut);
             }
         }
         else if (msgKey != null)

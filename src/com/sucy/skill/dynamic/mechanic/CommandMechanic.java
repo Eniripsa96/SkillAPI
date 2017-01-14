@@ -68,7 +68,7 @@ public class CommandMechanic extends EffectComponent
                 Player p = (Player) t;
                 worked = true;
 
-                command = filter(caster, command);
+                command = filter(caster, p, command);
                 if (type.equals("op"))
                 {
                     boolean op = p.isOp();

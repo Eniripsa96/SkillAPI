@@ -257,7 +257,7 @@ public abstract class EffectComponent
         }
     }
 
-    protected String filter(LivingEntity caster, String text)
+    protected String filter(LivingEntity caster, LivingEntity target, String text)
     {
         // Grab values
         StringBuilder builder = new StringBuilder();
@@ -284,6 +284,13 @@ public abstract class EffectComponent
             {
                 builder.append(text.substring(k, i));
                 builder.append(caster.getName());
+
+                k = j + 1;
+            }
+            else if (key.equals("target"))
+            {
+                builder.append(text.substring(k, i));
+                builder.append(target.getName());
 
                 k = j + 1;
             }

@@ -71,6 +71,7 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
     {
         this.page = page;
         ItemStack[] contents = gui.getPage(page).instance(player, data);
+        GUITool.addPageButtons(contents);
         inventory.setContents(contents);
     }
 
@@ -91,6 +92,18 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
                 onHotBar((T) data.get(result), event.getSlot(), event.getHotbarButton());
             else
                 onClick((T) data.get(result), event.getSlot(), event.isLeftClick(), event.isShiftClick());
+        }
+        else if (top && gui.getPages() > 1) {
+            if (gui.getSize() == 9) {
+                if (event.getSlot() == 7)
+                    prev();
+                if (event.getSlot() == 8)
+                    next();
+            }
+            else if (event.getSlot() == 8)
+                prev();
+            else if (event.getSlot() == 17)
+                next();
         }
     }
 

@@ -351,20 +351,22 @@ public class GUITool implements ToolMenu
 
         // Page buttons
         if (guiData.getPages() > 1)
-        {
-            if (inventoryContents.length > 9)
-            {
-                inventoryContents[8] = items.get(PREV_PAGE);
-                inventoryContents[17] = items.get(NEXT_PAGE);
-            }
-            else
-            {
-                inventoryContents[7] = items.get(PREV_PAGE);
-                inventoryContents[8] = items.get(NEXT_PAGE);
-            }
-        }
+            addPageButtons(inventoryContents);
 
         return name;
+    }
+
+    public static void addPageButtons(ItemStack[] contents) {
+        if (contents.length > 9)
+        {
+            contents[8] = items.get(PREV_PAGE);
+            contents[17] = items.get(NEXT_PAGE);
+        }
+        else
+        {
+            contents[7] = items.get(PREV_PAGE);
+            contents[8] = items.get(NEXT_PAGE);
+        }
     }
 
     private ItemStack toPlaceholder(String key, ItemStack custom)

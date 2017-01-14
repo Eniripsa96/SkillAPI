@@ -54,7 +54,7 @@ public class EffectComponentTest
 
         DynamicSkill.getCastData(caster).put("yup", 12);
 
-        String result = effectComponent.filter(caster, "Hey {nope} {yup} {player} {yup} there");
+        String result = effectComponent.filter(caster, caster, "Hey {nope} {yup} {player} {yup} there");
         Assert.assertEquals(result, "Hey {nope} 12 Dude 12 there");
     }
 }

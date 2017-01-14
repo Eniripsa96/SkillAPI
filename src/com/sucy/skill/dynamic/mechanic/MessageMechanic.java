@@ -58,15 +58,13 @@ public class MessageMechanic extends EffectComponent
         String message = TextFormatter.colorString(settings.getString(MESSAGE));
         if (message == null) return false;
 
-        message = filter(caster, message);
-
         // Display message
         boolean worked = false;
         for (LivingEntity target : targets)
         {
             if (target instanceof Player)
             {
-                target.sendMessage(message);
+                target.sendMessage(filter(caster, target, message));
                 worked = true;
             }
         }

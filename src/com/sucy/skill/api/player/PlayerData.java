@@ -93,6 +93,7 @@ public final class PlayerData
     private boolean        init;
     private boolean        passive;
     private int            attribPoints;
+    private long           skillTimer;
 
     /**
      * Initializes a new account data representation for a player.
@@ -1899,6 +1900,7 @@ public final class PlayerData
                         {
                             useMana(skill.getManaCost(), ManaCost.SKILL_CAST);
                         }
+                        skillTimer = System.currentTimeMillis() + SkillAPI.getSettings().getCastCooldown();
                         return true;
                     }
                 }
@@ -1938,6 +1940,7 @@ public final class PlayerData
                         {
                             useMana(skill.getManaCost(), ManaCost.SKILL_CAST);
                         }
+                        skillTimer = System.currentTimeMillis() + SkillAPI.getSettings().getCastCooldown();
                         return true;
                     }
                 }
@@ -1963,7 +1966,7 @@ public final class PlayerData
      */
     public boolean check(PlayerSkill skill, boolean cooldown, boolean mana)
     {
-        if (skill == null)
+        if (skill == null || System.currentTimeMillis() < skillTimer)
             return false;
 
         SkillStatus status = skill.getStatus();

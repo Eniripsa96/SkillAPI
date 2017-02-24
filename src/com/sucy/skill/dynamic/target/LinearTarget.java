@@ -72,15 +72,14 @@ public class LinearTarget extends EffectComponent
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity t : targets)
         {
-            if (self)
-            {
-                list.add(caster);
-            }
+
             Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
 
             List<LivingEntity> result = TargetHelper.getLivingTargets(t, range, tolerance);
             for (LivingEntity target : result)
             {
+                if (target == caster)
+                    continue;
                 if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                 {
                     continue;
@@ -94,7 +93,10 @@ public class LinearTarget extends EffectComponent
                     }
                 }
             }
-
+            if (self)
+            {
+                list.add(caster);
+            }
         }
         return list.size() > 0 && executeChildren(caster, level, list);
     }

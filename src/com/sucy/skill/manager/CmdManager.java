@@ -100,18 +100,10 @@ public class CmdManager
         {
             root.addSubCommand(new ConfigurableCommand(api, "combo", SenderType.PLAYER_ONLY, new CmdCombo(), "Sets skill combo", "<skill> <combo>", Permissions.BASIC));
         }
-        if (SkillAPI.getSettings().isMapTreeEnabled())
-        {
-            root.addSubCommand(new ConfigurableCommand(api, "scheme", SenderType.PLAYER_ONLY, new CmdScheme(), "Views/sets map schemes", "[scheme]", Permissions.BASIC));
-        }
         if (SkillAPI.getSettings().isAttributesEnabled())
         {
             root.addSubCommand(new ConfigurableCommand(api, "ap", SenderType.ANYONE, new CmdAP(), "Gives attrib points", "[player] <amount>", Permissions.ATTRIB));
             root.addSubCommand(new ConfigurableCommand(api, "attr", SenderType.PLAYER_ONLY, new CmdAttribute(), "Opens attribute menu", "", Permissions.BASIC));
-        }
-        if (SkillAPI.getSettings().isMapTreeAvailable() && !SkillAPI.getSettings().isMapTreeEnabled())
-        {
-            root.addSubCommand(new ConfigurableCommand(api, "skillmap", SenderType.PLAYER_ONLY, new CmdSkillMap(), "Alternate skill list", "", Permissions.BASIC));
         }
         CommandManager.registerCommand(root);
     }

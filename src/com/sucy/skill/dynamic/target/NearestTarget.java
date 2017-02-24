@@ -139,7 +139,7 @@ public class NearestTarget extends EffectComponent
         // Grab nearby targets
         for (Entity entity : entities)
         {
-            if (!(entity instanceof LivingEntity))
+            if (!(entity instanceof LivingEntity) || entity == caster)
                 continue;
 
             LivingEntity target = (LivingEntity) entity;

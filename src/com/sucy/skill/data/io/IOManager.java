@@ -57,7 +57,6 @@ public abstract class IOManager
         SKILLS         = "skills",
         BINDS          = "binds",
         LEVEL          = "level",
-        SCHEME         = "scheme",
         EXP            = "exp",
         POINTS         = "points",
         SKILL_BAR      = "bar",
@@ -81,7 +80,7 @@ public abstract class IOManager
      *
      * @param api SkillAPI reference
      */
-    protected IOManager(SkillAPI api)
+    IOManager(SkillAPI api)
     {
         this.api = api;
     }
@@ -134,10 +133,6 @@ public abstract class IOManager
         {
             DataSection account = accounts.getSection(accountKey);
             PlayerData acc = data.getData(Integer.parseInt(accountKey.replace(ACCOUNT_PREFIX, "")), player, true);
-
-            // Load scheme
-            if (SkillAPI.getSettings().isMapTreeAvailable())
-                acc.setScheme(account.getString(SCHEME, "default"));
 
             // Load classes
             DataSection classes = account.getSection(CLASSES);
@@ -289,10 +284,6 @@ public abstract class IOManager
             {
                 DataSection account = accounts.createSection(ACCOUNT_PREFIX + entry.getKey());
                 PlayerData acc = entry.getValue();
-
-                // Save scheme
-                if (SkillAPI.getSettings().isMapTreeAvailable())
-                    account.set(SCHEME, acc.getScheme());
 
                 // Save classes
                 DataSection classes = account.createSection(CLASSES);

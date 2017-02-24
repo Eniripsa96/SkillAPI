@@ -39,8 +39,7 @@ import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.gui.tool.IconHolder;
-import com.sucy.skill.tree.SkillTree;
-import com.sucy.skill.tree.map.MapTree;
+import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
@@ -59,7 +58,8 @@ public abstract class RPGClass implements IconHolder
     private final HashMap<String, Skill> skillMap = new HashMap<String, Skill>();
     private final ArrayList<Skill>       skills   = new ArrayList<Skill>();
 
-    private SkillTree skillTree;
+    private InventoryTree skillTree;
+
     private String    parent;
     private ItemStack icon;
     private TreeType  tree;
@@ -210,7 +210,7 @@ public abstract class RPGClass implements IconHolder
      *
      * @return class skill tree
      */
-    public SkillTree getSkillTree()
+    public InventoryTree getSkillTree()
     {
         return skillTree;
     }
@@ -692,10 +692,7 @@ public abstract class RPGClass implements IconHolder
             }
         }
 
-        if (SkillAPI.getSettings().isMapTreeEnabled())
-            this.skillTree = new MapTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
-        else
-            this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
+        this.skillTree = this.tree.getTree((SkillAPI) Bukkit.getPluginManager().getPlugin("SkillAPI"), this);
     }
 
     /**

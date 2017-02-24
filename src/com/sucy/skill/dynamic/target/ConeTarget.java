@@ -121,19 +121,19 @@ public class ConeTarget extends EffectComponent
         Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
 
         List<LivingEntity> list = TargetHelper.getConeTargets(t, angle, range);
-        if (self)
-        {
-            list.add(caster);
-        }
         for (int i = list.size() - 1; i >= 0; i--)
         {
             LivingEntity target = list.get(i);
-            if (i >= max
+            if (i >= max || target == caster
                 || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                 || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
             {
                 list.remove(i);
             }
+        }
+        if (self)
+        {
+            list.add(caster);
         }
 
         return list;

@@ -163,7 +163,9 @@ public class CastListener extends SkillAPIListener
             return;
 
         if (SkillAPI.getPlayerData(event.getPlayer()).getCastBars().handleInteract(event.getPlayer()))
+        {
             event.getItemDrop().remove();
+        }
 
         else if (event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
@@ -181,7 +183,7 @@ public class CastListener extends SkillAPIListener
         PlayerCastBars bars = SkillAPI.getPlayerData(event.getPlayer()).getCastBars();
 
         // Interaction while in a view
-        if (bars.handleInteract(event.getPlayer()))
+        if (bars.isHovering())
             event.setCancelled(true);
 
             // Entering a view

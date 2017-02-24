@@ -166,6 +166,11 @@ public abstract class InventoryTree extends SkillTree
         return skillSlots;
     }
 
+    public int getHeight()
+    {
+        return height;
+    }
+
     /**
      * Arranges the skill tree
      *
@@ -180,16 +185,6 @@ public abstract class InventoryTree extends SkillTree
         if (height > 6)
         {
             throw new SkillTreeException("Error generating the skill tree: " + tree.getName() + " - too large of a tree!");
-        }
-
-        // Apply to GUI editor if not set up already
-        GUIData data = GUITool.getSkillTree(tree);
-        if (!data.isValid())
-        {
-            GUIPage page = data.getPage(0);
-            for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())
-                page.set(entry.getKey(), entry.getValue().getName());
-            data.resize(height);
         }
     }
 

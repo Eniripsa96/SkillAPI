@@ -28,12 +28,16 @@ package com.sucy.skill.gui.tool;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.tree.SkillTree;
+import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class GUIData
 {
@@ -48,12 +52,18 @@ public class GUIData
     private int pages = 1;
     private int nav   = 0;
 
-    public GUIData()
+    GUIData()
     {
         pageMap.add(new GUIPage(this));
     }
 
-    public GUIData(DataSection data)
+    GUIData(InventoryTree skillTree)
+    {
+        rows = skillTree.getHeight();
+        this.pageMap.add(new GUIPage(this, skillTree.getSkillSlots()));
+    }
+
+    GUIData(DataSection data)
     {
         if (data != null)
         {

@@ -144,6 +144,8 @@ public class AreaTarget extends EffectComponent
         for (int i = 0; i < entities.size() && list.size() < max; i++)
         {
             LivingEntity t = entities.get(i);
+            if (t == caster)
+                continue;
             if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, t.getLocation().add(0, 0.5, 0)))
                 continue;
 

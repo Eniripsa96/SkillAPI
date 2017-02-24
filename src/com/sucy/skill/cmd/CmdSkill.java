@@ -71,27 +71,10 @@ public class CmdSkill implements IFunction
         else if (sender instanceof Player)
         {
             Player p = (Player) sender;
-            if (SkillAPI.getSettings().isMapTreeEnabled())
+            PlayerData data = SkillAPI.getPlayerData(p);
+            if (!data.showSkills(p))
             {
-                ItemStack map = MapMenuManager.getData(Menu.SKILL_TREE).getMapItem();
-                for (ItemStack i : p.getInventory().getContents())
-                {
-                    if (i != null && i.getType() == Material.MAP && i.getDurability() == map.getDurability())
-                    {
-                        cmd.sendMessage(sender, MAP_OWNED, ChatColor.RED + "You already have the skill tree map");
-                        return;
-                    }
-                }
-                cmd.sendMessage(sender, MAP_GIVEN, ChatColor.DARK_GREEN + "You were given the skill tree map. Hold it in your hand to view skills.");
-                p.getInventory().addItem(map);
-            }
-            else
-            {
-                PlayerData data = SkillAPI.getPlayerData(p);
-                if (!data.showSkills(p))
-                {
-                    cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");
-                }
+                cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");
             }
         }
 

@@ -29,6 +29,7 @@ package com.sucy.skill.gui.tool;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.skills.Skill;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
@@ -42,12 +43,22 @@ public class GUIPage
 
     private GUIData parent;
 
-    public GUIPage(GUIData parent)
+    GUIPage(GUIData parent)
     {
         this.parent = parent;
     }
 
-    public GUIPage(GUIData parent, DataSection data)
+    GUIPage(GUIData parent, Map<Integer, Skill> skillSlots)
+    {
+        this.parent = parent;
+        for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())
+        {
+            slots.put(entry.getValue().getName().toLowerCase(), entry.getKey());
+            lookup.put(entry.getKey(), entry.getValue().getName().toLowerCase());
+        }
+    }
+
+    GUIPage(GUIData parent, DataSection data)
     {
         this(parent);
 

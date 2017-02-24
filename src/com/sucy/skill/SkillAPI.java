@@ -47,7 +47,6 @@ import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
-import com.sucy.skill.gui.map.Menu;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
@@ -150,7 +149,6 @@ public class SkillAPI extends JavaPlugin
         listen(new StatusListener(), true);
         listen(new ToolListener(), true);
         listen(new KillListener(), true);
-        listen(new TreeListener(), !settings.isMapTreeEnabled());
         listen(new ItemListener(), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());
         listen(new ClickListener(), settings.isCombosEnabled());
@@ -158,9 +156,6 @@ public class SkillAPI extends JavaPlugin
         listen(new CastListener(), settings.isCastEnabled() && settings.isUsingBars());
         listen(new CastItemListener(), settings.isCastEnabled() && !settings.isUsingBars());
         listen(new DeathListener(), !VersionManager.isVersionAtLeast(11000));
-
-        if (settings.isMapTreeAvailable())
-            Menu.initialize(this);
 
         // Set up tasks
         if (settings.isManaEnabled())
@@ -605,7 +600,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @param skill skill to register
      */
-    public void addSkill(Skill skill)
+    void addSkill(Skill skill)
     {
         skill = registrationManager.validate(skill);
         if (skill != null)
@@ -632,7 +627,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @param rpgClass class to register
      */
-    public void addClass(RPGClass rpgClass)
+    void addClass(RPGClass rpgClass)
     {
         rpgClass = registrationManager.validate(rpgClass);
         if (rpgClass != null)

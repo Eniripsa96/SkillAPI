@@ -47,6 +47,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class GUITool implements ToolMenu
@@ -100,23 +101,26 @@ public class GUITool implements ToolMenu
         PREV_PROFESSION = make(Material.IRON_HOE, ChatColor.GOLD + "Previous Profession");
 
         availableClasses = SkillAPI.getClasses().values().toArray(new RPGClass[SkillAPI.getClasses().size()]);
-        ArrayList<RPGClass> professes = new ArrayList<RPGClass>();
-        ArrayList<String> groups = new ArrayList<String>();
+        HashSet<RPGClass> professes = new HashSet<RPGClass>();
+        HashSet<String> groups = new HashSet<String>();
         professes.add(null);
         for (RPGClass c : availableClasses)
         {
-            if (c.hasParent() && !professes.contains(c.getParent()))
+            setups.put(GUIType.SKILL_TREE.getPrefix() + c.getName(), new GUIData(c.getSkillTree()));
+            if (c.hasParent())
                 professes.add(c.getParent());
-            if (!groups.contains(c.getGroup()))
-                groups.add(c.getGroup());
+            groups.add(c.getGroup());
         }
         availableGroups = groups.toArray(new String[groups.size()]);
         availableProfesses = professes.toArray(new RPGClass[professes.size()]);
 
         config = SkillAPI.getConfig("gui");
         DataSection data = config.getConfig();
-        for (String key : data.keys())
-            setups.put(key, new GUIData(data.getSection(key)));
+        for (String key : data.keys()) {
+            GUIData loaded = new GUIData(data.getSection(key));
+            if (loaded.isValid())
+                setups.put(key, loaded);
+        }
 
         CommentedConfig itemFile = SkillAPI.getConfig("tool");
         itemFile.checkDefaults();
@@ -156,7 +160,8 @@ public class GUITool implements ToolMenu
         config.clear();
         DataSection data = config.getConfig();
         for (Map.Entry<String, GUIData> entry : setups.entrySet())
-            entry.getValue().save(data.createSection(entry.getKey()));
+            if (entry.getValue().isValid())
+                entry.getValue().save(data.createSection(entry.getKey()));
         config.save();
 
         setups.clear();

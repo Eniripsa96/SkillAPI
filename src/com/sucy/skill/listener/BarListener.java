@@ -45,6 +45,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
@@ -244,6 +245,11 @@ public class BarListener extends SkillAPIListener
             {
                 event.setCancelled(true);
                 skillBar.toggleSlot(slot);
+            }
+            else if (event.getAction() == InventoryAction.HOTBAR_SWAP
+                    && !skillBar.isWeaponSlot(event.getHotbarButton()))
+            {
+                event.setCancelled(true);
             }
         }
     }

@@ -914,7 +914,6 @@ public class Settings
         GUI_NAME   = GUI_BASE + "show-class-name",
         GUI_LEVEL  = GUI_BASE + "show-class-level",
         GUI_LVLTXT = GUI_BASE + "class-level-text",
-        GUI_MAP    = GUI_BASE + "map-tree-enabled",
         GUI_TITLE  = GUI_BASE + "title-enabled",
         GUI_DUR    = GUI_BASE + "title-duration",
         GUI_FADEI  = GUI_BASE + "title-fade-in",
@@ -933,8 +932,6 @@ public class Settings
     private boolean showScoreboard;
     private boolean showClassName;
     private boolean showClassLevel;
-    private boolean showMapTree;
-    private boolean showTree;
     private boolean useTitle;
     private int     titleDuration;
     private int     titleFadeIn;
@@ -1039,26 +1036,6 @@ public class Settings
     }
 
     /**
-     * Checks whether or not map trees are enabled on the server
-     *
-     * @return true if enabled, false otherwise
-     */
-    public boolean isMapTreeEnabled()
-    {
-        return showMapTree;
-    }
-
-    /**
-     * Checks whether or not the map tree is available in some way
-     *
-     * @return true if available
-     */
-    public boolean isMapTreeAvailable()
-    {
-        return showTree;
-    }
-
-    /**
      * Check whether or not to use the title display
      * on the given message type
      *
@@ -1107,8 +1084,6 @@ public class Settings
         showScoreboard = config.getBoolean(GUI_BOARD);
         showClassName = config.getBoolean(GUI_NAME);
         showClassLevel = config.getBoolean(GUI_LEVEL);
-        showMapTree = config.getString(GUI_MAP).equalsIgnoreCase("TRUE");
-        showTree = showMapTree || config.getString(GUI_MAP).equalsIgnoreCase("PARTIAL");
         useTitle = config.getBoolean(GUI_TITLE);
         titleDuration = (int) (20 * config.getFloat(GUI_DUR));
         titleFadeIn = (int) (20 * config.getFloat(GUI_FADEI));

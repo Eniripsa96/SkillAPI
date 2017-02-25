@@ -236,6 +236,11 @@ public class TempEntity implements LivingEntity
     }
 
     @Override
+    public PotionEffect getPotionEffect(PotionEffectType potionEffectType) {
+        return null;
+    }
+
+    @Override
     public void removePotionEffect(PotionEffectType potionEffectType)
     {
 
@@ -318,6 +323,61 @@ public class TempEntity implements LivingEntity
     }
 
     @Override
+    public void setInvulnerable(boolean b) {
+
+    }
+
+    @Override
+    public boolean isInvulnerable() {
+        return false;
+    }
+
+    @Override
+    public boolean isSilent() {
+        return false;
+    }
+
+    @Override
+    public void setSilent(boolean b) {
+
+    }
+
+    @Override
+    public boolean hasGravity() {
+        return false;
+    }
+
+    @Override
+    public void setGravity(boolean b) {
+
+    }
+
+    @Override
+    public int getPortalCooldown() {
+        return 0;
+    }
+
+    @Override
+    public void setPortalCooldown(int i) {
+
+    }
+
+    @Override
+    public Set<String> getScoreboardTags() {
+        return null;
+    }
+
+    @Override
+    public boolean addScoreboardTag(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean removeScoreboardTag(String s) {
+        return false;
+    }
+
+    @Override
     public Spigot spigot()
     {
         return null;
@@ -338,6 +398,36 @@ public class TempEntity implements LivingEntity
     @Override
     public boolean setLeashHolder(Entity entity)
     {
+        return false;
+    }
+
+    @Override
+    public boolean isGliding() {
+        return false;
+    }
+
+    @Override
+    public void setGliding(boolean b) {
+
+    }
+
+    @Override
+    public void setAI(boolean b) {
+
+    }
+
+    @Override
+    public boolean hasAI() {
+        return false;
+    }
+
+    @Override
+    public void setCollidable(boolean b) {
+
+    }
+
+    @Override
+    public boolean isCollidable() {
         return false;
     }
 
@@ -570,6 +660,21 @@ public class TempEntity implements LivingEntity
     @Override
     public boolean setPassenger(Entity entity)
     {
+        return false;
+    }
+
+    @Override
+    public List<Entity> getPassengers() {
+        return null;
+    }
+
+    @Override
+    public boolean addPassenger(Entity entity) {
+        return false;
+    }
+
+    @Override
+    public boolean removePassenger(Entity entity) {
         return false;
     }
 

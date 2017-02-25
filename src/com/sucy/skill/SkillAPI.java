@@ -154,6 +154,7 @@ public class SkillAPI extends JavaPlugin
         listen(new ClickListener(), settings.isCombosEnabled());
         listen(new AttributeListener(), settings.isAttributesEnabled());
         listen(new CastListener(), settings.isCastEnabled() && settings.isUsingBars());
+        listen(new CastOffhandListener(), settings.isCastEnabled() && VersionManager.isVersionAtLeast(VersionManager.V1_9_0));
         listen(new CastItemListener(), settings.isCastEnabled() && !settings.isUsingBars());
         listen(new DeathListener(), !VersionManager.isVersionAtLeast(11000));
 

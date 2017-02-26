@@ -400,8 +400,24 @@ input, select, textarea {
 	float: left;
 }
 
+#skillForm .grayed, #classForm .grayed {
+    color: #999;
+}
+
 #skillForm .byteList, #classForm .byteList {
     width: calc(40% - 24px);
+    min-height: 50px;
+}
+
+#skillForm .multilist, #classForm .multilist {
+    padding: 5px;
+    padding-left: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+#skillForm .multilist:hover, #classForm .multilist:hover {
+    background-color: red;
 }
 
 #skillForm select, #classForm select {

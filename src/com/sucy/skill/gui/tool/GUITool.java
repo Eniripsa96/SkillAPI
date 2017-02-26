@@ -405,9 +405,14 @@ public class GUITool implements ToolMenu
         }
 
         if (profession == null)
-            return "GUI Editor - Class Selection";
+            return "Class Selection";
         else
-            return "GUI Editor - " + profession.getName() + " Subprofession";
+            return limit(profession.getName() + " / Sub-profession");
+    }
+
+    private String limit(String text)
+    {
+        return text.substring(0, Math.min(text.length(), 32));
     }
 
     private String populateClassDetails()
@@ -450,7 +455,7 @@ public class GUITool implements ToolMenu
             current = current.getParent();
         }
 
-        return "GUI Editor - " + availableClasses[classId].getName() + " Skill Tree";
+        return limit(availableClasses[classId].getName() + " / Skill Tree");
     }
 
     private String populateAttributes()

@@ -37,6 +37,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -184,10 +185,12 @@ public class CastItemListener extends SkillAPIListener
     @EventHandler
     public void onClick(InventoryClickEvent event)
     {
-        if (SkillAPI.getSettings().isWorldEnabled(event.getWhoClicked().getWorld())
-            && event.getSlot() == slot)
-        {
-            event.setCancelled(true);
+        if (SkillAPI.getSettings().isWorldEnabled(event.getWhoClicked().getWorld())) {
+            if (event.getSlot() == slot)
+                event.setCancelled(true);
+            else if (event.getAction() == InventoryAction.HOTBAR_SWAP
+                    && event.getHotbarButton() == slot)
+                event.setCancelled(true);
         }
     }
 

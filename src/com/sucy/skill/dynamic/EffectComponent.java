@@ -449,6 +449,7 @@ public abstract class EffectComponent
         put("direction", DirectionCondition.class);
         put("elevation", ElevationCondition.class);
         put("else", ElseCondition.class);
+        put("entity type", EntityTypeCondition.class);
         put("fire", FireCondition.class);
         put("flag", FlagCondition.class);
         put("health", HealthCondition.class);

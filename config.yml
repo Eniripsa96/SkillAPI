@@ -275,6 +275,16 @@ Casting:
   # - No limit on skills (though makes cycling hard to find skills)
   bars: true
   #
+  # Whether or not to use the combat bar implementation. Details:
+  # - Specified slot becomes a toggle item
+  # - Can optionally move over or require interacting (left, right, or drop) to swap modes
+  # - Swaps between combat mode and passive mode
+  # - In combat mode, works like the classic skill bar
+  # - In passive mode, no skills are shown
+  # - Passive and combat modes each have their own stored contents
+  # - combat mode uses the skill bar settings
+  combat: false
+  #
   # Global cooldown between skill casts in seconds
   cooldown: 0
   #

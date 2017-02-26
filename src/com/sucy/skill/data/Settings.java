@@ -749,7 +749,6 @@ public class Settings
     private static final String ITEM_EXCLUDE = ITEM_BASE + "lore-exclude-text";
     private static final String ITEM_ATTR    = ITEM_BASE + "lore-attribute-text";
     private static final String ITEM_STATS   = ITEM_BASE + "attribute-text";
-    private static final String ITEM_CHECK   = ITEM_BASE + "players-per-check";
     private static final String ITEM_SLOTS   = ITEM_BASE + "slots";
 
     private boolean checkLore;
@@ -1100,6 +1099,7 @@ public class Settings
     private static final String CAST_BASE      = "Casting.";
     private static final String CAST_ENABLED   = CAST_BASE + "enabled";
     private static final String CAST_BARS      = CAST_BASE + "bars";
+    private static final String CAST_COMBAT    = CAST_BASE + "combat";
     private static final String CAST_INDICATOR = CAST_BASE + "cast-indicator";
     private static final String CAST_SLOT      = CAST_BASE + "slot";
     private static final String CAST_ITEM      = CAST_BASE + "item";
@@ -1109,6 +1109,7 @@ public class Settings
 
     private boolean   castEnabled;
     private boolean   castBars;
+    private boolean   combatEnabled;
     private int       castSlot;
     private long      castCooldown;
     private ItemStack castItem;
@@ -1128,7 +1129,17 @@ public class Settings
      */
     public boolean isUsingBars()
     {
-        return castBars;
+        return castEnabled && castBars && !combatEnabled;
+    }
+
+    public boolean isUsingWand()
+    {
+        return castEnabled && !castBars && !combatEnabled;
+    }
+
+    public boolean isUsingCombat()
+    {
+        return castEnabled && combatEnabled;
     }
 
     /**
@@ -1169,6 +1180,7 @@ public class Settings
     {
         castEnabled = config.getBoolean(CAST_ENABLED);
         castBars = config.getBoolean(CAST_BARS);
+        combatEnabled = config.getBoolean(CAST_COMBAT);
         castSlot = config.getInt(CAST_SLOT) - 1;
         castCooldown = (long) (config.getDouble(CAST_COOLDOWN) * 1000);
         castItem = GUITool.parseItem(config.getSection(CAST_ITEM));
@@ -1539,6 +1551,10 @@ public class Settings
             DataSection slot = layout.getSection((i + 1) + "");
             defaultBarLayout[i] = slot.getBoolean("skill", i <= 5);
             lockedSlots[i] = slot.getBoolean("locked", false);
+            if (isUsingCombat() && i == castSlot) {
+                lockedSlots[i] = true;
+                defaultBarLayout[i] = false;
+            }
             if (defaultBarLayout[i])
             {
                 skillCount++;

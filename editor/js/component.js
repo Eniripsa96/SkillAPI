@@ -31,7 +31,7 @@ var Trigger = {
     CLEANUP              : { name: 'Cleanup',              container: true, construct: TriggerCleanup            },
     CROUCH               : { name: 'Crouch',               container: true, construct: TriggerCrouch             },
     DEATH                : { name: 'Death',                container: true, construct: TriggerDeath              },
-    ENVIRONMENT_DAMAGE   : { name: 'Environment Damage',   container: true, construct: TriggerEnvironmentDamage  },
+    ENVIRONMENT_DAMAGE   : { name: 'Environment Damage',   container: true, construct: TriggerEnvironmentDamage, premium: true },
     INITIALIZE           : { name: 'Initialize',           container: true, construct: TriggerInitialize         },
     KILL                 : { name: 'Kill',                 container: true, construct: TriggerKill               },
     LAND                 : { name: 'Land',                 container: true, construct: TriggerLand               },

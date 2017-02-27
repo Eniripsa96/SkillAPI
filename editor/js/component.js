@@ -1,5 +1,7 @@
 var hoverSpace;
 
+var DAMAGE_TYPES = [ 'Block Explosion', 'Contact', 'Cramming', 'Dragon Breath', 'Drowning', 'Entity Attack', 'Entity Explosion', 'Fall', 'Falling Block', 'Fire', 'Fire Tick', 'Fly Into Wall', 'Hot Floor', 'Lava', 'Lightning', 'Magic', 'Melting', 'Poison', 'Projectile', 'Starvation', 'Suffocation', 'Suicide', 'Thorns', 'Void', 'Wither' ];
+
 function canDrop(thing, target) {
     if (thing == target) return false;
     
@@ -29,6 +31,7 @@ var Trigger = {
     CLEANUP              : { name: 'Cleanup',              container: true, construct: TriggerCleanup            },
     CROUCH               : { name: 'Crouch',               container: true, construct: TriggerCrouch             },
     DEATH                : { name: 'Death',                container: true, construct: TriggerDeath              },
+    ENVIRONMENT_DAMAGE   : { name: 'Environment Damage',   container: true, construct: TriggerEnvironmentDamage  },
     INITIALIZE           : { name: 'Initialize',           container: true, construct: TriggerInitialize         },
     KILL                 : { name: 'Kill',                 container: true, construct: TriggerKill               },
     LAND                 : { name: 'Land',                 container: true, construct: TriggerLand               },
@@ -50,7 +53,7 @@ var Target = {
     NEAREST  : { name: 'Nearest',  container: true, construct: TargetNearest  },
     OFFSET   : { name: 'Offset',   container: true, construct: TargetOffset   },
     REMEMBER : { name: 'Remember', container: true, construct: TargetRemember },
-     SELF     : { name: 'Self',     container: true, construct: TargetSelf     },
+    SELF     : { name: 'Self',     container: true, construct: TargetSelf     },
     SINGLE   : { name: 'Single',   container: true, construct: TargetSingle   }
 };
 
@@ -127,6 +130,7 @@ var Mechanic = {
     PARTICLE:            { name: 'Particle',            container: false, construct: MechanicParticle           },
     PARTICLE_ANIMATION:  { name: 'Particle Animation',  container: false, construct: MechanicParticleAnimation  },
     PARTICLE_EFFECT:     { name: 'Particle Effect',     container: false, construct: MechanicParticleEffect,    premium: true },
+    CANCEL_EFFECT:       { name: 'Cancel Effect',       container: false, construct: MechanicCancelEffect,      premium: true },
     PARTICLE_PROJECTILE: { name: 'Particle Projectile', container: true,  construct: MechanicParticleProjectile },
     PASSIVE:             { name: 'Passive',             container: true,  construct: MechanicPassive            },
     PERMISSION:          { name: 'Permission',          container: false, construct: MechanicPermission         },
@@ -571,22 +575,16 @@ function TriggerDeath()
     this.description = 'Applies skill effects when a player dies.';
 }
 
-/*
-extend('TriggerHealth', 'Component');
-function TriggerHealth() 
+extend('TriggerEnvironmentDamage', 'Component');
+function TriggerEnvironmentDamage()
 {
-    this.super('Health', Type.TRIGGER, true);
+    this.super('Environment Damage', Type.TRIGGER, true);
     
-    this.description = 'Applies skill effects when dropping below a threshold of health';
+    this.description = 'Applies skill effects when a player takes environmental damage.';
     
-    this.data.push(new ListValue('Type', 'type', [ 'Percentage', 'Flat' ], 'Percentage')
-        .setTooltip('Whether to use a percentage or flat amount of health')
-    );
-    this.data.push(new AttributeValue('Amount', 'amount', 20, 0)
-        .setTooltip('The amount of health to trigger on')
-    );
+    this.data.push(new ListValue('Type', 'type', DAMAGE_TYPES, 'FALL'));
 }
-*/
+
 
 extend('TriggerInitialize', 'Component');
 function TriggerInitialize()
@@ -1401,6 +1399,18 @@ function MechanicCancel()
     this.description = 'Cancels the event that caused the trigger this is under to go off. For example, damage based triggers will stop the damage that was dealt while the Launch trigger would stop the projectile from firing.';
 }
 
+extend('MechanicCancelEffect', 'Component');
+function MechanicCancelEffect()
+{
+    this.super('Cancel Effect', Type.MECHANIC, false);
+    
+    this.description = 'Stops a particle effect prematurely.';
+    
+    this.data.push(new StringValue('Effect Key', 'effect-key', 'default')
+        .setTooltip('The key used when setting up the effect')
+    );
+}
+
 extend('MechanicChannel', 'Component');
 function MechanicChannel()
 {
@@ -1698,11 +1708,14 @@ function MechanicImmunity()
     
     this.description = 'Provides damage immunity from one source for a duration.'
     
-    this.data.push(new ListValue('Type', 'type', [ 'Block Explosion', 'Contact', 'Drowning', 'Entity Attack', 'Entity Explosion', 'Fall', 'Falling Block', 'Fire', 'Fire Tick', 'Lava', 'Lightning', 'Magic', 'Melting', 'Poison', 'Projectile', 'Starvation', 'Suffocation', 'Suicide', 'Thorns', 'Void', 'Wither' ], 'Poison')
+    this.data.push(new ListValue('Type', 'type', DAMAGE_TYPES, 'Poison')
         .setTooltip('The damage type to give an immunity for')
     );
     this.data.push(new AttributeValue('Seconds', 'seconds', 3, 0)
         .setTooltip('How long to give an immunity for')
+    );
+    this.data.push(new AttributeValue('Multiplier', 'multiplier', 0, 0)
+        .setTooltip('The multiplier for the incoming damage. Use 0 if you want full immunity.')
     );
 }
 
@@ -2426,6 +2439,9 @@ function MechanicWolf()
     this.data.push(new AttributeValue('Duration', 'seconds', 10, 0)
         .setTooltip('How long to summon the wolf for')
     );
+    this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
+        .setTooltip('How many wolves to summon')
+    );
     this.data.push(new StringListValue('Skills (one per line)', 'skills', [])
         .setTooltip('The skills to give the wolf. Skills are executed at the level of the skill summoning the wolf. Skills needing a Cast trigger will not work.')
     );
@@ -2664,8 +2680,8 @@ function addEffectOptions(component, optional)
     component.data.push(opt(new ListValue('Shape Direction', '-shape-dir', [ 'XY', 'YZ', 'XZ' ], 'XY')
         .setTooltip('The plane the shape formula applies to. XZ would be flat, the other two are vertical.')
     ));
-    component.data.push(opt(new StringValue('Shape Size', '-shape-size', 'still')
-        .setTooltip('Key of a formula for deciding the size of the shape. View "effects.yml" for a list of defined formulas and their keys.')
+    component.data.push(opt(new StringValue('Shape Size', '-shape-size', '1')
+        .setTooltip('Formula for deciding the size of the shape. This can be any sort of formula using the operations defined in the wiki.')
     ));
     component.data.push(opt(new StringValue('Animation', '-animation', 'circle')
         .setTooltip('Key of a formula for deciding where the particle effect moves relative to the target. View "effects.yml" for a list of defined formulas and their keys.')
@@ -2673,8 +2689,8 @@ function addEffectOptions(component, optional)
     component.data.push(opt(new ListValue('Animation Direction', '-anim-dir', [ 'XY', 'YZ', 'XZ' ], 'XZ')
         .setTooltip('The plane the animation motion moves through. XZ wold be flat, the other two are vertical.')
     ));
-    component.data.push(opt(new StringValue('Animation Size', '-anim-size', 'still')
-        .setTooltip('Key of a formula for deciding the multiplier of the animation distance. View "effects.yml" for a list of defined formulas and their keys.')
+    component.data.push(opt(new StringValue('Animation Size', '-anim-size', '1')
+        .setTooltip('Formula for deciding the multiplier of the animation distance. This can be any sort of formula using the operations defined in the wiki.')
     ));
     component.data.push(opt(new IntValue('Interval', '-interval', 1)
         .setTooltip('Number of ticks between playing particles.')

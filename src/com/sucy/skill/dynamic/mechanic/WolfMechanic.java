@@ -58,6 +58,7 @@ public class WolfMechanic extends EffectComponent
     private static final String NAME    = "name";
     private static final String DAMAGE  = "damage";
     private static final String SKILLS  = "skills";
+    private static final String AMOUNT = "amount";
 
     /**
      * Executes the component
@@ -81,6 +82,7 @@ public class WolfMechanic extends EffectComponent
         double health = attr(caster, HEALTH, level, 10.0, isSelf);
         String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", caster.getName()));
         double damage = attr(caster, DAMAGE, level, 3.0, isSelf);
+        double amount = attr(caster, AMOUNT, level, 1.0, isSelf);
         List<String> skills = settings.getStringList(SKILLS);
 
         DyeColor dye = null;
@@ -99,41 +101,39 @@ public class WolfMechanic extends EffectComponent
         ArrayList<LivingEntity> wolves = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
-            Wolf wolf = target.getWorld().spawn(target.getLocation(), Wolf.class);
-            wolf.setOwner((Player) caster);
-            wolf.setMaxHealth(health);
-            wolf.setHealth(health);
-            SkillAPI.setMeta(wolf, MechanicListener.SUMMON_DAMAGE, damage);
+            for (int i = 0; i < amount; i++) {
+                Wolf wolf = target.getWorld().spawn(target.getLocation(), Wolf.class);
+                wolf.setOwner((Player) caster);
+                wolf.setMaxHealth(health);
+                wolf.setHealth(health);
+                SkillAPI.setMeta(wolf, MechanicListener.SUMMON_DAMAGE, damage);
 
-            List<LivingEntity> owner = new ArrayList<LivingEntity>(1);
-            owner.add(caster);
-            DynamicSkill.getCastData(wolf).put("api-owner", owner);
+                List<LivingEntity> owner = new ArrayList<LivingEntity>(1);
+                owner.add(caster);
+                DynamicSkill.getCastData(wolf).put("api-owner", owner);
 
-            if (dye != null)
-            {
-                wolf.setCollarColor(dye);
-            }
-            if (name.length() > 0)
-            {
-                wolf.setCustomName(name);
-                wolf.setCustomNameVisible(true);
-            }
-
-            // Setup skills
-            for (String skillName : skills)
-            {
-                Skill skill = SkillAPI.getSkill(skillName);
-                if (skill instanceof PassiveSkill)
-                {
-                    ((PassiveSkill) skill).initialize(wolf, level);
+                if (dye != null) {
+                    wolf.setCollarColor(dye);
                 }
-            }
-            SkillAPI.setMeta(wolf, SKILL_META, skills);
-            SkillAPI.setMeta(wolf, LEVEL, level);
+                if (name.length() > 0) {
+                    wolf.setCustomName(name);
+                    wolf.setCustomNameVisible(true);
+                }
 
-            RemoveTask task = new RemoveTask(wolf, ticks);
-            tasks.add(task);
-            wolves.add(wolf);
+                // Setup skills
+                for (String skillName : skills) {
+                    Skill skill = SkillAPI.getSkill(skillName);
+                    if (skill instanceof PassiveSkill) {
+                        ((PassiveSkill) skill).initialize(wolf, level);
+                    }
+                }
+                SkillAPI.setMeta(wolf, SKILL_META, skills);
+                SkillAPI.setMeta(wolf, LEVEL, level);
+
+                RemoveTask task = new RemoveTask(wolf, ticks);
+                tasks.add(task);
+                wolves.add(wolf);
+            }
         }
 
         // Apply children to the wolves

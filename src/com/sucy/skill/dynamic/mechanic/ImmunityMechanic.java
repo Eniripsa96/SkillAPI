@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
@@ -37,8 +38,11 @@ import java.util.List;
  */
 public class ImmunityMechanic extends EffectComponent
 {
+    public static final String META_KEY = "sapi_immunity";
+
     private static final String TYPE    = "type";
     private static final String SECONDS = "seconds";
+    private static final String MULTIPLIER = "multiplier";
 
     /**
      * Executes the component
@@ -60,10 +64,12 @@ public class ImmunityMechanic extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(TYPE);
         double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+        double multiplier = attr(caster, MULTIPLIER, level, 0, isSelf);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
             FlagManager.addFlag(target, "immune:" + key.toUpperCase().replace(" ", "_"), ticks);
+            SkillAPI.setMeta(target, META_KEY, multiplier);
         }
         return targets.size() > 0;
     }

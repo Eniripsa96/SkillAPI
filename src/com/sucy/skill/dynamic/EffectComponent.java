@@ -260,10 +260,17 @@ public abstract class EffectComponent
     protected String filter(LivingEntity caster, LivingEntity target, String text)
     {
         // Grab values
+        int i = text.indexOf('{');
+        if (i < 0)
+            return text;
+
+        int j = text.indexOf('}', i);
+        if (j < 0)
+            return text;
+
         StringBuilder builder = new StringBuilder();
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        int i = text.indexOf('{');
-        int j = text.indexOf('}', i);
+
         int k = 0;
         while (i >= 0 && j > i)
         {

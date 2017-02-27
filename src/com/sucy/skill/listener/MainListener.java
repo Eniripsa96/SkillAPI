@@ -38,6 +38,7 @@ import com.sucy.skill.api.util.Combat;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.mechanic.ImmunityMechanic;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -240,8 +241,13 @@ public class MainListener extends SkillAPIListener
     @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event)
     {
-        if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity) event.getEntity(), "immune:" + event.getCause().name()))
-            event.setCancelled(true);
+        if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity) event.getEntity(), "immune:" + event.getCause().name())) {
+            double multiplier = SkillAPI.getMetaDouble(event.getEntity(), ImmunityMechanic.META_KEY);
+            if (multiplier <= 0)
+                event.setCancelled(true);
+            else
+                event.setDamage(event.getDamage() * multiplier);
+        }
     }
 
     /**

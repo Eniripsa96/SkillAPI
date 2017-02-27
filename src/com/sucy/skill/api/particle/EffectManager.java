@@ -123,6 +123,16 @@ public class EffectManager
     }
 
     /**
+     * Gets the effect data for the given target
+     *
+     * @param target target to get the data for
+     * @return effect data for the target or null if doesn't exist
+     */
+    public static EffectData getEffectData(EffectTarget target) {
+        return instances.get(target);
+    }
+
+    /**
      * Fetches an active effect for a given target
      *
      * @param target target to get the effect for

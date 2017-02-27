@@ -402,9 +402,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public void onKill(EntityDeathEvent event)
     {
         // Kill trigger
-        if (active.containsKey(event.getEntity().getEntityId()))
+        Player player = event.getEntity().getKiller();
+        if (player != null && active.containsKey(player.getEntityId()))
         {
-            trigger(event.getEntity(), event.getEntity(), active.get(event.getEntity().getEntityId()), Trigger.KILL);
+            trigger(player, player, active.get(event.getEntity().getEntityId()), Trigger.KILL);
             cancel = false;
         }
     }

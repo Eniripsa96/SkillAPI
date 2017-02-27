@@ -97,6 +97,15 @@ public class EffectData
     }
 
     /**
+     * Cancels an effect via its associated key
+     *
+     * @param key key of the effect to cancel
+     */
+    public void cancel(String key) {
+        effects.remove(key);
+    }
+
+    /**
      * Ticks each effect for the target
      */
     public void tick()

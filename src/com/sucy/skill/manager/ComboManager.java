@@ -304,7 +304,7 @@ public class ComboManager
      */
     public int parseCombo(String combo)
     {
-        if (combo == null)
+        if (combo == null || combo.length() == 0)
             return -1;
 
         String[] parts = combo.toLowerCase().split(" ");

@@ -232,5 +232,6 @@ public class ItemProjectileMechanic extends EffectComponent implements Projectil
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
         executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
+        projectile.setCallback(null);
     }
 }

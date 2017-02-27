@@ -943,6 +943,178 @@ StringListValue.prototype.load = function(value)
 }
 
 /**
+ * Represents a defined list of options for a value
+ * 
+ * @param {string} name  - the display name of the value
+ * @param {string} key   - the config key for the value
+ * @param {Array}  list  - the list of available options
+ * @param {Array} values - the default values to include
+ *
+ * @constructor
+ */ 
+function MultiListValue(name, key, list, values) 
+{
+	this.name = name;
+	this.key = key;
+	this.list = list;
+	this.values = values || [];
+	
+	this.label = undefined;
+	this.select = undefined;
+    this.valueContainer = undefined;
+	this.div = undefined;
+    this.hidden = false;
+}
+
+MultiListValue.prototype.dupe = function()
+{
+    return new MultiListValue(this.name, this.key, this.list, this.values)
+        .setTooltip(this.tooltip);
+}
+
+// -- Hooking up the function at the top, see comments there -- //
+MultiListValue.prototype.requireValue = requireValue;
+MultiListValue.prototype.applyRequireValues = applyRequireValues;
+MultiListValue.prototype.setTooltip = setTooltip;
+
+/**
+ * Creates the form HTML for the value and appends
+ * it to the target element
+ *
+ * @param {Element} target - the HTML element to append to
+ */ 
+MultiListValue.prototype.createHTML = function(target) 
+{
+	this.label = document.createElement('label');
+	this.label.innerHTML = this.name;
+	if (this.tooltip) {
+        this.label.setAttribute('data-tooltip', this.tooltip);
+        this.label.className = 'tooltip';
+    } 
+	target.appendChild(this.label);
+	
+	this.select = document.createElement('select');
+	this.select.id = this.key;
+	var selected = -1;
+	
+    var option = document.createElement('option');
+    option.innerHTML = '- Select -';
+    this.select.add(option);
+	for (var i = 0; i < this.list.length; i++)
+	{
+		option = document.createElement('option');
+		option.innerHTML = this.list[i];
+		this.select.add(option);
+	}
+	this.select.selectedIndex = 0;
+    this.select.inputRef = this;
+    this.select.addEventListener('change', function(e) {
+        if (this.selectedIndex != 0)
+        {
+            var val = this[this.selectedIndex].innerHTML;
+            //this.inputRef.values.add(val);
+            this.inputRef.populate(val);
+            this.selectedIndex = 0;
+        }
+    });
+	target.appendChild(this.select);
+    
+    this.help = document.createElement('label');
+    this.help.innerHTML = '- Click to remove -';
+    this.help.className = 'grayed';
+    target.appendChild(this.help);
+    
+    this.div = document.createElement('div');
+    this.div.className = 'byteList';
+    target.appendChild(this.div);
+    
+    for (var i = 0; i < this.values.length; i++) {
+        this.populate(this.values[i]);
+    }
+}
+
+MultiListValue.prototype.populate = function(value)
+{
+    var entry = document.createElement('div');
+    entry.className = 'multilist';
+    entry.innerHTML = value;
+    entry.addEventListener('click', function(e) { 
+        this.parentNode.removeChild(this);
+    });
+    this.div.appendChild(entry);
+};
+
+/**
+ * Hides the HTML elements of the value
+ */
+MultiListValue.prototype.hide = function()
+{
+	if (this.label && this.select && !this.hidden)
+	{
+		this.hidden = true;
+		this.label.style.display = 'none';
+		this.select.style.display = 'none';
+        this.div.style.display = 'none';
+	}
+};
+
+/**
+ * Shows the HTML elements of the value
+ */
+MultiListValue.prototype.show = function()
+{
+	if (this.label && this.select && this.hidden)
+	{
+		this.hidden = false;
+		this.label.style.display = 'block';
+		this.select.style.display = 'block';
+        this.div.style.display = 'block';
+	}
+};
+
+/**
+ * Updates the current value using the HTML elements
+ */ 
+MultiListValue.prototype.update = function()
+{
+    this.values = [];
+    for (var entry = this.div.firstChild; entry !== null; entry = entry.nextSibling) {
+        this.values.push(entry.innerHTML);
+    }
+}
+
+/**
+ * Retrieves the save string for the value
+ *
+ * @param {string} spacing - the spacing to go before the value
+ */ 
+MultiListValue.prototype.getSaveString = function(spacing)
+{	
+	var result = spacing + this.key + ':\n';
+	for (var i = 0; i < this.values.length; i++)
+	{
+		var enclosing = "'";
+		if (this.values[i].indexOf("'") >= 0)
+		{
+			if (this.values[i].indexOf('"') >= 0) this.values[i] = this.values[i].replace("'", "");
+			else enclosing = '"';
+		}
+		result += spacing + "- " + enclosing + this.values[i] + enclosing + "\n";
+	}
+	return result;
+}
+
+/**
+ * Loads a config value
+ *
+ * @param {Array} value - config array value
+ */
+MultiListValue.prototype.load = function(value)
+{
+	this.values = value;
+}
+
+/**
  * Represents a byte-represented list of options
  *
  * @param {string} name   - the display name of the value
@@ -960,7 +1132,7 @@ function ByteListValue(name, key, values, value)
 	this.values = values;
     
 	this.label = undefined;
-	this.box = undefined;
+	this.div = undefined;
 	this.hidden = false;
 }
 

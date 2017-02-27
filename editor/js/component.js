@@ -70,6 +70,7 @@ var Condition = {
     DIRECTION:   { name: 'Direction',   container: true, construct: ConditionDirection  },
     ELEVATION:   { name: 'Elevation',   container: true, construct: ConditionElevation  },
     ELSE:        { name: 'Else',        container: true, construct: ConditionElse,      premium: true },
+    ENTITY_TYPE: { name: 'Entity Type', container: true, construct: ConditionEntityType,premium: true },
     FIRE:        { name: 'Fire',        container: true, construct: ConditionFire       },
     FLAG:        { name: 'Flag',        container: true, construct: ConditionFlag       },
     HEALTH:      { name: 'Health',      container: true, construct: ConditionHealth     },
@@ -1053,6 +1054,18 @@ function ConditionElse()
     this.description = 'Applies child elements if the previous component failed to execute. This not only applies for conditions not passing, but mechanics failing due to no target or other cases.';
 }
 
+extend('ConditionEntityType', 'Component');
+function ConditionEntityType()
+{
+    this.super('Entity Type', Type.CONDITION, true);
+    
+    this.description = 'Applies child elements if the target matches one of the selected entity types'
+    
+    this.data.push(new MultiListValue('Types', 'types', [ 'BAT', 'BLAZE', 'CAVE_SPIDER', 'CHICKEN', 'COW', 'CREEPER', 'DONKEY', 'ELDER_GUARDIAN', 'ENDER_DRAGON', 'ENDERMAN', 'ENDERMITE', 'EVOKER', 'GHAST', 'GIANT', 'GUARDIAN', 'HORSE', 'HUSK', 'IRON_GOLEM', 'LLAMA', 'MAGMA_CUBE', 'MULE', 'MUSHROOM_COW', 'OCELOT', 'PIG', 'PIG_ZOMBIE', 'PLAYER', 'POLAR_BEAR', 'RABBIT', 'SHEEP', 'SHULKER', 'SILVERFISH', 'SKELETON', 'SKELETON_HORSE', 'SLIME', 'SNOWMAN', 'SPIDER', 'SQUID', 'VEX', 'VILLAGER', 'VINDICATOR', 'WITCH', 'WITHER', 'WITHER_SKELETON', 'WOLF', 'ZOMBIE', 'ZOMBIE_HORSE', 'ZOMBIE_VILLAGER' ])
+        .setTooltip('The entity types to target')
+    );
+}
+
 extend('ConditionFire', 'Component');
 function ConditionFire()
 {
@@ -1410,7 +1423,7 @@ function MechanicCleanse()
     
     this.description = 'Cleanses negative potion or status effects from the targets.';
     
-    this.data.push(new ListValue('Potion', 'potion', [ 'None', 'All', 'Blindness', 'Confusion', 'Hunger', 'Poison', 'Slow', 'Slow Digging', 'Weakness', 'Wither' ], 'All')
+    this.data.push(new ListValue('Potion', 'potion', [ 'None', 'All', 'Blindness', 'Confusion', 'Hunger', 'Levitation', 'Poison', 'Slow', 'Slow Digging', 'Weakness', 'Wither' ], 'All')
         .setTooltip('The type of potion effect to remove from the target')
     );
     this.data.push(new ListValue('Status', 'status', [ 'None', 'All', 'Curse', 'Disarm', 'Root', 'Silence', 'Stun' ], 'All')
@@ -2640,6 +2653,9 @@ function addEffectOptions(component, optional)
     
     component.data.push(opt(new StringValue('Effect Key', 'effect-key', 'default')
         .setTooltip('The key to refer to the effect by. Only one effect of each key can be active at a time.')
+    ));
+    component.data.push(opt(new AttributeValue('Duration', 'duration', 1, 0)
+        .setTooltip('The time to play the effect for in seconds')
     ));
     
     component.data.push(opt(new StringValue('Shape', '-shape', 'hexagon')

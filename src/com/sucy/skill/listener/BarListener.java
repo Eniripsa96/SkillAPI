@@ -66,9 +66,11 @@ public class BarListener extends SkillAPIListener
     {
         for (Player player : VersionManager.getOnlinePlayers())
         {
-            PlayerData data = SkillAPI.getPlayerData(player);
-            if (data.hasClass())
-                data.getSkillBar().setup(player);
+            if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
+                PlayerData data = SkillAPI.getPlayerData(player);
+                if (data.hasClass())
+                    data.getSkillBar().setup(player);
+            }
         }
     }
 
@@ -243,7 +245,7 @@ public class BarListener extends SkillAPIListener
 
         // Prevent moving skill icons
         int slot = event.getSlot();
-        if (event.getSlotType() == InventoryType.SlotType.QUICKBAR && slot < 9)
+        if (event.getSlot() < 9 && event.getClickedInventory() == event.getWhoClicked().getInventory())
         {
             if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT)
                 event.setCancelled(!skillBar.isWeaponSlot(slot));
@@ -253,6 +255,8 @@ public class BarListener extends SkillAPIListener
                 event.setCancelled(true);
                 skillBar.toggleSlot(slot);
             }
+            else if (event.getAction().name().startsWith("DROP"))
+                event.setCancelled(!skillBar.isWeaponSlot(slot));
         }
     }
 

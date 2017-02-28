@@ -110,7 +110,7 @@ public class PassiveMechanic extends EffectComponent
         private LivingEntity       caster;
         private int                level;
 
-        public PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period)
+        PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period)
         {
             this.targets = targets;
             this.caster = caster;

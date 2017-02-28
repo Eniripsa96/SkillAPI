@@ -80,6 +80,9 @@ public class CastCombatListener extends SkillAPIListener
 
     private void init(Player player)
     {
+        if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+            return;
+
         backup.put(player.getUniqueId(), new ItemStack[9]);
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
@@ -124,7 +127,10 @@ public class CastCombatListener extends SkillAPIListener
             player.getInventory().setItem(i, null);
         }
         backup.put(player.getUniqueId(), temp);
-        data.getSkillBar().toggleEnabled();
+        if (data.getSkillBar().isSetup())
+            data.getSkillBar().clear(player);
+        else
+            data.getSkillBar().setup(player);
         for (int i = 0; i < 9; i++) {
             if (items[i] != null)
                 player.getInventory().setItem(i, items[i]);
@@ -255,11 +261,13 @@ public class CastCombatListener extends SkillAPIListener
     @EventHandler
     public void onDupe(InventoryClickEvent event)
     {
-        if (event.getClickedInventory() == event.getWhoClicked().getInventory() && event.getSlot() == slot)
-            event.setCancelled(true);
-        else if (event.getAction() == InventoryAction.HOTBAR_SWAP
-                && event.getHotbarButton() == slot)
-            event.setCancelled(true);
+        if (SkillAPI.getSettings().isWorldEnabled(event.getWhoClicked().getWorld())) {
+            if (event.getSlot() == slot)
+                event.setCancelled(true);
+            else if (event.getAction() == InventoryAction.HOTBAR_SWAP
+                    && event.getHotbarButton() == slot)
+                event.setCancelled(true);
+        }
     }
 
     /**
@@ -285,7 +293,7 @@ public class CastCombatListener extends SkillAPIListener
 
         // Prevent moving skill icons
         int slot = event.getSlot();
-        if (event.getSlotType() == InventoryType.SlotType.QUICKBAR && slot < 9)
+        if (event.getSlot() < 9 && event.getClickedInventory() == event.getWhoClicked().getInventory())
         {
             if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT)
                 event.setCancelled(!skillBar.isWeaponSlot(slot));
@@ -295,6 +303,8 @@ public class CastCombatListener extends SkillAPIListener
                 event.setCancelled(true);
                 skillBar.toggleSlot(slot);
             }
+            else if (event.getAction().name().startsWith("DROP"))
+                event.setCancelled(!skillBar.isWeaponSlot(slot));
         }
     }
 

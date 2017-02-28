@@ -38,8 +38,6 @@ import java.util.List;
  */
 public class ItemRemoveMechanic extends EffectComponent
 {
-
-
     /**
      * Executes the component
      *

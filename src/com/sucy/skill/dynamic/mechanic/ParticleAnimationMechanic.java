@@ -41,8 +41,6 @@ import java.util.List;
  */
 public class ParticleAnimationMechanic extends EffectComponent
 {
-    private static final Vector UP = new Vector(0, 1, 0);
-
     private static final String FORWARD  = "forward";
     private static final String UPWARD   = "upward";
     private static final String RIGHT    = "right";
@@ -102,11 +100,10 @@ public class ParticleAnimationMechanic extends EffectComponent
         private int    vl;
         private double ht;
         private double vt;
-        private double radius;
         private double cos;
         private double sin;
 
-        public ParticleTask(LivingEntity caster, List<LivingEntity> targets, int level)
+        ParticleTask(LivingEntity caster, List<LivingEntity> targets, int level)
         {
             this.targets = targets;
 

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.google.common.collect.ImmutableSet;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
 import com.sucy.skill.dynamic.EffectComponent;
@@ -33,17 +34,17 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Cleanses a target of negative potion or status effects
  */
 public class CleanseMechanic extends EffectComponent
 {
-    private static final PotionEffectType[] POTIONS = new PotionEffectType[] {
-        PotionEffectType.BLINDNESS, PotionEffectType.CONFUSION, PotionEffectType.HUNGER,
-        PotionEffectType.LEVITATION, PotionEffectType.POISON, PotionEffectType.SLOW,
-        PotionEffectType.SLOW_DIGGING, PotionEffectType.WEAKNESS, PotionEffectType.WITHER
-    };
+    private static final Set<String> POTIONS = ImmutableSet.of(
+            "BLINDNESS", "CONFUSION", "HUNGER", "LEVITATION", "POISON",
+            "SLOW", "SLOW_DIGGING", "WEAKNESS", "WITHER"
+    );
 
     private static final String STATUS = "status";
     private static final String POTION = "potion";
@@ -94,9 +95,9 @@ public class CleanseMechanic extends EffectComponent
 
             if (potion.equals("ALL"))
             {
-                for (PotionEffectType p : POTIONS)
+                for (PotionEffectType p : PotionEffectType.values())
                 {
-                    if (target.hasPotionEffect(p))
+                    if (target.hasPotionEffect(p) && POTIONS.contains(p.getName()))
                     {
                         target.removePotionEffect(p);
                         worked = true;

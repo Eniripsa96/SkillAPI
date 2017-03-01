@@ -82,10 +82,11 @@ public class BarListener extends SkillAPIListener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        if (data.hasClass())
-        {
-            data.getSkillBar().setup(event.getPlayer());
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())) {
+            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+            if (data.hasClass()) {
+                data.getSkillBar().setup(event.getPlayer());
+            }
         }
     }
 
@@ -113,6 +114,8 @@ public class BarListener extends SkillAPIListener
     public void onProfess(PlayerClassChangeEvent event)
     {
         Player p = event.getPlayerData().getPlayer();
+        if (!SkillAPI.getSettings().isWorldEnabled(p.getWorld()))
+            return;
 
         // Professing as a first class sets up the skill bar
         if (event.getPreviousClass() == null && event.getNewClass() != null)
@@ -178,15 +181,16 @@ public class BarListener extends SkillAPIListener
     @EventHandler
     public void onDowngrade(final PlayerSkillDowngradeEvent event)
     {
-        SkillAPI.schedule(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SkillAPI.getPlayerData(event.getPlayerData().getPlayer()).getSkillBar().update(event.getPlayerData().getPlayer());
-            }
-        }, 1);
-
+        if (event.getPlayerData().getSkillBar().isSetup()) {
+            SkillAPI.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    SkillAPI.getPlayerData(event.getPlayerData().getPlayer())
+                            .getSkillBar()
+                            .update(event.getPlayerData().getPlayer());
+                }
+            }, 1);
+        }
     }
 
     /**
@@ -210,6 +214,9 @@ public class BarListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(PlayerRespawnEvent event)
     {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (data.hasClass())
         {
@@ -269,8 +276,13 @@ public class BarListener extends SkillAPIListener
     public void onChangeWorld(PlayerChangedWorldEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        if (data.hasClass() && data.getSkillBar().isSetup() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        boolean enabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
+        if (data.hasClass() && data.getSkillBar().isSetup() && enabled)
             ignored.add(event.getPlayer().getUniqueId());
+        if (enabled)
+            data.getSkillBar().setup(event.getPlayer());
+        else
+            data.getSkillBar().clear(event.getPlayer());
     }
 
     /**

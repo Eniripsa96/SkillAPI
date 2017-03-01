@@ -40,6 +40,7 @@ import com.sucy.skill.gui.tool.GUIData;
 import com.sucy.skill.gui.tool.GUIPage;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.gui.tool.IconHolder;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -129,7 +130,9 @@ public class AttributeManager
         for (String key : data.keys())
         {
             Logger.log(LogType.ATTRIBUTE_LOAD, 2, "  - " + key);
-            attributes.put(key.toLowerCase(), new Attribute(data.getSection(key), key));
+            Attribute attribute = new Attribute(data.getSection(key), key);
+            attributes.put(key.toLowerCase(), attribute);
+            attributes.put(ChatColor.stripColor(attribute.getName()), attribute);
         }
 
         GUIData attribs = GUITool.getAttributesMenu();

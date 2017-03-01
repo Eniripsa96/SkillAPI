@@ -43,7 +43,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -313,12 +312,18 @@ public class CastCombatListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onChangeWorld(PlayerChangedWorldEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        if (data.hasClass() && data.getSkillBar().isSetup() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        boolean enabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
+        boolean wasEnabled = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
+        if (data.hasClass() && data.getSkillBar().isSetup() && enabled)
             ignored.add(event.getPlayer().getUniqueId());
+        if (enabled && !wasEnabled)
+            init(event.getPlayer());
+        else if (!enabled && wasEnabled)
+            cleanup(event.getPlayer());
     }
 
     /**
@@ -329,10 +334,14 @@ public class CastCombatListener extends SkillAPIListener
     @EventHandler
     public void onCast(PlayerItemHeldEvent event)
     {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
         if (event.getNewSlot() == slot)
         {
             event.setCancelled(true);
-            toggle(event.getPlayer());
+            if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
+                toggle(event.getPlayer());
             return;
         }
 

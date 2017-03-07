@@ -201,9 +201,17 @@ public class BarListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDeath(PlayerDeathEvent event)
     {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
-        if (data.hasClass())
-            data.getSkillBar().clear(event);
+        if (data.getSkillBar().isSetup()) {
+            for (int i = 0; i < 9; i++) {
+                if (!data.getSkillBar().isWeaponSlot(i))
+                    event.getDrops().remove(event.getEntity().getInventory().getItem(i));
+            }
+            data.getSkillBar().clear(event.getEntity());
+        }
     }
 
     /**
@@ -252,7 +260,7 @@ public class BarListener extends SkillAPIListener
 
         // Prevent moving skill icons
         int slot = event.getSlot();
-        if (event.getSlot() < 9 && event.getClickedInventory() == event.getWhoClicked().getInventory())
+        if (event.getSlot() < 9 && event.getSlotType() == InventoryType.SlotType.QUICKBAR)
         {
             if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT)
                 event.setCancelled(!skillBar.isWeaponSlot(slot));

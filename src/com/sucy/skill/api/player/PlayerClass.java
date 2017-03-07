@@ -322,8 +322,10 @@ public final class PlayerClass implements IconHolder
         event.setCancelled(!classData.receivesExp(source));
         Bukkit.getPluginManager().callEvent(event);
 
+        int rounded = (int)Math.ceil(event.getExp());
+
         // Add experience if not cancelled
-        if (!event.isCancelled() && event.getExp() > 0)
+        if (!event.isCancelled() && rounded > 0)
         {
             if (SkillAPI.getSettings().isShowExpMessages() && player.getPlayer() != null)
             {
@@ -331,13 +333,13 @@ public final class PlayerClass implements IconHolder
                     player.getPlayer(),
                     TitleType.EXP_GAINED,
                     NotificationNodes.EXP,
-                    RPGFilter.EXP.setReplacement(amount + ""),
+                    RPGFilter.EXP.setReplacement(rounded + ""),
                     RPGFilter.CLASS.setReplacement(classData.getName()),
-                    Filter.AMOUNT.setReplacement(amount + "")
+                    Filter.AMOUNT.setReplacement(rounded + "")
                 );
             }
 
-            exp += amount;
+            exp += rounded;
             checkLevelUp();
         }
     }

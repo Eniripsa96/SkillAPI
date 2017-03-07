@@ -90,6 +90,10 @@ public class PlayerCastBars implements InventoryHolder
         return view == PlayerView.HOVER_BAR;
     }
 
+    public PlayerView getView() {
+        return view;
+    }
+
     /**
      * Marks a skill as hovered
      *

@@ -477,29 +477,34 @@ Experience:
   # The experience yields from each mob type
   # When exp orbs are enabled, these values are ignored
   yields:
-    blaze: 10
-    cavespider: 5
-    creeper: 3
-    elderguardian: 10
-    enderdragon: 400
-    enderman: 5
-    endermite: 3
-    ghast: 5
-    giant: 20
-    guardian: 10
-    irongolem: 10
-    magmacube: 1
-    pigzombie: 5
-    player: 5
-    shulker: 5
-    silverfish: 2
-    skeleton: 3
-    slime: 1
-    spider: 3
-    witch: 3
-    wither: 500
-    witherskeleton: 5
-    zombie: 2
+    blaze: '10'
+    cavespider: '5'
+    creeper: '3'
+    elderguardian: '10'
+    enderdragon: '400'
+    enderman: '5'
+    endermite: '3'
+    evoker: '10'
+    ghast: '5'
+    giant: '20'
+    guardian: '10'
+    husk: '2'
+    irongolem: '10'
+    magmacube: '1'
+    pigzombie: '5'
+    player: '5'
+    shulker: '5'
+    silverfish: '2'
+    skeleton: '3'
+    slime: '1'
+    spider: '3'
+    stray: '5'
+    vex: '3'
+    vindicator: '5'
+    witch: '3'
+    wither: '500'
+    witherskeleton: '5'
+    zombie: '2'
 #
 # How much logging to do when loading SkillAPI
 # When testing setting up skills/classes, increase this to 1-5

@@ -44,7 +44,7 @@ public abstract class RepeatThreadTask implements IThreadTask
      */
     public RepeatThreadTask(int delay, int interval)
     {
-        this.interval = interval;
+        this.interval = Math.max(interval, 1);
         this.time = -delay;
         expired = false;
     }

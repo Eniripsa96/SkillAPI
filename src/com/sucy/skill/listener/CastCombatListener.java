@@ -43,6 +43,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -241,8 +242,18 @@ public class CastCombatListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDeath(PlayerDeathEvent event)
     {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
-        data.getSkillBar().clear(event.getEntity());
+        if (data.getSkillBar().isSetup()) {
+            for (int i = 0; i < 9; i++) {
+                if (!data.getSkillBar().isWeaponSlot(i))
+                    event.getDrops().remove(event.getEntity().getInventory().getItem(i));
+            }
+            data.getSkillBar().clear(event.getEntity());
+        }
+        event.getDrops().remove(event.getEntity().getInventory().getItem(slot));
         event.getEntity().getInventory().setItem(slot, null);
     }
 
@@ -261,7 +272,7 @@ public class CastCombatListener extends SkillAPIListener
     public void onDupe(InventoryClickEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getWhoClicked().getWorld())) {
-            if (event.getSlot() == slot)
+            if (event.getSlot() == slot && event.getSlotType() == InventoryType.SlotType.QUICKBAR)
                 event.setCancelled(true);
             else if (event.getAction() == InventoryAction.HOTBAR_SWAP
                     && event.getHotbarButton() == slot)
@@ -292,7 +303,7 @@ public class CastCombatListener extends SkillAPIListener
 
         // Prevent moving skill icons
         int slot = event.getSlot();
-        if (event.getSlot() < 9 && event.getClickedInventory() == event.getWhoClicked().getInventory())
+        if (event.getSlot() < 9 && event.getSlotType() == InventoryType.SlotType.QUICKBAR)
         {
             if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT)
                 event.setCancelled(!skillBar.isWeaponSlot(slot));

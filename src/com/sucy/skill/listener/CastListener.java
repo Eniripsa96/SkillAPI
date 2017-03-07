@@ -29,7 +29,9 @@ package com.sucy.skill.listener;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.cast.PlayerCastBars;
+import com.sucy.skill.cast.PlayerView;
 import com.sucy.skill.thread.MainThread;
 import com.sucy.skill.thread.ThreadTask;
 import org.bukkit.Bukkit;
@@ -37,6 +39,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -83,6 +87,14 @@ public class CastListener extends SkillAPIListener
     }
 
     @EventHandler
+    public void onDamaged(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            SkillAPI.getPlayerData(player).getCastBars().restore(player);
+        }
+    }
+
+    @EventHandler
     public void onClassChange(PlayerClassChangeEvent event)
     {
         event.getPlayerData().getCastBars().reset();
@@ -103,6 +115,13 @@ public class CastListener extends SkillAPIListener
             event.getPlayer().getInventory().setItem(SkillAPI.getSettings().getCastSlot(), null);
         else
             init(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        if (SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld())) {
+            event.getDrops().remove(event.getEntity().getInventory().getItem(slot));
+        }
     }
 
     private void init(Player player)

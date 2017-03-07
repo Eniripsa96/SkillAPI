@@ -315,6 +315,8 @@ public class Settings
                     && canAttack((LivingEntity) tameable.getOwner(), target);
             }
         }
+        else return !(target instanceof Monster);
+
         boolean canAttack;
         if (PluginChecker.isNoCheatActive() && attacker instanceof Player)
         {

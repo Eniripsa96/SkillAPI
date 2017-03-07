@@ -354,7 +354,7 @@ public class MainListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPhysicalDamage(EntityDamageByEntityEvent event)
     {
         if (Skill.isSkillDamage()
@@ -410,10 +410,9 @@ public class MainListener extends SkillAPIListener
         {
             PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
             data.stopPassives(event.getPlayer());
-            if (SkillAPI.getSettings().isSkillBarEnabled())
-                data.getSkillBar().clear(event.getPlayer());
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
-            event.getPlayer().setHealth(20);
+            event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());
+            event.getPlayer().setHealth(SkillAPI.getSettings().getDefaultHealth());
             if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none"))
             {
                 event.getPlayer().setLevel(0);
@@ -428,8 +427,6 @@ public class MainListener extends SkillAPIListener
         {
             PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
             data.startPassives(event.getPlayer());
-            if (SkillAPI.getSettings().isSkillBarEnabled())
-                data.getSkillBar().setup(event.getPlayer());
             data.updateHealthAndMana(event.getPlayer());
             data.updateScoreboard();
         }

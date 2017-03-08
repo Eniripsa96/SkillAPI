@@ -12,7 +12,12 @@ Accounts:
   # The main class group used for GUI displays
   main-class-group: class
   #
-  # Currently disabled, ignore this
+  # Allows one "account" per class, providing the "/class switch"
+  # command to change between them. This is an alternative to
+  # using "/class acc <id>" which professes as a class at the same
+  # time and makes it easier to correlate an account to a class.
+  # This will not work well if you have one common class
+  # that turns into the rest.
   one-per-class: false
   #
   # The max number of accounts a normal user can use

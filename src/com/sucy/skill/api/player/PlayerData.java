@@ -2017,6 +2017,9 @@ public final class PlayerData
      */
     public void init(Player player)
     {
+        if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+            return;
+
         AttributeListener.updatePlayer(this);
         getEquips().update(player);
         this.updateHealthAndMana(player);

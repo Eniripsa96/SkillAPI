@@ -185,7 +185,7 @@ public abstract class IOManager
             }
 
             // Load skill bar
-            if (SkillAPI.getSettings().isSkillBarEnabled())
+            if (SkillAPI.getSettings().isSkillBarEnabled() || SkillAPI.getSettings().isUsingCombat())
             {
                 DataSection skillBar = account.getSection(SKILL_BAR);
                 PlayerSkillBar bar = acc.getSkillBar();
@@ -315,7 +315,8 @@ public abstract class IOManager
                 }
 
                 // Save skill bar
-                if (SkillAPI.getSettings().isSkillBarEnabled() && acc.getSkillBar() != null)
+                if ((SkillAPI.getSettings().isSkillBarEnabled() || SkillAPI.getSettings().isUsingCombat())
+                        && acc.getSkillBar() != null)
                 {
                     DataSection skillBar = account.createSection(SKILL_BAR);
                     PlayerSkillBar bar = acc.getSkillBar();

@@ -61,7 +61,6 @@ public class CmdManager
     {
         ConfigurableCommand root = new ConfigurableCommand(api, "class", SenderType.ANYONE);
         root.addSubCommands(
-            new ConfigurableCommand(api, "acc", SenderType.PLAYER_ONLY, new CmdAccount(), "Changes account", "<accountId>", Permissions.BASIC),
             new ConfigurableCommand(api, "bind", SenderType.PLAYER_ONLY, new CmdBind(), "Binds a skill", "<skill>", Permissions.BASIC),
             new ConfigurableCommand(api, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "Casts a skill", "<skill>", Permissions.BASIC),
             new ConfigurableCommand(api, "clearbind", SenderType.PLAYER_ONLY, new CmdClearBinds(), "Clears skill binds", "", Permissions.BASIC),
@@ -88,6 +87,12 @@ public class CmdManager
             new ConfigurableCommand(api, "forcereset", SenderType.CONSOLE_ONLY, new CmdForceReset(), "Resets player data", "<player> [account]", Permissions.FORCE),
             new ConfigurableCommand(api, "forceskill", SenderType.CONSOLE_ONLY, new CmdForceSkill(), "Modifies skill levels", "<player> <up|down|reset> <skill>", Permissions.FORCE)
         );
+        if (SkillAPI.getSettings().isOnePerClass()) {
+            root.addSubCommand(new ConfigurableCommand(api, "switch", SenderType.PLAYER_ONLY, new CmdSwitch(), "Changes class", "<class>", Permissions.BASIC));
+        }
+        else {
+            root.addSubCommand(new ConfigurableCommand(api, "acc", SenderType.PLAYER_ONLY, new CmdAccount(), "Changes account", "<accountId>", Permissions.BASIC));
+        }
         if (SkillAPI.getSettings().isUseSql())
         {
             root.addSubCommand(new ConfigurableCommand(api, "backup", SenderType.ANYONE, new CmdBackup(), "Backs up SQL data", "", Permissions.BACKUP));

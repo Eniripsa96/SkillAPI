@@ -64,7 +64,8 @@ public class MessageMechanic extends EffectComponent
         {
             if (target instanceof Player)
             {
-                target.sendMessage(filter(caster, target, message));
+                Player player = (Player) target;
+                player.sendMessage(filter(caster, target, message));
                 worked = true;
             }
         }

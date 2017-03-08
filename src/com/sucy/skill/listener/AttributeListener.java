@@ -36,6 +36,7 @@ import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -219,6 +220,18 @@ public class AttributeListener extends SkillAPIListener
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldChange(PlayerChangedWorldEvent event) {
+        boolean oldEnabled = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
+        boolean newEnabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
+        if (oldEnabled && !newEnabled) {
+            clearBonuses(event.getPlayer());
+        }
+        else {
+            updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
+        }
+    }
+
     /**
      * Updates the stats of a player based on their current attributes
      *
@@ -227,7 +240,7 @@ public class AttributeListener extends SkillAPIListener
     public static void updatePlayer(PlayerData data)
     {
         Player player = data.getPlayer();
-        if (player != null)
+        if (player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
             double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth());
             data.addMaxHealth(change);

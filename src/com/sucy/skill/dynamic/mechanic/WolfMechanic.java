@@ -40,6 +40,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -166,13 +167,15 @@ public class WolfMechanic extends EffectComponent
      */
     public static void removeWolves(Player player)
     {
-        for (RemoveTask task : tasks)
+        Iterator<RemoveTask> iterator = tasks.iterator();
+        while (iterator.hasNext())
         {
+            RemoveTask task = iterator.next();
             if (task.isOwnedBy(player))
             {
                 task.run();
                 task.cancel();
-                tasks.remove(task);
+                iterator.remove();
             }
         }
     }

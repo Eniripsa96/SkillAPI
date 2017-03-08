@@ -40,6 +40,8 @@ public class PotionCondition extends EffectComponent
 {
     private static final String TYPE   = "type";
     private static final String POTION = "potion";
+    private static final String MIN_RANK = "min-rank";
+    private static final String MAX_RANK = "max-rank";
 
     /**
      * Executes the component
@@ -55,6 +57,8 @@ public class PotionCondition extends EffectComponent
     {
         boolean active = !settings.getString(TYPE, "active").toLowerCase().equals("not active");
         String potion = settings.getString(POTION, "").toUpperCase().replace(' ', '_');
+        int minRank = (int)attr(caster, MIN_RANK, level, 0, false);
+        int maxRank = (int)attr(caster, MAX_RANK, level, 999, false);
         PotionEffectType type;
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         try
@@ -62,7 +66,7 @@ public class PotionCondition extends EffectComponent
             type = PotionEffectType.getByName(potion);
             for (LivingEntity target : targets)
             {
-                if (target.hasPotionEffect(type) == active)
+                if (has(target, type, minRank, maxRank) == active)
                 {
                     list.add(target);
                 }
@@ -75,7 +79,7 @@ public class PotionCondition extends EffectComponent
                 boolean has = false;
                 for (PotionEffectType check : PotionEffectType.values())
                 {
-                    if (check != null && target.hasPotionEffect(check))
+                    if (check != null && has(target, check, minRank, maxRank))
                     {
                         has = true;
                         break;
@@ -88,5 +92,11 @@ public class PotionCondition extends EffectComponent
             }
         }
         return list.size() > 0 && executeChildren(caster, level, list);
+    }
+
+    private boolean has(LivingEntity target, PotionEffectType type, int min, int max) {
+        if (!target.hasPotionEffect(type)) return false;
+        int rank = target.getPotionEffect(type).getAmplifier();
+        return rank  >= min && rank <= max;
     }
 }

@@ -1217,6 +1217,12 @@ function ConditionPotion()
     this.data.push(new ListValue('Potion', 'potion', [ 'Any', 'Absorption', 'Blindness', 'Confusion', 'Damage Resistance', 'Fast Digging', 'Fire Resistance', 'Glowing', 'Health Boost', 'Hunger', 'Increase Damage', 'Invisibility', 'Jump', 'Levitation', 'Luck', 'Night Vision', 'Poison', 'Regeneration', 'Saturation', 'Slow', 'Slow Digging', 'Speed', 'Unluck', 'Water Breathing', 'Weakness', 'Wither' ], 'Any')
         .setTooltip('The type of potion to look for')
     );
+    this.data.push(new AttributeValue('Min Rank', 'min-rank', 0, 0)
+        .setTooltip('The minimum rank the potion effect can be')
+    );
+    this.data.push(new AttributeValue('Max Rank', 'max-rank', 999, 0)
+        .setTooltip('The maximum rank the potion effect can be')
+    );
 }
 
 extend('ConditionSkillLevel', 'Component');
@@ -1243,8 +1249,8 @@ function ConditionSlot()
     this.super('Slot', Type.CONDITION, true);
     this.description = "Applies child components when the target player has a matching item in the given slot.";
     
-    this.data.push(new IntValue('Slot', 'slot', 9)
-        .setTooltip('The slot to look at. Slots 0-8 are the hot bar, 9-35 are the main inventory, 36-39 are armor, and 40 is the offhand slot.')
+    this.data.push(new StringListValue('Slots (one per line)', 'slot', [9])
+        .setTooltip('The slots to look at. Slots 0-8 are the hot bar, 9-35 are the main inventory, 36-39 are armor, and 40 is the offhand slot. Multiple slots will check if any of the slots match.')
     );
     
     addItemOptions(this);

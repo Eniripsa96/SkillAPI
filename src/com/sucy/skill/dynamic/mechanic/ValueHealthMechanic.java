@@ -33,7 +33,7 @@ import org.bukkit.entity.LivingEntity;
 import java.util.HashMap;
 import java.util.List;
 
-public class ValueHealth extends EffectComponent
+public class ValueHealthMechanic extends EffectComponent
 {
     private static final String KEY = "key";
 

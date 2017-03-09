@@ -35,7 +35,7 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.List;
 
-public class ValueMana extends EffectComponent
+public class ValueManaMechanic extends EffectComponent
 {
     private static final String KEY = "key";
 

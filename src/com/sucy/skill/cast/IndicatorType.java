@@ -32,13 +32,23 @@ package com.sucy.skill.cast;
 public enum IndicatorType
 {
     // 3-dimensional effect (sphere, cuboid, etc.)
-    DIM_3,
+    DIM_3("2D"),
 
     // 2-dimensional effect (circle, rectangle, etc.)
-    DIM_2,
+    DIM_2("3D"),
 
     // No effect
-    NONE;
+    NONE("None");
+
+    private String key;
+
+    IndicatorType(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
 
     /**
      * Gets the indicator type by key

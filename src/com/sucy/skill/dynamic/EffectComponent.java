@@ -345,6 +345,7 @@ public abstract class EffectComponent
     public void save(DataSection config)
     {
         config.set(TYPE, type);
+        config.set(INDICATOR, indicatorType.getKey());
         settings.save(config.createSection("data"));
         DataSection children = config.createSection("children");
         for (EffectComponent child : this.children)
@@ -375,7 +376,7 @@ public abstract class EffectComponent
                 skill.setAttribKey(key, this);
             }
         }
-        indicatorType = IndicatorType.getByKey(settings.getString(INDICATOR));
+        indicatorType = IndicatorType.getByKey(settings.getString(INDICATOR, "2D"));
 
         DataSection children = config.getSection("children");
         if (children != null)
@@ -529,9 +530,11 @@ public abstract class EffectComponent
         put("taunt", TauntMechanic.class);
         put("value add", ValueAddMechanic.class);
         put("value attribute", ValueAttributeMechanic.class);
+        put("value health", ValueHealthMechanic.class);
         put("value location", ValueLocationMechanic.class);
         put("value lore", ValueLoreMechanic.class);
         put("value lore slot", ValueLoreSlotMechanic.class);
+        put("value mana", ValueManaMechanic.class);
         put("value multiply", ValueMultiplyMechanic.class);
         put("value random", ValueRandomMechanic.class);
         put("value set", ValueSetMechanic.class);

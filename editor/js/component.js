@@ -1217,6 +1217,12 @@ function ConditionPotion()
     this.data.push(new ListValue('Potion', 'potion', [ 'Any', 'Absorption', 'Blindness', 'Confusion', 'Damage Resistance', 'Fast Digging', 'Fire Resistance', 'Glowing', 'Health Boost', 'Hunger', 'Increase Damage', 'Invisibility', 'Jump', 'Levitation', 'Luck', 'Night Vision', 'Poison', 'Regeneration', 'Saturation', 'Slow', 'Slow Digging', 'Speed', 'Unluck', 'Water Breathing', 'Weakness', 'Wither' ], 'Any')
         .setTooltip('The type of potion to look for')
     );
+    this.data.push(new AttributeValue('Min Rank', 'min-rank', 0, 0)
+        .setTooltip('The minimum rank the potion effect can be')
+    );
+    this.data.push(new AttributeValue('Max Rank', 'max-rank', 999, 0)
+        .setTooltip('The maximum rank the potion effect can be')
+    );
 }
 
 extend('ConditionSkillLevel', 'Component');

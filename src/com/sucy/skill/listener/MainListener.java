@@ -387,8 +387,6 @@ public class MainListener implements Listener
         {
             PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
             data.stopPassives(event.getPlayer());
-            if (SkillAPI.getSettings().isSkillBarEnabled())
-                data.getSkillBar().clear(event.getPlayer());
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
             event.getPlayer().setHealth(20);
             if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none"))
@@ -405,8 +403,6 @@ public class MainListener implements Listener
         {
             PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
             data.startPassives(event.getPlayer());
-            if (SkillAPI.getSettings().isSkillBarEnabled())
-                data.getSkillBar().setup(event.getPlayer());
             data.updateHealthAndMana(event.getPlayer());
             data.updateScoreboard();
         }

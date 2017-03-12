@@ -43,6 +43,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
@@ -57,7 +58,7 @@ import java.util.UUID;
  * Handles interactions with skill bars. This shouldn't be
  * use by other plugins as it is handled by the API.
  */
-public class BarListener
+public class BarListener implements Listener
 {
     private final HashSet<UUID> ignored = new HashSet<UUID>();
 

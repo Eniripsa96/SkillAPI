@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.target;
 
+import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.cast.CircleIndicator;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorType;
@@ -125,10 +126,16 @@ public class LocationTarget extends EffectComponent
         {
             loc = b.getLocation();
         }
-        else
-        {
-            return null;
+        else return null;
+
+        if (!groundOnly) {
+            LivingEntity target = TargetHelper.getLivingTarget(t, range, 4);
+            Location casterLoc = caster.getLocation();
+            if (target != null && target.getLocation().distanceSquared(casterLoc) < loc.distanceSquared(casterLoc)) {
+                loc = target.getLocation();
+            }
         }
+
         return new TempEntity(loc);
     }
 }

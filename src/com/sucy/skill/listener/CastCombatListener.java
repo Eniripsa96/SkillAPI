@@ -259,6 +259,8 @@ public class CastCombatListener extends SkillAPIListener
     {
         if (!SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
             return;
+        if (event.getEntity().getWorld().getGameRuleValue("keepInventory").equals("true"))
+            return;
 
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
         if (data.getSkillBar().isSetup()) {
@@ -288,7 +290,8 @@ public class CastCombatListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(PlayerRespawnEvent event)
     {
-        init(event.getPlayer());
+        if (!event.getPlayer().getWorld().getGameRuleValue("keepInventory").equals("true"))
+            init(event.getPlayer());
     }
 
     @EventHandler
@@ -346,7 +349,7 @@ public class CastCombatListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onChangeWorld(PlayerChangedWorldEvent event)
     {
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());

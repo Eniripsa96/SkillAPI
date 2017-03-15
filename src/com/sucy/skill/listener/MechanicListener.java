@@ -70,7 +70,8 @@ public class MechanicListener extends SkillAPIListener
     /**
      * Cleans up listener data on shutdown
      */
-    public static void cleanup()
+    @Override
+    public void cleanup()
     {
         flying.clear();
     }

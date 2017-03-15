@@ -67,7 +67,8 @@ public class CastListener extends SkillAPIListener
     /**
      * Cleans up
      */
-    public static void cleanup()
+    @Override
+    public void cleanup()
     {
         if (slot == -1)
             return;

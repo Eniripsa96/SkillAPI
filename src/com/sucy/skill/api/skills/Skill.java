@@ -469,7 +469,7 @@ public abstract class Skill implements IconHolder
     {
         PlayerSkill skill = data.getSkill(name);
         if (skill != null)
-            return getIndicator(skill);
+            return getIndicator(skill, false);
         else
             return getIndicator();
     }
@@ -482,7 +482,7 @@ public abstract class Skill implements IconHolder
      *
      * @return filtered skill indicator
      */
-    public ItemStack getIndicator(PlayerSkill skillData)
+    public ItemStack getIndicator(PlayerSkill skillData, boolean brief)
     {
         Player player = skillData.getPlayerData().getPlayer();
 
@@ -526,7 +526,7 @@ public abstract class Skill implements IconHolder
                         currValue = nextValue;
                     }
 
-                    if (currValue.equals(nextValue))
+                    if (currValue.equals(nextValue) || brief)
                     {
                         line = line.replace("{attr:" + attr + "}", attrStatic.replace("{name}", getAttrName(attr)).replace("{value}", currValue.toString()));
                     }

@@ -170,7 +170,7 @@ public class SkillDetailMenu extends MapMenu
 
         // Get text to draw
         PlayerSkill skill = SkillListMenu.getSkill(player);
-        ItemStack icon = skill.getData().getIndicator(skill);
+        ItemStack icon = skill.getData().getIndicator(skill, true);
         List<String> lore = icon.getItemMeta().getLore();
         lore.add(0, icon.getItemMeta().getDisplayName());
 

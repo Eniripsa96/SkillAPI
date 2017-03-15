@@ -74,6 +74,22 @@ public class BarListener extends SkillAPIListener
         }
     }
 
+    @Override
+    public void cleanup() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            cleanup(player);
+        }
+    }
+
+    private void cleanup(Player player) {
+        PlayerData data = SkillAPI.getPlayerData(player);
+        if (data.getSkillBar().isSetup())
+        {
+            data.getSkillBar().clear(player);
+        }
+        ignored.remove(player.getUniqueId());
+    }
+
     /**
      * Sets up skill bars on joining
      *
@@ -98,11 +114,7 @@ public class BarListener extends SkillAPIListener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        if (data.hasClass())
-        {
-            data.getSkillBar().clear(event.getPlayer());
-        }
+        cleanup(event.getPlayer());
     }
 
     /**
@@ -260,7 +272,7 @@ public class BarListener extends SkillAPIListener
 
         // Prevent moving skill icons
         int slot = event.getSlot();
-        if (event.getSlot() < 9 && event.getSlotType() == InventoryType.SlotType.QUICKBAR)
+        if (event.getSlot() < 9 && event.getRawSlot() > event.getView().getTopInventory().getSize())
         {
             if (event.getClick() == ClickType.LEFT || event.getClick() == ClickType.SHIFT_LEFT)
                 event.setCancelled(!skillBar.isWeaponSlot(slot));

@@ -389,7 +389,7 @@ public class PlayerSkillBar
                 }
             }
             else if (isEnabled() && player != null)
-                player.getInventory().setItem(index, skill.getData().getIndicator(skill));
+                player.getInventory().setItem(index, skill.getData().getIndicator(skill, true));
         }
     }
 

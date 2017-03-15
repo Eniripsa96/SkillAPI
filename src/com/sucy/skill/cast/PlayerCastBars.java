@@ -99,7 +99,7 @@ public class PlayerCastBars implements InventoryHolder
      *
      * @param slot skill slot
      */
-    public void hoverSkill(Player player, int slot)
+    private void hoverSkill(Player player, int slot)
     {
         if (hoverBar.containsKey(slot))
         {
@@ -265,7 +265,7 @@ public class PlayerCastBars implements InventoryHolder
      */
     private ItemStack makeIndicator(String skill)
     {
-        ItemStack item = SkillAPI.getSkill(skill).getIndicator(this.player.getSkill(skill));
+        ItemStack item = SkillAPI.getSkill(skill).getIndicator(this.player.getSkill(skill), true);
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
         lore.add(skill);
@@ -315,7 +315,7 @@ public class PlayerCastBars implements InventoryHolder
         backup = player.getInventory().getContents();
 
         ItemStack[] contents = new ItemStack[36];
-        makeContents(player, bar, contents, 0);
+        makeContents(bar, contents, 0);
         player.getInventory().setContents(contents);
 
         return true;
@@ -468,17 +468,16 @@ public class PlayerCastBars implements InventoryHolder
     /**
      * Makes the contents for one of the views
      *
-     * @param player   player to make them for
      * @param slots    slots to use
      * @param contents where to store the results
      * @param offset   starting index to add to
      */
-    private void makeContents(Player player, HashMap<Integer, String> slots, ItemStack[] contents, int offset)
+    private void makeContents(HashMap<Integer, String> slots, ItemStack[] contents, int offset)
     {
         for (Map.Entry<Integer, String> slot : slots.entrySet())
         {
-            contents[offset + slot.getKey()] = SkillAPI.getSkill(slot.getValue())
-                .getIndicator(SkillAPI.getPlayerData(player).getSkill(slot.getValue()));
+            PlayerSkill skill = this.player.getSkill(slot.getValue());
+            contents[offset + slot.getKey()] = skill.getData().getIndicator(skill, true);
         }
     }
 

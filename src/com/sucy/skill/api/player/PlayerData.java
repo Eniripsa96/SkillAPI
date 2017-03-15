@@ -28,6 +28,7 @@ package com.sucy.skill.api.player;
 
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
+import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -64,6 +65,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Represents one account for a player which can contain one class from each group
@@ -78,6 +80,7 @@ public final class PlayerData
     private final HashMap<String, Integer>       attributes  = new HashMap<String, Integer>();
     private final HashMap<String, Integer>       bonusAttrib = new HashMap<String, Integer>();
 
+    private DataSection    extraData = new DataSection();
     private OfflinePlayer  player;
     private PlayerSkillBar skillBar;
     private PlayerCastBars castBars;
@@ -141,6 +144,11 @@ public final class PlayerData
         return player.getName();
     }
 
+    public UUID getUUID()
+    {
+        return player.getUniqueId();
+    }
+
     /**
      * Retrieves the skill bar data for the owner
      *
@@ -167,6 +175,13 @@ public final class PlayerData
     public PlayerCombos getComboData()
     {
         return combos;
+    }
+
+    /**
+     * @return extra data attached to the player's account
+     */
+    public DataSection getExtraData() {
+        return extraData;
     }
 
     /**

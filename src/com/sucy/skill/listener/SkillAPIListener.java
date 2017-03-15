@@ -34,4 +34,6 @@ import org.bukkit.event.Listener;
 public abstract class SkillAPIListener implements Listener
 {
     public void init() { }
+
+    public void cleanup() { }
 }

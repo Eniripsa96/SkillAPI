@@ -83,7 +83,8 @@ public class StatusListener extends SkillAPIListener
     /**
      * Cleans up the listener data on shutdown
      */
-    public static void cleanup()
+    @Override
+    public void cleanup()
     {
         messageTimers.clear();
     }

@@ -69,7 +69,8 @@ public class CastItemListener extends SkillAPIListener
     /**
      * Cleans up the listener functions
      */
-    public static void cleanup()
+    @Override
+    public void cleanup()
     {
         if (slot == -1)
             return;

@@ -66,7 +66,7 @@ public class PlayerSkillSlot
     {
         return skills.size() == 0 ?
             SkillAPI.getSettings().getCastItem()
-            : skills.get(index).getData().getIcon(player);
+            : skills.get(index).getData().getIndicator(skills.get(index), true);
     }
 
     /**

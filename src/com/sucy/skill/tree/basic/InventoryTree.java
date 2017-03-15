@@ -37,8 +37,6 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.language.GUINodes;
 import com.sucy.skill.language.RPGFilter;
-import com.sucy.skill.gui.tool.GUIData;
-import com.sucy.skill.gui.tool.GUIPage;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.entity.HumanEntity;
@@ -55,7 +53,7 @@ import java.util.Map;
  */
 public abstract class InventoryTree extends SkillTree
 {
-    public static final String INVENTORY_KEY = "SAPI_ST";
+    private static final String INVENTORY_KEY = "SAPI_ST";
 
     protected final HashMap<Integer, Skill> skillSlots = new HashMap<Integer, Skill>();
 
@@ -109,7 +107,7 @@ public abstract class InventoryTree extends SkillTree
         {
             if (canShow(p, entry.getValue()))
             {
-                inv.setItem(entry.getKey(), entry.getValue().getIndicator(player.getSkill(entry.getValue().getName())));
+                inv.setItem(entry.getKey(), entry.getValue().getIndicator(player.getSkill(entry.getValue().getName()), false));
             }
         }
 
@@ -198,7 +196,7 @@ public abstract class InventoryTree extends SkillTree
         InventoryView view = player.getPlayer().getOpenInventory();
         for (Map.Entry<Integer, Skill> skills : skillSlots.entrySet())
         {
-            view.setItem(skills.getKey(), skills.getValue().getIndicator(player.getSkill(skills.getValue().getName())));
+            view.setItem(skills.getKey(), skills.getValue().getIndicator(player.getSkill(skills.getValue().getName()), false));
         }
     }
 

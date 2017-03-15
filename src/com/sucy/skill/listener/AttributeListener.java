@@ -53,7 +53,8 @@ public class AttributeListener extends SkillAPIListener
     /**
      * Cleans up the listener on shutdown
      */
-    public static void cleanup()
+    @Override
+    public void cleanup()
     {
         bonuses.clear();
     }
@@ -65,9 +66,10 @@ public class AttributeListener extends SkillAPIListener
      */
     public static void clearBonuses(Player player)
     {
+        PlayerData data = SkillAPI.getPlayerData(player);
+        data.addMaxHealth(-bonuses.remove(player.getName() + ":" + AttributeManager.HEALTH));
+        data.addMaxMana(-bonuses.remove(player.getName() + ":" + AttributeManager.MANA));
         bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
-        bonuses.remove(player.getName() + ":" + AttributeManager.HEALTH);
-        bonuses.remove(player.getName() + ":" + AttributeManager.MANA);
         player.setWalkSpeed(0.2f);
     }
 

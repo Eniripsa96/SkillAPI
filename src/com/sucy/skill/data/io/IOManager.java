@@ -61,6 +61,7 @@ public abstract class IOManager
         POINTS         = "points",
         SKILL_BAR      = "bar",
         HOVER          = "hover",
+        EXTRA          = "extra",
         INSTANT        = "instant",
         ENABLED        = "enabled",
         SLOTS          = "slots",
@@ -260,6 +261,11 @@ public abstract class IOManager
                 acc.getCastBars().load(account.getSection(INSTANT), false);
             }
 
+            // Extra data
+            if (account.has(EXTRA)) {
+                acc.getExtraData().applyDefaults(account.getSection(EXTRA));
+            }
+
             acc.endInit();
             acc.autoLevel();
         }
@@ -364,6 +370,11 @@ public abstract class IOManager
                 {
                     acc.getCastBars().save(account.createSection(HOVER), true);
                     acc.getCastBars().save(account.createSection(INSTANT), false);
+                }
+
+                // Extra data
+                if (acc.getExtraData().size() > 0) {
+                    account.set(EXTRA, acc.getExtraData());
                 }
             }
             return file;

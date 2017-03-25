@@ -201,17 +201,26 @@ public class PlayerEquips
                 String lower = ChatColor.stripColor(line).toLowerCase();
 
                 // Level requirements
-                if (lower.startsWith(levelText))
+                if (lower.startsWith(levelText)) {
                     levelReq = NumberParser.parseInt(lower.substring(levelText.length()));
+                }
 
-                    // Class requirements
-                else if (lower.startsWith(classText))
-                    classReq = new HashSet<String>(Arrays.asList(lower.substring(classText.length()).split(", ")));
+                // Class requirements
+                else if (lower.startsWith(classText)) {
+                    List<String> required = Arrays.asList(lower.substring(classText.length()).split(", "));
+                    if (classReq == null)
+                        classReq = new HashSet<String>();
+                    classReq.addAll(required);
+                }
 
-                    // Excluded classes
-                else if (lower.startsWith(excludeText))
-                    classExc = new HashSet<String>(Arrays.asList(lower.substring(excludeText.length()).split(", ")));
-
+                // Excluded classes
+                else if (lower.startsWith(excludeText)) {
+                    List<String> excluded = Arrays.asList(lower.substring(excludeText.length()).split(", "));
+                    if (classExc == null)
+                        classExc = new HashSet<String>();
+                    classExc.addAll(excluded);
+                }
+                    
                 else
                 {
                     boolean done = false;

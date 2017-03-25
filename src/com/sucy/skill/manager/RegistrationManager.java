@@ -128,27 +128,28 @@ public class RegistrationManager
             skillConfig.getConfig().set("loaded", true);
             for (String key : skillConfig.getConfig().keys())
             {
-                if (!skillConfig.getConfig().isSection(key))
-                {
-                    Logger.log(LogType.REGISTRATION, 3, "Skipping \"" + key + "\" because it isn't a configuration section");
-                    continue;
+                try {
+                    if (!skillConfig.getConfig().isSection(key)) {
+                        Logger.log(LogType.REGISTRATION, 3, "Skipping \"" + key + "\" because it isn't a configuration section");
+                        continue;
+                    }
+                    if (!SkillAPI.isSkillRegistered(key)) {
+                        DynamicSkill skill = new DynamicSkill(key);
+                        api.addDynamicSkill(skill);
+                        skill.load(skillConfig.getConfig().getSection(key));
+                        skill.registerEvents(api);
+                        CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + key);
+                        sConfig.clear();
+                        skill.save(sConfig.getConfig().createSection(key));
+                        skill.save(skillConfig.getConfig().createSection(key));
+                        sConfig.save();
+                        Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + key);
+                    } else {
+                        Logger.invalid("Duplicate skill detected: " + key);
+                    }
                 }
-                if (!SkillAPI.isSkillRegistered(key))
-                {
-                    DynamicSkill skill = new DynamicSkill(key);
-                    api.addDynamicSkill(skill);
-                    skill.load(skillConfig.getConfig().getSection(key));
-                    skill.registerEvents(api);
-                    CommentedConfig sConfig = new CommentedConfig(api, SKILL_DIR + key);
-                    sConfig.clear();
-                    skill.save(sConfig.getConfig().createSection(key));
-                    skill.save(skillConfig.getConfig().createSection(key));
-                    sConfig.save();
-                    Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + key);
-                }
-                else
-                {
-                    Logger.invalid("Duplicate skill detected: " + key);
+                catch (Exception ex) {
+                    Logger.invalid("Failed to load skill: " + key + " - " + ex.getMessage());
                 }
             }
         }

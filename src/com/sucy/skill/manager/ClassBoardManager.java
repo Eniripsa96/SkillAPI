@@ -135,7 +135,11 @@ public class ClassBoardManager
     {
         if (SkillAPI.getSettings().isShowClassName())
         {
-            BoardManager.registerTeam(new Team(c.getName(), c.getPrefix() + ChatColor.RESET + " ", null));
+            String name = c.getName();
+            if (name.length() > 16) {
+                name = name.substring(0, 16);
+            }
+            BoardManager.registerTeam(new Team(name, c.getPrefix() + ChatColor.RESET + " ", null));
         }
     }
 

@@ -1455,9 +1455,9 @@ public final class PlayerData
         {
             health += SkillAPI.getSettings().getDefaultHealth();
         }
-        if (health == 0)
+        if (health <= 0)
         {
-            health = 20;
+            health = SkillAPI.getSettings().getDefaultHealth();
         }
         if (SkillAPI.getSettings().isModifyHealth())
             player.setMaxHealth(health);

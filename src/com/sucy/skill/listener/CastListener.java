@@ -227,6 +227,21 @@ public class CastListener extends SkillAPIListener
         SkillAPI.getPlayerData(event.getPlayer()).getCastBars().handle(event);
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onCommand(final PlayerCommandPreprocessEvent event) {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        if (event.getMessage().equals("/clear")) {
+            SkillAPI.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    event.getPlayer().getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
+                }
+            }, 1);
+        }
+    }
+
     private class OrganizerTask extends ThreadTask
     {
         private Player player;

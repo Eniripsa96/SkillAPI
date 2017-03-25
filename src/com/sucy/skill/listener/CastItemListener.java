@@ -31,6 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkillBar;
 import com.sucy.skill.api.player.PlayerSkillSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -237,6 +238,21 @@ public class CastItemListener extends SkillAPIListener
                 get(event.getPlayer()).next();
             else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
                 get(event.getPlayer()).prev();
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onCommand(final PlayerCommandPreprocessEvent event) {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        if (event.getMessage().equals("/clear")) {
+            SkillAPI.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    event.getPlayer().getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
+                }
+            }, 1);
         }
     }
 }

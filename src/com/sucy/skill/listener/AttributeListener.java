@@ -66,16 +66,13 @@ public class AttributeListener extends SkillAPIListener
      */
     public static void clearBonuses(Player player)
     {
-        PlayerData data = SkillAPI.getPlayerData(player);
+        clearLocalBonuses(player);
+        bonuses.remove(player.getName() + ":" + AttributeManager.HEALTH);
+        bonuses.remove(player.getName() + ":" + AttributeManager.MANA);
+    }
 
-        String healthKey = player.getName() + ":" + AttributeManager.HEALTH;
-        if (bonuses.containsKey(healthKey))
-            data.addMaxHealth(-bonuses.remove(healthKey));
-
-        String manaKey = player.getName() + ":" + AttributeManager.MANA;
-        if (bonuses.containsKey(manaKey))
-            data.addMaxMana(-bonuses.remove(manaKey));
-
+    private static void clearLocalBonuses(Player player)
+    {
         bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
         player.setWalkSpeed(0.2f);
     }
@@ -229,14 +226,13 @@ public class AttributeListener extends SkillAPIListener
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldChange(PlayerChangedWorldEvent event) {
         boolean oldEnabled = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
         boolean newEnabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
         if (oldEnabled && !newEnabled) {
             clearBonuses(event.getPlayer());
-        }
-        else {
+        } else if (!oldEnabled && newEnabled) {
             updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
         }
     }

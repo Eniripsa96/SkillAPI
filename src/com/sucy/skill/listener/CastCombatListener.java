@@ -27,6 +27,7 @@
 package com.sucy.skill.listener;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerAccountChangeEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillDowngradeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
@@ -46,6 +47,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -64,13 +66,13 @@ import java.util.UUID;
  */
 public class CastCombatListener extends SkillAPIListener
 {
-    private static final String ITEM_SAVE_KEY = "combatItems";
+    private final String ITEM_SAVE_KEY = "combatItems";
 
-    private static final HashMap<UUID, ItemStack[]> backup = new HashMap<UUID, ItemStack[]>();
+    private final HashMap<UUID, ItemStack[]> backup = new HashMap<UUID, ItemStack[]>();
 
     private final HashSet<UUID> ignored = new HashSet<UUID>();
 
-    private static int slot;
+    private int slot;
 
     @Override
     public void init()
@@ -113,20 +115,19 @@ public class CastCombatListener extends SkillAPIListener
         }
     }
 
-    private static void cleanup(Player player)
+    private void cleanup(Player player)
     {
+        ignored.remove(player.getUniqueId());
         PlayerData data = SkillAPI.getPlayerData(player);
         PlayerSkillBar bar = data.getSkillBar();
-        if (bar.isSetup()) {
+        if (bar.isSetup())
             toggle(player);
-            bar.clear(player);
-        }
         player.getInventory().setItem(slot, null);
-        ItemStack[] restore = backup.get(player.getUniqueId());
+        ItemStack[] restore = backup.remove(player.getUniqueId());
         data.getExtraData().set(ITEM_SAVE_KEY, ItemSerializer.toBase64(restore));
     }
 
-    private static void toggle(Player player)
+    private void toggle(Player player)
     {
         ItemStack[] items = backup.get(player.getUniqueId());
         ItemStack[] temp = new ItemStack[9];
@@ -363,6 +364,13 @@ public class CastCombatListener extends SkillAPIListener
             cleanup(event.getPlayer());
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onChangeAccount(PlayerAccountChangeEvent event) {
+        if (event.getPreviousAccount().getSkillBar().isSetup()) {
+            toggle(event.getPreviousAccount().getPlayer());
+        }
+    }
+
     /**
      * Applies skill bar actions when pressing the number keys
      *
@@ -406,5 +414,23 @@ public class CastCombatListener extends SkillAPIListener
         final PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (event.getNewGameMode() == GameMode.CREATIVE && data.getSkillBar().isSetup())
             toggle(data.getPlayer());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onCommand(final PlayerCommandPreprocessEvent event) {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        if (event.getMessage().equals("/clear")) {
+            SkillAPI.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    PlayerSkillBar skillBar = SkillAPI.getPlayerData(event.getPlayer()).getSkillBar();
+                    if (skillBar.isSetup())
+                        skillBar.update(event.getPlayer());
+                    event.getPlayer().getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
+                }
+            }, 1);
+        }
     }
 }

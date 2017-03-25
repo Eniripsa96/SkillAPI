@@ -174,9 +174,9 @@ public class MechanicListener extends SkillAPIListener
                 else
                     ((Player) event.getEntity()).setWalkSpeed(0.2f);
             }
-            else if (event.getFlag().equals(DISGUISE_KEY))
-                DisguiseHook.removeDisguise(event.getEntity());
         }
+        if (event.getFlag().equals(DISGUISE_KEY))
+            DisguiseHook.removeDisguise(event.getEntity());
     }
 
     /**

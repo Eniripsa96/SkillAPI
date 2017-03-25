@@ -409,6 +409,7 @@ public class MainListener extends SkillAPIListener
         if (oldEnabled && !newEnabled)
         {
             PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+            data.clearBonuses();
             data.stopPassives(event.getPlayer());
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
             event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());

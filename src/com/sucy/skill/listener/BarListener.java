@@ -31,6 +31,7 @@ import com.rit.sucy.gui.MapMenu;
 import com.rit.sucy.gui.MapMenuManager;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerAccountChangeEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillDowngradeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
@@ -340,6 +341,13 @@ public class BarListener extends SkillAPIListener
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onChangeAccount(PlayerAccountChangeEvent event) {
+        if (event.getPreviousAccount().getSkillBar().isSetup()) {
+            event.getPreviousAccount().getSkillBar().clear(event.getPreviousAccount().getPlayer());
+        }
+    }
+
     /**
      * Clears or sets up the skill bar upon changing from or to creative mode
      *
@@ -365,6 +373,26 @@ public class BarListener extends SkillAPIListener
                     SkillAPI.getPlayerData(player).getSkillBar().setup(player);
                 }
             }, 0);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onCommand(final PlayerCommandPreprocessEvent event) {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        final PlayerSkillBar skillBar = SkillAPI.getPlayerData(event.getPlayer()).getSkillBar();
+        if (!skillBar.isSetup())
+            return;
+
+        if (event.getMessage().equals("/clear")) {
+            SkillAPI.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    if (skillBar.isSetup())
+                        skillBar.update(event.getPlayer());
+                }
+            }, 1);
         }
     }
 }

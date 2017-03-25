@@ -157,12 +157,14 @@ public class GUITool implements ToolMenu
 
     public static void tearDown()
     {
-        config.clear();
-        DataSection data = config.getConfig();
-        for (Map.Entry<String, GUIData> entry : setups.entrySet())
-            if (entry.getValue().isValid())
-                entry.getValue().save(data.createSection(entry.getKey()));
-        config.save();
+        if (config != null) {
+            config.clear();
+            DataSection data = config.getConfig();
+            for (Map.Entry<String, GUIData> entry : setups.entrySet())
+                if (entry.getValue().isValid())
+                    entry.getValue().save(data.createSection(entry.getKey()));
+            config.save();
+        }
 
         setups.clear();
         items.clear();

@@ -126,7 +126,7 @@ public class AreaTarget extends EffectComponent
         boolean throughWall = settings.getString(WALL, "false").equalsIgnoreCase("true");
         boolean self = settings.getString(CASTER, "false").equalsIgnoreCase("true");
         double max = attr(caster, MAX, level, 99, isSelf);
-        Location wallCheckLoc = target.getLocation().add(0, 0.5, 0);
+        Location wallCheckLoc = target.getEyeLocation();
 
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
 
@@ -146,7 +146,7 @@ public class AreaTarget extends EffectComponent
             LivingEntity t = entities.get(i);
             if (t == caster && self)
                 continue;
-            if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, t.getLocation().add(0, 0.5, 0)))
+            if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, t.getEyeLocation()))
                 continue;
 
             if (both || ally == SkillAPI.getSettings().isAlly(caster, t))

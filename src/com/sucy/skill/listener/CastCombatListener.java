@@ -422,6 +422,7 @@ public class CastCombatListener extends SkillAPIListener
             return;
 
         if (event.getMessage().equals("/clear")) {
+            backup.put(event.getPlayer().getUniqueId(), new ItemStack[9]);
             SkillAPI.schedule(new Runnable() {
                 @Override
                 public void run() {

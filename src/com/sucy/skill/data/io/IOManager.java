@@ -87,6 +87,13 @@ public abstract class IOManager
     }
 
     /**
+     * Loads player data for all online players
+     *
+     * @return loaded player data
+     */
+    public abstract HashMap<String, PlayerAccounts> loadAll();
+
+    /**
      * Loads data for the player
      *
      * @param player player to load for

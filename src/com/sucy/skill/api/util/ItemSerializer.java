@@ -33,9 +33,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Map;
@@ -51,7 +54,6 @@ public class ItemSerializer {
     private static Constructor<?> craftItemNMSConstructor;
     private static Constructor<?> nmsItemConstructor;
 
-    private static Method craftItemStack_getHandle;
     private static Method itemStack_save;
     private static Method nbtTagList_add;
     private static Method nbtTagList_size;
@@ -61,6 +63,8 @@ public class ItemSerializer {
     private static Method nbtTagCompound_set;
     private static Method nbtTagCompound_getList;
     private static Method nbtTagCompound_isEmpty;
+
+    private static Field craftItemStack_getHandle;
 
     private static void initialize() {
         if (initialized)
@@ -74,15 +78,18 @@ public class ItemSerializer {
 
             Class<?> craftItemStack = Class.forName(craft + "inventory.CraftItemStack");
             Class<?> nmsItemStack = Class.forName(nms + "ItemStack");
-            craftItemConstructor = craftItemStack.getConstructor(ItemStack.class);
-            craftItemNMSConstructor = craftItemStack.getConstructor(nmsItemStack);
-            craftItemStack_getHandle = craftItemStack.getDeclaredMethod("getHandle");
+            craftItemConstructor = craftItemStack.getDeclaredConstructor(ItemStack.class);
+            craftItemConstructor.setAccessible(true);
+            craftItemNMSConstructor = craftItemStack.getDeclaredConstructor(nmsItemStack);
+            craftItemNMSConstructor.setAccessible(true);
+            craftItemStack_getHandle = craftItemStack.getDeclaredField("handle");
+            craftItemStack_getHandle.setAccessible(true);
 
             Class<?> nbtTagCompound = Class.forName(nms + "NBTTagCompound");
             Class<?> nbtTagList = Class.forName(nms + "NBTTagList");
             Class<?> nbtBase = Class.forName(nms + "NBTBase");
             Class<?> nbtCompressedStreamTools = Class.forName(nms + "NBTCompressedStreamTools");
-            nmsItemConstructor = nmsItemStack.getConstructor(nbtTagCompound);
+            nmsItemConstructor = nmsItemStack.getDeclaredConstructor(nbtTagCompound);
             nbtTagCompoundConstructor = nbtTagCompound.getConstructor();
             nbtTagListConstructor = nbtTagList.getConstructor();
             nbtTagCompound_set = nbtTagCompound.getDeclaredMethod("set", String.class, nbtBase);
@@ -92,11 +99,12 @@ public class ItemSerializer {
             nbtTagList_add = nbtTagList.getDeclaredMethod("add", nbtBase);
             nbtTagList_size = nbtTagList.getDeclaredMethod("size");
             nbtTagList_get = nbtTagList.getDeclaredMethod("get", int.class);
-            nbtCompressedStreamTools_write = nbtCompressedStreamTools.getDeclaredMethod("a", nbtTagCompound, DataOutputStream.class);
-            nbtCompressedStreamTools_read = nbtCompressedStreamTools.getDeclaredMethod("a", InputStream.class);
+            nbtCompressedStreamTools_write = nbtCompressedStreamTools.getDeclaredMethod("a", nbtTagCompound, DataOutput.class);
+            nbtCompressedStreamTools_read = nbtCompressedStreamTools.getDeclaredMethod("a", DataInputStream.class);
         }
         catch (Exception ex) {
             System.out.println("Server doesn't support NBT serialization - resorting to a less complete implementation");
+            ex.printStackTrace();
         }
     }
 
@@ -117,7 +125,7 @@ public class ItemSerializer {
 
                 // Convert the item stack to a NBT compound
                 if (craft != null)
-                    itemStack_save.invoke(craftItemStack_getHandle.invoke(craft), outputObject);
+                    itemStack_save.invoke(craftItemStack_getHandle.get(craft), outputObject);
                 nbtTagList_add.invoke(itemList, outputObject);
             }
 
@@ -130,18 +138,19 @@ public class ItemSerializer {
             return new BigInteger(1, outputStream.toByteArray()).toString(32);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             return null;
         }
     }
 
     public static ItemStack[] fromBase64(String data) {
-        if (nbtCompressedStreamTools_read == null) {
+        initialize();
+        if (data.indexOf(';') >= 0) {
             return basicDeserialize(data);
         }
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(new BigInteger(data, 32).toByteArray());
-            Object wrapper = nbtCompressedStreamTools_read.invoke(null, inputStream);
+            DataInputStream dataInputStream = new DataInputStream(inputStream);
+            Object wrapper = nbtCompressedStreamTools_read.invoke(null, dataInputStream);
             Object itemList = nbtTagCompound_getList.invoke(wrapper, "i", 10);
             ItemStack[] items = new ItemStack[(Integer)nbtTagList_size.invoke(itemList)];
 
@@ -158,7 +167,6 @@ public class ItemSerializer {
             return items;
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             return null;
         }
     }
@@ -227,7 +235,7 @@ public class ItemSerializer {
         String invInfo = serializedBlocks[0];
         ItemStack[] deserializedInventory = new ItemStack[Integer.valueOf(invInfo)];
 
-        for (int i = 1; i < serializedBlocks.length; i++)
+        for (int i = 1; i <= deserializedInventory.length; i++)
         {
             String[] serializedBlock = serializedBlocks[i].split("#");
             int stackPosition = Integer.valueOf(serializedBlock[0]);

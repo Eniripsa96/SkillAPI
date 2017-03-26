@@ -79,7 +79,7 @@ public class TempEntity implements LivingEntity
     @Override
     public Location getEyeLocation()
     {
-        return null;
+        return loc.clone().add(0, 1 ,0);
     }
 
     @Override

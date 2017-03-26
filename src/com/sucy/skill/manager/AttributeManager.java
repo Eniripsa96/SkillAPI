@@ -66,6 +66,7 @@ public class AttributeManager
     public static final String MOVE_SPEED       = "move-speed";
 
     private HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
+    private HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();
 
     /**
      * Sets up the attribute manager, loading the attribute
@@ -89,7 +90,7 @@ public class AttributeManager
      */
     public Attribute getAttribute(String key)
     {
-        return attributes.get(key.toLowerCase());
+        return lookup.get(key.toLowerCase());
     }
 
     /**
@@ -132,7 +133,8 @@ public class AttributeManager
             Logger.log(LogType.ATTRIBUTE_LOAD, 2, "  - " + key);
             Attribute attribute = new Attribute(data.getSection(key), key);
             attributes.put(key.toLowerCase(), attribute);
-            attributes.put(ChatColor.stripColor(attribute.getName()), attribute);
+            lookup.put(key.toLowerCase(), attribute);
+            lookup.put(ChatColor.stripColor(attribute.getName()).toLowerCase(), attribute);
         }
 
         GUIData attribs = GUITool.getAttributesMenu();

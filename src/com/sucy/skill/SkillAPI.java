@@ -173,12 +173,9 @@ public class SkillAPI extends JavaPlugin
         GUITool.init();
 
         // Load player data
-        for (Player player : VersionManager.getOnlinePlayers())
-        {
-            PlayerData data = loadPlayerData(player).getActiveData();
-            data.init(player);
-        }
-        if (settings.isUseSql()) ((SQLIO) io).cleanup();
+        players.putAll(io.loadAll());
+        for (PlayerAccounts accounts : players.values())
+            accounts.getActiveData().init(accounts.getPlayer());
 
         loaded = true;
     }
@@ -216,7 +213,7 @@ public class SkillAPI extends JavaPlugin
         RepeatMechanic.stopAll();
 
         for (SkillAPIListener listener : listeners)
-                listener.cleanup();
+            listener.cleanup();
 
         // Clear scoreboards
         ClassBoardManager.clearAll();

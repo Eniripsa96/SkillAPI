@@ -62,6 +62,7 @@ public abstract class IOManager
             SKILL_BAR      = "bar",
             ENABLED        = "enabled",
             SLOTS          = "slots",
+            SCHEME         = "scheme",
             UNASSIGNED     = "e",
             COMBOS         = "combos",
             ATTRIBS        = "attribs",

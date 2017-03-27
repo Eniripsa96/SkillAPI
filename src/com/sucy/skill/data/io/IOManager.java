@@ -47,27 +47,26 @@ import java.util.Map;
 public abstract class IOManager
 {
     private static final String
-        LIMIT          = "limit",
-        ACTIVE         = "active",
-        ACCOUNTS       = "accounts",
-        ACCOUNT_PREFIX = "acc",
-        HEALTH         = "health",
-        MANA           = "mana",
-        CLASSES        = "classes",
-        SKILLS         = "skills",
-        BINDS          = "binds",
-        LEVEL          = "level",
-        SCHEME         = "scheme",
-        EXP            = "exp",
-        POINTS         = "points",
-        SKILL_BAR      = "bar",
-        ENABLED        = "enabled",
-        SLOTS          = "slots",
-        UNASSIGNED     = "e",
-        COMBOS         = "combos",
-        ATTRIBS        = "attribs",
-        COOLDOWN       = "cd",
-        ATTRIB_POINTS  = "attrib-points";
+            LIMIT          = "limit",
+            ACTIVE         = "active",
+            ACCOUNTS       = "accounts",
+            ACCOUNT_PREFIX = "acc",
+            HEALTH         = "health",
+            MANA           = "mana",
+            CLASSES        = "classes",
+            SKILLS         = "skills",
+            BINDS          = "binds",
+            LEVEL          = "level",
+            EXP            = "exp",
+            POINTS         = "points",
+            SKILL_BAR      = "bar",
+            ENABLED        = "enabled",
+            SLOTS          = "slots",
+            UNASSIGNED     = "e",
+            COMBOS         = "combos",
+            ATTRIBS        = "attribs",
+            COOLDOWN       = "cd",
+            ATTRIB_POINTS  = "attrib-points";
 
     /**
      * API reference
@@ -79,10 +78,17 @@ public abstract class IOManager
      *
      * @param api SkillAPI reference
      */
-    protected IOManager(SkillAPI api)
+    IOManager(SkillAPI api)
     {
         this.api = api;
     }
+
+    /**
+     * Loads player data for all online players
+     *
+     * @return loaded player data
+     */
+    public abstract HashMap<String, PlayerAccounts> loadAll();
 
     /**
      * Loads data for the player

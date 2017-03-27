@@ -37,7 +37,7 @@ import org.bukkit.event.Listener;
 
 import java.lang.reflect.Method;
 
-public class DeathListener implements Listener
+public class DeathListener extends SkillAPIListener
 {
     private Method handle;
     private Method playerAttack;

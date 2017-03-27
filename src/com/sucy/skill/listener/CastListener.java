@@ -40,7 +40,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
  * A listener that handles casting skills through binds. This shouldn't be
  * use by other plugins as it is handled by the API.
  */
-public class CastListener implements Listener
+public class CastListener extends SkillAPIListener
 {
     /**
      * Handles interact events to check when a player right clicks with

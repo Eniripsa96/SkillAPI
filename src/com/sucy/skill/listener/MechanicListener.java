@@ -45,7 +45,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -58,7 +57,7 @@ import java.util.UUID;
 /**
  * The listener for handling events related to dynamic mechanics
  */
-public class MechanicListener implements Listener
+public class MechanicListener extends SkillAPIListener
 {
     public static final String SUMMON_DAMAGE     = "sapiSumDamage";
     public static final String P_CALL            = "pmCallback";
@@ -71,7 +70,8 @@ public class MechanicListener implements Listener
     /**
      * Cleans up listener data on shutdown
      */
-    public static void cleanup()
+    @Override
+    public void cleanup()
     {
         flying.clear();
     }
@@ -84,6 +84,9 @@ public class MechanicListener implements Listener
     @EventHandler
     public void onMove(PlayerMoveEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         boolean inMap = flying.containsKey(event.getPlayer().getUniqueId());
         if (inMap == ((Entity) event.getPlayer()).isOnGround())
         {
@@ -171,9 +174,9 @@ public class MechanicListener implements Listener
                 else
                     ((Player) event.getEntity()).setWalkSpeed(0.2f);
             }
-            else if (event.getFlag().equals(DISGUISE_KEY))
-                DisguiseHook.removeDisguise(event.getEntity());
         }
+        if (event.getFlag().equals(DISGUISE_KEY))
+            DisguiseHook.removeDisguise(event.getEntity());
     }
 
     /**
@@ -182,10 +185,19 @@ public class MechanicListener implements Listener
      * @param event event details
      */
     @EventHandler
-    public void onLand(ProjectileHitEvent event)
+    public void onLand(final ProjectileHitEvent event)
     {
         if (event.getEntity().hasMetadata(P_CALL))
-            ((ProjectileMechanic) SkillAPI.getMeta(event.getEntity(), P_CALL)).callback(event.getEntity(), null);
+            SkillAPI.schedule(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Object obj = SkillAPI.getMeta(event.getEntity(), P_CALL);
+                    if (obj != null)
+                        ((ProjectileMechanic) obj).callback(event.getEntity(), null);
+                }
+            }, 1);
     }
 
     /**
@@ -214,7 +226,7 @@ public class MechanicListener implements Listener
             if (p.hasMetadata(P_CALL) && event.getEntity() instanceof LivingEntity)
             {
                 ((ProjectileMechanic) SkillAPI.getMeta(p, P_CALL))
-                    .callback(p, (LivingEntity) event.getEntity());
+                        .callback(p, (LivingEntity) event.getEntity());
                 event.setCancelled(true);
             }
         }
@@ -244,7 +256,7 @@ public class MechanicListener implements Listener
         {
             event.setCancelled(true);
             ((PotionProjectileMechanic) SkillAPI.getMeta(event.getEntity(), POTION_PROJECTILE))
-                .callback(event.getEntity(), event.getAffectedEntities());
+                    .callback(event.getEntity(), event.getAffectedEntities());
             event.getAffectedEntities().clear();
         }
     }

@@ -1327,7 +1327,7 @@ public final class PlayerData
             health = 20;
         }
         if (SkillAPI.getSettings().isModifyHealth())
-            VersionManager.setMaxHealth(player, health);
+            player.setMaxHealth(health);
         mana = Math.min(mana, maxMana);
 
         // Health scaling is available starting with 1.6.2
@@ -1903,7 +1903,7 @@ public final class PlayerData
         AttributeListener.updatePlayer(this);
         InventoryTask.check(player);
         this.updateHealthAndMana(player);
-        if (this.getLastHealth() > 0)
+        if (this.getLastHealth() > 0 && !player.isDead())
             player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
         this.startPassives(player);
         this.updateScoreboard();

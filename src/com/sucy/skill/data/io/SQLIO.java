@@ -31,12 +31,15 @@ import com.rit.sucy.config.parse.YAMLParser;
 import com.rit.sucy.sql.ColumnType;
 import com.rit.sucy.sql.direct.SQLDatabase;
 import com.rit.sucy.sql.direct.SQLTable;
+import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.log.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,10 +53,6 @@ public class SQLIO extends IOManager
     public static final String DATA   = "data";
     public static final char   STRING = '√';
 
-    private boolean     startup;
-    private SQLDatabase database;
-    private SQLTable    table;
-
     /**
      * Initializes the SQL IO Manager
      *
@@ -62,37 +61,33 @@ public class SQLIO extends IOManager
     public SQLIO(SkillAPI api)
     {
         super(api);
-        startup = true;
     }
 
-    /**
-     * Connects to the database
-     */
-    private void init()
-    {
-        if (database == null)
-        {
-            Settings settings = SkillAPI.getSettings();
-            database = new SQLDatabase(api, settings.getSQLHost(), settings.getSQLPort(), settings.getSQLDatabase(), settings.getSQLUser(), settings.getSQLPass());
-            database.openConnection();
-            table = database.createTable(api, "players");
+    private SQLConnection openConnection() {
+        SQLConnection connection = new SQLConnection();
 
-            table.createColumn(ID, ColumnType.INCREMENT);
-            table.createColumn(DATA, ColumnType.TEXT);
-        }
+        Settings settings = SkillAPI.getSettings();
+        connection.database = new SQLDatabase(api, settings.getSQLHost(), settings.getSQLPort(), settings.getSQLDatabase(), settings.getSQLUser(), settings.getSQLPass());
+        connection.database.openConnection();
+        connection.table = connection.database.createTable(api, "players");
+
+        connection.table.createColumn(ID, ColumnType.INCREMENT);
+        connection.table.createColumn(DATA, ColumnType.TEXT);
+        return connection;
     }
 
-    /**
-     * Closes the database connection
-     */
-    public void cleanup()
-    {
-        startup = false;
-        if (database != null)
-        {
-            database.closeConnection();
-            database = null;
+    @Override
+    public HashMap<String, PlayerAccounts> loadAll() {
+        SQLConnection connection = openConnection();
+
+        HashMap<String, PlayerAccounts> result = new HashMap<String, PlayerAccounts>();
+        for (Player player : VersionManager.getOnlinePlayers()) {
+            result.put(new VersionPlayer(player).getIdString(), load(connection, player));
         }
+
+        connection.database.closeConnection();
+
+        return result;
     }
 
     @Override
@@ -100,59 +95,67 @@ public class SQLIO extends IOManager
     {
         if (player == null) return null;
 
-        init();
+        SQLConnection connection = openConnection();
 
-        PlayerAccounts result = null;
+        PlayerAccounts result = load(connection, player);
 
+        connection.database.closeConnection();
+
+        return result;
+    }
+
+    private PlayerAccounts load(SQLConnection connection, OfflinePlayer player) {
         try
         {
             String playerKey = new VersionPlayer(player).getIdString();
-            DataSection file = YAMLParser.parseText(table.createEntry(playerKey).getString(DATA), STRING);
-            result = load(player, file);
+            DataSection file = YAMLParser.parseText(connection.table.createEntry(playerKey).getString(DATA), STRING);
+            return load(player, file);
         }
         catch (Exception ex)
         {
             Logger.bug("Failed to load data from the SQL Database - " + ex.getMessage());
+            return null;
         }
-
-        if (!startup) cleanup();
-
-        return result;
     }
 
     @Override
     public void saveData(PlayerAccounts data)
     {
-        init();
-        saveSingle(data);
-        cleanup();
+        SQLConnection connection = openConnection();
+        saveSingle(connection, data);
+        connection.database.closeConnection();
     }
 
     @Override
     public void saveAll()
     {
-        init();
+        SQLConnection connection = openConnection();
         HashMap<String, PlayerAccounts> data = SkillAPI.getPlayerAccountData();
         ArrayList<String> keys = new ArrayList<String>(data.keySet());
         for (String key : keys)
         {
-            saveSingle(data.get(key));
+            saveSingle(connection, data.get(key));
         }
-        cleanup();
+        connection.database.closeConnection();
     }
 
-    private void saveSingle(PlayerAccounts data)
+    private void saveSingle(SQLConnection connection, PlayerAccounts data)
     {
         DataSection file = save(data);
 
         try
         {
             String playerKey = new VersionPlayer(data.getOfflinePlayer()).getIdString();
-            table.createEntry(playerKey).set(DATA, file.toString(STRING));
+            connection.table.createEntry(playerKey).set(DATA, file.toString(STRING));
         }
         catch (Exception ex)
         {
             Logger.bug("Failed to save data for invalid player");
         }
+    }
+
+    private class SQLConnection {
+        private SQLDatabase database;
+        private SQLTable table;
     }
 }

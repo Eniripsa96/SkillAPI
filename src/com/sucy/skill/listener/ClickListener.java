@@ -39,7 +39,7 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
  * Handles transferring click actions by the player to
  * combos that cast skills.
  */
-public class ClickListener implements Listener
+public class ClickListener extends SkillAPIListener
 {
     /**
      * Registers clicks as they happen

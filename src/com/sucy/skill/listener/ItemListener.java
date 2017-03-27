@@ -43,7 +43,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 /**
  * Listener that handles weapon item lore requirements
  */
-public class ItemListener implements Listener
+public class ItemListener extends SkillAPIListener
 {
     /**
      * Clear attribute buff data on quit

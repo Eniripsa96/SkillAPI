@@ -28,11 +28,13 @@ package com.sucy.skill.data.io;
 
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
+import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.log.Logger;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +54,14 @@ public class ConfigIO extends IOManager
         super(plugin);
     }
 
+    public HashMap<String, PlayerAccounts> loadAll() {
+        HashMap<String, PlayerAccounts> result = new HashMap<String, PlayerAccounts>();
+        for (Player player : VersionManager.getOnlinePlayers()) {
+            result.put(new VersionPlayer(player).getIdString(), loadData(player));
+        }
+        return result;
+    }
+
     /**
      * Loads data for the given player
      *
@@ -69,9 +79,7 @@ public class ConfigIO extends IOManager
         {
             DataSection old = nameConfig.getConfig();
             for (String key : old.keys())
-            {
                 config.getConfig().set(key, old.get(key));
-            }
             nameConfig.getConfigFile().delete();
         }
         DataSection file = config.getConfig();
@@ -112,8 +120,6 @@ public class ConfigIO extends IOManager
         HashMap<String, PlayerAccounts> data = SkillAPI.getPlayerAccountData();
         ArrayList<String> keys = new ArrayList<String>(data.keySet());
         for (String key : keys)
-        {
             saveData(data.get(key));
-        }
     }
 }

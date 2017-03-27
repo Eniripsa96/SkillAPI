@@ -40,7 +40,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -57,7 +56,7 @@ import java.util.HashSet;
  * Listener for applying default status flags for the API. You should
  * not use this class as it is already set up by the API.
  */
-public class StatusListener implements Listener
+public class StatusListener extends SkillAPIListener
 {
     private static final HashMap<String, Long> messageTimers = new HashMap<String, Long>();
 
@@ -84,7 +83,8 @@ public class StatusListener implements Listener
     /**
      * Cleans up the listener data on shutdown
      */
-    public static void cleanup()
+    @Override
+    public void cleanup()
     {
         messageTimers.clear();
     }
@@ -108,7 +108,7 @@ public class StatusListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMove(PlayerMoveEvent event)
     {
-        if ((((LivingEntity) event.getPlayer()).isOnGround() || event.getTo().getY() > event.getFrom().getY()) && check(event, event.getPlayer(), event.getPlayer(), StatusFlag.STUN, StatusFlag.ROOT, StatusFlag.CHANNELING))
+        if (((event.getPlayer()).isOnGround() || event.getTo().getY() > event.getFrom().getY()) && check(event, event.getPlayer(), event.getPlayer(), StatusFlag.STUN, StatusFlag.ROOT, StatusFlag.CHANNELING))
         {
             event.getPlayer().setVelocity(ZERO);
         }
@@ -139,8 +139,8 @@ public class StatusListener implements Listener
     public void onFlag(FlagApplyEvent event)
     {
         if (event.getFlag().equals(StatusFlag.STUN)
-            || event.getFlag().equals(StatusFlag.ROOT)
-            || event.getFlag().equals(StatusFlag.CHANNELING))
+                || event.getFlag().equals(StatusFlag.ROOT)
+                || event.getFlag().equals(StatusFlag.CHANNELING))
         {
             if (!(event.getEntity() instanceof Player))
             {
@@ -173,7 +173,7 @@ public class StatusListener implements Listener
     public void onDamaged(EntityDamageEvent event)
     {
         if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
-            || !(event.getEntity() instanceof LivingEntity))
+                || !(event.getEntity() instanceof LivingEntity))
             return;
 
         checkAbsorbAndInvincible((LivingEntity) event.getEntity(), event, event.getDamage());
@@ -240,7 +240,7 @@ public class StatusListener implements Listener
     private boolean checkTime(Player player)
     {
         if (!messageTimers.containsKey(player.getName())
-            || System.currentTimeMillis() - messageTimers.get(player.getName()) > 1000)
+                || System.currentTimeMillis() - messageTimers.get(player.getName()) > 1000)
         {
             messageTimers.put(player.getName(), System.currentTimeMillis());
             return true;
@@ -270,10 +270,10 @@ public class StatusListener implements Listener
                     if (checkTime(player))
                     {
                         TitleManager.show(
-                            player,
-                            TitleType.STATUS,
-                            "Status." + messageMap.get(flag),
-                            RPGFilter.DURATION.setReplacement("" + FlagManager.getTimeLeft(entity, flag))
+                                player,
+                                TitleType.STATUS,
+                                "Status." + messageMap.get(flag),
+                                RPGFilter.DURATION.setReplacement("" + FlagManager.getTimeLeft(entity, flag))
                         );
                     }
                 }

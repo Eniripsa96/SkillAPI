@@ -38,6 +38,7 @@ import com.sucy.skill.api.util.Combat;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.mechanic.ImmunityMechanic;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -45,7 +46,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
@@ -56,7 +56,7 @@ import org.bukkit.event.player.*;
  * such as loading/clearing data, controlling experience gains, and
  * enabling/disabling passive abilities.
  */
-public class MainListener implements Listener
+public class MainListener extends SkillAPIListener
 {
     /**
      * Loads player data asynchronously when a player tries to log in
@@ -67,13 +67,9 @@ public class MainListener implements Listener
     public void onLogin(AsyncPlayerPreLoginEvent event)
     {
         if (VersionManager.isVersionAtLeast(VersionManager.V1_7_5))
-        {
             SkillAPI.loadPlayerData(Bukkit.getOfflinePlayer(event.getUniqueId()));
-        }
         else
-        {
             SkillAPI.loadPlayerData(VersionManager.getOfflinePlayer(event.getName()));
-        }
     }
 
     /**
@@ -84,6 +80,9 @@ public class MainListener implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         data.init(event.getPlayer());
     }
@@ -96,21 +95,34 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event)
     {
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+        unload(event.getPlayer());
+    }
+
+    /**
+     * Unloads a player's data from the server
+     *
+     * @param player player to unload
+     */
+    public static void unload(Player player)
+    {
+        if (player.hasMetadata("NPC"))
+            return;
+
+        PlayerData data = SkillAPI.getPlayerData(player);
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
-            data.stopPassives(event.getPlayer());
-            data.record(event.getPlayer());
+            data.stopPassives(player);
+            data.record(player);
         }
 
-        FlagManager.clearFlags(event.getPlayer());
-        BuffManager.clearData(event.getPlayer());
-        Combat.clearData(event.getPlayer());
-        DynamicSkill.clearCastData(event.getPlayer());
+        FlagManager.clearFlags(player);
+        BuffManager.clearData(player);
+        Combat.clearData(player);
+        DynamicSkill.clearCastData(player);
 
-        event.getPlayer().setDisplayName(event.getPlayer().getName());
-        event.getPlayer().setMaxHealth(20);
-        SkillAPI.unloadPlayerData(event.getPlayer());
+        player.setDisplayName(player.getName());
+        player.setMaxHealth(20);
+        SkillAPI.unloadPlayerData(player);
     }
 
     /**
@@ -124,6 +136,9 @@ public class MainListener implements Listener
         FlagManager.clearFlags(event.getEntity());
         BuffManager.clearData(event.getEntity());
         DynamicSkill.clearCastData(event.getEntity());
+
+        if (event.getEntity().hasMetadata("NPC"))
+            return;
 
         PlayerData data = SkillAPI.getPlayerData(event.getEntity());
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
@@ -141,11 +156,12 @@ public class MainListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         Player player = event.getPlayer();
         if (SkillAPI.getSettings().isUseOrbs() && player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
-        {
             SkillAPI.getPlayerData(player).giveExp(event.getExpToDrop(), ExpSource.BLOCK_BREAK);
-        }
     }
 
     /**
@@ -158,9 +174,7 @@ public class MainListener implements Listener
     {
         Player player = event.getPlayer();
         if (SkillAPI.getSettings().isUseOrbs() && player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
-        {
             SkillAPI.getPlayerData(player).giveExp(event.getExpToDrop(), ExpSource.SMELT);
-        }
     }
 
     /**
@@ -172,14 +186,14 @@ public class MainListener implements Listener
     public void onExpBottleBreak(ExpBottleEvent event)
     {
         if (!(event.getEntity().getShooter() instanceof Player) || !SkillAPI.getSettings().isWorldEnabled(((Player) event.getEntity().getShooter()).getWorld()))
-        {
             return;
-        }
+
         Player player = (Player) event.getEntity().getShooter();
+        if (player.hasMetadata("NPC"))
+            return;
+
         if (SkillAPI.getSettings().isUseOrbs())
-        {
             SkillAPI.getPlayerData(player).giveExp(event.getExperience(), ExpSource.EXP_BOTTLE);
-        }
     }
 
     /**
@@ -193,8 +207,8 @@ public class MainListener implements Listener
     {
         // Prevent it from changing the level bar when that is being used to display class level
         if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none")
-            && event.getPlayer().hasPermission(Permissions.EXP)
-            && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+                && event.getPlayer().hasPermission(Permissions.EXP)
+                && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             event.setAmount(0);
         }
@@ -208,6 +222,9 @@ public class MainListener implements Listener
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
@@ -224,9 +241,12 @@ public class MainListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event)
     {
-        if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity) event.getEntity(), "immune:" + event.getCause().name()))
-        {
-            event.setCancelled(true);
+        if (event.getEntity() instanceof LivingEntity && FlagManager.hasFlag((LivingEntity) event.getEntity(), "immune:" + event.getCause().name())) {
+            double multiplier = SkillAPI.getMetaDouble(event.getEntity(), ImmunityMechanic.META_KEY);
+            if (multiplier <= 0)
+                event.setCancelled(true);
+            else
+                event.setDamage(event.getDamage() * multiplier);
         }
     }
 
@@ -240,7 +260,7 @@ public class MainListener implements Listener
     public void onStarve(EntityDamageEvent event)
     {
         if (event.getCause() == EntityDamageEvent.DamageCause.STARVATION
-            && !SkillAPI.getSettings().getFoodBar().equalsIgnoreCase("none"))
+                && !SkillAPI.getSettings().getFoodBar().equalsIgnoreCase("none"))
         {
             event.setCancelled(true);
         }
@@ -256,7 +276,7 @@ public class MainListener implements Listener
     {
         String foodBar = SkillAPI.getSettings().getFoodBar().toLowerCase();
         if ((foodBar.equals("mana") || foodBar.equals("exp"))
-            && event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED)
+                && event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED)
         {
             event.setCancelled(true);
         }
@@ -272,7 +292,7 @@ public class MainListener implements Listener
     public void onDamage(EntityDamageByEntityEvent event)
     {
         if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
-            || !(event.getEntity() instanceof LivingEntity)) return;
+                || !(event.getEntity() instanceof LivingEntity)) return;
 
         // Ignore no-damage events (for CrackShot)
         if (event.getDamage() == 0)
@@ -334,12 +354,12 @@ public class MainListener implements Listener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPhysicalDamage(EntityDamageByEntityEvent event)
     {
         if (Skill.isSkillDamage()
-            || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
-            || !(event.getEntity() instanceof LivingEntity))
+                || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
+                || !(event.getEntity() instanceof LivingEntity))
         {
             return;
         }
@@ -359,7 +379,7 @@ public class MainListener implements Listener
     public void onCombat(EntityDamageByEntityEvent event)
     {
         if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
-            || !(event.getEntity() instanceof LivingEntity)) return;
+                || !(event.getEntity() instanceof LivingEntity)) return;
 
         if (event.getEntity() instanceof Player)
         {
@@ -381,14 +401,19 @@ public class MainListener implements Listener
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         boolean oldEnabled = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
         boolean newEnabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
         if (oldEnabled && !newEnabled)
         {
             PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+            data.clearBonuses();
             data.stopPassives(event.getPlayer());
             ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
-            event.getPlayer().setHealth(20);
+            event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());
+            event.getPlayer().setHealth(SkillAPI.getSettings().getDefaultHealth());
             if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none"))
             {
                 event.getPlayer().setLevel(0);

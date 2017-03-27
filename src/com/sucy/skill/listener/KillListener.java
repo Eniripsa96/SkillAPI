@@ -41,7 +41,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
@@ -51,7 +50,7 @@ import java.lang.reflect.Method;
 /**
  * Tracks who kills what entities and awards experience accordingly
  */
-public class KillListener implements Listener
+public class KillListener extends SkillAPIListener
 {
     private static final String S_TYPE  = "sType";
     private static final int    SPAWNER = 0, EGG = 1;
@@ -99,41 +98,31 @@ public class KillListener implements Listener
 
             // Block spawner mob experience
             if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner())
-            {
                 return;
-            }
 
             // Block egg mob experience
             else if (value == EGG && SkillAPI.getSettings().isBlockEgg())
-            {
                 return;
-            }
         }
 
         // Summons don't give experience
         if (event.getEntity().hasMetadata(MechanicListener.SUMMON_DAMAGE))
-        {
             return;
-        }
 
         Player killer = event.getEntity().getKiller();
         if (killer != null && killer.hasPermission(Permissions.EXP))
         {
             // Block creative experience
             if (killer.getGameMode() == GameMode.CREATIVE && SkillAPI.getSettings().isBlockCreative())
-            {
                 return;
-            }
 
             PlayerData player = SkillAPI.getPlayerData(killer);
 
             // Give experience based on orbs when enabled
             if (SkillAPI.getSettings().isUseOrbs())
-            {
                 player.giveExp(event.getDroppedExp(), ExpSource.MOB);
-            }
 
-            // Give experience based on config when not using orbs
+                // Give experience based on config when not using orbs
             else
             {
                 String name = ListenerUtil.getName(event.getEntity());
@@ -152,13 +141,9 @@ public class KillListener implements Listener
     public void onSpawn(CreatureSpawnEvent event)
     {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER)
-        {
             SkillAPI.setMeta(event.getEntity(), S_TYPE, SPAWNER);
-        }
         else if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.SPAWNER_EGG)
-        {
             SkillAPI.setMeta(event.getEntity(), S_TYPE, EGG);
-        }
     }
 
     /**

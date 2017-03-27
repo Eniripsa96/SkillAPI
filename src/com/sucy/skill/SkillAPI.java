@@ -77,6 +77,8 @@ public class SkillAPI extends JavaPlugin
     private final HashMap<String, PlayerAccounts> players = new HashMap<String, PlayerAccounts>();
     private final ArrayList<String>               groups  = new ArrayList<String>();
 
+    private final List<SkillAPIListener> listeners = new ArrayList<SkillAPIListener>();
+
     private CommentedLanguageConfig language;
     private Settings                settings;
 
@@ -161,20 +163,19 @@ public class SkillAPI extends JavaPlugin
         guiTask = new GUITask(this);
 
         // Load player data
-        for (Player player : VersionManager.getOnlinePlayers())
-        {
-            PlayerData data = loadPlayerData(player).getActiveData();
-            data.init(player);
-        }
-        if (settings.isUseSql()) ((SQLIO) io).cleanup();
+        io.loadAll();
 
         loaded = true;
     }
 
-    private void listen(Listener listener, boolean enabled)
+    private void listen(SkillAPIListener listener, boolean enabled)
     {
         if (enabled)
+        {
             Bukkit.getPluginManager().registerEvents(listener, this);
+            listener.init();
+            listeners.add(listener);
+        }
     }
 
     /**
@@ -219,6 +220,9 @@ public class SkillAPI extends JavaPlugin
             guiTask = null;
         }
 
+        for (SkillAPIListener listener : listeners)
+            listener.cleanup();
+
         // Clear scoreboards
         ClassBoardManager.clearAll();
 
@@ -241,9 +245,6 @@ public class SkillAPI extends JavaPlugin
         players.clear();
 
         HandlerList.unregisterAll(this);
-        AttributeListener.cleanup();
-        MechanicListener.cleanup();
-        StatusListener.cleanup();
         cmd.clear();
 
         loaded = false;

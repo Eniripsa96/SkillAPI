@@ -37,8 +37,8 @@ import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -48,7 +48,7 @@ import java.util.HashMap;
 /**
  * Listener for managing applying attribute bonuses for players
  */
-public class AttributeListener implements Listener
+public class AttributeListener extends SkillAPIListener
 {
     public static final String MENU_KEY = "skillAPIAttrMenu";
 
@@ -57,7 +57,8 @@ public class AttributeListener implements Listener
     /**
      * Cleans up the listener on shutdown
      */
-    public static void cleanup()
+    @Override
+    public void cleanup()
     {
         bonuses.clear();
     }
@@ -69,9 +70,14 @@ public class AttributeListener implements Listener
      */
     public static void clearBonuses(Player player)
     {
-        bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
+        clearLocalBonuses(player);
         bonuses.remove(player.getName() + ":" + AttributeManager.HEALTH);
         bonuses.remove(player.getName() + ":" + AttributeManager.MANA);
+    }
+
+    private static void clearLocalBonuses(Player player)
+    {
+        bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
         player.setWalkSpeed(0.2f);
     }
 
@@ -81,6 +87,9 @@ public class AttributeListener implements Listener
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(PlayerJoinEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
     }
 
@@ -92,6 +101,9 @@ public class AttributeListener implements Listener
     @EventHandler(priority = EventPriority.HIGH)
     public void onRespawn(PlayerRespawnEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
     }
 
@@ -103,6 +115,9 @@ public class AttributeListener implements Listener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
+        if (event.getPlayer().hasMetadata("NPC"))
+            return;
+
         clearBonuses(event.getPlayer());
     }
 
@@ -157,6 +172,9 @@ public class AttributeListener implements Listener
         if (event.getDamager() instanceof Player)
         {
             Player player = (Player) event.getDamager();
+            if (player.hasMetadata("NPC"))
+                return;
+
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
@@ -167,6 +185,9 @@ public class AttributeListener implements Listener
         if (event.getTarget() instanceof Player)
         {
             Player player = (Player) event.getTarget();
+            if (player.hasMetadata("NPC"))
+                return;
+
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage());
@@ -186,6 +207,9 @@ public class AttributeListener implements Listener
         if (event.getDamager() instanceof Player)
         {
             Player player = (Player) event.getDamager();
+            if (player.hasMetadata("NPC"))
+                return;
+
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, event.getDamage());
@@ -196,10 +220,24 @@ public class AttributeListener implements Listener
         if (event.getTarget() instanceof Player)
         {
             Player player = (Player) event.getTarget();
+            if (player.hasMetadata("NPC"))
+                return;
+
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, event.getDamage());
             event.setDamage(newAmount);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldChange(PlayerChangedWorldEvent event) {
+        boolean oldEnabled = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
+        boolean newEnabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
+        if (oldEnabled && !newEnabled) {
+            clearBonuses(event.getPlayer());
+        } else if (!oldEnabled && newEnabled) {
+            updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
         }
     }
 
@@ -211,7 +249,7 @@ public class AttributeListener implements Listener
     public static void updatePlayer(PlayerData data)
     {
         Player player = data.getPlayer();
-        if (player != null)
+        if (player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
             double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth());
             data.addMaxHealth(change);
@@ -222,12 +260,12 @@ public class AttributeListener implements Listener
             change = updateStat(data, AttributeManager.MOVE_SPEED, player.getWalkSpeed());
             if (change + player.getWalkSpeed() > 1)
             {
-                bonuses.put(AttributeManager.MOVE_SPEED, 0.8);
+                bonuses.put(player.getName() + ":" + AttributeManager.MOVE_SPEED, 0.8);
                 change = 1 - player.getWalkSpeed();
             }
             else if (change + player.getWalkSpeed() < -1)
             {
-                bonuses.put(AttributeManager.MOVE_SPEED, -1.8);
+                bonuses.put(player.getName() + ":" + AttributeManager.MOVE_SPEED, -1.8);
                 change = -1 - player.getWalkSpeed();
             }
             player.setWalkSpeed(player.getWalkSpeed() + (float) change);

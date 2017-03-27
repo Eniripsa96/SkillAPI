@@ -29,15 +29,19 @@ package com.sucy.skill.manager;
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.Formula;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -56,7 +60,8 @@ public class AttributeManager
     public static final String SKILL_DEFENSE    = "skill-defense";
     public static final String MOVE_SPEED       = "move-speed";
 
-    private LinkedHashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
+    private HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
+    private HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();
 
     /**
      * Sets up the attribute manager, loading the attribute
@@ -80,7 +85,7 @@ public class AttributeManager
      */
     public Attribute getAttribute(String key)
     {
-        return attributes.get(key.toLowerCase());
+        return lookup.get(key.toLowerCase());
     }
 
     /**
@@ -108,7 +113,10 @@ public class AttributeManager
         for (String key : data.keys())
         {
             Logger.log(LogType.ATTRIBUTE_LOAD, 2, "  - " + key);
-            attributes.put(key.toLowerCase(), new Attribute(data.getSection(key), key));
+            Attribute attribute = new Attribute(data.getSection(key), key);
+            attributes.put(key.toLowerCase(), attribute);
+            lookup.put(key.toLowerCase(), attribute);
+            lookup.put(ChatColor.stripColor(attribute.getName()).toLowerCase(), attribute);
         }
     }
 

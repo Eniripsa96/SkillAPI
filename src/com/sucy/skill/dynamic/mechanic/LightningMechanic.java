@@ -27,6 +27,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
@@ -41,6 +42,7 @@ public class LightningMechanic extends EffectComponent
 
     private static final String FORWARD = "forward";
     private static final String RIGHT   = "right";
+    private static final String DAMAGE  = "damage";
 
     /**
      * Executes the component
@@ -59,13 +61,18 @@ public class LightningMechanic extends EffectComponent
             return false;
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        boolean damage = settings.getBool(DAMAGE, true);
         double forward = attr(caster, FORWARD, level, 0, isSelf);
         double right = attr(caster, RIGHT, level, 0, isSelf);
         for (LivingEntity target : targets)
         {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();
             Vector nor = dir.clone().crossProduct(up);
-            target.getWorld().strikeLightning(target.getLocation().add(dir.multiply(forward).add(nor.multiply(right))));
+            Location loc = target.getLocation().add(dir.multiply(forward).add(nor.multiply(right)));
+            if (damage)
+                target.getWorld().strikeLightning(loc);
+            else
+                target.getWorld().strikeLightningEffect(loc);
         }
         return targets.size() > 0;
     }

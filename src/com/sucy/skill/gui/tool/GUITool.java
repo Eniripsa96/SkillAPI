@@ -155,7 +155,7 @@ public class GUITool implements ToolMenu
         return item;
     }
 
-    public static void tearDown()
+    public static void cleanUp()
     {
         if (config != null) {
             config.clear();

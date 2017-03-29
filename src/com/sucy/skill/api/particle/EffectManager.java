@@ -64,6 +64,12 @@ public class EffectManager
         MainThread.register(new EffectTask());
     }
 
+    public static void cleanUp() {
+        formulas.clear();
+        effects.clear();
+        instances.clear();
+    }
+
     /**
      * Registers a new particle effect, replacing any conflicting
      * effects already registered under the key

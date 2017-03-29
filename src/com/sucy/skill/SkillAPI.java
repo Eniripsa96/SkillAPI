@@ -201,7 +201,8 @@ public class SkillAPI extends JavaPlugin
         if (singleton != this)
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
 
-        GUITool.tearDown();
+        GUITool.cleanUp();
+        EffectManager.cleanUp();
 
         mainThread.disable();
         mainThread = null;

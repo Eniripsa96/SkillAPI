@@ -385,7 +385,7 @@ public class BarListener extends SkillAPIListener
         if (!skillBar.isSetup())
             return;
 
-        if (event.getMessage().equals("/clear")) {
+        if (event.getMessage().equals("/cleanUp")) {
             SkillAPI.schedule(new Runnable() {
                 @Override
                 public void run() {

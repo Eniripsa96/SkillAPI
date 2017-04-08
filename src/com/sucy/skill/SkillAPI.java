@@ -56,6 +56,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -734,7 +735,8 @@ public class SkillAPI extends JavaPlugin
      */
     public static Object getMeta(Metadatable target, String key)
     {
-        return target.getMetadata(key).get(0).value();
+        List<MetadataValue> metadata = target.getMetadata(key);
+        return (metadata == null || metadata.isEmpty()) ? null : metadata.get(0).value();
     }
 
     /**

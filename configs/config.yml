@@ -266,7 +266,7 @@ GUI:
 Casting:
   #
   # Whether or not the main casting option is enabled
-  enabled: true
+  enabled: false
   #
   # Whether or not to use the mult-bar implementation.
   # When enabled:

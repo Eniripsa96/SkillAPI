@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.listener;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerAccountChangeEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
@@ -34,7 +35,9 @@ import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
+import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.ItemSerializer;
+import com.sucy.skill.gui.handlers.SkillHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -53,6 +56,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -89,8 +93,13 @@ public class CastCombatListener extends SkillAPIListener
             return;
 
         PlayerData data = SkillAPI.getPlayerData(player);
-        if (data.getExtraData().has(ITEM_SAVE_KEY))
-            backup.put(player.getUniqueId(), ItemSerializer.fromBase64(data.getExtraData().getString(ITEM_SAVE_KEY)));
+        if (data.getExtraData().has(ITEM_SAVE_KEY)) {
+            ItemStack[] items = ItemSerializer.fromBase64(data.getExtraData().getString(ITEM_SAVE_KEY));
+            if (items != null)
+                backup.put(player.getUniqueId(), items);
+            else
+                backup.put(player.getUniqueId(), new ItemStack[9]);
+        }
         else
             backup.put(player.getUniqueId(), new ItemStack[9]);
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
@@ -132,7 +141,7 @@ public class CastCombatListener extends SkillAPIListener
         ItemStack[] items = backup.get(player.getUniqueId());
         ItemStack[] temp = new ItemStack[9];
         PlayerData data = SkillAPI.getPlayerData(player);
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < items.length; i++) {
             if (i == slot)
                 continue;
             if (data.getSkillBar().isSetup() && !data.getSkillBar().isWeaponSlot(i))
@@ -157,7 +166,7 @@ public class CastCombatListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event)
     {
         init(event.getPlayer());
@@ -168,7 +177,7 @@ public class CastCombatListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
@@ -247,6 +256,25 @@ public class CastCombatListener extends SkillAPIListener
                             .update(event.getPlayerData().getPlayer());
                 }
             }, 1);
+        }
+    }
+
+    /**
+     * Handles assigning skills to the skill bar
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onAssign(final InventoryClickEvent event) {
+        if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD && event.getInventory().getHolder() instanceof SkillHandler) {
+            final PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
+            if (data.getSkillBar().isSetup() && !data.getSkillBar().isWeaponSlot(event.getHotbarButton())) {
+                final SkillHandler handler = (SkillHandler) event.getInventory().getHolder();
+                final Skill skill = handler.get(event.getSlot());
+                if (skill != null) {
+                    data.getSkillBar().assign(data.getSkill(skill.getName()), event.getHotbarButton());
+                }
+            }
         }
     }
 
@@ -422,16 +450,33 @@ public class CastCombatListener extends SkillAPIListener
             return;
 
         if (event.getMessage().equals("/clear")) {
-            backup.put(event.getPlayer().getUniqueId(), new ItemStack[9]);
-            SkillAPI.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    PlayerSkillBar skillBar = SkillAPI.getPlayerData(event.getPlayer()).getSkillBar();
-                    if (skillBar.isSetup())
-                        skillBar.update(event.getPlayer());
-                    event.getPlayer().getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
-                }
-            }, 1);
+            handleClear(event.getPlayer());
         }
+        else if (event.getMessage().startsWith("/clear ")) {
+            handleClear(VersionManager.getPlayer(event.getMessage().substring(7)));
+        }
+    }
+
+    @EventHandler
+    public void onCommand(final ServerCommandEvent event) {
+        if (event.getCommand().startsWith("clear ")) {
+            handleClear(VersionManager.getPlayer(event.getCommand().substring(6)));
+        }
+    }
+
+    private void handleClear(final Player player) {
+        if (player == null)
+            return;
+
+        backup.put(player.getUniqueId(), new ItemStack[9]);
+        SkillAPI.schedule(new Runnable() {
+            @Override
+            public void run() {
+                PlayerSkillBar skillBar = SkillAPI.getPlayerData(player).getSkillBar();
+                if (skillBar.isSetup())
+                    skillBar.update(player);
+                player.getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
+            }
+        }, 1);
     }
 }

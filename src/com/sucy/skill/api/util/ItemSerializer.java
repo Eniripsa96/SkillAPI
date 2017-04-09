@@ -232,10 +232,12 @@ public class ItemSerializer {
     private static ItemStack[] basicDeserialize(String invString)
     {
         String[] serializedBlocks = invString.split(";");
+        if (serializedBlocks.length == 0)
+            return null;
         String invInfo = serializedBlocks[0];
         ItemStack[] deserializedInventory = new ItemStack[Integer.valueOf(invInfo)];
 
-        for (int i = 1; i <= deserializedInventory.length; i++)
+        for (int i = 1; i <= deserializedInventory.length && i < serializedBlocks.length; i++)
         {
             String[] serializedBlock = serializedBlocks[i].split("#");
             int stackPosition = Integer.valueOf(serializedBlock[0]);

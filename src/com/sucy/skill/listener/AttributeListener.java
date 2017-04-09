@@ -30,6 +30,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
@@ -168,7 +169,7 @@ public class AttributeListener extends SkillAPIListener
         if (event.getDamager() instanceof Player)
         {
             Player player = (Player) event.getDamager();
-            if (player.hasMetadata("NPC"))
+            if (CitizensHook.isNPC(player))
                 return;
 
             PlayerData data = SkillAPI.getPlayerData(player);
@@ -181,7 +182,7 @@ public class AttributeListener extends SkillAPIListener
         if (event.getTarget() instanceof Player)
         {
             Player player = (Player) event.getTarget();
-            if (player.hasMetadata("NPC"))
+            if (CitizensHook.isNPC(player))
                 return;
 
             PlayerData data = SkillAPI.getPlayerData(player);
@@ -203,7 +204,7 @@ public class AttributeListener extends SkillAPIListener
         if (event.getDamager() instanceof Player)
         {
             Player player = (Player) event.getDamager();
-            if (player.hasMetadata("NPC"))
+            if (CitizensHook.isNPC(player))
                 return;
 
             PlayerData data = SkillAPI.getPlayerData(player);
@@ -216,7 +217,7 @@ public class AttributeListener extends SkillAPIListener
         if (event.getTarget() instanceof Player)
         {
             Player player = (Player) event.getTarget();
-            if (player.hasMetadata("NPC"))
+            if (CitizensHook.isNPC(player))
                 return;
 
             PlayerData data = SkillAPI.getPlayerData(player);

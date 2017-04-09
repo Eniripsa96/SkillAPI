@@ -40,7 +40,7 @@ import java.util.HashMap;
 
 public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
 {
-    protected HashMap<String, ? extends IconHolder> data = new HashMap<String, IconHolder>();
+    protected HashMap<String, T> data = new HashMap<String, T>();
 
     protected GUIData    gui;
     protected PlayerData player;
@@ -55,6 +55,11 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
         this.data = data;
 
         onSetup();
+    }
+
+    public T get(int slot) {
+        String identifier = gui.getPage(page).get(slot);
+        return identifier == null ? null : data.get(identifier);
     }
 
     public void next()
@@ -86,13 +91,13 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
     {
         event.setCancelled(true);
         boolean top = event.getRawSlot() < event.getView().getTopInventory().getSize();
-        String result = gui.getPage(page).get(event.getSlot());
-        if (top && result != null && data.containsKey(result))
+        T result = get(event.getSlot());
+        if (top && result != null)
         {
             if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.HOTBAR_SWAP)
-                onHotBar((T) data.get(result), event.getSlot(), event.getHotbarButton());
+                onHotBar(result, event.getSlot(), event.getHotbarButton());
             else
-                onClick((T) data.get(result), event.getSlot(), event.isLeftClick(), event.isShiftClick());
+                onClick(result, event.getSlot(), event.isLeftClick(), event.isShiftClick());
         }
         else if (top && gui.getPages() > 1) {
             if (gui.getSize() == 9) {

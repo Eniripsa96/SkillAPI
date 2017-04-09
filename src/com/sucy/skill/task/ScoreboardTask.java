@@ -29,6 +29,7 @@ package com.sucy.skill.task;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -54,7 +55,7 @@ public class ScoreboardTask extends BukkitRunnable
     public void run()
     {
         Player player = data.getPlayer();
-        if (player == null || player.hasMetadata("NPC"))
+        if (player == null || CitizensHook.isNPC(player))
             return;
 
         if (data.getMainClass() != null)

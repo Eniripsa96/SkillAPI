@@ -31,6 +31,7 @@ import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.BuffManager;
@@ -39,6 +40,7 @@ import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.mechanic.ImmunityMechanic;
+import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -105,7 +107,7 @@ public class MainListener extends SkillAPIListener
      */
     public static void unload(Player player)
     {
-        if (player.hasMetadata("NPC"))
+        if (CitizensHook.isNPC(player))
             return;
 
         PlayerData data = SkillAPI.getPlayerData(player);
@@ -189,7 +191,7 @@ public class MainListener extends SkillAPIListener
             return;
 
         Player player = (Player) event.getEntity().getShooter();
-        if (player.hasMetadata("NPC"))
+        if (CitizensHook.isNPC(player))
             return;
 
         if (SkillAPI.getSettings().isUseOrbs())
@@ -211,6 +213,18 @@ public class MainListener extends SkillAPIListener
             && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             event.setAmount(0);
+        }
+    }
+
+    /**
+     * Handles updating level displays for players
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onLevelUp(final PlayerLevelUpEvent event) {
+        if (SkillAPI.getSettings().isShowClassLevel()) {
+            ClassBoardManager.updateLevel(event.getPlayerData());
         }
     }
 

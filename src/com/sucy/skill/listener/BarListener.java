@@ -38,8 +38,11 @@ import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
+import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.gui.handlers.SkillHandler;
 import com.sucy.skill.gui.map.SkillDetailMenu;
 import com.sucy.skill.gui.map.SkillListMenu;
+import com.sucy.skill.gui.tool.GUITool;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -247,6 +250,25 @@ public class BarListener extends SkillAPIListener
                 && SkillAPI.getSettings().isWorldEnabled(event.getRespawnLocation().getWorld())
                 && !data.getSkillBar().isWeaponSlot(0))
                 ignored.add(event.getPlayer().getUniqueId());
+        }
+    }
+
+    /**
+     * Handles assigning skills to the skill bar
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onAssign(final InventoryClickEvent event) {
+        if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD && event.getInventory().getHolder() instanceof SkillHandler) {
+            final PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
+            if (data.getSkillBar().isSetup() && !data.getSkillBar().isWeaponSlot(event.getHotbarButton())) {
+                final SkillHandler handler = (SkillHandler) event.getInventory().getHolder();
+                final Skill skill = handler.get(event.getSlot());
+                if (skill != null) {
+                    data.getSkillBar().assign(data.getSkill(skill.getName()), event.getHotbarButton());
+                }
+            }
         }
     }
 

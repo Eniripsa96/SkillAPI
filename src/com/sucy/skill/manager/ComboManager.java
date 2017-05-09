@@ -307,7 +307,7 @@ public class ComboManager
         if (combo == null)
             return -1;
 
-        String[] parts = combo.toLowerCase().split(" ");
+        String[] parts = combo.toLowerCase().split(", ");
         Click[] clicks = new Click[parts.length];
         int i = 0;
         for (String part : parts)

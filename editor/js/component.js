@@ -116,6 +116,7 @@ var Mechanic = {
     FLAG:                { name: 'Flag',                container: false, construct: MechanicFlag               },
     FLAG_CLEAR:          { name: 'Flag Clear',          container: false, construct: MechanicFlagClear          },
     FLAG_TOGGLE:         { name: 'Flag Toggle',         container: false, construct: MechanicFlagToggle         },
+    FORGET_TARGETS:      { name: 'Forget Targets',      container: false, construct: MechanicForgetTargets,     premium: true },
     HEAL:                { name: 'Heal',                container: false, construct: MechanicHeal               },
     HELD_ITEM:           { name: 'Held Item',           container: false, construct: MechanicHeldItem,          premium: true },
     IMMUNITY:            { name: 'Immunity',            container: false, construct: MechanicImmunity           },
@@ -1677,6 +1678,18 @@ function MechanicFlagToggle()
     
     this.data.push(new StringValue('Key', 'key', 'key')
         .setTooltip('The unique string for the flag. Use the same key when checking it in a Flag Condition')
+    );
+}
+
+extend('MechanicForgetTargets', 'Component');
+function MechanicForgetTargets() 
+{
+    this.super('Forget Targets', Type.MECHANIC, false);
+    
+    this.description = 'Clears targets stored by the "Remember Targets" mechanic';
+    
+    this.data.push(new StringValue('Key', 'key', 'key')
+        .setTooltip('The unique key the targets were stored under')
     );
 }
 

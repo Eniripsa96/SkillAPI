@@ -1358,11 +1358,21 @@ public final class PlayerData
      * @param amount amount of experience to give
      * @param source source of the experience
      */
-    public void giveExp(double amount, ExpSource source)
-    {
+    public void giveExp(double amount, ExpSource source) {
+        giveExp(amount, source, true);
+    }
+
+    /**
+     * Gives experience to the player from the given source
+     *
+     * @param amount amount of experience to give
+     * @param source source of the experience
+     * @param message whether or not to show the configured message if enabled
+     */
+    public void giveExp(double amount, ExpSource source, boolean message) {
         for (PlayerClass playerClass : classes.values())
         {
-            playerClass.giveExp(amount, source);
+            playerClass.giveExp(amount, source, message);
         }
     }
 

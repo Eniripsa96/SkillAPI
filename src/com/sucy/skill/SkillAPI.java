@@ -160,6 +160,7 @@ public class SkillAPI extends JavaPlugin
         listen(new CastItemListener(), settings.isUsingWand());
         listen(new CastCombatListener(), settings.isUsingCombat());
         listen(new DeathListener(), !VersionManager.isVersionAtLeast(11000));
+        listen(new ExperienceListener(), settings.yieldsEnabled());
 
         // Set up tasks
         if (settings.isManaEnabled())

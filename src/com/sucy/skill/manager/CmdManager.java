@@ -114,6 +114,16 @@ public class CmdManager
         CommandManager.registerCommand(root);
     }
 
+    public static String join(String[] args, int start) {
+        return join(args, start, args.length);
+    }
+
+    public static String join(String[] args, int start, int end) {
+        final StringBuilder builder = new StringBuilder();
+        for (int i = start; i < end; i++) builder.append(args[i]);
+        return builder.toString();
+    }
+
     /**
      * Unregisters all commands for SkillAPI from the server
      */

@@ -139,6 +139,9 @@ public class CastCombatListener extends SkillAPIListener
     private void toggle(Player player)
     {
         ItemStack[] items = backup.get(player.getUniqueId());
+        if (items == null) {
+            items = new ItemStack[9];
+        }
         ItemStack[] temp = new ItemStack[9];
         PlayerData data = SkillAPI.getPlayerData(player);
         for (int i = 0; i < items.length; i++) {

@@ -37,17 +37,23 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.manager.CmdManager;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.regex.Pattern;
+
 /**
  * A command that gives a player class experience
  */
 public class CmdExp implements IFunction
 {
+    private static final Pattern IS_NUMBER = Pattern.compile("[0-9]+");
+    private static final Pattern IS_BOOL = Pattern.compile("(true)|(false)");
+
     private static final String NOT_PLAYER   = "not-player";
     private static final String NOT_NUMBER   = "not-number";
     private static final String NOT_POSITIVE = "not-positive";
@@ -73,10 +79,12 @@ public class CmdExp implements IFunction
         }
 
         // Only can show info of a player so console needs to provide a name
-        else if (args.length >= 2 || (args.length >= 1 && sender instanceof Player))
+        else if (args.length >= 1 && (sender instanceof Player || (args.length >= 2 && !IS_NUMBER.matcher(args[0]).matches())))
         {
+            int numberIndex = IS_NUMBER.matcher(args[0]).matches() ? 0 : 1;
+
             // Get the player data
-            OfflinePlayer target = args.length == 1 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
+            OfflinePlayer target = numberIndex == 0 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
             if (target == null)
             {
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");
@@ -88,7 +96,7 @@ public class CmdExp implements IFunction
             double amount;
             try
             {
-                amount = NumberParser.parseDouble(args[args.length == 1 ? 0 : 1]);
+                amount = NumberParser.parseDouble(args[numberIndex]);
             }
             catch (Exception ex)
             {
@@ -103,28 +111,42 @@ public class CmdExp implements IFunction
                 return;
             }
 
+            int lastArg = args.length;
+            boolean message = IS_BOOL.matcher(args[lastArg]).matches();
+            if (message) lastArg--;
+
             // Give experience to a specific class group
-            if (args.length == 3)
+            if (args.length > numberIndex + 1 && numberIndex + 1 < lastArg)
             {
-                PlayerClass playerClass = data.getClass(args[2]);
+                PlayerClass playerClass = data.getClass(CmdManager.join(args, numberIndex + 1, lastArg));
                 if (playerClass == null)
                     return;
 
-                playerClass.giveExp(amount, ExpSource.COMMAND);
+                playerClass.giveExp(amount, ExpSource.COMMAND, message);
             }
 
             // Give experience
             else
-                data.giveExp(amount, ExpSource.COMMAND);
+                data.giveExp(amount, ExpSource.COMMAND, message);
 
             // Messages
-            if (target != sender)
-            {
-                cmd.sendMessage(sender, GAVE_EXP, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {exp} experience", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.EXP.setReplacement("" + amount));
-            }
-            if (target.isOnline())
-            {
-                cmd.sendMessage(target.getPlayer(), RECEIVED_EXP, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{exp} experience " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.EXP.setReplacement("" + amount));
+            if (message) {
+                if (target != sender) {
+                    cmd.sendMessage(
+                            sender,
+                            GAVE_EXP,
+                            ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {exp} experience",
+                            Filter.PLAYER.setReplacement(target.getName()),
+                            RPGFilter.EXP.setReplacement("" + amount));
+                }
+                if (target.isOnline()) {
+                    cmd.sendMessage(
+                            target.getPlayer(),
+                            RECEIVED_EXP,
+                            ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{exp} experience " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}",
+                            Filter.PLAYER.setReplacement(sender.getName()),
+                            RPGFilter.EXP.setReplacement("" + amount));
+                }
             }
         }
 

@@ -309,7 +309,22 @@ public final class PlayerClass implements IconHolder
      * @param amount amount of experience to give
      * @param source type of the source of the experience
      */
-    public void giveExp(double amount, ExpSource source)
+    public void giveExp(double amount, ExpSource source) {
+        giveExp(amount, source, true);
+    }
+
+    /**
+     * <p>Gives experience to the class under the context of the experience source.</p>
+     * <p>This will also check for leveling up after the experience is added.</p>
+     * <p>If the class does not normally receive experience from the source,
+     * it will still launch an experience event, just it will start off as
+     * cancelled in case it should still be given in select circumstances.</p>
+     *
+     * @param amount amount of experience to give
+     * @param source type of the source of the experience
+     * @param showMessage whether or not to show the configured message if enabled
+     */
+    public void giveExp(double amount, ExpSource source, boolean showMessage)
     {
         // Cannot give a non-positive amount of exp
         if (amount <= 0 || level >= classData.getMaxLevel())
@@ -327,7 +342,7 @@ public final class PlayerClass implements IconHolder
         // Add experience if not cancelled
         if (!event.isCancelled() && rounded > 0)
         {
-            if (SkillAPI.getSettings().isShowExpMessages() && player.getPlayer() != null)
+            if (showMessage && SkillAPI.getSettings().isShowExpMessages() && player.getPlayer() != null)
             {
                 TitleManager.show(
                     player.getPlayer(),

@@ -33,6 +33,7 @@ import com.rit.sucy.player.Protection;
 import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IndicatorSettings;
 import com.sucy.skill.data.formula.Formula;
@@ -91,6 +92,7 @@ public class Settings
      */
     public void reload()
     {
+        loadExperienceSettings();
         loadAccountSettings();
         loadClassSettings();
         loadManaSettings();
@@ -105,6 +107,77 @@ public class Settings
         loadWorldSettings();
         loadSaveSettings();
         loadTargetingSettings();
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
+    //               Experience Settings                 //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    private static final String DEFAULT_YIELD = "default";
+
+    private Map<String, Map<String, Double>> breakYields;
+    private Map<String, Map<String, Double>> placeYields;
+    private Map<String, Map<String, Double>> craftYields;
+
+    private boolean trackBreak;
+    private boolean yieldsEnabled;
+
+    public void loadExperienceSettings()
+    {
+        CommentedConfig file = new CommentedConfig(plugin, "exp");
+        file.saveDefaultConfig();
+        DataSection config = file.getConfig();
+
+        DataSection breakData = config.getSection("break");
+        yieldsEnabled = config.getBoolean("enabled", false);
+        trackBreak = breakData.getBoolean("allow-replace", true);
+        breakYields = loadYields(breakData.getSection("types"));
+        placeYields = loadYields(config.getSection("place"));
+        craftYields = loadYields(config.getSection("craft"));
+    }
+
+    private Map<String, Map<String, Double>> loadYields(DataSection config) {
+        Map<String, Map<String, Double>> yields = new HashMap<String, Map<String, Double>>();
+        for (String className : config.keys()) {
+            HashMap<String, Double> map = new HashMap<String, Double>();
+            DataSection classYields = config.getSection(className);
+            for (String type : classYields.keys()) {
+                map.put(type.toUpperCase().replace(" ", "_"), classYields.getDouble(type));
+            }
+            yields.put(className, map);
+        }
+        return yields;
+    }
+
+    public boolean trackBreaks() {
+        return trackBreak;
+    }
+
+    public boolean yieldsEnabled() {
+        return yieldsEnabled;
+    }
+
+    public double getBreakYield(PlayerClass playerClass, Material mat) {
+        return getYield(breakYields, playerClass, mat.name());
+    }
+
+    public double getPlaceYield(PlayerClass playerClass, Material mat) {
+        return getYield(placeYields, playerClass, mat.name());
+    }
+
+    public double getCraftYield(PlayerClass playerClass, Material mat) {
+        return getYield(craftYields, playerClass, mat.name());
+    }
+
+    private double getYield(Map<String, Map<String, Double>> yields, PlayerClass playerClass, String key) {
+        double yield = getYield(yields.get(playerClass.getData().getName()), key);
+        return yield > 0 ? yield : getYield(yields.get(DEFAULT_YIELD), key);
+    }
+
+    private double getYield(Map<String, Double> yields, String key) {
+        return yields == null ? 0 : (yields.containsKey(key) ? yields.get(key) : 0);
     }
 
     ///////////////////////////////////////////////////////

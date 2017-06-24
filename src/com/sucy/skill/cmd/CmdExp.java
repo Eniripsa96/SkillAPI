@@ -79,7 +79,8 @@ public class CmdExp implements IFunction
         }
 
         // Only can show info of a player so console needs to provide a name
-        else if (args.length >= 1 && (sender instanceof Player || (args.length >= 2 && !IS_NUMBER.matcher(args[0]).matches())))
+        else if ((args.length >= 1 && sender instanceof Player && IS_NUMBER.matcher(args[0]).matches())
+                || (args.length >= 2 && !IS_NUMBER.matcher(args[0]).matches()))
         {
             int numberIndex = IS_NUMBER.matcher(args[0]).matches() ? 0 : 1;
 

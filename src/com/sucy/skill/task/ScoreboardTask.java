@@ -55,7 +55,7 @@ public class ScoreboardTask extends BukkitRunnable
     public void run()
     {
         Player player = data.getPlayer();
-        if (player == null || CitizensHook.isNPC(player))
+        if (player == null || !player.isOnline() || player.isDead() || CitizensHook.isNPC(player))
             return;
 
         if (data.getMainClass() != null)

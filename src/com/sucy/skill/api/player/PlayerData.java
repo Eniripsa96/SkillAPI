@@ -2048,7 +2048,7 @@ public final class PlayerData
         AttributeListener.updatePlayer(this);
         getEquips().update(player);
         this.updateHealthAndMana(player);
-        if (this.getLastHealth() > 0)
+        if (this.getLastHealth() > 0 && !player.isDead())
             player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
         this.startPassives(player);
         this.updateScoreboard();

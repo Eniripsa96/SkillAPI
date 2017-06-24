@@ -60,6 +60,9 @@ public class HealMechanic extends EffectComponent
         if (value < 0) return false;
         for (LivingEntity target : targets)
         {
+            if (target.isDead())
+                continue;
+
             double amount = value;
             if (percent)
             {

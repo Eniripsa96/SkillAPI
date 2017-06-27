@@ -80,6 +80,11 @@ Saving:
     database: plugins
     username: username
     password: password
+    # Time to wait on loading data from the SQL database in milliseconds.
+    # Can be used to give time for other servers to synchronize data. Note:
+    # this does not apply when loading player data on server startup since
+    # players wouldn't be coming from another server.
+    delay: 0
 #
 Classes:
   #

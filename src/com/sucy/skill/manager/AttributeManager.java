@@ -34,13 +34,12 @@ import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.formula.Formula;
 import com.sucy.skill.data.formula.value.CustomValue;
 import com.sucy.skill.dynamic.EffectComponent;
-import com.sucy.skill.log.LogType;
-import com.sucy.skill.log.Logger;
 import com.sucy.skill.gui.tool.GUIData;
 import com.sucy.skill.gui.tool.GUIPage;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.gui.tool.IconHolder;
-import org.bukkit.ChatColor;
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -134,7 +133,7 @@ public class AttributeManager
             Attribute attribute = new Attribute(data.getSection(key), key);
             attributes.put(key.toLowerCase(), attribute);
             lookup.put(key.toLowerCase(), attribute);
-            lookup.put(ChatColor.stripColor(attribute.getName()).toLowerCase(), attribute);
+            lookup.put(attribute.getName().toLowerCase(), attribute);
         }
 
         GUIData attribs = GUITool.getAttributesMenu();

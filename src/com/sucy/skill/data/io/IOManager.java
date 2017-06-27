@@ -175,8 +175,8 @@ public abstract class IOManager
                     PlayerSkill skillData = acc.getSkill(skillKey);
                     if (skillData != null)
                     {
-                        skillData.addLevels(skill.getInt(LEVEL));
-                        skillData.addPoints(skill.getInt(POINTS));
+                        skillData.setLevel(skill.getInt(LEVEL));
+                        skillData.setPoints(skill.getInt(POINTS));
                         skillData.addCooldown(skill.getInt(COOLDOWN, 0));
                     }
                 }

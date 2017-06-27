@@ -29,6 +29,7 @@ package com.sucy.skill.api.projectile;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.api.particle.target.Followable;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -69,7 +70,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Logger.log("Unable to use reflection for accurate collision - will resort to simple radius check");
         }
     }
 

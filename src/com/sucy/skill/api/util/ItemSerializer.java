@@ -106,7 +106,6 @@ public class ItemSerializer {
         }
         catch (Exception ex) {
             System.out.println("Server doesn't support NBT serialization - resorting to a less complete implementation");
-            ex.printStackTrace();
         }
     }
 

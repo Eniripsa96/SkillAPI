@@ -112,26 +112,28 @@ public class CmdExp implements IFunction
                 return;
             }
 
-            int lastArg = args.length;
+            int lastArg = args.length - 1;
             boolean message = IS_BOOL.matcher(args[lastArg]).matches();
+            boolean showMessage = !message || Boolean.parseBoolean(args[lastArg]);
             if (message) lastArg--;
 
+
             // Give experience to a specific class group
-            if (args.length > numberIndex + 1 && numberIndex + 1 < lastArg)
+            if (numberIndex + 1 <= lastArg)
             {
                 PlayerClass playerClass = data.getClass(CmdManager.join(args, numberIndex + 1, lastArg));
                 if (playerClass == null)
                     return;
 
-                playerClass.giveExp(amount, ExpSource.COMMAND, message);
+                playerClass.giveExp(amount, ExpSource.COMMAND, showMessage);
             }
 
             // Give experience
             else
-                data.giveExp(amount, ExpSource.COMMAND, message);
+                data.giveExp(amount, ExpSource.COMMAND, showMessage);
 
             // Messages
-            if (message) {
+            if (showMessage) {
                 if (target != sender) {
                     cmd.sendMessage(
                             sender,

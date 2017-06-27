@@ -37,7 +37,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.log.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -94,6 +93,11 @@ public class SQLIO extends IOManager
     public PlayerAccounts loadData(OfflinePlayer player)
     {
         if (player == null) return null;
+
+        try {
+            Thread.sleep(SkillAPI.getSettings().getSqlDelay());
+        }
+        catch (InterruptedException ex) { /* Shouldn't happen */ }
 
         SQLConnection connection = openConnection();
 

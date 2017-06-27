@@ -455,6 +455,7 @@ public class Settings
     private boolean auto;
     private boolean useSql;
     private int     minutes;
+    private int     sqlDelay;
 
     private String sqlHost;
     private String sqlPort;
@@ -542,6 +543,13 @@ public class Settings
         return sqlPass;
     }
 
+    /**
+     * @return time in milliseconds to wait before loading SQL data
+     */
+    public int getSqlDelay() {
+        return sqlDelay;
+    }
+
     private void loadSaveSettings()
     {
         auto = config.getBoolean(SAVE_AUTO);
@@ -556,6 +564,7 @@ public class Settings
             sqlDatabase = details.getString("database");
             sqlUser = details.getString("username");
             sqlPass = details.getString("password");
+            sqlDelay = details.getInt("delay");
         }
     }
 

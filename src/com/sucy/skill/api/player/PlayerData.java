@@ -65,6 +65,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -921,6 +922,11 @@ public final class PlayerData
     {
         if (classes.size() > 0 && player != null)
         {
+            HashMap<String, RPGClass> iconMap = new HashMap<String, RPGClass>();
+            for (Map.Entry<String, PlayerClass> entry : classes.entrySet()) {
+                iconMap.put(entry.getKey(), entry.getValue().getData());
+            }
+
             GUITool.getDetailsMenu().show(
                 new DetailsHandler(),
                 this,
@@ -930,7 +936,7 @@ public final class PlayerData
                     FilterType.COLOR,
                     Filter.PLAYER.setReplacement(player.getName())
                 ).get(0),
-                classes
+                iconMap
             );
             return true;
         }

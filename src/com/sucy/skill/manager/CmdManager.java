@@ -120,7 +120,7 @@ public class CmdManager
 
     public static String join(String[] args, int start, int end) {
         final StringBuilder builder = new StringBuilder();
-        for (int i = start; i < end; i++) builder.append(args[i]);
+        for (int i = start; i <= end; i++) builder.append(args[i]);
         return builder.toString();
     }
 

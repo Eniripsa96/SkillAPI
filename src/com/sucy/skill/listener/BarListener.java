@@ -29,6 +29,7 @@ package com.sucy.skill.listener;
 import com.rit.sucy.gui.MapData;
 import com.rit.sucy.gui.MapMenu;
 import com.rit.sucy.gui.MapMenuManager;
+import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerAccountChangeEvent;
@@ -38,18 +39,27 @@ import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkillBar;
+import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.gui.SkillDetailMenu;
 import com.sucy.skill.gui.SkillListMenu;
-import org.bukkit.*;
+import com.sucy.skill.tree.basic.InventoryTree;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -247,6 +257,27 @@ public class BarListener extends SkillAPIListener
                     && SkillAPI.getSettings().isWorldEnabled(event.getRespawnLocation().getWorld())
                     && !data.getSkillBar().isWeaponSlot(0))
                 ignored.add(event.getPlayer().getUniqueId());
+        }
+    }
+
+    /**
+     * Handles assigning skills to the skill bar
+     *
+     * @param event event details
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onAssign(final InventoryClickEvent event) {
+        if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD && InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY)) {
+            final PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
+            if (data.getSkillBar().isSetup() && !data.getSkillBar().isWeaponSlot(event.getHotbarButton())) {
+                InventoryTree tree = (InventoryTree) SkillAPI.getClass(data.getShownClassName()).getSkillTree();
+                if (tree.isSkill(event.getWhoClicked(), event.getRawSlot())) {
+                    final Skill skill = tree.getSkill(event.getRawSlot());
+                    if (skill.canCast() && data.hasSkill(skill.getName())) {
+                        data.getSkillBar().assign(data.getSkill(skill.getName()), event.getHotbarButton());
+                    }
+                }
+            }
         }
     }
 

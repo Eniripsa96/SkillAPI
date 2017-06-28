@@ -274,7 +274,7 @@ public class CastCombatListener extends SkillAPIListener
             if (data.getSkillBar().isSetup() && !data.getSkillBar().isWeaponSlot(event.getHotbarButton())) {
                 final SkillHandler handler = (SkillHandler) event.getInventory().getHolder();
                 final Skill skill = handler.get(event.getSlot());
-                if (skill != null) {
+                if (skill != null && skill.canCast()) {
                     data.getSkillBar().assign(data.getSkill(skill.getName()), event.getHotbarButton());
                 }
             }

@@ -42,8 +42,9 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.gui.handlers.SkillHandler;
 import com.sucy.skill.gui.map.SkillDetailMenu;
 import com.sucy.skill.gui.map.SkillListMenu;
-import com.sucy.skill.gui.tool.GUITool;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -51,8 +52,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -265,7 +271,7 @@ public class BarListener extends SkillAPIListener
             if (data.getSkillBar().isSetup() && !data.getSkillBar().isWeaponSlot(event.getHotbarButton())) {
                 final SkillHandler handler = (SkillHandler) event.getInventory().getHolder();
                 final Skill skill = handler.get(event.getSlot());
-                if (skill != null) {
+                if (skill != null && skill.canCast()) {
                     data.getSkillBar().assign(data.getSkill(skill.getName()), event.getHotbarButton());
                 }
             }

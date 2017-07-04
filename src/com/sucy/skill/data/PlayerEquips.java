@@ -264,7 +264,9 @@ public class PlayerEquips
                                 if (attribs == null)
                                     attribs = new HashMap<String, Integer>();
 
-                                attribs.put(attr, NumberParser.parseInt(lower.substring(text.length()).replace("%", "")));
+                                int current = attribs.containsKey(attr) ? attribs.get(attr) : 0;
+                                int extra = NumberParser.parseInt(lower.substring(text.length()).replace("%", ""));
+                                attribs.put(attr, current + extra);
                                 break;
                             }
                         }

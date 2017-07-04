@@ -121,7 +121,7 @@ public class CmdLevel implements IFunction
 
             // Give levels
             else
-                data.giveExp(amount, ExpSource.COMMAND, showMessage);
+                data.giveLevels(amount, ExpSource.COMMAND);
 
             // Messages
             if (showMessage) {

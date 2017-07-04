@@ -5,10 +5,11 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
-import net.md_5.bungee.event.EventHandler;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -45,7 +46,7 @@ public class ExperienceListener extends SkillAPIListener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
         if (track && unnatural.contains(format(event.getBlock()))) {
             return;
@@ -60,7 +61,7 @@ public class ExperienceListener extends SkillAPIListener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
         if (track) {
             unnatural.add(format(event.getBlock()));
@@ -75,7 +76,7 @@ public class ExperienceListener extends SkillAPIListener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraft(CraftItemEvent event) {
         PlayerData playerData = SkillAPI.getPlayerData((Player) event.getWhoClicked());
         for (PlayerClass playerClass : playerData.getClasses()) {

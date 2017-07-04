@@ -265,6 +265,9 @@ public class PlayerCastBars implements InventoryHolder
      */
     private ItemStack makeIndicator(String skill)
     {
+        if (skill == null) {
+            return null;
+        }
         ItemStack item = SkillAPI.getSkill(skill).getIndicator(this.player.getSkill(skill), true);
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();

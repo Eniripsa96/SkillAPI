@@ -40,6 +40,7 @@ import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.gui.tool.IconHolder;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -250,6 +251,11 @@ public class AttributeManager
 
             item.setItemMeta(meta);
             return item;
+        }
+
+        @Override
+        public boolean isAllowed(final Player player) {
+            return true;
         }
 
         /**

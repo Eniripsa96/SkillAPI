@@ -34,10 +34,9 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.exception.SkillTreeException;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.data.Permissions;
+import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.language.GUINodes;
 import com.sucy.skill.language.RPGFilter;
-import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.tree.SkillTree;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -135,11 +134,9 @@ public abstract class InventoryTree extends SkillTree
      */
     public boolean isSkill(HumanEntity player, int slot)
     {
-        return skillSlots.get(slot) != null &&
-            player != null &&
-            (!skillSlots.get(slot).needsPermission() ||
-                player.hasPermission(Permissions.SKILL) ||
-                player.hasPermission(Permissions.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-")));
+        return skillSlots.get(slot) != null
+                && player != null
+                && skillSlots.get(slot).isAllowed((Player) player);
     }
 
     /**

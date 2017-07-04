@@ -33,21 +33,28 @@ import com.rit.sucy.config.Filter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.manager.CmdManager;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.regex.Pattern;
+
 /**
  * A command that gives a player class levels
  */
 public class CmdLevel implements IFunction
 {
+    private static final Pattern IS_NUMBER = Pattern.compile("[0-9]+");
+    private static final Pattern IS_BOOL   = Pattern.compile("(true)|(false)");
+
     private static final String NOT_PLAYER     = "not-player";
-    private static final String NOT_NUMBER     = "not-number";
     private static final String NOT_POSITIVE   = "not-positive";
     private static final String GAVE_LEVEL     = "gave-level";
     private static final String RECEIVED_LEVEL = "received-level";
@@ -71,27 +78,23 @@ public class CmdLevel implements IFunction
         }
 
         // Only can show info of a player so console needs to provide a name
-        else if (args.length >= 1 && (args.length >= 2 || sender instanceof Player))
+        else if ((args.length >= 1 && sender instanceof Player && IS_NUMBER.matcher(args[0]).matches())
+                || (args.length >= 2 && !IS_NUMBER.matcher(args[0]).matches()))
         {
+            int numberIndex = IS_NUMBER.matcher(args[0]).matches() ? 0 : 1;
+
             // Get the player data
-            OfflinePlayer target = args.length == 1 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
+            OfflinePlayer target = numberIndex == 0 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
             if (target == null)
             {
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");
                 return;
             }
+            PlayerData data = SkillAPI.getPlayerData(target);
 
-            // Parse the level
+            // Parse the levels
             int amount;
-            try
-            {
-                amount = Integer.parseInt(args[args.length == 1 ? 0 : 1]);
-            }
-            catch (Exception ex)
-            {
-                cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid level amount");
-                return;
-            }
+            amount = NumberParser.parseInt(args[numberIndex]);
 
             // Invalid amount of levels
             if (amount <= 0)
@@ -100,18 +103,44 @@ public class CmdLevel implements IFunction
                 return;
             }
 
+            int lastArg = args.length - 1;
+            boolean message = IS_BOOL.matcher(args[lastArg]).matches();
+            boolean showMessage = !message || Boolean.parseBoolean(args[lastArg]);
+            if (message) lastArg--;
+
+
+            // Give levels to a specific class group
+            if (numberIndex + 1 <= lastArg)
+            {
+                PlayerClass playerClass = data.getClass(CmdManager.join(args, numberIndex + 1, lastArg));
+                if (playerClass == null)
+                    return;
+
+                playerClass.giveLevels(amount);
+            }
+
             // Give levels
-            PlayerData data = SkillAPI.getPlayerData(target);
-            data.giveLevels(amount, ExpSource.COMMAND);
+            else
+                data.giveExp(amount, ExpSource.COMMAND, showMessage);
 
             // Messages
-            if (target != sender)
-            {
-                cmd.sendMessage(sender, GAVE_LEVEL, ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {level} levels", Filter.PLAYER.setReplacement(target.getName()), RPGFilter.LEVEL.setReplacement("" + amount));
-            }
-            if (target.isOnline())
-            {
-                cmd.sendMessage(target.getPlayer(), RECEIVED_LEVEL, ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{level} levels " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}", Filter.PLAYER.setReplacement(sender.getName()), RPGFilter.LEVEL.setReplacement("" + amount));
+            if (showMessage) {
+                if (target != sender) {
+                    cmd.sendMessage(
+                            sender,
+                            GAVE_LEVEL,
+                            ChatColor.DARK_GREEN + "You have given " + ChatColor.GOLD + "{player} {level} levels",
+                            Filter.PLAYER.setReplacement(target.getName()),
+                            RPGFilter.LEVEL.setReplacement("" + amount));
+                }
+                if (target.isOnline()) {
+                    cmd.sendMessage(
+                            target.getPlayer(),
+                            RECEIVED_LEVEL,
+                            ChatColor.DARK_GREEN + "You have received " + ChatColor.GOLD + "{level} levels " + ChatColor.DARK_GREEN + "from " + ChatColor.GOLD + "{player}",
+                            Filter.PLAYER.setReplacement(sender.getName()),
+                            RPGFilter.LEVEL.setReplacement("" + amount));
+                }
             }
         }
 

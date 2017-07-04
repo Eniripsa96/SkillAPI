@@ -43,6 +43,7 @@ import com.sucy.skill.api.util.DamageLoreRemover;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.cast.IIndicator;
+import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.hook.NoCheatHook;
 import com.sucy.skill.hook.PluginChecker;
@@ -472,6 +473,13 @@ public abstract class Skill implements IconHolder
             return getIndicator(skill, false);
         else
             return getIndicator();
+    }
+
+    @Override
+    public boolean isAllowed(final Player player) {
+        return !needsPermission()
+                || player.hasPermission(Permissions.SKILL)
+                || player.hasPermission(Permissions.SKILL + "." + name.toLowerCase().replace(" ", "-"));
     }
 
     /**

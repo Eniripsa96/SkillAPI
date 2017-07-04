@@ -30,7 +30,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.exception.SkillTreeException;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.data.Permissions;
 import com.sucy.skill.log.Logger;
 import org.bukkit.entity.Player;
 
@@ -67,8 +66,8 @@ public abstract class SkillTree
      */
     public boolean canShow(Player player, Skill skill)
     {
-        if (skill.canAutoLevel() && !skill.canCast() && !SkillAPI.getSettings().isShowingAutoSkills()) return false;
-        return !skill.needsPermission() || player.hasPermission(Permissions.SKILL) || player.hasPermission(Permissions.SKILL + "." + skill.getName().toLowerCase().replaceAll(" ", "-"));
+        return !(skill.canAutoLevel() && !skill.canCast() && !SkillAPI.getSettings().isShowingAutoSkills())
+            && skill.isAllowed(player);
     }
 
     /**

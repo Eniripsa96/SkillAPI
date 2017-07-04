@@ -602,7 +602,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @param skill skill to register
      */
-    void addSkill(Skill skill)
+    public void addSkill(Skill skill)
     {
         skill = registrationManager.validate(skill);
         if (skill != null)
@@ -629,7 +629,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @param rpgClass class to register
      */
-    void addClass(RPGClass rpgClass)
+    public void addClass(RPGClass rpgClass)
     {
         rpgClass = registrationManager.validate(rpgClass);
         if (rpgClass != null)

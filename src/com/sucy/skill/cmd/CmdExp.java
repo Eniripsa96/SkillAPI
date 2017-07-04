@@ -55,7 +55,6 @@ public class CmdExp implements IFunction
     private static final Pattern IS_BOOL = Pattern.compile("(true)|(false)");
 
     private static final String NOT_PLAYER   = "not-player";
-    private static final String NOT_NUMBER   = "not-number";
     private static final String NOT_POSITIVE = "not-positive";
     private static final String GAVE_EXP     = "gave-exp";
     private static final String RECEIVED_EXP = "received-exp";
@@ -95,15 +94,7 @@ public class CmdExp implements IFunction
 
             // Parse the experience
             double amount;
-            try
-            {
-                amount = NumberParser.parseDouble(args[numberIndex]);
-            }
-            catch (Exception ex)
-            {
-                cmd.sendMessage(sender, NOT_NUMBER, ChatColor.RED + "That is not a valid experience amount");
-                return;
-            }
+            amount = NumberParser.parseDouble(args[numberIndex]);
 
             // Invalid amount of experience
             if (amount <= 0)

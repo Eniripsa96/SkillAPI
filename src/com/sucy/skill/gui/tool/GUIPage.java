@@ -31,6 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -145,10 +146,11 @@ public class GUIPage
     {
         ItemStack[] contents = new ItemStack[parent.getSize()];
 
+        Player bukkitPlayer = player.getPlayer();
         for (Map.Entry<Integer, String> entry : lookup.entrySet())
         {
             IconHolder holder = data.get(entry.getValue());
-            if (holder != null)
+            if (holder != null && holder.isAllowed(bukkitPlayer))
                 contents[entry.getKey()] = holder.getIcon(player);
         }
 

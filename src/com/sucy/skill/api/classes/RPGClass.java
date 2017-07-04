@@ -36,12 +36,14 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
+import com.sucy.skill.data.Permissions;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.gui.tool.IconHolder;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -294,6 +296,13 @@ public abstract class RPGClass implements IconHolder
     public ItemStack getIcon(PlayerData data)
     {
         return getIcon();
+    }
+
+    @Override
+    public boolean isAllowed(final Player player) {
+        return !needsPermission
+                || player.hasPermission(Permissions.CLASS)
+                || player.hasPermission(Permissions.CLASS + "." + name.toLowerCase().replace(" ", "-"));
     }
 
     /**

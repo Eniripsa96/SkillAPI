@@ -115,8 +115,14 @@ public class RegistrationManager
         {
             if (plugin instanceof SkillPlugin)
             {
-                Logger.log(LogType.REGISTRATION, 2, " - " + plugin.getName());
-                ((SkillPlugin) plugin).registerSkills(api);
+                try {
+                    Logger.log(LogType.REGISTRATION, 2, " - " + plugin.getName());
+                    ((SkillPlugin) plugin).registerSkills(api);
+                }
+                catch (Throwable t) {
+                    Logger.invalid("Plugin \"" + plugin.getName() + "\" failed to register skills. Error details:");
+                    t.printStackTrace();
+                }
             }
         }
 
@@ -210,7 +216,13 @@ public class RegistrationManager
             if (plugin instanceof SkillPlugin)
             {
                 Logger.log(LogType.REGISTRATION, 2, " - " + plugin.getName());
-                ((SkillPlugin) plugin).registerClasses(api);
+                try {
+                    ((SkillPlugin) plugin).registerClasses(api);
+                }
+                catch (Throwable t) {
+                    Logger.invalid("Plugin \"" + plugin.getName() + "\" failed to register classes. Error details:");
+                    t.printStackTrace();
+                }
             }
         }
 

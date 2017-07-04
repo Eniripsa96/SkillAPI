@@ -32,21 +32,33 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.enums.*;
-import com.sucy.skill.api.event.*;
+import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.enums.ManaCost;
+import com.sucy.skill.api.enums.ManaSource;
+import com.sucy.skill.api.enums.PointSource;
+import com.sucy.skill.api.enums.SkillStatus;
+import com.sucy.skill.api.event.PlayerCastSkillEvent;
+import com.sucy.skill.api.event.PlayerClassChangeEvent;
+import com.sucy.skill.api.event.PlayerManaGainEvent;
+import com.sucy.skill.api.event.PlayerManaLossEvent;
+import com.sucy.skill.api.event.PlayerRefundAttributeEvent;
+import com.sucy.skill.api.event.PlayerSkillDowngradeEvent;
+import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
+import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
+import com.sucy.skill.api.event.PlayerUpAttributeEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.cast.PlayerCastBars;
 import com.sucy.skill.data.GroupSettings;
-import com.sucy.skill.data.Permissions;
 import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.gui.handlers.AttributeHandler;
 import com.sucy.skill.gui.handlers.DetailsHandler;
 import com.sucy.skill.gui.handlers.ProfessHandler;
 import com.sucy.skill.gui.handlers.SkillHandler;
+import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.language.ErrorNodes;
 import com.sucy.skill.language.GUINodes;
 import com.sucy.skill.language.RPGFilter;
@@ -55,7 +67,6 @@ import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.task.ScoreboardTask;
-import com.sucy.skill.gui.tool.GUITool;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -924,7 +935,7 @@ public final class PlayerData
         {
             HashMap<String, RPGClass> iconMap = new HashMap<String, RPGClass>();
             for (Map.Entry<String, PlayerClass> entry : classes.entrySet()) {
-                iconMap.put(entry.getKey(), entry.getValue().getData());
+                iconMap.put(entry.getKey().toLowerCase(), entry.getValue().getData());
             }
 
             GUITool.getDetailsMenu().show(
@@ -1211,14 +1222,11 @@ public final class PlayerData
      */
     public boolean canProfess(RPGClass rpgClass)
     {
-        if (rpgClass.isNeedsPermission())
-        {
-            Player p = getPlayer();
-            if (p == null || (!p.hasPermission(Permissions.CLASS) && !p.hasPermission(Permissions.CLASS + "." + rpgClass.getName().toLowerCase().replace(" ", "-"))))
-            {
-                return false;
-            }
+        Player p = getPlayer();
+        if (p == null || !rpgClass.isAllowed(p)) {
+            return false;
         }
+
         if (classes.containsKey(rpgClass.getGroup()))
         {
             PlayerClass current = classes.get(rpgClass.getGroup());

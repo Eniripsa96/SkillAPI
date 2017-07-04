@@ -233,7 +233,7 @@ public class PlayerCombos
      */
     public void addSkill(Skill skill)
     {
-        if (skill == null || !skill.canCast()) return;
+        if (skill == null || !skill.canCast() || !SkillAPI.getSettings().isCombosEnabled()) return;
 
         // Can't already be added
         if (skill.hasCombo())

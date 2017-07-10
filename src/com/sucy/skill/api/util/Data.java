@@ -63,8 +63,14 @@ public class Data
         }
         catch (Exception ex)
         {
-            Logger.invalid("Failed to parse " + name);
-            return null;
+            try
+            {
+                return Material.getMaterial(Integer.parseInt(name));
+            }
+            catch (Exception e) {
+                Logger.invalid("Failed to parse material " + name);
+                return null;
+            }
         }
     }
 

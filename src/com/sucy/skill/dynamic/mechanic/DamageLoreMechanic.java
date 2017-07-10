@@ -26,8 +26,8 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.rit.sucy.config.parse.NumberParser;
 import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.api.util.NumberParser;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;

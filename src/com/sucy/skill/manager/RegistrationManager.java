@@ -134,12 +134,12 @@ public class RegistrationManager
             skillConfig.getConfig().set("loaded", true);
             for (String key : skillConfig.getConfig().keys())
             {
-                try {
-                    if (!skillConfig.getConfig().isSection(key)) {
-                        Logger.log(LogType.REGISTRATION, 3, "Skipping \"" + key + "\" because it isn't a configuration section");
-                        continue;
-                    }
-                    if (!SkillAPI.isSkillRegistered(key)) {
+                if (!skillConfig.getConfig().isSection(key)) {
+                    Logger.log(LogType.REGISTRATION, 3, "Skipping \"" + key + "\" because it isn't a configuration section");
+                    continue;
+                }
+                if (!SkillAPI.isSkillRegistered(key)) {
+                    try {
                         DynamicSkill skill = new DynamicSkill(key);
                         api.addDynamicSkill(skill);
                         skill.load(skillConfig.getConfig().getSection(key));
@@ -150,12 +150,12 @@ public class RegistrationManager
                         skill.save(skillConfig.getConfig().createSection(key));
                         sConfig.save();
                         Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic skill: " + key);
-                    } else {
-                        Logger.invalid("Duplicate skill detected: " + key);
                     }
-                }
-                catch (Exception ex) {
-                    Logger.invalid("Failed to load skill: " + key + " - " + ex.getMessage());
+                    catch (Exception ex) {
+                        Logger.invalid("Failed to load skill: " + key + " - " + ex.getMessage());
+                    }
+                } else {
+                    Logger.invalid("Duplicate skill detected: " + key);
                 }
             }
         }
@@ -239,15 +239,21 @@ public class RegistrationManager
                 }
                 if (!SkillAPI.isClassRegistered(key))
                 {
-                    DynamicClass tree = new DynamicClass(api, key);
-                    tree.load(classConfig.getConfig().getSection(key));
-                    api.addDynamicClass(tree);
-                    CommentedConfig cConfig = new CommentedConfig(api, CLASS_DIR + key);
-                    cConfig.clear();
-                    tree.save(cConfig.getConfig().createSection(key));
-                    tree.save(classConfig.getConfig().createSection(key));
-                    cConfig.save();
-                    Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic class: " + key);
+                    try {
+                        DynamicClass tree = new DynamicClass(api, key);
+                        tree.load(classConfig.getConfig().getSection(key));
+                        api.addDynamicClass(tree);
+                        CommentedConfig cConfig = new CommentedConfig(api, CLASS_DIR + key);
+                        cConfig.clear();
+                        tree.save(cConfig.getConfig().createSection(key));
+                        tree.save(classConfig.getConfig().createSection(key));
+                        cConfig.save();
+                        Logger.log(LogType.REGISTRATION, 2, "Loaded the dynamic class: " + key);
+                    }
+                    catch (Exception ex) {
+                        Logger.invalid("Failed to load class \"" + key + "\"");
+                        ex.printStackTrace();
+                    }
                 }
                 else
                 {

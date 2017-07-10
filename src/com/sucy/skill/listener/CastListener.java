@@ -29,9 +29,7 @@ package com.sucy.skill.listener;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
-import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.cast.PlayerCastBars;
-import com.sucy.skill.cast.PlayerView;
 import com.sucy.skill.thread.MainThread;
 import com.sucy.skill.thread.ThreadTask;
 import org.bukkit.Bukkit;
@@ -45,7 +43,13 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -81,10 +85,12 @@ public class CastListener extends SkillAPIListener
     private static void cleanup(Player player)
     {
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
-        {
-            SkillAPI.getPlayerData(player).getCastBars().restore(player);
-            player.getInventory().setItem(slot, null);
-        }
+            forceCleanup(player);
+    }
+
+    private static void forceCleanup(Player player) {
+        SkillAPI.getPlayerData(player).getCastBars().restore(player);
+        player.getInventory().setItem(slot, null);
     }
 
     @EventHandler
@@ -113,7 +119,7 @@ public class CastListener extends SkillAPIListener
         boolean from = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
         boolean to = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
         if (from && !to)
-            event.getPlayer().getInventory().setItem(SkillAPI.getSettings().getCastSlot(), null);
+            forceCleanup(event.getPlayer());
         else
             init(event.getPlayer());
     }

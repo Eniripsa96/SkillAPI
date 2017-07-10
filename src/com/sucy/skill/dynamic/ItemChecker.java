@@ -26,8 +26,8 @@
  */
 package com.sucy.skill.dynamic;
 
+import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.api.Settings;
-import com.sucy.skill.api.util.NumberParser;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

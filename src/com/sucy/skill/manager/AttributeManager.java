@@ -107,13 +107,36 @@ public class AttributeManager
     }
 
     /**
-     * Retrieves the available attribute keys
+     * Retrieves the available attribute keys. This
+     * does not include display names for attributes.
      *
      * @return set of available attribute keys
      */
     public Set<String> getKeys()
     {
         return attributes.keySet();
+    }
+
+    /**
+     * Retrieves the available attribute keys including
+     * both display names and config keys.
+     *
+     * @return display name and config keys for attributes
+     */
+    public Set<String> getLookupKeys()
+    {
+        return lookup.keySet();
+    }
+
+    /**
+     * Normalizes a config key or name into the config key
+     * for a unified identifier to store stats under.
+     *
+     * @param key key to normalize
+     * @return config key
+     */
+    public String normalize(String key) {
+        return lookup.get(key.toLowerCase()).getKey();
     }
 
     /**

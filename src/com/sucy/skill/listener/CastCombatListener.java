@@ -112,6 +112,14 @@ public class CastCombatListener extends SkillAPIListener
                     player.getWorld().dropItemNaturally(player.getLocation(), overflow);
             }
             inv.getItem(slot).setAmount(1);
+
+            int playerSlot = player.getInventory().getHeldItemSlot();
+            while (!data.getSkillBar().isWeaponSlot(playerSlot) || slot == playerSlot) {
+                playerSlot = (playerSlot + 1) % 9;
+            }
+            if (playerSlot != player.getInventory().getHeldItemSlot()) {
+                player.getInventory().setHeldItemSlot(playerSlot);
+            }
         }
     }
 
@@ -332,7 +340,7 @@ public class CastCombatListener extends SkillAPIListener
         if (SkillAPI.getSettings().isWorldEnabled(event.getWhoClicked().getWorld())) {
             if (event.getSlot() == slot && event.getSlotType() == InventoryType.SlotType.QUICKBAR)
                 event.setCancelled(true);
-            else if (event.getAction() == InventoryAction.HOTBAR_SWAP
+            else if ((event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
                     && event.getHotbarButton() == slot)
                 event.setCancelled(true);
         }
@@ -352,7 +360,7 @@ public class CastCombatListener extends SkillAPIListener
         if (!skillBar.isSetup())
             return;
 
-        if (event.getAction() == InventoryAction.HOTBAR_SWAP
+        if ((event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
                 && !skillBar.isWeaponSlot(event.getHotbarButton()))
         {
             event.setCancelled(true);

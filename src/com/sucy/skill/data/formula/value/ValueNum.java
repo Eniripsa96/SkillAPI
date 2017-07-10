@@ -26,7 +26,7 @@
  */
 package com.sucy.skill.data.formula.value;
 
-import com.sucy.skill.api.util.NumberParser;
+import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.data.formula.IValue;
 
 /**

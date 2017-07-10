@@ -26,7 +26,7 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.api.util.NumberParser;
+import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;

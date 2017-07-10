@@ -27,18 +27,22 @@
 package com.sucy.skill.data;
 
 import com.google.common.base.Objects;
+import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.api.util.NumberParser;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Handles keeping track of and applying attribute
@@ -246,7 +250,7 @@ public class PlayerEquips
                     // Attribute requirements
                     if (attributes && !done)
                     {
-                        for (String attr : SkillAPI.getAttributeManager().getKeys())
+                        for (String attr : SkillAPI.getAttributeManager().getLookupKeys())
                         {
                             String text = settings.getAttrReqText(attr);
                             if (lower.startsWith(text))
@@ -254,7 +258,8 @@ public class PlayerEquips
                                 if (attrReq == null)
                                     attrReq = new HashMap<String, Integer>();
 
-                                attrReq.put(attr, NumberParser.parseInt(lower.substring(text.length())));
+                                String normalized = SkillAPI.getAttributeManager().normalize(attr);
+                                attrReq.put(normalized, NumberParser.parseInt(lower.substring(text.length())));
                                 break;
                             }
 
@@ -264,9 +269,10 @@ public class PlayerEquips
                                 if (attribs == null)
                                     attribs = new HashMap<String, Integer>();
 
+                                String normalized = SkillAPI.getAttributeManager().normalize(attr);
                                 int current = attribs.containsKey(attr) ? attribs.get(attr) : 0;
                                 int extra = NumberParser.parseInt(lower.substring(text.length()).replace("%", ""));
-                                attribs.put(attr, current + extra);
+                                attribs.put(normalized, current + extra);
                                 break;
                             }
                         }

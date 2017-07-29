@@ -480,7 +480,9 @@ public class PlayerCastBars implements InventoryHolder
         for (Map.Entry<Integer, String> slot : slots.entrySet())
         {
             PlayerSkill skill = this.player.getSkill(slot.getValue());
-            contents[offset + slot.getKey()] = skill.getData().getIndicator(skill, true);
+            if (skill != null) {
+                contents[offset + slot.getKey()] = skill.getData().getIndicator(skill, true);
+            }
         }
     }
 

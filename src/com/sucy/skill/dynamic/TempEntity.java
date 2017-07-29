@@ -31,6 +31,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -82,7 +83,6 @@ public class TempEntity implements LivingEntity
         return loc.clone().add(0, 1 ,0);
     }
 
-    @Override
     public List<Block> getLineOfSight(HashSet<Byte> hashSet, int i)
     {
         return null;
@@ -175,7 +175,6 @@ public class TempEntity implements LivingEntity
         return 0;
     }
 
-    @Override
     public int _INVALID_getLastDamage()
     {
         return 0;
@@ -187,7 +186,6 @@ public class TempEntity implements LivingEntity
 
     }
 
-    @Override
     public void _INVALID_setLastDamage(int i)
     {
 
@@ -378,6 +376,11 @@ public class TempEntity implements LivingEntity
     }
 
     @Override
+    public PistonMoveReaction getPistonMoveReaction() {
+        return null;
+    }
+
+    @Override
     public Spigot spigot()
     {
         return null;
@@ -437,7 +440,6 @@ public class TempEntity implements LivingEntity
 
     }
 
-    @Override
     public void _INVALID_damage(int i)
     {
 
@@ -449,7 +451,6 @@ public class TempEntity implements LivingEntity
 
     }
 
-    @Override
     public void _INVALID_damage(int i, Entity entity)
     {
 
@@ -461,7 +462,6 @@ public class TempEntity implements LivingEntity
         return 1;
     }
 
-    @Override
     public int _INVALID_getHealth()
     {
         return 0;
@@ -473,7 +473,6 @@ public class TempEntity implements LivingEntity
 
     }
 
-    @Override
     public void _INVALID_setHealth(int i)
     {
 
@@ -485,7 +484,6 @@ public class TempEntity implements LivingEntity
         return 1;
     }
 
-    @Override
     public int _INVALID_getMaxHealth()
     {
         return 0;
@@ -497,7 +495,6 @@ public class TempEntity implements LivingEntity
 
     }
 
-    @Override
     public void _INVALID_setMaxHealth(int i)
     {
 
@@ -537,6 +534,16 @@ public class TempEntity implements LivingEntity
     public Vector getVelocity()
     {
         return new Vector(0, 0, 0);
+    }
+
+    @Override
+    public double getHeight() {
+        return 0;
+    }
+
+    @Override
+    public double getWidth() {
+        return 0;
     }
 
     @Override

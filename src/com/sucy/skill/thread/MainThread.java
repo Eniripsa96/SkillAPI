@@ -26,6 +26,8 @@
  */
 package com.sucy.skill.thread;
 
+import java.util.ConcurrentModificationException;
+
 /**
  * The main async task for SkillAPI functions
  */
@@ -36,6 +38,8 @@ public class MainThread extends Thread
     private long time;
 
     private boolean enabled;
+
+    private boolean print = true;
 
     /**
      * Sets up the main thread
@@ -53,9 +57,9 @@ public class MainThread extends Thread
     @Override
     public void run()
     {
-        try
+        while (enabled)
         {
-            while (enabled)
+            try
             {
                 tasks.iterator();
                 while (tasks.hasNext())
@@ -66,11 +70,18 @@ public class MainThread extends Thread
                 time += 50;
                 sleep(Math.max(1, time - current));
             }
-        }
-        catch (Exception ex)
-        {
-            // Thread ended
-            ex.printStackTrace();
+            catch (ConcurrentModificationException ex) {
+                // Concurrent exceptions would happen infrequently
+                // but shouldn't be a concern. We'll just continue
+                // functionality next tick.
+            }
+            catch (Exception ex)
+            {
+                if (print) {
+                    ex.printStackTrace();
+                    print = false;
+                }
+            }
         }
     }
 

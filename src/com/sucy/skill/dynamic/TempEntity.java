@@ -380,7 +380,6 @@ public class TempEntity implements LivingEntity
         return null;
     }
 
-    @Override
     public Spigot spigot()
     {
         return null;

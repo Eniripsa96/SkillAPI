@@ -28,6 +28,7 @@ package com.sucy.skill.listener;
 
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.event.FlagApplyEvent;
+import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.api.event.TrueDamageEvent;
 import com.sucy.skill.api.util.FlagManager;
@@ -161,7 +162,12 @@ public class StatusListener extends SkillAPIListener
             return;
 
         LivingEntity damager = ListenerUtil.getDamager(event);
-        check(event, damager, damager, StatusFlag.STUN, StatusFlag.DISARM, StatusFlag.CHANNEL);
+        check(event, damager, damager, StatusFlag.STUN, StatusFlag.DISARM);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPhysicalDamage(PhysicalDamageEvent event) {
+        check(event, event.getDamager(), event.getDamager(), StatusFlag.CHANNEL);
     }
 
     /**

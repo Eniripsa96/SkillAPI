@@ -29,7 +29,9 @@ package com.sucy.skill.api.player;
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.config.parse.DataSection;
+import com.rit.sucy.player.PlayerUUIDs;
 import com.rit.sucy.player.TargetHelper;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
@@ -93,7 +95,7 @@ public final class PlayerData
     private final HashMap<String, Integer>       bonusAttrib = new HashMap<String, Integer>();
 
     private DataSection    extraData = new DataSection();
-    private OfflinePlayer  player;
+    private String player;
     private PlayerSkillBar skillBar;
     private PlayerCastBars castBars;
     private PlayerCombos   combos;
@@ -117,7 +119,7 @@ public final class PlayerData
      */
     public PlayerData(OfflinePlayer player, boolean init)
     {
-        this.player = player;
+        this.player = player.getName();
         this.skillBar = new PlayerSkillBar(this);
         this.castBars = new PlayerCastBars(this);
         this.combos = new PlayerCombos(this);
@@ -143,7 +145,7 @@ public final class PlayerData
      */
     public Player getPlayer()
     {
-        return player.getPlayer();
+        return VersionManager.getPlayer(player);
     }
 
     /**
@@ -153,12 +155,12 @@ public final class PlayerData
      */
     public String getPlayerName()
     {
-        return player.getName();
+        return player;
     }
 
     public UUID getUUID()
     {
-        return player.getUniqueId();
+        return PlayerUUIDs.getUUID(player);
     }
 
     /**
@@ -1305,7 +1307,7 @@ public final class PlayerData
             attribPoints += s.getStartingAttribs() + s.getAttribsForLevels(c.getLevel(), 1);
         }
         AttributeListener.updatePlayer(this);
-        updateHealthAndMana(player.getPlayer());
+        updateHealthAndMana(getPlayer());
     }
 
     /**

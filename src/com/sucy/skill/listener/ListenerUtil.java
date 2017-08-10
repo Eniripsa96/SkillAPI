@@ -31,6 +31,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 
 /**
  * Helper class for listeners
@@ -61,6 +64,18 @@ public class ListenerUtil
             }
         }
         return null;
+    }
+
+    public static Inventory getClickedInventory(InventoryClickEvent event) {
+        int slot = event.getRawSlot();
+        InventoryView view = event.getView();
+        if (slot < 0) {
+            return null;
+        } else if ((view.getTopInventory() != null) && (slot < view.getTopInventory().getSize())) {
+            return view.getTopInventory();
+        } else {
+            return view.getBottomInventory();
+        }
     }
 
     /**

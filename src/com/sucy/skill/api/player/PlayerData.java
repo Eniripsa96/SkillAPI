@@ -29,9 +29,8 @@ package com.sucy.skill.api.player;
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.config.parse.DataSection;
-import com.rit.sucy.player.PlayerUUIDs;
 import com.rit.sucy.player.TargetHelper;
-import com.rit.sucy.version.VersionManager;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.enums.ExpSource;
@@ -95,7 +94,7 @@ public final class PlayerData
     private final HashMap<String, Integer>       bonusAttrib = new HashMap<String, Integer>();
 
     private DataSection    extraData = new DataSection();
-    private String player;
+    private OfflinePlayer player;
     private PlayerSkillBar skillBar;
     private PlayerCastBars castBars;
     private PlayerCombos   combos;
@@ -119,7 +118,7 @@ public final class PlayerData
      */
     public PlayerData(OfflinePlayer player, boolean init)
     {
-        this.player = player.getName();
+        this.player = player;
         this.skillBar = new PlayerSkillBar(this);
         this.castBars = new PlayerCastBars(this);
         this.combos = new PlayerCombos(this);
@@ -145,7 +144,7 @@ public final class PlayerData
      */
     public Player getPlayer()
     {
-        return VersionManager.getPlayer(player);
+        return new VersionPlayer(player).getPlayer();
     }
 
     /**
@@ -155,12 +154,12 @@ public final class PlayerData
      */
     public String getPlayerName()
     {
-        return player;
+        return player.getName();
     }
 
     public UUID getUUID()
     {
-        return PlayerUUIDs.getUUID(player);
+        return player.getUniqueId();
     }
 
     /**

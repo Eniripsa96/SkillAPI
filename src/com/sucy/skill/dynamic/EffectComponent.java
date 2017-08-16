@@ -283,7 +283,7 @@ public abstract class EffectComponent
 
         try
         {
-            return NumberParser.parseDouble(val);
+            return Double.parseDouble(val);
         }
         catch (Exception ex) { /* Not a number */ }
 
@@ -293,7 +293,7 @@ public abstract class EffectComponent
             String mapVal = map.get(val).toString();
             try
             {
-                return NumberParser.parseDouble(mapVal);
+                return Double.parseDouble(mapVal);
             }
             catch (Exception ex) { /* Not a number */ }
         }
@@ -301,8 +301,8 @@ public abstract class EffectComponent
         try
         {
             int mid = val.indexOf('-', 1);
-            double min = NumberParser.parseDouble(val.substring(0, mid));
-            double max = NumberParser.parseDouble(val.substring(mid + 1));
+            double min = Double.parseDouble(val.substring(0, mid));
+            double max = Double.parseDouble(val.substring(mid + 1));
             return Math.random() * (max - min) + min;
         }
         catch (Exception ex) { /* Not a range */ }

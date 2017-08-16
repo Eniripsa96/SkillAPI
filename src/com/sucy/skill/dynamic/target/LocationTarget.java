@@ -34,13 +34,14 @@ import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Applies child components to a location using the caster's faced direction
@@ -50,7 +51,7 @@ public class LocationTarget extends EffectComponent
     private static final String RANGE  = "range";
     private static final String GROUND = "ground";
 
-    private static final HashSet<Byte> NULL_SET = null;
+    private static final Set<Material> NULL_SET = null;
 
     /**
      * Creates the list of indicators for the skill
@@ -117,7 +118,7 @@ public class LocationTarget extends EffectComponent
         boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
 
         Location loc;
-        Block b = t.getTargetBlock(NULL_SET, (int) Math.ceil(range));
+        Block b = t.getLineOfSight(NULL_SET, (int) Math.ceil(range)).get(0);
         if (b == null && !groundOnly)
         {
             loc = t.getLocation().add(t.getLocation().getDirection().multiply(range));

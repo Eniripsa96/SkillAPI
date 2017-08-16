@@ -79,7 +79,6 @@ public class Settings
         this.plugin = plugin;
         CommentedConfig file = new CommentedConfig(plugin, "config");
         file.checkDefaults();
-        file.trim();
         file.save();
         config = file.getConfig();
         reload();

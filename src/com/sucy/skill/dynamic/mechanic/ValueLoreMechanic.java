@@ -62,7 +62,7 @@ public class ValueLoreMechanic extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
         double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
-        boolean offhand = settings.getString(HAND).equalsIgnoreCase("offhand");
+        boolean offhand = settings.getString(HAND, "").equalsIgnoreCase("offhand");
         String regex = settings.getString(REGEX, "Damage: {value}");
 
         if (caster.getEquipment() == null)

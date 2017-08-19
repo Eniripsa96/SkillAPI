@@ -26,40 +26,18 @@
  */
 package com.sucy.skill.listener;
 
-import com.rit.sucy.reflect.Reflection;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.event.TrueDamageEvent;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-
-import java.lang.reflect.Method;
+import org.bukkit.event.entity.EntityDeathEvent;
 
 public class DeathListener extends SkillAPIListener
 {
-    private Method handle;
-    private Method playerAttack;
-    private Method mobAttack;
-    private Method die;
-
-    public DeathListener()
-    {
-        try
-        {
-            Class<?> entityLiving = Reflection.getNMSClass("EntityLiving");
-            Class<?> source = Reflection.getNMSClass("DamageSource");
-            playerAttack = source.getDeclaredMethod("playerAttack", Reflection.getNMSClass("EntityHuman"));
-            mobAttack = source.getDeclaredMethod("mobAttack", entityLiving);
-            die = entityLiving.getDeclaredMethod("die", source);
-            handle = Reflection.getCraftClass("entity.CraftEntity")
-                .getDeclaredMethod("getHandle");
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
+    private final String KILLER = "sapiKiller";
 
     /**
      * Launches our own death event for when entities are killed via skills
@@ -83,25 +61,23 @@ public class DeathListener extends SkillAPIListener
         handle(event.getTarget(), event.getDamager(), event.getDamage());
     }
 
-    private void handle(LivingEntity entity, LivingEntity damager, double damage)
+    private void handle(final LivingEntity entity, final LivingEntity damager, final double damage)
     {
-        if (entity.getHealth() <= damage)
-        {
-            try
-            {
-                Object nmsEntity = handle.invoke(entity);
-                Object nmsAttacker = handle.invoke(damager);
-                Object damageSource;
-                if (damager instanceof HumanEntity)
-                    damageSource = playerAttack.invoke(null, nmsAttacker);
-                else
-                    damageSource = mobAttack.invoke(null, nmsAttacker);
-                die.invoke(nmsEntity, damageSource);
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
+        SkillAPI.setMeta(entity, KILLER, damager);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDeath(EntityDeathEvent event) {
+        Object killer = SkillAPI.getMeta(event.getEntity(), KILLER);
+        if (killer != null && event.getEntity().getKiller() == null) {
+            applyDeath(event.getEntity(), (LivingEntity)killer, event.getDroppedExp());
         }
+    }
+
+    private void applyDeath(LivingEntity entity, LivingEntity damager, int exp) {
+        if (!entity.isDead() || entity.getKiller() != null || !(damager instanceof Player))
+            return;
+
+        KillListener.giveExp(entity, (Player)damager, exp);
     }
 }

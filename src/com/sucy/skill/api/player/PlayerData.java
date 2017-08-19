@@ -669,9 +669,15 @@ public final class PlayerData
     {
         if (init) return;
 
+        final Player player = getPlayer();
+        if (player == null)
+            return;
+
         for (PlayerSkill skill : skills.values())
         {
-            autoLevel(skill.getData());
+            if (skill.getData().isAllowed(player)) {
+                autoLevel(skill.getData());
+            }
         }
     }
 
@@ -1412,25 +1418,20 @@ public final class PlayerData
      * @param amount amount of levels to give
      * @param source source of the levels
      */
-    public void giveLevels(int amount, ExpSource source)
+    public boolean giveLevels(int amount, ExpSource source)
     {
+        boolean success = false;
         for (PlayerClass playerClass : classes.values())
         {
             RPGClass data = playerClass.getData();
             if (data.receivesExp(source))
             {
-                int exp = 0;
-                int count = 0;
-                int temp = amount;
-                while (temp > 0)
-                {
-                    temp--;
-                    exp += data.getRequiredExp(playerClass.getLevel() + count++);
-                }
-                playerClass.giveExp(exp, source);
+                success = true;
+                playerClass.giveLevels(amount);
             }
         }
         updateHealthAndMana(getPlayer());
+        return success;
     }
 
     /**

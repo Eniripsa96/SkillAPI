@@ -95,6 +95,9 @@ public class DamageLoreMechanic extends EffectComponent
                     {
                         for (LivingEntity target : targets)
                         {
+                            if (target.isDead())
+                                continue;
+
                             if (trueDmg)
                                 skill.trueDamage(target, base * m, caster);
                             else

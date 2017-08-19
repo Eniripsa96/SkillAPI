@@ -59,6 +59,7 @@ public class CmdLevel implements IFunction
     private static final String GAVE_LEVEL     = "gave-level";
     private static final String RECEIVED_LEVEL = "received-level";
     private static final String DISABLED       = "world-disabled";
+    private static final String NO_CLASSES     = "no-classes";
 
     /**
      * Runs the command
@@ -110,22 +111,35 @@ public class CmdLevel implements IFunction
 
 
             // Give levels to a specific class group
+            boolean success;
             if (numberIndex + 1 <= lastArg)
             {
                 PlayerClass playerClass = data.getClass(CmdManager.join(args, numberIndex + 1, lastArg));
-                if (playerClass == null)
+                if (playerClass == null) {
+                    CommandManager.displayUsage(cmd, sender);
                     return;
+                }
 
                 playerClass.giveLevels(amount);
+                success = true;
             }
 
             // Give levels
             else
-                data.giveLevels(amount, ExpSource.COMMAND);
+                success = data.giveLevels(amount, ExpSource.COMMAND);
 
             // Messages
             if (showMessage) {
-                if (target != sender) {
+                if (!success) {
+                    cmd.sendMessage(
+                            sender,
+                            NO_CLASSES,
+                            ChatColor.RED + "You aren't professed as a class that receives experience from commands",
+                            Filter.PLAYER.setReplacement(target.getName()),
+                            RPGFilter.LEVEL.setReplacement("" + amount)
+                    );
+                }
+                else if (target != sender) {
                     cmd.sendMessage(
                             sender,
                             GAVE_LEVEL,

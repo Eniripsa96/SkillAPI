@@ -59,12 +59,10 @@ import org.bukkit.inventory.PlayerInventory;
  */
 public class CastListener extends SkillAPIListener
 {
-    private static int slot = -1;
+    private static int slot = SkillAPI.getSettings().getCastSlot();
 
     public void init()
     {
-        slot = SkillAPI.getSettings().getCastSlot();
-
         for (Player player : Bukkit.getOnlinePlayers())
             init(player);
     }

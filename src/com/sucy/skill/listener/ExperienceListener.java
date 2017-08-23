@@ -28,8 +28,7 @@ public class ExperienceListener extends SkillAPIListener {
     boolean track;
     HashSet<String> unnatural = new HashSet<String>();
 
-    @Override
-    public void init() {
+    public ExperienceListener() {
         track = SkillAPI.getSettings().trackBreaks();
         if (track) {
             CommentedConfig data = SkillAPI.getConfig("data/placed");

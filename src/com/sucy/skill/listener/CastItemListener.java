@@ -31,7 +31,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.player.PlayerSkillBar;
 import com.sucy.skill.api.player.PlayerSkillSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -42,7 +41,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -56,13 +60,11 @@ public class CastItemListener extends SkillAPIListener
 {
     private static HashMap<UUID, PlayerSkillSlot> data = new HashMap<UUID, PlayerSkillSlot>();
 
-    private static int slot;
+    private static int slot = SkillAPI.getSettings().getCastSlot();
 
     @Override
     public void init()
     {
-        slot = SkillAPI.getSettings().getCastSlot();
-
         for (Player player : Bukkit.getOnlinePlayers())
             init(player);
     }

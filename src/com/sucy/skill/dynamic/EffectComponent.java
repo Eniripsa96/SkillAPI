@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic;
 
 import com.rit.sucy.config.parse.DataSection;
-import com.rit.sucy.config.parse.NumberParser;
 import com.rit.sucy.mobs.MobManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
@@ -70,6 +69,7 @@ import com.sucy.skill.dynamic.condition.ValueCondition;
 import com.sucy.skill.dynamic.condition.WaterCondition;
 import com.sucy.skill.dynamic.mechanic.AttributeMechanic;
 import com.sucy.skill.dynamic.mechanic.BlockMechanic;
+import com.sucy.skill.dynamic.mechanic.BuffMechanic;
 import com.sucy.skill.dynamic.mechanic.CancelMechanic;
 import com.sucy.skill.dynamic.mechanic.ChannelMechanic;
 import com.sucy.skill.dynamic.mechanic.CleanseMechanic;
@@ -586,6 +586,7 @@ public abstract class EffectComponent
     {{
         put("attribute", AttributeMechanic.class);
         put("block", BlockMechanic.class);
+        put("buff", BuffMechanic.class);
         put("cancel", CancelMechanic.class);
         put("channel", ChannelMechanic.class);
         put("cleanse", CleanseMechanic.class);

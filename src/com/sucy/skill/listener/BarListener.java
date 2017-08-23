@@ -87,7 +87,9 @@ public class BarListener extends SkillAPIListener
     @Override
     public void cleanup() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            cleanup(player);
+            if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
+                cleanup(player);
+            }
         }
     }
 

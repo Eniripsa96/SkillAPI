@@ -31,5 +31,6 @@ public enum BuffType
     DAMAGE,
     DEFENSE,
     SKILL_DAMAGE,
-    SKILL_DEFENSE
+    SKILL_DEFENSE,
+    HEALING
 }

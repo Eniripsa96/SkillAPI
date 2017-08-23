@@ -134,7 +134,6 @@ public class SkillAPI extends JavaPlugin
         io = settings.isUseSql() ? new SQLIO(this) : new ConfigIO(this);
         PlayerStats.init();
         ClassBoardManager.registerText();
-        ResourceManager.copyQuestsModule();
         if (settings.isAttributesEnabled())
             attributeManager = new AttributeManager(this);
 
@@ -178,6 +177,15 @@ public class SkillAPI extends JavaPlugin
         for (PlayerAccounts accounts : players.values())
             accounts.getActiveData().init(accounts.getPlayer());
 
+        // Must initialize listeners AFTER player data is loaded since the
+        // player objects would otherwise change and mess a lot of things up.
+        for (SkillAPIListener listener : listeners) {
+            listener.init();
+        }
+
+        ResourceManager.copyQuestsModule();
+        ResourceManager.copyPlaceholdersModule();
+
         loaded = true;
     }
 
@@ -186,7 +194,6 @@ public class SkillAPI extends JavaPlugin
         if (enabled)
         {
             Bukkit.getPluginManager().registerEvents(listener, this);
-            listener.init();
             listeners.add(listener);
         }
     }
@@ -216,6 +223,7 @@ public class SkillAPI extends JavaPlugin
 
         for (SkillAPIListener listener : listeners)
             listener.cleanup();
+        listeners.clear();
 
         // Clear scoreboards
         ClassBoardManager.clearAll();

@@ -413,12 +413,7 @@ public final class PlayerClass
         {
             giveLevels(levels);
 
-            // Level up effect
-            if (SkillAPI.getSettings().hasLevelUpEffect())
-            {
-                DynamicSkill skill = SkillAPI.getSettings().getLevelUpSkill();
-                skill.cast(player.getPlayer(), level);
-            }
+            // Level up message
             if (SkillAPI.getSettings().isShowLevelMessages())
             {
                 TitleManager.show(
@@ -465,6 +460,13 @@ public final class PlayerClass
         // Call the event
         PlayerLevelUpEvent event = new PlayerLevelUpEvent(this, amount);
         Bukkit.getPluginManager().callEvent(event);
+
+        // Apply the effect
+        if (SkillAPI.getSettings().hasLevelUpEffect())
+        {
+            DynamicSkill skill = SkillAPI.getSettings().getLevelUpSkill();
+            skill.cast(player.getPlayer(), level);
+        }
     }
 
     /**

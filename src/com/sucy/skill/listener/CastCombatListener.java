@@ -76,13 +76,11 @@ public class CastCombatListener extends SkillAPIListener
 
     private final HashSet<UUID> ignored = new HashSet<UUID>();
 
-    private int slot;
+    private int slot = SkillAPI.getSettings().getCastSlot();
 
     @Override
     public void init()
     {
-        slot = SkillAPI.getSettings().getCastSlot();
-
         for (Player player : Bukkit.getOnlinePlayers())
             init(player);
     }

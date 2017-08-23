@@ -64,7 +64,9 @@ public class PermissionMechanic extends EffectComponent
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
-            FlagManager.addFlag(target, "perm:" + key, ticks);
+            if (!target.hasPermission(key)) {
+                FlagManager.addFlag(target, "perm:" + key, ticks);
+            }
         }
         return targets.size() > 0;
     }

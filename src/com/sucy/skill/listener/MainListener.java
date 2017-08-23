@@ -32,9 +32,11 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
+import com.sucy.skill.api.event.SkillHealEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.BuffManager;
+import com.sucy.skill.api.util.BuffType;
 import com.sucy.skill.api.util.Combat;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.data.Permissions;
@@ -437,5 +439,10 @@ public class MainListener extends SkillAPIListener
             data.updateHealthAndMana(event.getPlayer());
             data.updateScoreboard();
         }
+    }
+
+    @EventHandler
+    public void onHeal(final SkillHealEvent event) {
+        event.setAmount(BuffManager.apply(event.getTarget(), BuffType.HEALING, event.getAmount()));
     }
 }

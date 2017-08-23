@@ -31,11 +31,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class CastOffhandListener extends SkillAPIListener {
-    private static int slot = -1;
-
-    public void init() {
-        slot = SkillAPI.getSettings().getCastSlot();
-    }
+    private static int slot = SkillAPI.getSettings().getCastSlot();
 
     @EventHandler
     public void handleOffhandDupe(PlayerSwapHandItemsEvent event)

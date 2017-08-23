@@ -195,9 +195,6 @@ public class KillListener extends SkillAPIListener
             killer.set(hit, source);
             damageTime.set(hit, 100);
         }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+        catch (Exception ex) { /* */ }
     }
 }

@@ -109,7 +109,7 @@ public class LocationTarget extends EffectComponent
 
             list.add(temp);
         }
-        return executeChildren(caster, level, list);
+        return list.size() > 0 && executeChildren(caster, level, list);
     }
 
     private TempEntity getTargetLoc(LivingEntity caster, int level, LivingEntity t)
@@ -119,7 +119,7 @@ public class LocationTarget extends EffectComponent
         boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
 
         Location loc = calcTargetLoc(t, range);
-        if (groundOnly && !AIR_BLOCKS.contains(loc.getBlock().getType())) {
+        if (groundOnly && AIR_BLOCKS.contains(loc.getBlock().getType())) {
             return null;
         }
 

@@ -40,7 +40,7 @@ public class ResourceManager
 {
     public static final String
         QUESTS_FOLDER = "plugins" + File.separator + "Quests" + File.separator + "modules",
-        SCHEME_FOLDER = "plugins" + File.separator + "SkillAPI" + File.separator + "img" + File.separator + "default";
+        PLACEHOLDERS_FOLDER = "plugins" + File.separator + "PlaceholderAPI" + File.separator + "extensions";
 
     /**
      * Copies a resource embedded in the jar into the given folder
@@ -83,5 +83,9 @@ public class ResourceManager
     public static void copyQuestsModule()
     {
         copyResource("SkillAPIModule.jar", QUESTS_FOLDER);
+    }
+
+    public static void copyPlaceholdersModule() {
+        copyResource("SkillAPIPlaceholders.jar", PLACEHOLDERS_FOLDER);
     }
 }

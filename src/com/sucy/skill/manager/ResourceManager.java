@@ -40,7 +40,7 @@ public class ResourceManager
 {
     public static final String
         QUESTS_FOLDER = "plugins" + File.separator + "Quests" + File.separator + "modules",
-        PLACEHOLDERS_FOLDER = "plugins" + File.separator + "PlaceholderAPI" + File.separator + "extensions";
+        PLACEHOLDERS_FOLDER = "plugins" + File.separator + "PlaceholderAPI" + File.separator + "expansions";
 
     /**
      * Copies a resource embedded in the jar into the given folder

@@ -31,6 +31,7 @@ import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
@@ -95,11 +96,11 @@ public class CleanseMechanic extends EffectComponent
 
             if (potion.equals("ALL"))
             {
-                for (PotionEffectType p : PotionEffectType.values())
+                for (PotionEffect p : target.getActivePotionEffects())
                 {
-                    if (target.hasPotionEffect(p) && POTIONS.contains(p.getName()))
+                    if (POTIONS.contains(p.getType().getName()))
                     {
-                        target.removePotionEffect(p);
+                        target.removePotionEffect(p.getType());
                         worked = true;
                     }
                 }

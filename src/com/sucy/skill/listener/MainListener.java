@@ -291,73 +291,6 @@ public class MainListener extends SkillAPIListener
     }
 
     /**
-     * Applies damage and defense buffs when something takes or deals
-     * damage to something else.
-     *
-     * @param event event details
-     */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onDamage(EntityDamageByEntityEvent event)
-    {
-        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
-            || !(event.getEntity() instanceof LivingEntity)) return;
-
-        // Ignore no-damage events (for CrackShot)
-        if (event.getDamage() == 0)
-            return;
-
-        LivingEntity damager = ListenerUtil.getDamager(event);
-
-        if (Skill.isSkillDamage())
-        {
-            event.setDamage(BuffManager.modifySkillDealtDamage(damager, event.getDamage()));
-
-            // Cancel event if no damage
-            if (event.getDamage() <= 0)
-            {
-                if (!SkillAPI.getSettings().isKnockback())
-                    event.setCancelled(true);
-                return;
-            }
-
-            if (!(event.getEntity() instanceof LivingEntity))
-                return;
-
-            // Defense buff application
-            LivingEntity damaged = (LivingEntity) event.getEntity();
-            event.setDamage(BuffManager.modifySkillTakenDefense(damaged, event.getDamage()));
-
-            // Cancel event if no damage
-            if (event.getDamage() <= 0 && !SkillAPI.getSettings().isKnockback())
-                event.setCancelled(true);
-
-            return;
-        }
-
-        // Damage buff application
-        event.setDamage(BuffManager.modifyDealtDamage(damager, event.getDamage()));
-
-        // Cancel event if no damage
-        if (event.getDamage() <= 0)
-        {
-            if (!SkillAPI.getSettings().isKnockback())
-                event.setCancelled(true);
-            return;
-        }
-
-        if (!(event.getEntity() instanceof LivingEntity))
-            return;
-
-        // Defense buff application
-        LivingEntity damaged = (LivingEntity) event.getEntity();
-        event.setDamage(BuffManager.modifyTakenDefense(damaged, event.getDamage()));
-
-        // Cancel event if no damage
-        if (event.getDamage() <= 0 && !SkillAPI.getSettings().isKnockback())
-            event.setCancelled(true);
-    }
-
-    /**
      * Launches physical damage events to differentiate skill damage from physical damage
      *
      * @param event event details
@@ -367,7 +300,8 @@ public class MainListener extends SkillAPIListener
     {
         if (Skill.isSkillDamage()
             || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
-            || !(event.getEntity() instanceof LivingEntity))
+            || !(event.getEntity() instanceof LivingEntity)
+            || event.getDamage() <= 0)
         {
             return;
         }

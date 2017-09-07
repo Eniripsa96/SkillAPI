@@ -145,6 +145,7 @@ public class SkillAPI extends JavaPlugin
 
         // Set up listeners
         listen(new BindListener(), true);
+        listen(new BuffListener(), true);
         listen(new MainListener(), true);
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);

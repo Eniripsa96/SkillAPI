@@ -40,6 +40,7 @@ public class SkillDamageEvent extends Event implements Cancellable
     private static final HandlerList handlers = new HandlerList();
     private LivingEntity damager;
     private LivingEntity target;
+    private String classification;
     private double       damage;
     private boolean      cancelled;
 
@@ -50,11 +51,12 @@ public class SkillDamageEvent extends Event implements Cancellable
      * @param target  entity receiving the damage
      * @param damage  the amount of damage dealt
      */
-    public SkillDamageEvent(LivingEntity damager, LivingEntity target, double damage)
+    public SkillDamageEvent(LivingEntity damager, LivingEntity target, double damage, String classification)
     {
         this.damager = damager;
         this.target = target;
         this.damage = damage;
+        this.classification = classification;
         this.cancelled = false;
     }
 
@@ -86,6 +88,10 @@ public class SkillDamageEvent extends Event implements Cancellable
     public double getDamage()
     {
         return damage;
+    }
+
+    public String getClassification() {
+        return classification;
     }
 
     /**

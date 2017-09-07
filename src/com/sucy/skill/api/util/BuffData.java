@@ -30,7 +30,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -41,10 +40,10 @@ import java.util.Map;
  */
 public class BuffData
 {
-    private final Map<BuffType, Map<String, Buff>> buffs = new HashMap<BuffType, Map<String, Buff>>();
+    private final Map<String, Map<String, Buff>> buffs = new HashMap<String, Map<String, Buff>>();
 
     private LivingEntity entity;
-    private Plugin       plugin;
+    private SkillAPI     plugin;
 
     /**
      * Initializes new buff data for the entity
@@ -66,6 +65,23 @@ public class BuffData
      * @param ticks how long to apply the buff for
      */
     public void addBuff(final BuffType type, final Buff buff, final int ticks) {
+        doAddBuff(type.name(), buff, ticks);
+    }
+
+    /**
+     * Adds a buff to the buff collection. If a buff already exists with the same
+     * key, it will be overwritten.
+     *
+     * @param type type of buff to add
+     * @param category sub category of the type to apply (e.g. damage classification)
+     * @param buff buff details
+     * @param ticks how long to apply the buff for
+     */
+    public void addBuff(final BuffType type, final String category, final Buff buff, final int ticks) {
+        doAddBuff(type.name() + category, buff, ticks);
+    }
+
+    private void doAddBuff(final String type, final Buff buff, final int ticks) {
         if (!buffs.containsKey(type)) {
             buffs.put(type, new HashMap<String, Buff>());
         }
@@ -112,20 +128,45 @@ public class BuffData
      * @return value after all buff applications
      */
     public double apply(final BuffType type, final double value) {
+        return doApply(value, type.name());
+    }
+
+    /**
+     * Applies all buffs of the given type to the specified value
+     *
+     * @param type type of buff to apply
+     * @param category sub category of the buff type to apply (e.g. damage classification)
+     * @param value value to modify
+     * @return value after all buff applications
+     */
+    public double apply(final BuffType type, final String category, final double value) {
+        return category == null || category.length() == 0
+            ? doApply(value, type.name())
+            : doApply(value, type.name(), type.name() + category);
+    }
+
+    private double doApply(final double value, final String... types) {
+
         // Ignore zeroed out values that shouldn't get buffs
         if (value <= 0) return value;
 
         double multiplier = 1;
         double bonus = 0;
         Logger.log(LogType.BUFF, 1, "Buffs:");
-        for (Buff buff : buffs.get(type).values()) {
-            if (buff.isPercent()) {
-                Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
-                multiplier *= buff.getValue();
+        for (final String type : types) {
+            final Map<String, Buff> typeBuffs = buffs.get(type);
+            if (typeBuffs == null) {
+                continue;
             }
-            else {
-                Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
-                bonus += buff.getValue();
+
+            for (final Buff buff : typeBuffs.values()) {
+                if (buff.isPercent()) {
+                    Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
+                    multiplier *= buff.getValue();
+                } else {
+                    Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
+                    bonus += buff.getValue();
+                }
             }
         }
         Logger.log(LogType.BUFF, 1, "Result: x" + multiplier + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * multiplier + bonus));
@@ -179,10 +220,10 @@ public class BuffData
 
     private class BuffTask extends BukkitRunnable
     {
-        private final BuffType type;
+        private final String type;
         private final String key;
 
-        BuffTask(final BuffType type, final String key)
+        BuffTask(final String type, final String key)
         {
             this.type = type;
             this.key = key;

@@ -33,7 +33,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class PassiveMechanic extends EffectComponent
 {
     private static final String PERIOD = "seconds";
 
-    private static final HashMap<String, ArrayList<PassiveTask>> TASKS = new HashMap<String, ArrayList<PassiveTask>>();
+    private static final HashMap<String, PassiveTask> TASKS = new HashMap<String, PassiveTask>();
 
     /**
      * Executes the component
@@ -58,14 +57,16 @@ public class PassiveMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        final String key = skill.getName() + caster.getUniqueId();
+        if (TASKS.containsKey(key))
+            return false;
+
         if (targets.size() > 0)
         {
-            boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-            int period = (int) (attr(caster, PERIOD, level, 1.0, isSelf) * 20);
-            PassiveTask task = new PassiveTask(caster, level, targets, period);
-
-            if (!TASKS.containsKey(skill.getName())) TASKS.put(skill.getName(), new ArrayList<PassiveTask>());
-            TASKS.get(skill.getName()).add(task);
+            final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+            final int period = (int) (attr(caster, PERIOD, level, 1.0, isSelf) * 20);
+            final PassiveTask task = new PassiveTask(caster, level, targets, period);
+            TASKS.put(skill.getName(), task);
 
             return true;
         }
@@ -80,17 +81,9 @@ public class PassiveMechanic extends EffectComponent
      */
     public static void stopTasks(LivingEntity player, String skill)
     {
-        ArrayList<PassiveTask> tasks = TASKS.get(skill);
-        if (tasks == null) return;
-        for (int i = 0; i < tasks.size(); i++)
-        {
-            if (tasks.get(i).caster == player)
-            {
-                tasks.get(i).cancel();
-                tasks.remove(i);
-                i--;
-            }
-        }
+        final PassiveTask task = TASKS.remove(skill + player.getUniqueId());
+        if (task == null) return;
+        task.cancel();
     }
 
     /**
@@ -98,9 +91,8 @@ public class PassiveMechanic extends EffectComponent
      */
     public static void stopAll()
     {
-        for (ArrayList<PassiveTask> list : TASKS.values())
-            for (PassiveTask task : list)
-                task.cancel();
+        for (PassiveTask task : TASKS.values())
+            task.cancel();
         TASKS.clear();
     }
 
@@ -132,7 +124,7 @@ public class PassiveMechanic extends EffectComponent
             if (!skill.isActive(caster) || targets.size() == 0)
             {
                 cancel();
-                TASKS.get(skill.getName()).remove(this);
+                TASKS.remove(skill.getName() + caster.getUniqueId());
                 return;
             }
             else if (caster instanceof Player)
@@ -141,7 +133,7 @@ public class PassiveMechanic extends EffectComponent
                 if (data == null || !data.isUnlocked() || !((Player) caster).isOnline())
                 {
                     cancel();
-                    TASKS.get(skill.getName()).remove(this);
+                    TASKS.remove(skill.getName() + caster.getUniqueId());
                     return;
                 }
             }

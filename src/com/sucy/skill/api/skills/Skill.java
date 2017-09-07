@@ -678,11 +678,22 @@ public abstract class Skill implements IconHolder
      * @param damage amount of damage to deal
      * @param source source of the damage (skill caster)
      */
-    public void damage(LivingEntity target, double damage, LivingEntity source)
-    {
+    public void damage(LivingEntity target, double damage, LivingEntity source) {
+        damage(target, damage, source, "default");
+    }
+
+    /**
+     * Applies skill damage to the target, launching the skill damage event
+     *
+     * @param target target to receive the damage
+     * @param damage amount of damage to deal
+     * @param source source of the damage (skill caster)
+     * @param classification type of damage to deal
+     */
+    public void damage(LivingEntity target, double damage, LivingEntity source, String classification) {
         if (target instanceof TempEntity) return;
 
-        SkillDamageEvent event = new SkillDamageEvent(source, target, damage);
+        SkillDamageEvent event = new SkillDamageEvent(source, target, damage, classification);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled())
         {

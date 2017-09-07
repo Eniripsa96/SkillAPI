@@ -77,13 +77,14 @@ public class WolfMechanic extends EffectComponent
         {
             return false;
         }
+        final Player player = (Player)caster;
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        boolean isSelf = targets.size() == 1 && targets.get(0) == player;
         String color = settings.getString(COLOR);
-        double health = attr(caster, HEALTH, level, 10.0, isSelf);
-        String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", caster.getName()));
-        double damage = attr(caster, DAMAGE, level, 3.0, isSelf);
-        double amount = attr(caster, AMOUNT, level, 1.0, isSelf);
+        double health = attr(player, HEALTH, level, 10.0, isSelf);
+        String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", player.getName()));
+        double damage = attr(player, DAMAGE, level, 3.0, isSelf);
+        double amount = attr(player, AMOUNT, level, 1.0, isSelf);
         List<String> skills = settings.getStringList(SKILLS);
 
         DyeColor dye = null;
@@ -97,20 +98,20 @@ public class WolfMechanic extends EffectComponent
             { /* Invalid color */ }
         }
 
-        double seconds = attr(caster, SECONDS, level, 10.0, isSelf);
+        double seconds = attr(player, SECONDS, level, 10.0, isSelf);
         int ticks = (int) (seconds * 20);
         ArrayList<LivingEntity> wolves = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets)
         {
             for (int i = 0; i < amount; i++) {
                 Wolf wolf = target.getWorld().spawn(target.getLocation(), Wolf.class);
-                wolf.setOwner((Player) caster);
+                wolf.setOwner(player);
                 wolf.setMaxHealth(health);
                 wolf.setHealth(health);
                 SkillAPI.setMeta(wolf, MechanicListener.SUMMON_DAMAGE, damage);
 
                 List<LivingEntity> owner = new ArrayList<LivingEntity>(1);
-                owner.add(caster);
+                owner.add(player);
                 DynamicSkill.getCastData(wolf).put("api-owner", owner);
 
                 if (dye != null) {
@@ -140,7 +141,7 @@ public class WolfMechanic extends EffectComponent
         // Apply children to the wolves
         if (wolves.size() > 0)
         {
-            executeChildren(caster, level, wolves);
+            executeChildren(player, level, wolves);
             return true;
         }
         return false;

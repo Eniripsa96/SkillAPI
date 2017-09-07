@@ -46,6 +46,7 @@ public class DamageLoreMechanic extends EffectComponent
     private static final String MULTIPLIER = "multiplier";
     private static final String HAND       = "hand";
     private static final String TRUE       = "true";
+    private static final String CLASSIFIER = "classifier";
 
     /**
      * Executes the component
@@ -68,6 +69,7 @@ public class DamageLoreMechanic extends EffectComponent
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
             && settings.getString(HAND).equalsIgnoreCase("offhand");
         boolean trueDmg = settings.getBool(TRUE, false);
+        String classification = settings.getString(CLASSIFIER, "default");
 
         if (caster.getEquipment() == null)
             return false;
@@ -101,7 +103,7 @@ public class DamageLoreMechanic extends EffectComponent
                             if (trueDmg)
                                 skill.trueDamage(target, base * m, caster);
                             else
-                                skill.damage(target, base * m, caster);
+                                skill.damage(target, base * m, caster, classification);
                         }
                         worked = targets.size() > 0;
                         break;

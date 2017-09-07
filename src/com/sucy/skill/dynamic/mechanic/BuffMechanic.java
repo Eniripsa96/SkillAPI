@@ -15,6 +15,7 @@ import java.util.List;
 public class BuffMechanic extends EffectComponent {
 
     private static final String MODIFIER = "modifier";
+    private static final String CATEGORY = "category";
     private static final String TYPE     = "type";
     private static final String VALUE    = "value";
     private static final String SECONDS  = "seconds";
@@ -37,11 +38,12 @@ public class BuffMechanic extends EffectComponent {
         boolean percent = settings.getString(MODIFIER, "flat").toLowerCase().equals("multiplier");
         double value = attr(caster, VALUE, level, 1.0, isSelf);
         double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+        String category = settings.getString(CATEGORY, null);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
-            BuffManager.addBuff(
-                    target,
+            BuffManager.getBuffData(target).addBuff(
                     buffType,
+                    category,
                     new Buff(this.skill.getName() + "-" + percent, value, percent),
                     ticks);
         }

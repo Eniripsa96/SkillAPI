@@ -84,6 +84,9 @@ import java.util.UUID;
  * Represents one account for a player which can contain one class from each group
  * and the skills in each of those classes. You should not instantiate this class
  * yourself and instead get it from the SkillAPI static methods.
+ *
+ * In order to get a player's data, use "SkillAPI.getPlayerData(...)". Do NOT
+ * try to instantaite your own PlayerData object.
  */
 public final class PlayerData
 {
@@ -116,7 +119,7 @@ public final class PlayerData
      *
      * @param player player to store the data for
      */
-    public PlayerData(OfflinePlayer player, boolean init)
+    PlayerData(OfflinePlayer player, boolean init)
     {
         this.player = player;
         this.skillBar = new PlayerSkillBar(this);
@@ -399,7 +402,7 @@ public final class PlayerData
      */
     public void addBonusAttributes(String key, int amount)
     {
-        key = key.toLowerCase();
+        key = SkillAPI.getAttributeManager().normalize(key);
         if (bonusAttrib.containsKey(key))
             amount += bonusAttrib.get(key);
         bonusAttrib.put(key, Math.max(0, amount));

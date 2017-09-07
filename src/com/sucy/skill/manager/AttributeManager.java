@@ -136,7 +136,9 @@ public class AttributeManager
      * @return config key
      */
     public String normalize(String key) {
-        return lookup.get(key.toLowerCase()).getKey();
+        final Attribute attribute = lookup.get(key.toLowerCase());
+        if (attribute == null) throw new IllegalArgumentException("Invalid attribute - " + key);
+        return attribute.getKey();
     }
 
     /**
@@ -155,8 +157,8 @@ public class AttributeManager
         {
             Logger.log(LogType.ATTRIBUTE_LOAD, 2, "  - " + key);
             Attribute attribute = new Attribute(data.getSection(key), key);
-            attributes.put(key.toLowerCase(), attribute);
-            lookup.put(key.toLowerCase(), attribute);
+            attributes.put(attribute.getKey(), attribute);
+            lookup.put(attribute.getKey(), attribute);
             lookup.put(attribute.getName().toLowerCase(), attribute);
         }
 
@@ -208,7 +210,7 @@ public class AttributeManager
          */
         public Attribute(DataSection data, String key)
         {
-            this.key = key;
+            this.key = key.toLowerCase();
             this.display = data.getString(DISPLAY, key).toLowerCase();
             this.icon = Data.parseIcon(data);
             this.max = data.getInt(MAX, 999);

@@ -100,6 +100,7 @@ var Condition = {
 var Mechanic = {
     ATTRIBUTE:           { name: 'Attribute',           container: false, construct: MechanicAttribute          },
     BLOCK:               { name: 'Block',               container: false, construct: MechanicBlock              },
+    BUFF:                { name: 'Buff',                container: false, construct: MechanicBuff,              premium: true },
     CANCEL:              { name: 'Cancel',              container: false, construct: MechanicCancel             },
     CHANNEL:             { name: 'Channel',             container: true,  construct: MechanicChannel            },
     CLEANSE:             { name: 'Cleanse',             container: false, construct: MechanicCleanse            },
@@ -1398,6 +1399,31 @@ function MechanicBlock()
     );
 }
 
+extend('MechanicBuff', 'Component');
+function MechanicBuff()
+{
+    this.super('Buff', Type.MECHANIC, false);
+
+    this.description = 'Buffs combat stats of the target';
+
+    this.data.push(new ListValue('Type', 'type', [ 'DAMAGE', 'DEFENSE', 'SKILL_DAMAGE', 'SKILL_DEFENSE', 'HEALING' ], 'DAMAGE')
+        .setTooltip('What type of buff to apply. DAMAGE/DEFENSE is for regular attacks, SKILL_DAMAGE/SKILL_DEFENSE are for damage from abilities, and HEALING is for healing from abilities')
+    );
+    this.data.push(new ListValue('Modifier', 'modifier', [ 'Flat', 'Multiplier' ], 'Flat')
+        .setTooltip('The sort of scaling for the buff. Flat will increase/reduce incoming damage by a fixed amount where Multiplier does it by a percentage of the damage. Multipliers above 1 will increase damage taken while multipliers below 1 reduce damage taken.')
+    );
+    this.data.push(new StringValue('Category', 'category', '')
+        .requireValue('type', [ 'SKILL_DAMAGE', 'SKILL_DEFENSE' ])
+        .setTooltip('What kind of skill damage to affect. If left empty, this will affect all skill damage.')
+    );
+    this.data.push(new AttributeValue('Value', 'value', 1, 0)
+        .setTooltip('The amount to increase/decrease incoming damage by')
+    );
+    this.data.push(new AttributeValue('Seconds', 'seconds', 3, 0)
+        .setTooltip('The duration of the buff in seconds')
+    );
+}
+
 extend('MechanicCancel', 'Component');
 function MechanicCancel()
 {
@@ -1497,6 +1523,9 @@ function MechanicDamage()
     this.data.push(new ListValue('True Damage', 'true', [ 'True', 'False' ], 'False')
         .setTooltip('Whether or not to deal true damage. True damage ignores armor and all plugin checks.')
     );
+    this.data.push(new StringValue('Classifier', 'classifier', 'default')
+        .setTooltip('[PREMIUM ONLY] The type of damage to deal. Can act as elemental damage or fake physical damage')
+    );
 }
 
 extend('MechanicDamageBuff', 'Component');
@@ -1538,6 +1567,9 @@ function MechanicDamageLore()
     );
     this.data.push(new ListValue('True Damage', 'true', [ 'True', 'False' ], 'False')
         .setTooltip('Whether or not to deal true damage. True damage ignores armor and all plugin checks.')
+    );
+    this.data.push(new StringValue('Classifier', 'classifier', 'default')
+        .setTooltip('[PREMIUM ONLY] The type of damage to deal. Can act as elemental damage or fake physical damage')
     );
 }
 

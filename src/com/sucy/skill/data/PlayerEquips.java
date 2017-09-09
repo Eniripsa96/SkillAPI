@@ -58,6 +58,8 @@ public class PlayerEquips
     private EquipData weapon = empty;
     private EquipData[] other;
 
+    private int offhand = -1;
+
     /**
      * @param player player data reference
      */
@@ -65,8 +67,11 @@ public class PlayerEquips
     {
         this.player = player;
         other = new EquipData[SkillAPI.getSettings().getSlots().length];
-        for (int i = 0; i < other.length; i++)
+        for (int i = 0; i < other.length; i++) {
             other[i] = empty;
+            if (SkillAPI.getSettings().getSlots()[i] == 40)
+                offhand = i;
+        }
     }
 
     /**
@@ -75,6 +80,11 @@ public class PlayerEquips
     public boolean canHit()
     {
         return weapon.isMet();
+    }
+
+    public boolean canBlock()
+    {
+        return offhand >= 0 && other[offhand].isMet();
     }
 
     /**

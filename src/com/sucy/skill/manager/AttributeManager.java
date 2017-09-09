@@ -44,6 +44,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,8 +66,10 @@ public class AttributeManager
     public static final String SKILL_DEFENSE    = "skill-defense";
     public static final String MOVE_SPEED       = "move-speed";
 
-    private HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
-    private HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();
+    private final HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
+    private final HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();
+    private final HashMap<String, List<Attribute>> byStat = new HashMap<String, List<Attribute>>();
+    private final HashMap<String, List<Attribute>> byComponent = new HashMap<String, List<Attribute>>();
 
     /**
      * Sets up the attribute manager, loading the attribute
@@ -104,6 +107,14 @@ public class AttributeManager
     public HashMap<String, Attribute> getAttributes()
     {
         return attributes;
+    }
+
+    public List<Attribute> forStat(final String key) {
+        return byStat.get(key);
+    }
+
+    public List<Attribute> forComponent(final EffectComponent component, final String key) {
+        return byComponent.get(component.getName() + "-" + key);
     }
 
     /**
@@ -338,7 +349,7 @@ public class AttributeManager
             else if (component.getType().equals("mechanic")) map = mechanics;
             else map = targets;
 
-            key = component.getKey().replaceAll("-.+", "").toLowerCase() + "-" + key.toLowerCase();
+            key = component.getName() + "-" + key.toLowerCase();
             if (map.containsKey(key))
             {
                 AttributeValue[] list = map.get(key);
@@ -378,14 +389,19 @@ public class AttributeManager
             if (data == null) return;
             for (String key : data.keys())
             {
+                final String lower = key.toLowerCase();
                 Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    SkillMod: " + key);
-                String value = data.getString(key);
-                String[] formulas = value.split("\\|");
-                AttributeValue[] values = new AttributeValue[formulas.length];
+                final String value = data.getString(key);
+                final String[] formulas = value.split("\\|");
+                final AttributeValue[] values = new AttributeValue[formulas.length];
                 int i = 0;
-                for (String formula : formulas)
+                for (final String formula : formulas)
                     values[i++] = new AttributeValue(formula);
-                target.put(key.toLowerCase(), values);
+                target.put(lower, values);
+
+                if (!byComponent.containsKey(key))
+                    byComponent.put(lower, new ArrayList<Attribute>());
+                byComponent.get(lower).add(this);
             }
         }
 
@@ -401,6 +417,10 @@ public class AttributeManager
             {
                 Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    StatMod: " + key);
                 statModifiers.put(key, new Formula(data.getString(key, "v"), new CustomValue("v"), new CustomValue("a")));
+
+                if (!byStat.containsKey(key))
+                    byStat.put(key, new ArrayList<Attribute>());
+                byStat.get(key).add(this);
             }
         }
     }

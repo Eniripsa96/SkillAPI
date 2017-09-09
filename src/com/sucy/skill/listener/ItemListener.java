@@ -29,8 +29,10 @@ package com.sucy.skill.listener;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.language.ErrorNodes;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,6 +42,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
@@ -160,8 +163,8 @@ public class ItemListener extends SkillAPIListener
         if (event.getEntity() instanceof Player && VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
         {
             Player player = (Player) event.getEntity();
-            if (event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0
-                && SkillAPI.getPlayerData(player).getEquips().canHit())
+            final boolean blocking = event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0;
+            if (blocking && !SkillAPI.getPlayerData(player).getEquips().canBlock())
             {
                 SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, event.getEntity(), FilterType.COLOR);
                 event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, 0);
@@ -179,12 +182,24 @@ public class ItemListener extends SkillAPIListener
     {
         if (event.getEntity() instanceof Player)
         {
-            if (!SkillAPI.getPlayerData((Player) event.getEntity()).getEquips().canHit())
+            final PlayerEquips equips = SkillAPI.getPlayerData((Player) event.getEntity()).getEquips();
+            if (isMainhand(event.getBow(), event.getEntity()))
             {
+                if (!equips.canHit()) {
+                    SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, event.getEntity(), FilterType.COLOR);
+                    event.setCancelled(true);
+                }
+            }
+            else if (!equips.canBlock()) {
                 SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, event.getEntity(), FilterType.COLOR);
                 event.setCancelled(true);
             }
         }
+    }
+
+    private boolean isMainhand(final ItemStack bow, final LivingEntity entity) {
+        return !VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
+                || bow == entity.getEquipment().getItemInMainHand();
     }
 
     private static final HashSet<Material> ARMOR = new HashSet<Material>()

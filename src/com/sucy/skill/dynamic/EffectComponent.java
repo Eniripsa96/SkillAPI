@@ -185,6 +185,7 @@ public abstract class EffectComponent
     public boolean hasEffect;
 
     private String key;
+    private String name;
     private String type = "trigger";
 
     /**
@@ -195,6 +196,10 @@ public abstract class EffectComponent
     public String getKey()
     {
         return key;
+    }
+
+    public String getName() {
+        return name;
     }
 
     /**
@@ -512,6 +517,7 @@ public abstract class EffectComponent
                     {
                         EffectComponent child = map.get(mkey).newInstance();
                         child.key = key;
+                        child.name = mkey;
                         child.type = type;
                         child.load(skill, children.getSection(key));
                         this.children.add(child);

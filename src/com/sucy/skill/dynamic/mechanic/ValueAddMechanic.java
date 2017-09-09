@@ -60,7 +60,7 @@ public class ValueAddMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        double amount = attr(caster, AMOUNT, level, 1, isSelf);
+        double amount = attr(caster, AMOUNT, level, 1, isSelf) * targets.size();
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         if (!data.containsKey(key)) data.put(key, amount);
         else data.put(key, amount + (Double) data.get(key));

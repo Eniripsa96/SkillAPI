@@ -43,8 +43,6 @@ import java.util.List;
  */
 public class SelfTarget extends EffectComponent
 {
-    private static final String REPEATED = "repeated";
-
     /**
      * Creates the list of indicators for the skill
      *
@@ -88,18 +86,11 @@ public class SelfTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean worked = false;
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+        final ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         list.add(caster);
-        for (LivingEntity t : targets)
-        {
-            worked = executeChildren(caster, level, list) || worked;
+        for (int i = 0; i < targets.size(); i++)
+            list.add(caster);
 
-            if (!settings.getBool(REPEATED))
-            {
-                break;
-            }
-        }
-        return worked;
+        return list.size() > 0 && executeChildren(caster, level, list);
     }
 }

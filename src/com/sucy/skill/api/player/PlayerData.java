@@ -77,6 +77,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -88,7 +89,7 @@ import java.util.UUID;
  * In order to get a player's data, use "SkillAPI.getPlayerData(...)". Do NOT
  * try to instantaite your own PlayerData object.
  */
-public final class PlayerData
+public class PlayerData
 {
     private final HashMap<String, PlayerClass>   classes     = new HashMap<String, PlayerClass>();
     private final HashMap<String, PlayerSkill>   skills      = new HashMap<String, PlayerSkill>();
@@ -497,19 +498,24 @@ public final class PlayerData
      *
      * @return modified value
      */
-    public double scaleStat(String stat, double value)
+    public double scaleStat(final String stat, final double value)
     {
-        AttributeManager manager = SkillAPI.getAttributeManager();
+        final AttributeManager manager = SkillAPI.getAttributeManager();
         if (manager == null) return value;
-        for (String key : manager.getKeys())
+
+        final List<AttributeManager.Attribute> matches = manager.forStat(stat);
+        if (matches == null) return value;
+
+        double modified = value;
+        for (final AttributeManager.Attribute attribute : matches)
         {
-            int amount = getAttribute(key);
+            int amount = getAttribute(attribute.getKey());
             if (amount > 0)
             {
-                value = manager.getAttribute(key).modifyStat(stat, value, amount);
+                modified = attribute.modifyStat(stat, value, amount);
             }
         }
-        return value;
+        return modified;
     }
 
     /**
@@ -524,14 +530,18 @@ public final class PlayerData
      */
     public double scaleDynamic(EffectComponent component, String key, double value, boolean self)
     {
-        AttributeManager manager = SkillAPI.getAttributeManager();
+        final AttributeManager manager = SkillAPI.getAttributeManager();
         if (manager == null) return value;
-        for (String attr : manager.getKeys())
+
+        final List<AttributeManager.Attribute> matches = manager.forComponent(component, key);
+        if (matches == null) return value;
+
+        for (final AttributeManager.Attribute attribute : matches)
         {
-            int amount = getAttribute(attr);
+            int amount = getAttribute(attribute.getKey());
             if (amount > 0)
             {
-                value = manager.getAttribute(attr).modify(component, key, self, value, amount);
+                value = attribute.modify(component, key, self, value, amount);
             }
         }
         return value;

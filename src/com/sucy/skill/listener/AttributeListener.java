@@ -198,31 +198,35 @@ public class AttributeListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onSkillDamage(SkillDamageEvent event)
+    public void onSkillDamage(final SkillDamageEvent event)
     {
+        final String classified = AttributeManager.SKILL_DAMAGE + "-" + event.getClassification();
+
         // Skill Damage
         if (event.getDamager() instanceof Player)
         {
-            Player player = (Player) event.getDamager();
+            final Player player = (Player) event.getDamager();
             if (CitizensHook.isNPC(player))
                 return;
 
-            PlayerData data = SkillAPI.getPlayerData(player);
+            final PlayerData data = SkillAPI.getPlayerData(player);
 
-            double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, event.getDamage());
+            final double firstPass = data.scaleStat(classified, event.getDamage());
+            final double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, firstPass);
             event.setDamage(newAmount);
         }
 
         // Skill Defense
         if (event.getTarget() instanceof Player)
         {
-            Player player = (Player) event.getTarget();
+            final Player player = (Player) event.getTarget();
             if (CitizensHook.isNPC(player))
                 return;
 
-            PlayerData data = SkillAPI.getPlayerData(player);
+            final PlayerData data = SkillAPI.getPlayerData(player);
 
-            double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, event.getDamage());
+            final double firstPass = data.scaleStat(classified, event.getDamage());
+            final double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, firstPass);
             event.setDamage(newAmount);
         }
     }

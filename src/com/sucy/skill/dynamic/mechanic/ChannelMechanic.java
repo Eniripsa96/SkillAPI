@@ -71,9 +71,9 @@ public class ChannelMechanic extends EffectComponent
                 {
                     if (FlagManager.hasFlag(caster, StatusFlag.CHANNEL))
                     {
-                        executeChildren(caster, level, targets);
                         FlagManager.removeFlag(caster, StatusFlag.CHANNEL);
                         FlagManager.removeFlag(caster, StatusFlag.CHANNELING);
+                        executeChildren(caster, level, targets);
                     }
                 }
             }, ticks

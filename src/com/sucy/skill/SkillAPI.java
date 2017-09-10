@@ -46,15 +46,34 @@ import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.gui.Menu;
 import com.sucy.skill.hook.PluginChecker;
-import com.sucy.skill.listener.*;
-import com.sucy.skill.manager.*;
-import com.sucy.skill.task.*;
+import com.sucy.skill.listener.AttributeListener;
+import com.sucy.skill.listener.BarListener;
+import com.sucy.skill.listener.CastListener;
+import com.sucy.skill.listener.ClickListener;
+import com.sucy.skill.listener.DeathListener;
+import com.sucy.skill.listener.ItemListener;
+import com.sucy.skill.listener.KillListener;
+import com.sucy.skill.listener.MainListener;
+import com.sucy.skill.listener.MechanicListener;
+import com.sucy.skill.listener.SkillAPIListener;
+import com.sucy.skill.listener.StatusListener;
+import com.sucy.skill.listener.TreeListener;
+import com.sucy.skill.manager.AttributeManager;
+import com.sucy.skill.manager.ClassBoardManager;
+import com.sucy.skill.manager.CmdManager;
+import com.sucy.skill.manager.ComboManager;
+import com.sucy.skill.manager.RegistrationManager;
+import com.sucy.skill.manager.ResourceManager;
+import com.sucy.skill.task.CooldownTask;
+import com.sucy.skill.task.GUITask;
+import com.sucy.skill.task.InventoryTask;
+import com.sucy.skill.task.ManaTask;
+import com.sucy.skill.task.SaveTask;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
@@ -164,7 +183,12 @@ public class SkillAPI extends JavaPlugin
         guiTask = new GUITask(this);
 
         // Load player data
-        io.loadAll();
+        players.putAll(io.loadAll());
+        for (PlayerAccounts accounts : players.values())
+            accounts.getActiveData().init(accounts.getPlayer());
+
+        for (SkillAPIListener listener : listeners)
+            listener.init();
 
         loaded = true;
     }
@@ -174,7 +198,6 @@ public class SkillAPI extends JavaPlugin
         if (enabled)
         {
             Bukkit.getPluginManager().registerEvents(listener, this);
-            listener.init();
             listeners.add(listener);
         }
     }

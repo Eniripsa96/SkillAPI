@@ -26,17 +26,18 @@
  */
 package com.sucy.skill.api.util;
 
+import org.bukkit.scheduler.BukkitTask;
+
 /**
  * Represents a buff given to an entity
  */
 public class Buff
 {
-    protected BuffType type;
-
     private double  value;
     private boolean percent;
     private String  key;
-    private int     id;
+
+    BukkitTask task;
 
     /**
      * Constructs a new buff
@@ -77,15 +78,5 @@ public class Buff
     public boolean isPercent()
     {
         return percent;
-    }
-
-    public int getId()
-    {
-        return id;
-    }
-
-    public void setId(int id)
-    {
-        id = id;
     }
 }

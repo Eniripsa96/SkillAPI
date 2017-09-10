@@ -26,15 +26,18 @@
  */
 package com.sucy.skill.dynamic.target;
 
+import com.rit.sucy.player.TargetHelper;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Applies child components to a location using the caster's faced direction
@@ -58,31 +61,71 @@ public class LocationTarget extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean worked = false;
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        final ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+        for (final LivingEntity t : targets)
+        {
+            final TempEntity loc = getTargetLoc(caster, level, t);
+            if (loc != null)
+                list.add(loc);
+        }
+        return list.size() > 0 && executeChildren(caster, level, list);
+    }
+
+    private TempEntity getTargetLoc(LivingEntity caster, int level, LivingEntity t)
+    {
+        boolean isSelf = caster == t;
         double range = attr(caster, RANGE, level, 5.0, isSelf);
         boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
 
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity t : targets)
-        {
-            Location loc;
-            Block b = t.getTargetBlock(NULL_SET, (int) Math.ceil(range));
-            if (b == null && !groundOnly)
-            {
-                loc = t.getLocation().add(t.getLocation().getDirection().multiply(range));
-            }
-            else if (b != null)
-            {
-                loc = b.getLocation();
-            }
-            else
-            {
-                continue;
-            }
-
-            list.add(new TempEntity(loc));
+        Location loc = calcTargetLoc(t, range);
+        if (groundOnly && AIR_BLOCKS.contains(loc.getBlock().getType())) {
+            return null;
         }
-        return executeChildren(caster, level, list);
+
+        if (!groundOnly) {
+            LivingEntity target = TargetHelper.getLivingTarget(t, range, 4);
+            Location casterLoc = caster.getLocation();
+            if (target != null && target.getLocation().distanceSquared(casterLoc) < loc.distanceSquared(casterLoc)) {
+                loc = target.getLocation();
+            }
+        }
+
+        return new TempEntity(loc);
+    }
+
+    private Location calcTargetLoc(LivingEntity entity, double maxRange) {
+        Location start = entity.getEyeLocation();
+        Vector dir = entity.getLocation().getDirection();
+        if (dir.getX() == 0) dir.setX(Double.MIN_NORMAL);
+        if (dir.getY() == 0) dir.setY(Double.MIN_NORMAL);
+        if (dir.getZ() == 0) dir.setY(Double.MIN_NORMAL);
+        int ox = dir.getX() > 0 ? 1 : 0;
+        int oy = dir.getY() > 0 ? 1 : 0;
+        int oz = dir.getZ() > 0 ? 1 : 0;
+
+        while (AIR_BLOCKS.contains(start.getBlock().getType()) && maxRange > 0) {
+            double dxt = computeWeight(start.getX(), dir.getX(), ox);
+            double dyt = computeWeight(start.getY(), dir.getY(), oy);
+            double dzt = computeWeight(start.getZ(), dir.getZ(), oz);
+            double t = Math.min(dxt, Math.min(dyt, Math.min(dzt, maxRange))) + 1E-5;
+
+            start.add(dir.clone().multiply(t));
+            maxRange -= t;
+        }
+
+        return start;
+    }
+
+    private double computeWeight(double val, double dir, int offset) {
+        return (Math.floor(val + offset) - val) / dir;
+    }
+
+    private static final Set<Material> AIR_BLOCKS = new HashSet<Material>();
+    static {
+        for (Material material : Material.values()) {
+            if (material.isTransparent()) {
+                AIR_BLOCKS.add(material);
+            }
+        }
     }
 }

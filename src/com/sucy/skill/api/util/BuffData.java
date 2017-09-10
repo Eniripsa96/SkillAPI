@@ -26,33 +26,24 @@
  */
 package com.sucy.skill.api.util;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents buffs set on an entity
  */
 public class BuffData
 {
-    private static final int MAX_ID = 9999999;
-
-    private final HashMap<Integer, Buff>       damageBuffs       = new HashMap<Integer, Buff>();
-    private final HashMap<Integer, Buff>       defenseBuffs      = new HashMap<Integer, Buff>();
-    private final HashMap<Integer, Buff>       skillDamageBuffs  = new HashMap<Integer, Buff>();
-    private final HashMap<Integer, Buff>       skillDefenseBuffs = new HashMap<Integer, Buff>();
-    private final HashMap<Integer, BukkitTask> tasks             = new HashMap<Integer, BukkitTask>();
+    private final Map<BuffType, Map<String, Buff>> buffs = new HashMap<BuffType, Map<String, Buff>>();
 
     private LivingEntity entity;
-    private Plugin       plugin;
-    private int nextId = 0;
+    private SkillAPI     plugin;
 
     /**
      * Initializes new buff data for the entity
@@ -61,245 +52,142 @@ public class BuffData
      */
     public BuffData(LivingEntity entity)
     {
-        this.plugin = Bukkit.getPluginManager().getPlugin("SkillAPI");
+        this.plugin = SkillAPI.getPlugin(SkillAPI.class);
         this.entity = entity;
     }
 
     /**
-     * Adds an offensive buff to the entity
+     * Adds a buff to the buff collection. If a buff already exists with the same
+     * key, it will be overwritten.
      *
-     * @param buff  buff to add
-     * @param ticks ticks to apply the buff for
+     * @param type type of buff to add
+     * @param buff buff details
+     * @param ticks how long to apply the buff for
      */
-    public void addDamageBuff(Buff buff, int ticks)
-    {
-        buff.type = BuffType.DAMAGE;
-        int id = check(buff, damageBuffs);
-        if (id == -1)
-        {
-            damageBuffs.put(nextId, buff);
-            tasks.put(nextId, new BuffTask(BuffType.DAMAGE, nextId).runTaskLater(plugin, ticks));
-            nextId = (nextId + 1) % MAX_ID;
+    public void addBuff(final BuffType type, final Buff buff, final int ticks) {
+        if (!buffs.containsKey(type)) {
+            buffs.put(type, new HashMap<String, Buff>());
         }
-        else
-        {
-            damageBuffs.put(id, buff);
-            BukkitTask task = tasks.remove(id);
-            if (task != null)
-                task.cancel();
-            tasks.put(id, new BuffTask(BuffType.DAMAGE, id).runTaskLater(plugin, ticks));
-        }
+
+        final Map<String, Buff> typeBuffs = buffs.get(type);
+
+        final Buff conflict = typeBuffs.remove(buff.getKey());
+        if (conflict != null)
+            conflict.task.cancel();
+
+        typeBuffs.put(buff.getKey(), buff);
+        buff.task = new BuffTask(type, buff.getKey()).runTaskLater(plugin, ticks);
+    }
+
+    /** @deprecated use {@link BuffData#addBuff(BuffType, Buff, int)} instead */
+    @Deprecated
+    public void addDamageBuff(Buff buff, int ticks) {
+        addBuff(BuffType.DAMAGE, buff, ticks);
+    }
+
+    /** @deprecated use {@link BuffData#addBuff(BuffType, Buff, int)} instead */
+    @Deprecated
+    public void addDefenseBuff(Buff buff, int ticks) {
+        addBuff(BuffType.DEFENSE, buff, ticks);
+    }
+
+    /** @deprecated use {@link BuffData#addBuff(BuffType, Buff, int)} instead */
+    @Deprecated
+    public void addSkillDamageBuff(Buff buff, int ticks) {
+        addBuff(BuffType.SKILL_DAMAGE, buff, ticks);
+    }
+
+    /** @deprecated use {@link BuffData#addBuff(BuffType, Buff, int)} instead */
+    @Deprecated
+    public void addSkillDefenseBuff(Buff buff, int ticks) {
+        addBuff(BuffType.SKILL_DEFENSE, buff, ticks);
     }
 
     /**
-     * Adds a defensive buff to the entity
+     * Applies all buffs of the given type to the specified value
      *
-     * @param buff  buff to add
-     * @param ticks ticks to apply the buff for
+     * @param type type of buff to apply
+     * @param value value to modify
+     * @return value after all buff applications
      */
-    public void addDefenseBuff(Buff buff, int ticks)
-    {
-        buff.type = BuffType.DEFENSE;
-        int id = check(buff, defenseBuffs);
-        if (id == -1)
-        {
-            defenseBuffs.put(nextId, buff);
-            tasks.put(nextId, new BuffTask(BuffType.DEFENSE, nextId).runTaskLater(plugin, ticks));
-            nextId = (nextId + 1) % MAX_ID;
-        }
-        else
-        {
-            defenseBuffs.put(id, buff);
-            BukkitTask task = tasks.remove(id);
-            if (task != null)
-                task.cancel();
-            tasks.put(id, new BuffTask(BuffType.DEFENSE, id).runTaskLater(plugin, ticks));
-        }
-    }
+    public double apply(final BuffType type, final double value) {
+        // Ignore zeroed out values that shouldn't get buffs
+        if (value <= 0) return value;
 
-    /**
-     * Adds an offensive buff to the entity
-     *
-     * @param buff  buff to add
-     * @param ticks ticks to apply the buff for
-     */
-    public void addSkillDamageBuff(Buff buff, int ticks)
-    {
-        buff.type = BuffType.SKILL_DAMAGE;
-        int id = check(buff, skillDamageBuffs);
-        if (id == -1)
-        {
-            skillDamageBuffs.put(nextId, buff);
-            tasks.put(nextId, new BuffTask(BuffType.SKILL_DAMAGE, nextId).runTaskLater(plugin, ticks));
-            nextId = (nextId + 1) % MAX_ID;
-        }
-        else
-        {
-            skillDamageBuffs.put(id, buff);
-            BukkitTask task = tasks.remove(id);
-            if (task != null)
-                task.cancel();
-            tasks.put(id, new BuffTask(BuffType.SKILL_DAMAGE, id).runTaskLater(plugin, ticks));
-        }
-    }
+        final Map<String, Buff> typeBuffs = buffs.get(type);
+        if (typeBuffs == null)
+            return value;
 
-    /**
-     * Adds a defensive buff to the entity
-     *
-     * @param buff  buff to add
-     * @param ticks ticks to apply the buff for
-     */
-    public void addSkillDefenseBuff(Buff buff, int ticks)
-    {
-        buff.type = BuffType.SKILL_DEFENSE;
-        int id = check(buff, skillDefenseBuffs);
-        if (id == -1)
-        {
-            skillDefenseBuffs.put(nextId, buff);
-            tasks.put(nextId, new BuffTask(BuffType.SKILL_DEFENSE, nextId).runTaskLater(plugin, ticks));
-            nextId = (nextId + 1) % MAX_ID;
-        }
-        else
-        {
-            skillDefenseBuffs.put(id, buff);
-            BukkitTask task = tasks.remove(id);
-            if (task != null)
-                task.cancel();
-            tasks.put(id, new BuffTask(BuffType.SKILL_DEFENSE, id).runTaskLater(plugin, ticks));
-        }
-    }
-
-    /**
-     * Checks for buffs with overlapping keys
-     *
-     * @param buff new buff to check against
-     * @param map  map to look through
-     *
-     * @return ID of overlapping buff or -1 if no conflict
-     */
-    private int check(Buff buff, HashMap<Integer, Buff> map)
-    {
-        for (Buff active : map.values())
-        {
-            if (active.getKey().equals(buff.getKey()))
-            {
-                return active.getId();
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Modifies the amount of dealt damage using damage buff
-     * multipliers and bonuses.
-     *
-     * @param damage base damage amount to modify
-     *
-     * @return modified damage amount
-     */
-    public double modifyDealtDamage(double damage)
-    {
-        return modify(damageBuffs.values(), damage);
-    }
-
-    /**
-     * Modifies the amount of taken damage using defense buff
-     * multipliers and bonuses.
-     *
-     * @param damage base damage amount to modify
-     *
-     * @return modified damage amount
-     */
-    public double modifyTakenDamage(double damage)
-    {
-        return modify(defenseBuffs.values(), damage);
-    }
-
-    /**
-     * Modifies the amount of dealt damage using damage buff
-     * multipliers and bonuses.
-     *
-     * @param damage base damage amount to modify
-     *
-     * @return modified damage amount
-     */
-    public double modifySkillDealtDamage(double damage)
-    {
-        return modify(skillDamageBuffs.values(), damage);
-    }
-
-    /**
-     * Modifies the amount of taken damage using defense buff
-     * multipliers and bonuses.
-     *
-     * @param damage base damage amount to modify
-     *
-     * @return modified damage amount
-     */
-    public double modifySkillTakenDamage(double damage)
-    {
-        return modify(skillDefenseBuffs.values(), damage);
-    }
-
-    private double modify(Collection<Buff> buffs, double value)
-    {
-        if (value <= 0)
-        {
-            return 0;
-        }
         double multiplier = 1;
         double bonus = 0;
         Logger.log(LogType.BUFF, 1, "Buffs:");
-        for (Buff buff : buffs)
-        {
-            if (buff.isPercent())
-            {
+        for (final Buff buff : typeBuffs.values()) {
+            if (buff.isPercent()) {
                 Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
                 multiplier *= buff.getValue();
-            }
-            else
-            {
+            } else {
                 Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
                 bonus += buff.getValue();
             }
         }
         Logger.log(LogType.BUFF, 1, "Result: x" + multiplier + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * multiplier + bonus));
-        if (multiplier <= 0)
-        {
-            return 0;
-        }
-        else
-        {
-            return Math.max(0, value * multiplier + bonus);
-        }
+
+        // Negatives aren't well received by bukkit, so return 0 instead
+        if (multiplier <= 0) return 0;
+
+        return Math.max(0, value * multiplier + bonus);
+    }
+
+    /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */
+    @Deprecated
+    public double modifyDealtDamage(double damage)
+    {
+        return apply(BuffType.DAMAGE, damage);
+    }
+
+    /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */
+    @Deprecated
+    public double modifyTakenDamage(double damage)
+    {
+        return apply(BuffType.DEFENSE, damage);
+    }
+
+    /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */
+    @Deprecated
+    public double modifySkillDealtDamage(double damage)
+    {
+        return apply(BuffType.SKILL_DAMAGE, damage);
+    }
+
+    /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */
+    @Deprecated
+    public double modifySkillTakenDamage(double damage)
+    {
+        return apply(BuffType.SKILL_DEFENSE, damage);
     }
 
     /**
      * Clears all buffs on the entity and stops associated tasks.
      */
-    public void clear()
-    {
-        damageBuffs.clear();
-        defenseBuffs.clear();
-        skillDamageBuffs.clear();
-        skillDefenseBuffs.clear();
-        for (BukkitTask task : tasks.values())
-        {
-            task.cancel();
+    public void clear() {
+        for (final Map<String, Buff> typeBuffs : buffs.values()) {
+            for (final Buff buff : typeBuffs.values()) {
+                buff.task.cancel();
+            }
         }
-        tasks.clear();
+        buffs.clear();
         BuffManager.clearData(entity);
     }
 
     private class BuffTask extends BukkitRunnable
     {
-        private BuffType type;
-        private int      id;
+        private final BuffType type;
+        private final String key;
 
-        public BuffTask(BuffType type, int id)
+        BuffTask(final BuffType type, final String key)
         {
             this.type = type;
-            this.id = id;
+            this.key = key;
         }
 
         @Override
@@ -310,24 +198,16 @@ public class BuffData
                 BuffManager.clearData(entity);
                 return;
             }
-            switch (type)
-            {
-                case DAMAGE:
-                    damageBuffs.remove(id);
-                    break;
-                case DEFENSE:
-                    defenseBuffs.remove(id);
-                    break;
-                case SKILL_DAMAGE:
-                    skillDamageBuffs.remove(id);
-                    break;
-                case SKILL_DEFENSE:
-                    skillDefenseBuffs.remove(id);
-            }
-            tasks.remove(id);
-            if (damageBuffs.size() + defenseBuffs.size() == 0)
-            {
-                BuffManager.clearData(entity);
+
+            final Map<String, Buff> typeBuffs = buffs.get(type);
+            typeBuffs.remove(key);
+
+            // Clean up buff data if the entity doesn't hold onto any buffs
+            if (typeBuffs.size() == 0) {
+                buffs.remove(type);
+                if (buffs.size() == 0) {
+                    BuffManager.clearData(entity);
+                }
             }
         }
     }

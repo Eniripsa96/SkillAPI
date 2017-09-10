@@ -29,7 +29,6 @@ package com.sucy.skill.manager;
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.Formula;
 import com.sucy.skill.dynamic.EffectComponent;
@@ -37,11 +36,9 @@ import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -86,6 +83,19 @@ public class AttributeManager
     public Attribute getAttribute(String key)
     {
         return lookup.get(key.toLowerCase());
+    }
+
+    /**
+     * Normalizes a config key or name into the config key
+     * for a unified identifier to store stats under.
+     *
+     * @param key key to normalize
+     * @return config key
+     */
+    public String normalize(String key) {
+        final Attribute attribute = lookup.get(key.toLowerCase());
+        if (attribute == null) throw new IllegalArgumentException("Invalid attribute - " + key);
+        return attribute.getKey();
     }
 
     /**

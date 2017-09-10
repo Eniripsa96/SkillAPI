@@ -30,11 +30,23 @@ import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.player.TargetHelper;
-import com.rit.sucy.version.VersionManager;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.enums.*;
-import com.sucy.skill.api.event.*;
+import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.enums.ManaCost;
+import com.sucy.skill.api.enums.ManaSource;
+import com.sucy.skill.api.enums.PointSource;
+import com.sucy.skill.api.enums.SkillStatus;
+import com.sucy.skill.api.event.PlayerCastSkillEvent;
+import com.sucy.skill.api.event.PlayerClassChangeEvent;
+import com.sucy.skill.api.event.PlayerManaGainEvent;
+import com.sucy.skill.api.event.PlayerManaLossEvent;
+import com.sucy.skill.api.event.PlayerRefundAttributeEvent;
+import com.sucy.skill.api.event.PlayerSkillDowngradeEvent;
+import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
+import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
+import com.sucy.skill.api.event.PlayerUpAttributeEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
@@ -125,7 +137,8 @@ public final class PlayerData
      */
     public Player getPlayer()
     {
-        return player.getPlayer();
+        final Player updated = new VersionPlayer(player).getPlayer();
+        return updated == null ? player.getPlayer() : updated;
     }
 
     /**
@@ -347,7 +360,7 @@ public final class PlayerData
      */
     public void addBonusAttributes(String key, int amount)
     {
-        key = key.toLowerCase();
+        key = SkillAPI.getAttributeManager().normalize(key);
         if (bonusAttrib.containsKey(key))
             amount += bonusAttrib.get(key);
         bonusAttrib.put(key, Math.max(0, amount));

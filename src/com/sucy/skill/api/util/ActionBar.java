@@ -28,6 +28,7 @@ package com.sucy.skill.api.util;
 
 import com.rit.sucy.reflect.Reflection;
 import com.rit.sucy.text.TextFormatter;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.log.Logger;
 import org.bukkit.entity.Player;
 
@@ -50,6 +51,8 @@ public class ActionBar
     private static Constructor<?> constructPacket;
     private static Constructor<?> constructText;
 
+    private static Object messageType = (byte)2;
+
     private static boolean initialized = false;
     private static boolean supported   = false;
 
@@ -63,7 +66,14 @@ public class ActionBar
             packet = Reflection.getNMSClass("Packet");
             chatBase = Reflection.getNMSClass("IChatBaseComponent");
             chatText = Reflection.getNMSClass("ChatComponentText");
-            constructPacket = chatPacket.getConstructor(chatBase, byte.class);
+            if (VersionManager.isVersionAtLeast(11200)) {
+                Class<?> chatMessageType = Reflection.getNMSClass("ChatMessageType");
+                messageType = chatMessageType.getMethod("a", byte.class).invoke(null, messageType);
+                constructPacket = chatPacket.getConstructor(chatBase, chatMessageType);
+            }
+            else {
+                constructPacket = chatPacket.getConstructor(chatBase, byte.class);
+            }
             constructText = chatText.getConstructor(String.class);
             getHandle = craftPlayer.getDeclaredMethod("getHandle");
 
@@ -71,7 +81,8 @@ public class ActionBar
         }
         catch (Exception ex)
         {
-            Logger.invalid("Failed to setup Action Bar utility - not supported on pre-1.8 servers");
+            ex.printStackTrace();
+            Logger.invalid("Failed to setup Action Bar utility - not supported on pre-1.8 servers or brand new servers");
         }
     }
 
@@ -100,7 +111,7 @@ public class ActionBar
         try
         {
             Object text = constructText.newInstance(TextFormatter.colorString(message));
-            Object data = constructPacket.newInstance(text, (byte) 2);
+            Object data = constructPacket.newInstance(text, messageType);
             Object handle = getHandle.invoke(player);
             Object connection = Reflection.getValue(handle, "playerConnection");
             Method send = Reflection.getMethod(connection, "sendPacket", packet);

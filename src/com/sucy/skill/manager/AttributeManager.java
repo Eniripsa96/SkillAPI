@@ -110,11 +110,11 @@ public class AttributeManager
     }
 
     public List<Attribute> forStat(final String key) {
-        return byStat.get(key);
+        return byStat.get(key.toLowerCase());
     }
 
     public List<Attribute> forComponent(final EffectComponent component, final String key) {
-        return byComponent.get(component.getName() + "-" + key);
+        return byComponent.get(component.getName() + "-" + key.toLowerCase());
     }
 
     /**

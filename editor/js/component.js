@@ -796,6 +796,9 @@ function TargetLocation()
     this.data.push(new AttributeValue('Range', 'range', 5, 0)
         .setTooltip('The max distance the location can be')
     );
+    this.data.push(new ListValue('Ground Only', 'ground', [ 'True', 'False' ], 'True')
+        .setTooltip('Whether or not a player is only allowed to target the ground or other units')
+    );
 }
 
 extend('TargetNearest', 'Component');

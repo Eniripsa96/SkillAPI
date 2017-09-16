@@ -237,16 +237,10 @@ public class AttributeManager
 
             // Load stat settings
             DataSection stats = data.getSection(STATS);
-            if (stats != null)
-            {
-                loadStatModifier(stats, HEALTH);
-                loadStatModifier(stats, MANA);
-                loadStatModifier(stats, MANA_REGEN);
-                loadStatModifier(stats, PHYSICAL_DAMAGE);
-                loadStatModifier(stats, PHYSICAL_DEFENSE);
-                loadStatModifier(stats, SKILL_DAMAGE);
-                loadStatModifier(stats, SKILL_DEFENSE);
-                loadStatModifier(stats, MOVE_SPEED);
+            if (stats != null) {
+                for (String stat : stats.keys()) {
+                    loadStatModifier(stats, stat);
+                }
             }
         }
 

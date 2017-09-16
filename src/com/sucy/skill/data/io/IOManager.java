@@ -182,16 +182,6 @@ public abstract class IOManager
                 }
             }
 
-            // Load binds
-            DataSection binds = account.getSection(BINDS);
-            if (binds != null)
-            {
-                for (String bindKey : binds.keys())
-                {
-                    acc.bind(Material.valueOf(bindKey), acc.getSkill(binds.getString(bindKey)));
-                }
-            }
-
             // Load skill bar
             if (SkillAPI.getSettings().isSkillBarEnabled() || SkillAPI.getSettings().isUsingCombat())
             {
@@ -275,6 +265,16 @@ public abstract class IOManager
 
             acc.endInit();
             acc.autoLevel();
+
+            // Load binds
+            DataSection binds = account.getSection(BINDS);
+            if (binds != null)
+            {
+                for (String bindKey : binds.keys())
+                {
+                    acc.bind(Material.valueOf(bindKey), acc.getSkill(binds.getString(bindKey)));
+                }
+            }
         }
         data.setAccount(file.getInt(ACTIVE, data.getActiveId()), false);
         data.getActiveData().setLastHealth(file.getDouble(HEALTH));

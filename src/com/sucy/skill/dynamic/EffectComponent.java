@@ -86,6 +86,7 @@ import com.sucy.skill.dynamic.mechanic.FireMechanic;
 import com.sucy.skill.dynamic.mechanic.FlagClearMechanic;
 import com.sucy.skill.dynamic.mechanic.FlagMechanic;
 import com.sucy.skill.dynamic.mechanic.FlagToggleMechanic;
+import com.sucy.skill.dynamic.mechanic.FoodMechanic;
 import com.sucy.skill.dynamic.mechanic.ForgetTargetsMechanic;
 import com.sucy.skill.dynamic.mechanic.HealMechanic;
 import com.sucy.skill.dynamic.mechanic.HeldItemMechanic;
@@ -609,6 +610,7 @@ public abstract class EffectComponent
         put("flag", FlagMechanic.class);
         put("flag clear", FlagClearMechanic.class);
         put("flag toggle", FlagToggleMechanic.class);
+        put("food", FoodMechanic.class);
         put("forget targets", ForgetTargetsMechanic.class);
         put("heal", HealMechanic.class);
         put("held item", HeldItemMechanic.class);

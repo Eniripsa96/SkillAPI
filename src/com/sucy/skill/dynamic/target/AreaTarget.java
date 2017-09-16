@@ -34,7 +34,6 @@ import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorType;
 import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.EffectComponent;
-import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -132,10 +131,6 @@ public class AreaTarget extends EffectComponent
 
         List<LivingEntity> entities = Nearby.getLivingNearby(target.getLocation(), radius);
 
-        if (target != caster && !(target instanceof TempEntity) && (both || SkillAPI.getSettings().isAlly(caster, target) == ally))
-        {
-            list.add(target);
-        }
         if (self)
         {
             list.add(caster);

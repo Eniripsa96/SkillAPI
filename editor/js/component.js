@@ -117,6 +117,7 @@ var Mechanic = {
     FLAG:                { name: 'Flag',                container: false, construct: MechanicFlag               },
     FLAG_CLEAR:          { name: 'Flag Clear',          container: false, construct: MechanicFlagClear          },
     FLAG_TOGGLE:         { name: 'Flag Toggle',         container: false, construct: MechanicFlagToggle         },
+    FOOD:                { name: 'Food',                container: false, construct: MechanicFood,              premium: true },
     FORGET_TARGETS:      { name: 'Forget Targets',      container: false, construct: MechanicForgetTargets,     premium: true },
     HEAL:                { name: 'Heal',                container: false, construct: MechanicHeal               },
     HELD_ITEM:           { name: 'Held Item',           container: false, construct: MechanicHeldItem,          premium: true },
@@ -1713,6 +1714,21 @@ function MechanicFlagToggle()
     
     this.data.push(new StringValue('Key', 'key', 'key')
         .setTooltip('The unique string for the flag. Use the same key when checking it in a Flag Condition')
+    );
+}
+
+extend('MechanicFood', 'Component');
+function MechanicFood()
+{
+    this.super('Food', Type.MECHANIC, false);
+
+    this.description = 'Adds or removes to a player\'s hunger and saturation';
+
+    this.data.push(new AttributeValue('Food', 'food', 1, 1)
+        .setTooltip('The amount of food to give. Use a negative number to lower the food meter.')
+    );
+    this.data.push(new AttributeValue('Saturation', 'saturation', 0, 0)
+        .setTooltip('How much saturation to give. Use a negative number to lower saturation. This is the hidden value that determines how long until food starts going down.')
     );
 }
 

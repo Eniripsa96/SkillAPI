@@ -35,6 +35,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -46,6 +47,7 @@ public class PlayerSkillBar
         UNASSIGNED = "e";
 
     private final HashMap<Integer, String> slots = new HashMap<Integer, String>();
+    private final HashSet<Integer> reserved = new HashSet<Integer>();
     private final PlayerData player;
     private boolean enabled = true;
     private boolean setup   = false;
@@ -57,10 +59,19 @@ public class PlayerSkillBar
      */
     public PlayerSkillBar(PlayerData player)
     {
+        if (SkillAPI.getSettings().isUsingCombat()) {
+            reserve(SkillAPI.getSettings().getCastSlot());
+        }
+
         this.player = player;
         for (int i = 1; i <= 9; i++)
-            if (SkillAPI.getSettings().getDefaultBarLayout()[i - 1])
+            if (SkillAPI.getSettings().getDefaultBarLayout()[i - 1] && !reserved.contains(i - 1))
                 slots.put(i, UNASSIGNED);
+    }
+
+    public void reserve(int slot) {
+        this.reserved.add(slot);
+        this.slots.remove(slot);
     }
 
     /**
@@ -149,7 +160,7 @@ public class PlayerSkillBar
 
         ItemStack[] items = p.getInventory().getContents();
         for (int i = 0; i < items.length; i++)
-            if (items[i] == null && !slots.containsKey(i + 1))
+            if (items[i] == null && !slots.containsKey(i + 1) && !reserved.contains(i))
                 count++;
 
         return count;
@@ -179,13 +190,13 @@ public class PlayerSkillBar
      */
     public void toggleSlot(int slot)
     {
-        if (!isEnabled() || SkillAPI.getSettings().getLockedSlots()[slot])
+        if (!isEnabled() || SkillAPI.getSettings().getLockedSlots()[slot] || reserved.contains(slot))
             return;
 
         slot++;
 
         // Make sure there is always at least one weapon slot
-        if (!slots.containsKey(slot) && (slots.size() == 8 || countOpenSlots() == 0))
+        if (!slots.containsKey(slot) && (slots.size() == 8 - reserved.size() || countOpenSlots() == 0))
             return;
 
         // Cannot have item in cursor
@@ -210,8 +221,7 @@ public class PlayerSkillBar
      */
     public void apply(int slot)
     {
-        if (getPlayer() == null || getPlayer().getGameMode() == GameMode.CREATIVE
-            || !isEnabled() || isWeaponSlot(slot))
+        if (getPlayer() == null || getPlayer().getGameMode() == GameMode.CREATIVE || !isEnabled() || isWeaponSlot(slot))
             return;
 
         PlayerSkill skill = player.getSkill(slots.get(slot + 1));

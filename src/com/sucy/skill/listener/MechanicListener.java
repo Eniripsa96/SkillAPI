@@ -62,6 +62,8 @@ public class MechanicListener extends SkillAPIListener
     public static final String SUMMON_DAMAGE     = "sapiSumDamage";
     public static final String P_CALL            = "pmCallback";
     public static final String POTION_PROJECTILE = "potionProjectile";
+    public static final String SKILL_LEVEL       = "skill_level";
+    public static final String SKILL_CASTER      = "caster";
     public static final String SPEED_KEY         = "sapiSpeedKey";
     public static final String DISGUISE_KEY      = "sapiDisguiseKey";
 

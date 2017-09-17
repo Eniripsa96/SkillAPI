@@ -160,6 +160,7 @@ public class SkillAPI extends JavaPlugin
         listen(new CastItemListener(), settings.isUsingWand());
         listen(new CastCombatListener(), settings.isUsingCombat());
         listen(new DeathListener(), !VersionManager.isVersionAtLeast(11000));
+        listen(new LingeringPotionListener(), VersionManager.isVersionAtLeast(VersionManager.V1_9_0));
         listen(new ExperienceListener(), settings.yieldsEnabled());
 
         // Set up tasks
@@ -190,10 +191,8 @@ public class SkillAPI extends JavaPlugin
         loaded = true;
     }
 
-    private void listen(SkillAPIListener listener, boolean enabled)
-    {
-        if (enabled)
-        {
+    private void listen(SkillAPIListener listener, boolean enabled) {
+        if (enabled) {
             Bukkit.getPluginManager().registerEvents(listener, this);
             listeners.add(listener);
         }

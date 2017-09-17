@@ -43,6 +43,8 @@ public class LaunchMechanic extends EffectComponent
     private static final String UPWARD  = "upward";
     private static final String RIGHT   = "right";
 
+    private static final String RELATIVE = "relative";
+
     /**
      * Executes the component
      *
@@ -64,10 +66,21 @@ public class LaunchMechanic extends EffectComponent
         double forward = attr(caster, FORWARD, level, 0, isSelf);
         double upward = attr(caster, UPWARD, level, 0, isSelf);
         double right = attr(caster, RIGHT, level, 0, isSelf);
+        String relative = settings.getString(RELATIVE, "target").toLowerCase();
         for (LivingEntity target : targets)
         {
-            Vector dir = target.getLocation().getDirection().setY(0).normalize();
-            Vector nor = dir.clone().crossProduct(up);
+            final Vector dir;
+            if (relative.equals("caster")) {
+                dir = caster.getLocation().getDirection().setY(0).normalize();
+            }
+            else if (relative.equals("between")) {
+                dir = target.getLocation().toVector().subtract(caster.getLocation().toVector()).setY(0).normalize();
+            }
+            else {
+                dir = target.getLocation().getDirection().setY(0).normalize();
+            }
+
+            final Vector nor = dir.clone().crossProduct(up);
             dir.multiply(forward);
             dir.add(nor.multiply(right)).setY(upward);
 

@@ -185,32 +185,32 @@ public abstract class IOManager
             // Load skill bar
             if (SkillAPI.getSettings().isSkillBarEnabled() || SkillAPI.getSettings().isUsingCombat())
             {
-                DataSection skillBar = account.getSection(SKILL_BAR);
-                PlayerSkillBar bar = acc.getSkillBar();
+                final DataSection skillBar = account.getSection(SKILL_BAR);
+                final PlayerSkillBar bar = acc.getSkillBar();
                 if (skillBar != null && bar != null)
                 {
-                    for (String key : skillBar.keys())
+                    boolean enabled = skillBar.getBoolean(ENABLED, true);
+                    for (final String key : skillBar.keys())
                     {
-                        if (key.equals(ENABLED))
-                        {
-                            if (bar.isEnabled() != skillBar.getBoolean(key))
-                            {
-                                bar.toggleEnabled();
-                            }
-                        }
-                        else if (key.equals(SLOTS))
-                        {
-                            List<String> slots = skillBar.getList(SLOTS);
-                            for (String i : slots)
-                            {
-                                bar.getData().put(Integer.parseInt(i), UNASSIGNED);
+                        final boolean[] locked = SkillAPI.getSettings().getLockedSlots();
+                        if (key.equals(SLOTS)) {
+                            for (int i = 0; i < 9; i++)
+                                if (!bar.isWeaponSlot(i) && !locked[i])
+                                    bar.getData().remove(i + 1);
+
+                            final List<String> slots = skillBar.getList(SLOTS);
+                            for (final String slot : slots) {
+                                int i = Integer.parseInt(slot);
+                                if (!locked[i - 1])
+                                    bar.getData().put(i, UNASSIGNED);
                             }
                         }
                         else if (SkillAPI.getSkill(key) != null)
-                        {
                             bar.getData().put(skillBar.getInt(key), key);
-                        }
                     }
+                    if (bar.isEnabled() != enabled)
+                        bar.toggleEnabled();
+
                     bar.applySettings();
                 }
             }

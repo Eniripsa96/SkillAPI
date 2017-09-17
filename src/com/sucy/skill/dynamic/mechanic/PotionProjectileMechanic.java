@@ -26,11 +26,14 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
-import com.sucy.skill.listener.MechanicListener;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LingeringPotion;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
@@ -43,6 +46,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.sucy.skill.listener.MechanicListener.POTION_PROJECTILE;
+import static com.sucy.skill.listener.MechanicListener.SKILL_CASTER;
+import static com.sucy.skill.listener.MechanicListener.SKILL_LEVEL;
+
 /**
  * Heals each target
  */
@@ -50,7 +57,6 @@ public class PotionProjectileMechanic extends EffectComponent
 {
     private static final String POTION = "type";
     private static final String ALLY   = "group";
-    private static final String LEVEL  = "skill_level";
     private static final String LINGER = "linger";
 
     /**
@@ -67,7 +73,7 @@ public class PotionProjectileMechanic extends EffectComponent
     {
         // Get common values
         String potion = settings.getString(POTION, "slowness").toUpperCase().replace(" ", "_");
-        boolean linger = settings.getString(LINGER, "false").toLowerCase().equals("true");
+        boolean linger = settings.getString(LINGER, "false").toLowerCase().equals("true") && VersionManager.isVersionAtLeast(VersionManager.V1_9_0);
         PotionType type;
         try
         {
@@ -98,9 +104,10 @@ public class PotionProjectileMechanic extends EffectComponent
         // Fire from each target
         for (LivingEntity target : targets)
         {
-            ThrownPotion thrown = caster.launchProjectile(ThrownPotion.class);
-            SkillAPI.setMeta(thrown, LEVEL, level);
-            SkillAPI.setMeta(thrown, MechanicListener.POTION_PROJECTILE, this);
+            ThrownPotion thrown = target.launchProjectile(linger ? LingeringPotion.class : ThrownPotion.class);
+            SkillAPI.setMeta(thrown, SKILL_LEVEL, level);
+            SkillAPI.setMeta(thrown, SKILL_CASTER, caster);
+            SkillAPI.setMeta(thrown, POTION_PROJECTILE, this);
             thrown.setItem(item);
         }
 
@@ -110,16 +117,18 @@ public class PotionProjectileMechanic extends EffectComponent
     /**
      * The callback for the projectiles that applies child components
      *
-     * @param projectile projectile calling back for
-     * @param hit        the entity hit by the projectile, if any
+     * @param entity potion effect
+     * @param hit    the entity hit by the projectile, if any
      */
-    public void callback(ThrownPotion projectile, Collection<LivingEntity> hit)
+    public void callback(Entity entity, Collection<LivingEntity> hit)
     {
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>(hit);
         String group = settings.getString(ALLY, "enemy").toLowerCase();
         boolean both = group.equals("both");
         boolean ally = group.equals("ally");
-        LivingEntity caster = (LivingEntity) projectile.getShooter();
+        LivingEntity caster = (LivingEntity) SkillAPI.getMeta(entity, SKILL_CASTER);
+        int level = SkillAPI.getMetaInt(entity, SKILL_LEVEL);
+        Location loc = entity.getLocation();
         for (int i = 0; i < targets.size(); i++)
         {
             if (!both && SkillAPI.getSettings().canAttack(caster, targets.get(i)) == ally)
@@ -130,9 +139,9 @@ public class PotionProjectileMechanic extends EffectComponent
         }
         if (targets.size() == 0)
         {
-            LivingEntity loc = new TempEntity(projectile.getLocation());
-            targets.add(loc);
+            LivingEntity locTarget = new TempEntity(loc);
+            targets.add(locTarget);
         }
-        executeChildren((LivingEntity) projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
+        executeChildren(caster, level, targets);
     }
 }

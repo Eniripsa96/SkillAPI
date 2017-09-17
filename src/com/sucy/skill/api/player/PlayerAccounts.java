@@ -239,7 +239,7 @@ public class PlayerAccounts
             getActiveData().updateScoreboard();
             getActiveData().updateHealthAndMana(player);
             AttributeListener.updatePlayer(getActiveData());
-            if (getActiveData().hasClass() && SkillAPI.getSettings().isSkillBarEnabled())
+            if (getActiveData().hasClass() && SkillAPI.getSettings().isSkillBarEnabled() && !SkillAPI.getSettings().isUsingCombat())
             {
                 getActiveData().getSkillBar().setup(player);
             }

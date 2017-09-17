@@ -1867,7 +1867,10 @@ function MechanicLaunch()
     this.super('Launch', Type.MECHANIC, false);
     
     this.description = 'Launches the target relative to their forward direction. Use negative values to go in the opposite direction (e.g. negative forward makes the target go backwards)';
-    
+
+    this.data.push(new ListValue('[PREM] Relative', 'relative', [ 'Target', 'Caster', 'Between'], 'Target')
+        .setTooltip('Determines what is considered "forward". Target uses the direction the target is facing, Caster uses the direction the caster is facing, and Between uses the direction from the caster to the target.')
+    );
     this.data.push(new AttributeValue('Forward Speed', 'forward', 0, 0)
         .setTooltip('The speed to give the target in the direction they are facing')
     );

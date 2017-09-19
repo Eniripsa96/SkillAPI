@@ -93,6 +93,10 @@ public class AttributeListener extends SkillAPIListener
     }
 
     private static void clear(Player player, Attribute attribute, String attribKey) {
+        if (!bonuses.containsKey(attribKey)) {
+            return;
+        }
+
         double bonus = bonuses.remove(attribKey);
         AttributeInstance instance = player.getAttribute(attribute);
         instance.setBaseValue(instance.getBaseValue() - bonus);

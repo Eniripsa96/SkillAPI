@@ -45,7 +45,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Base class for custom projectiles
@@ -75,6 +77,8 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     }
 
     private final HashMap<String, List<MetadataValue>> metadata = new HashMap<String, List<MetadataValue>>();
+
+    private final Set<Integer> hit = new HashSet<Integer>();
 
     private ProjectileCallback callback;
     private LivingEntity       thrower;
@@ -158,21 +162,29 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     /**
      * Checks if the projectile collides with a given list of entities
      */
-    protected void checkCollision()
+    protected void checkCollision(final boolean pierce)
     {
         for (LivingEntity entity : getColliding())
         {
+            if (pierce && hit.contains(entity.getEntityId())) {
+                continue;
+            }
+
             boolean ally = Protection.isAlly(getShooter(), entity);
             if (ally && !this.ally) continue;
             if (!ally && !this.enemy) continue;
 
-            cancel();
             Bukkit.getPluginManager().callEvent(hit(entity));
 
             if (callback != null)
                 callback.callback(this, entity);
 
-            return;
+            if (!pierce) {
+                cancel();
+                return;
+            }
+
+            hit.add(entity.getEntityId());
         }
     }
 

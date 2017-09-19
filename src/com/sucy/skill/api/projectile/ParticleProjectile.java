@@ -65,6 +65,8 @@ public class ParticleProjectile extends CustomProjectile
      */
     private static final String GRAVITY = "gravity";
 
+    private static final String PIERCE = "pierce";
+
     private Location loc;
     private Settings settings;
     private Vector   vel;
@@ -73,6 +75,7 @@ public class ParticleProjectile extends CustomProjectile
     private int      freq;
     private int      life;
     private Vector   gravity;
+    private boolean pierce;
 
     /**
      * Constructor
@@ -92,6 +95,7 @@ public class ParticleProjectile extends CustomProjectile
         this.freq = (int) (20 * settings.getDouble(FREQUENCY, 0.5));
         this.life = (int) (settings.getDouble(LIFESPAN, 2) * 20);
         this.gravity = new Vector(0, settings.getDouble(GRAVITY, 0), 0);
+        this.pierce = settings.getBool(PIERCE, false);
 
         steps = (int) Math.ceil(vel.length() * 2);
         vel.multiply(1.0 / steps);
@@ -200,7 +204,7 @@ public class ParticleProjectile extends CustomProjectile
             if (!isTraveling())
                 return;
 
-            checkCollision();
+            checkCollision(pierce);
         }
 
         // Particle along path

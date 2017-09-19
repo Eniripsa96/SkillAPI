@@ -140,7 +140,7 @@ public class ItemProjectile extends CustomProjectile
     public void run()
     {
         if (isTraveling())
-            checkCollision();
+            checkCollision(false);
     }
 
     /**

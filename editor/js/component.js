@@ -2030,6 +2030,9 @@ function MechanicParticleProjectile()
     this.data.push(new DoubleValue('Gravity', 'gravity', 0)
         .setTooltip('How much gravity to apply each tick. Negative values make it fall while positive values make it rise')
     );
+    this.data.push(new ListValue('Pierce', 'pierce', [ 'True', 'False' ], 'False')
+        .setTooltip('Whether or not this projectile should pierce through initial targets and continue hitting those behind them')
+    );
 
     addParticleOptions(this);
     

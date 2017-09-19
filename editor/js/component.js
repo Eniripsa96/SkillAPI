@@ -2026,6 +2026,11 @@ function MechanicParticleProjectile()
     this.description = 'Launches a projectile using particles as its visual that applies child components upon landing. The target passed on will be the collided target or the location where it landed if it missed.';
     
     addProjectileOptions(this);
+
+    this.data.push(new DoubleValue('Gravity', 'gravity', 0)
+        .setTooltip('How much gravity to apply each tick. Negative values make it fall while positive values make it rise')
+    );
+
     addParticleOptions(this);
     
     this.data.push(new DoubleValue('Frequency', 'frequency', 0.05)

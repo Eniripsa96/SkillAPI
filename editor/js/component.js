@@ -120,6 +120,7 @@ var Mechanic = {
     FOOD:                { name: 'Food',                container: false, construct: MechanicFood,              premium: true },
     FORGET_TARGETS:      { name: 'Forget Targets',      container: false, construct: MechanicForgetTargets,     premium: true },
     HEAL:                { name: 'Heal',                container: false, construct: MechanicHeal               },
+    HEALTH_SET:          { name: 'Health Set',          container: false, construct: MechanicHealthSet,         premium: true },
     HELD_ITEM:           { name: 'Held Item',           container: false, construct: MechanicHeldItem,          premium: true },
     IMMUNITY:            { name: 'Immunity',            container: false, construct: MechanicImmunity           },
     INTERRUPT:           { name: 'Interrupt',           container: false, construct: MechanicInterrupt          },
@@ -1756,6 +1757,18 @@ function MechanicHeal()
     );
     this.data.push(new AttributeValue("Value", "value", 3, 1)
         .setTooltip('The amount of health to restore')
+    );
+}
+
+extend('MechanicHealthSet', 'Component');
+function MechanicHealthSet()
+{
+    this.super('Health Set', Type.MECHANIC, false);
+
+    this.description = 'Sets the target\'s health to the specified amount, ignoring resistances, damage buffs, and so on';
+
+    this.data.push(new AttributeValue("Health", "health", 1, 0)
+        .setTooltip('The health to set to')
     );
 }
 

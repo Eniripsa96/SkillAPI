@@ -620,6 +620,14 @@ public class PlayerData
         return skills.get(name.toLowerCase());
     }
 
+    public int getInvestedSkillPoints() {
+        int total = 0;
+        for (PlayerSkill playerSkill : skills.values()) {
+            total += playerSkill.getInvestedCost();
+        }
+        return total;
+    }
+
     /**
      * Retrieves all of the skill data the player has. Modifying this
      * collection will not modify the player's owned skills but modifying
@@ -744,6 +752,9 @@ public class PlayerData
             {
                 return false;
             }
+        }
+        if (!skill.isCompatible(this) || !skill.hasInvestedEnough(this)) {
+            return false;
         }
 
         int level = data.getPlayerClass().getLevel();

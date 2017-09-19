@@ -26,14 +26,21 @@
  */
 package com.sucy.skill.listener;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaSource;
-import com.sucy.skill.api.event.*;
+import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.event.PlayerLevelUpEvent;
+import com.sucy.skill.api.event.PlayerManaGainEvent;
+import com.sucy.skill.api.event.PlayerUpAttributeEvent;
+import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -76,6 +83,19 @@ public class AttributeListener extends SkillAPIListener
     {
         bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
         player.setWalkSpeed(0.2f);
+
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+            clear(player, Attribute.GENERIC_ATTACK_SPEED, AttributeManager.ATTACK_SPEED);
+            clear(player, Attribute.GENERIC_ARMOR, AttributeManager.ARMOR);
+            clear(player, Attribute.GENERIC_ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS);
+            clear(player, Attribute.GENERIC_LUCK, AttributeManager.LUCK);
+        }
+    }
+
+    private static void clear(Player player, Attribute attribute, String attribKey) {
+        double bonus = bonuses.remove(attribKey);
+        AttributeInstance instance = player.getAttribute(attribute);
+        instance.setBaseValue(instance.getBaseValue() - bonus);
     }
 
     /**
@@ -252,25 +272,35 @@ public class AttributeListener extends SkillAPIListener
         Player player = data.getPlayer();
         if (player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
-            double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth());
+            double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth(), 0, Double.MAX_VALUE);
             data.addMaxHealth(change);
 
-            change = updateStat(data, AttributeManager.MANA, data.getMaxMana());
+            change = updateStat(data, AttributeManager.MANA, data.getMaxMana(), 0, Double.MAX_VALUE);
             data.addMaxMana(change);
 
-            change = updateStat(data, AttributeManager.MOVE_SPEED, player.getWalkSpeed());
-            if (change + player.getWalkSpeed() > 1)
-            {
-                bonuses.put(player.getName() + ":" + AttributeManager.MOVE_SPEED, 0.8);
-                change = 1 - player.getWalkSpeed();
-            }
-            else if (change + player.getWalkSpeed() < -1)
-            {
-                bonuses.put(player.getName() + ":" + AttributeManager.MOVE_SPEED, -1.8);
-                change = -1 - player.getWalkSpeed();
-            }
+            change = updateStat(data, AttributeManager.MOVE_SPEED, player.getWalkSpeed(), -2, 1);
             player.setWalkSpeed(player.getWalkSpeed() + (float) change);
+
+            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+                update(data, player, Attribute.GENERIC_ATTACK_SPEED, AttributeManager.ATTACK_SPEED, 0, 1024);
+                update(data, player, Attribute.GENERIC_ARMOR, AttributeManager.ARMOR, 0, 30);
+                update(data, player, Attribute.GENERIC_ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS, 0, 20);
+                update(data, player, Attribute.GENERIC_LUCK, AttributeManager.LUCK, -1024, 1024);
+            }
         }
+    }
+
+    private static void update(
+            final PlayerData data,
+            final Player player,
+            final Attribute attribute,
+            final String attribKey,
+            final double min,
+            final double max) {
+
+        final AttributeInstance instance = player.getAttribute(attribute);
+        final double change = updateStat(data, attribKey, instance.getBaseValue(), min, max);
+        instance.setBaseValue(instance.getBaseValue() + change);
     }
 
     /**
@@ -281,7 +311,7 @@ public class AttributeListener extends SkillAPIListener
     public static void refreshSpeed(Player player)
     {
         bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
-        double speed = updateStat(SkillAPI.getPlayerData(player), AttributeManager.MOVE_SPEED, 0.2);
+        double speed = updateStat(SkillAPI.getPlayerData(player), AttributeManager.MOVE_SPEED, 0.2, -2, 1);
         player.setWalkSpeed((float) (0.2 + speed));
     }
 
@@ -294,14 +324,14 @@ public class AttributeListener extends SkillAPIListener
      *
      * @return change in the stat based on current attributes
      */
-    private static double updateStat(PlayerData data, String key, double value)
+    private static double updateStat(PlayerData data, String key, double value, double min, double max)
     {
         Player player = data.getPlayer();
         if (player != null)
         {
             String mapKey = player.getName() + ":" + key;
             double current = bonuses.containsKey(mapKey) ? bonuses.remove(mapKey) : 0;
-            double updated = data.scaleStat(key, value - current) - value + current;
+            double updated = Math.max(min, Math.min(max, data.scaleStat(key, value - current) - value + current));
             bonuses.put(mapKey, updated);
             return updated - current;
         }

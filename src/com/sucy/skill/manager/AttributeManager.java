@@ -65,6 +65,10 @@ public class AttributeManager
     public static final String SKILL_DAMAGE     = "skill-damage";
     public static final String SKILL_DEFENSE    = "skill-defense";
     public static final String MOVE_SPEED       = "move-speed";
+    public static final String ATTACK_SPEED     = "attack-speed";
+    public static final String ARMOR            = "armor";
+    public static final String LUCK             = "luck";
+    public static final String ARMOR_TOUGHNESS  = "armor-toughness";
 
     private final HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
     private final HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();

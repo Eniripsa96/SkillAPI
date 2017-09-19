@@ -482,6 +482,26 @@ public abstract class Skill implements IconHolder
                 || player.hasPermission(Permissions.SKILL + "." + name.toLowerCase().replace(" ", "-"));
     }
 
+    public boolean isCompatible(final PlayerData playerData) {
+        for (final String skillName : settings.getStringList(SkillAttribute.INCOMPATIBLE)) {
+            final PlayerSkill skill = playerData.getSkill(skillName);
+            if (skill != null && skill.getLevel() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean hasInvestedEnough(final PlayerData playerData) {
+        final PlayerSkill skill = playerData.getSkill(name);
+        if (skill == null) {
+            return false;
+        }
+
+        final double reqPoints = settings.getAttr(SkillAttribute.POINTS_SPENT_REQ, skill.getLevel(), 0);
+        return playerData.getInvestedSkillPoints() >= reqPoints;
+    }
+
     /**
      * Retrieves the indicator for the skill while applying filters to match
      * the player-specific data.
@@ -499,10 +519,15 @@ public abstract class Skill implements IconHolder
         ItemMeta meta = item.hasItemMeta() ? item.getItemMeta() : Bukkit.getItemFactory().getItemMeta(item.getType());
         ArrayList<String> lore = new ArrayList<String>();
 
-        String lvlReq = SkillAPI.getLanguage().getMessage(skillData.getLevelReq() <= skillData.getPlayerClass().getLevel() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
-        String costReq = SkillAPI.getLanguage().getMessage(skillData.getCost() <= skillData.getPlayerClass().getPoints() ? SkillNodes.REQUIREMENT_MET : SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
-        lvlReq = lvlReq.substring(0, lvlReq.length() - 2);
-        costReq = costReq.substring(0, costReq.length() - 2);
+        String MET = SkillAPI.getLanguage().getMessage(SkillNodes.REQUIREMENT_MET, true, FilterType.COLOR).get(0);
+        String NOT_MET = SkillAPI.getLanguage().getMessage(SkillNodes.REQUIREMENT_NOT_MET, true, FilterType.COLOR).get(0);
+        MET = MET.substring(0, MET.length() - 2);
+        NOT_MET = NOT_MET.substring(0, NOT_MET.length() - 2);
+
+        final String lvlReq = skillData.getLevelReq() <= skillData.getPlayerClass().getLevel() ? MET : NOT_MET;
+        final String costReq = skillData.getCost() <= skillData.getPlayerClass().getPoints() ? MET : NOT_MET;
+        final String spentReq = hasInvestedEnough(skillData.getPlayerData()) ? MET : NOT_MET;
+        final String branchReq = isCompatible(skillData.getPlayerData()) ? MET : NOT_MET;
 
         String attrChanging = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_CHANGING, true, FilterType.COLOR).get(0);
         String attrStatic = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, true, FilterType.COLOR).get(0);
@@ -513,12 +538,14 @@ public abstract class Skill implements IconHolder
             {
                 // General data
                 line = line.replace("{level}", "" + skillData.getLevel())
-                    .replace("{req:lvl}", lvlReq)
-                    .replace("{req:level}", lvlReq)
-                    .replace("{req:cost}", costReq)
-                    .replace("{max}", "" + maxLevel)
-                    .replace("{name}", name)
-                    .replace("{type}", type);
+                        .replace("{req:lvl}", lvlReq)
+                        .replace("{req:level}", lvlReq)
+                        .replace("{req:cost}", costReq)
+                        .replace("{req:spent}", spentReq)
+                        .replace("{req:branch}", branchReq)
+                        .replace("{max}", "" + maxLevel)
+                        .replace("{name}", name)
+                        .replace("{type}", type);
 
                 // Attributes
                 while (line.contains("{attr:"))
@@ -780,6 +807,8 @@ public abstract class Skill implements IconHolder
     private static final String ATTR      = "attributes";
     private static final String ATTR_INFO = "attribute-info";
     private static final String COMBO     = "combo";
+    private static final String INCOMPATIBLE = "incompatible";
+    private static final String MIN_POINTS_REQ = "min-points-req";
 
     /**
      * Saves the skill data to the configuration, overwriting all previous data

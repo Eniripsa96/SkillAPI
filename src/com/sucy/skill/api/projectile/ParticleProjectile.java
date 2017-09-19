@@ -60,6 +60,11 @@ public class ParticleProjectile extends CustomProjectile
      */
     private static final String FREQUENCY = "frequency";
 
+    /**
+     * Settings key for the projectile's effective gravity
+     */
+    private static final String GRAVITY = "gravity";
+
     private Location loc;
     private Settings settings;
     private Vector   vel;
@@ -67,6 +72,7 @@ public class ParticleProjectile extends CustomProjectile
     private int      count;
     private int      freq;
     private int      life;
+    private Vector   gravity;
 
     /**
      * Constructor
@@ -85,9 +91,11 @@ public class ParticleProjectile extends CustomProjectile
         this.vel = loc.getDirection().multiply(settings.getAttr(SPEED, level, 1.0));
         this.freq = (int) (20 * settings.getDouble(FREQUENCY, 0.5));
         this.life = (int) (settings.getDouble(LIFESPAN, 2) * 20);
+        this.gravity = new Vector(0, settings.getDouble(GRAVITY, 0), 0);
 
         steps = (int) Math.ceil(vel.length() * 2);
         vel.multiply(1.0 / steps);
+        gravity.multiply(1.0 / steps);
         Bukkit.getPluginManager().callEvent(new ParticleProjectileLaunchEvent(this));
     }
 
@@ -187,6 +195,7 @@ public class ParticleProjectile extends CustomProjectile
         for (int i = 0; i < steps; i++)
         {
             loc.add(vel);
+            vel.add(gravity);
 
             if (!isTraveling())
                 return;

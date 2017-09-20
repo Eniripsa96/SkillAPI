@@ -76,8 +76,9 @@ Skill.prototype.createFormHTML = function()
 	header.innerHTML = 'Skill Details';
 	form.appendChild(header);
 	
-	var h = document.createElement('hr');
-	form.appendChild(h);
+    form.appendChild(document.createElement('hr'));
+    form.appendChild(this.createEditButton(form));
+    form.appendChild(document.createElement('hr'));
 	
 	this.data[3].list.splice(1, this.data[3].list.length - 1);
 	for (var i = 0; i < skills.length; i++)
@@ -95,7 +96,15 @@ Skill.prototype.createFormHTML = function()
 	var hr = document.createElement('hr');
 	form.appendChild(hr);
 	
-	var done = document.createElement('h5');
+	form.appendChild(this.createEditButton(form));
+	
+	var target = document.getElementById('skillForm');
+	target.innerHTML = '';
+	target.appendChild(form);
+}
+
+Skill.prototype.createEditButton = function(form) {
+    var done = document.createElement('h5');
 	done.className = 'doneButton';
 	done.innerHTML = 'Edit Effects',
 	done.skill = this;
@@ -107,11 +116,7 @@ Skill.prototype.createFormHTML = function()
 		this.form.parentNode.removeChild(this.form);
 		showSkillPage('builder');
 	});
-	form.appendChild(done);
-	
-	var target = document.getElementById('skillForm');
-	target.innerHTML = '';
-	target.appendChild(form);
+    return done;
 }
 
 /**

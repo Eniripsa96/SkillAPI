@@ -67,6 +67,14 @@ html, body {
 	display: none;
 }
 
+#componentChooser h5 {
+    background-color: #181818;
+}
+
+#componentChooser h5:hover {
+    background-color: #777;
+}
+
 #skills, #classes {
 	float: left;
 	width: 100%;
@@ -313,11 +321,11 @@ hr {
 	margin-bottom: 5px;
 }
 
-.premium {
+#componentChooser .premium {
     background-color: #033;
 }
 
-.premium:hover {
+#componentChooser .premium:hover {
     background-color: #6aa;
 }
 
@@ -401,6 +409,7 @@ hr {
 	font: 24px Sertig-Web;
 	font-weight: bold;
 	padding-top: 10px;
+	clear: both;
 }
 
 #skillForm input, #skillForm select, #classForm input, #classForm select, #skillForm .byteList, #classForm .byteList {
@@ -479,6 +488,7 @@ textArea {
 	margin: 0;
 	padding: 0;
 	padding-top: 10px;
+	clear: none;
 }
 
 #skillForm .base, #classForm .base {

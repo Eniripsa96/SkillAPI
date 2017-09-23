@@ -98,7 +98,7 @@ public class PlayerExperienceGainEvent extends Event implements Cancellable
      *
      * @throws IllegalArgumentException if experience is less than 0
      */
-    public void setExp(int amount)
+    public void setExp(double amount)
     {
         if (amount < 0)
         {

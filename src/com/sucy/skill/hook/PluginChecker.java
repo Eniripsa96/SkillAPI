@@ -91,4 +91,8 @@ public class PluginChecker
             return false;
         }
     }
+
+    public static boolean isMythicMobsActive() {
+        return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
+    }
 }

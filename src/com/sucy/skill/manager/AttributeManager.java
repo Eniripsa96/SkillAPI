@@ -69,6 +69,7 @@ public class AttributeManager
     public static final String ARMOR            = "armor";
     public static final String LUCK             = "luck";
     public static final String ARMOR_TOUGHNESS  = "armor-toughness";
+    public static final String EXPERIENCE       = "exp";
 
     private final HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
     private final HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();

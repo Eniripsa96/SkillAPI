@@ -538,8 +538,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
             double min = component.settings.getDouble("dmg-min");
             double max = component.settings.getDouble("dmg-max");
+            String category = component.settings.getString("category", "");
 
-            if (event.getDamage() >= min && event.getDamage() <= max)
+            if (event.getDamage() >= min && event.getDamage() <= max && (category.length() == 0 || event.getClassification().equals(category)))
             {
                 getCastData(target).put("api-taken", event.getDamage());
                 trigger(target, caster ? target : damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
@@ -568,8 +569,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
             double min = component.settings.getDouble("dmg-min");
             double max = component.settings.getDouble("dmg-max");
+            String category = component.settings.getString("category", "");
 
-            if (event.getDamage() >= min && event.getDamage() <= max)
+            if (event.getDamage() >= min && event.getDamage() <= max && (category.length() == 0 || event.getClassification().equals(category)))
             {
                 getCastData(damager).put("api-dealt", event.getDamage());
                 trigger(damager, caster ? damager : target, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);

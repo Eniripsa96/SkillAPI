@@ -705,7 +705,7 @@ public class PlayerData
     private void autoLevel(Skill skill)
     {
         PlayerSkill data = skills.get(skill.getKey());
-        if (data == null) return;
+        if (data == null || !skill.isAllowed(getPlayer())) return;
 
         int lastLevel = data.getLevel();
         while (data.getData().canAutoLevel() && !data.isMaxed() && data.getLevelReq() <= data.getPlayerClass().getLevel())

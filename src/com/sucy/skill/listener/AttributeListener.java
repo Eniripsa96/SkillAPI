@@ -30,6 +30,7 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.event.PlayerExperienceGainEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.event.PlayerManaGainEvent;
 import com.sucy.skill.api.event.PlayerUpAttributeEvent;
@@ -44,6 +45,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -92,13 +94,13 @@ public class AttributeListener extends SkillAPIListener
         }
     }
 
-    private static void clear(Player player, Attribute attribute, String attribKey) {
+    private static void clear(Player player, Object attribute, String attribKey) {
         if (!bonuses.containsKey(attribKey)) {
             return;
         }
 
         double bonus = bonuses.remove(attribKey);
-        AttributeInstance instance = player.getAttribute(attribute);
+        AttributeInstance instance = player.getAttribute((Attribute) attribute);
         instance.setBaseValue(instance.getBaseValue() - bonus);
     }
 
@@ -255,6 +257,26 @@ public class AttributeListener extends SkillAPIListener
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onDamage(final EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player))
+            return;
+
+        final Player player = (Player)event.getEntity();
+        if (CitizensHook.isNPC(player)) {
+            return;
+        }
+
+        final PlayerData data = SkillAPI.getPlayerData(player);
+        event.setDamage(data.scaleStat("defense-" + event.getCause().name().toLowerCase(), event.getDamage()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onExp(final PlayerExperienceGainEvent event) {
+        final double newExp = event.getPlayerData().scaleStat(AttributeManager.EXPERIENCE, event.getExp());
+        event.setExp(newExp);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldChange(PlayerChangedWorldEvent event) {
         boolean oldEnabled = SkillAPI.getSettings().isWorldEnabled(event.getFrom());
@@ -297,12 +319,12 @@ public class AttributeListener extends SkillAPIListener
     private static void update(
             final PlayerData data,
             final Player player,
-            final Attribute attribute,
+            final Object attribute,
             final String attribKey,
             final double min,
             final double max) {
 
-        final AttributeInstance instance = player.getAttribute(attribute);
+        final AttributeInstance instance = player.getAttribute((Attribute) attribute);
         final double change = updateStat(data, attribKey, instance.getBaseValue(), min, max);
         instance.setBaseValue(instance.getBaseValue() + change);
     }

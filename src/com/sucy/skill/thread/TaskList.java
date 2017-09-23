@@ -76,7 +76,11 @@ public class TaskList implements Iterable<IThreadTask>, Iterator<IThreadTask>
     @Override
     public IThreadTask next()
     {
-        return (iteratee = iteratee.next).task;
+        if (iteratee == null || iteratee.next == null) {
+            return null;
+        }
+        iteratee = iteratee.next;
+        return iteratee.task;
     }
 
     @Override
@@ -91,7 +95,7 @@ public class TaskList implements Iterable<IThreadTask>, Iterator<IThreadTask>
         }
     }
 
-    private class Entry
+    private static class Entry
     {
         public Entry() { }
 

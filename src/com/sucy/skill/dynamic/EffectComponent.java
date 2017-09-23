@@ -81,6 +81,7 @@ import com.sucy.skill.dynamic.mechanic.DamageMechanic;
 import com.sucy.skill.dynamic.mechanic.DefenseBuffMechanic;
 import com.sucy.skill.dynamic.mechanic.DelayMechanic;
 import com.sucy.skill.dynamic.mechanic.DisguiseMechanic;
+import com.sucy.skill.dynamic.mechanic.DurabilityMechanic;
 import com.sucy.skill.dynamic.mechanic.ExplosionMechanic;
 import com.sucy.skill.dynamic.mechanic.FireMechanic;
 import com.sucy.skill.dynamic.mechanic.FlagClearMechanic;
@@ -606,6 +607,7 @@ public abstract class EffectComponent
         put("defense buff", DefenseBuffMechanic.class);
         put("delay", DelayMechanic.class);
         put("disguise", DisguiseMechanic.class);
+        put("durability", DurabilityMechanic.class);
         put("explosion", ExplosionMechanic.class);
         put("fire", FireMechanic.class);
         put("flag", FlagMechanic.class);

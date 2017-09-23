@@ -112,6 +112,7 @@ var Mechanic = {
     DEFENSE_BUFF:        { name: 'Defense Buff',        container: false, construct: MechanicDefenseBuff        },
     DELAY:               { name: 'Delay',               container: true,  construct: MechanicDelay              },
     DISGUISE:            { name: 'Disguise',            container: false, construct: MechanicDisguise           },
+    DURABILITY:          { name: 'Durability',          container: false, construct: MechanicDurability,        premium: true },
     EXPLOSION:           { name: 'Explosion',           container: false, construct: MechanicExplosion          },
     FIRE:                { name: 'Fire',                container: false, construct: MechanicFire               },
     FLAG:                { name: 'Flag',                container: false, construct: MechanicFlag               },
@@ -667,6 +668,9 @@ function TriggerSkillDamage()
     this.data.push(new DoubleValue("Max Damage", "dmg-max", 999)
         .setTooltip('The maximum damage that needs to be dealt')
     );
+    this.data.push(new StringValue('Category', 'category', '')
+        .setTooltip('The type of skill damage to apply for. Leave this empty to apply to all skill damage.')
+    );
 }
 
 extend('TriggerTookPhysicalDamage', 'Component');
@@ -705,6 +709,9 @@ function TriggerTookSkillDamage()
     );
     this.data.push(new DoubleValue("Max Damage", "dmg-max", 999)
         .setTooltip('The maximum damage that needs to be dealt')
+    );
+    this.data.push(new StringValue('Category', 'category', '')
+        .setTooltip('The type of skill damage to apply for. Leave this empty to apply to all skill damage.')
     );
 }
 
@@ -1649,6 +1656,21 @@ function MechanicDisguise()
     );
 }
 
+extend('MechanicDurability', 'Component');
+function MechanicDurability()
+{
+    this.super('Durability', Type.MECHANIC, false);
+
+    this.description = 'Lowers the durability of a held item';
+
+    this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
+        .setTooltip('Amount to reduce the item\'s durability by')
+    );
+    this.data.push(new ListValue('Offhand', 'offhand', [ 'True', 'False' ], 'False')
+        .setTooltip('Whether or not to apply to the offhand slot')
+    );
+}
+
 extend('MechanicExplosion', 'Component');
 function MechanicExplosion()
 {
@@ -2255,6 +2277,10 @@ function MechanicTaunt()
     this.super('Taunt', Type.MECHANIC, false);
     
     this.description = 'Draws aggro of targeted creatures. This only works on newer server versions.';
+
+    this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
+        .setTooltip('The amount of aggro to apply if MythicMobs is active. Use negative amounts to reduce aggro')
+    );
 }
 
 extend('MechanicValueAdd', 'Component');

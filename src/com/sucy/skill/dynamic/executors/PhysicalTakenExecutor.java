@@ -27,7 +27,7 @@
 package com.sucy.skill.dynamic.executors;
 
 import com.sucy.skill.api.event.PhysicalDamageEvent;
-import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.TriggerHandler;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
@@ -48,6 +48,6 @@ public class PhysicalTakenExecutor implements EventExecutor
     @Override
     public void execute(Listener listener, Event event)
     {
-        ((DynamicSkill) listener).onPhysical((PhysicalDamageEvent) event);
+        ((TriggerHandler) listener).onPhysical((PhysicalDamageEvent) event);
     }
 }

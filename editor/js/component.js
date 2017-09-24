@@ -150,6 +150,7 @@ var Mechanic = {
     SPEED:               { name: 'Speed',               container: false, construct: MechanicSpeed              },
     STATUS:              { name: 'Status',              container: false, construct: MechanicStatus             },
     TAUNT:               { name: 'Taunt',               container: false, construct: MechanicTaunt              },
+    TRIGGER:             { name: 'Trigger',             container: true,  construct: MechanicTrigger,           premium: true },
     VALUE_ADD:           { name: 'Value Add',           container: false, construct: MechanicValueAdd           },
     VALUE_ATTRIBUTE:     { name: 'Value Attribute',     container: false, construct: MechanicValueAttribute     },
     VALUE_HEALTH:        { name: 'Value Health',        container: false, construct: MechanicValueHealth,       premium: true },
@@ -587,7 +588,9 @@ function TriggerEnvironmentDamage()
     
     this.description = 'Applies skill effects when a player takes environmental damage.';
     
-    this.data.push(new ListValue('Type', 'type', DAMAGE_TYPES, 'FALL'));
+    this.data.push(new ListValue('Type', 'type', DAMAGE_TYPES, 'FALL')
+        .setTooltip('The source of damage to apply for')
+    );
 }
 
 
@@ -2280,6 +2283,78 @@ function MechanicTaunt()
 
     this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
         .setTooltip('The amount of aggro to apply if MythicMobs is active. Use negative amounts to reduce aggro')
+    );
+}
+
+extend('MechanicTrigger', 'Component');
+function MechanicTrigger()
+{
+    this.super('Trigger', Type.MECHANIC, true);
+
+    this.description = 'Listens for a trigger on the current targets for a duration.';
+
+    this.data.push(new ListValue('Trigger', 'trigger', [ 'Crouch', 'Death', 'Environment Damage', 'Kill', 'Land', 'Launch', 'Physical Damage', 'Skill Damage', 'Took Physical Damage', 'Took Skill Damage' ], 'Death')
+        .setTooltip('The trigger to listen for')
+    );
+    this.data.push(new AttributeValue('Duration', 'duration', 5, 0)
+        .setTooltip('How long to listen to the trigger for')
+    );
+    this.data.push(new ListValue('Stackable', 'stackable', [ 'True', 'False', ], 'True')
+        .setTooltip('Whether or not different players (or the same player) can listen to the same target at the same time')
+    );
+    this.data.push(new ListValue('Once', 'once', [ 'True', 'False' ], 'True')
+        .setTooltip('Whether or not the trigger should only be used once each cast. When false, the trigger can execute as many times as it happens for the duration.')
+    );
+
+    // CROUCH
+    this.data.push(new ListValue('Type', 'type', [ 'Start Crouching', 'Stop Crouching', 'Both' ], 'Start Crouching')
+        .requireValue('trigger', [ 'Crouch' ])
+        .setTooltip('Whether or not you want to apply components when crouching or not crouching')
+    );
+
+    // ENVIRONMENT_DAMAGE
+    this.data.push(new ListValue('Type', 'type', DAMAGE_TYPES, 'FALL')
+        .requireValue('trigger', [ 'Environment Damage' ])
+        .setTooltip('The source of damage to apply for')
+    );
+
+    // LAND
+    this.data.push(new DoubleValue('Min Distance', 'min-distance', 0)
+        .requireValue('trigger', [ 'Land' ])
+        .setTooltip('The minimum distance the player should fall before effects activating.')
+    );
+
+    // LAUNCH
+    this.data.push(new ListValue('Type', 'type', [ 'Any', 'Arrow', 'Egg', 'Ender Pearl', 'Fireball', 'Fishing Hook', 'Snowball' ], 'Any')
+        .requireValue('trigger', [ 'Launch' ])
+        .setTooltip('The type of projectile that should be launched.')
+    );
+
+    // PHYSICAL
+    this.data.push(new ListValue('Type', 'type', [ 'Both', 'Melee', 'Projectile' ], 'Both')
+        .requireValue('trigger', [ 'Physical Damage', 'Took Physical Damage' ])
+        .setTooltip('The type of damage dealt')
+    );
+
+    // SKILL
+    this.data.push(new StringValue('Category', 'category', '')
+        .requireValue('trigger', [ 'Skill Damage', 'Took Skill Damage' ])
+        .setTooltip('The type of skill damage to apply for. Leave this empty to apply to all skill damage.')
+    );
+
+    // DAMAGE
+    var damageTriggers = [ 'Physical Damage', 'Skill Damage', 'Took Physical Damage', 'Took Skill Damage' ];
+    this.data.push(new ListValue('Target Listen Target', 'target', [ 'True', 'False' ], 'True')
+        .requireValue('trigger', damageTriggers)
+        .setTooltip('True makes children target the target that has been listened to. False makes children target the entity fighting the target entity.')
+    );
+    this.data.push(new DoubleValue("Min Damage", "dmg-min", 0)
+        .requireValue('trigger', damageTriggers)
+        .setTooltip('The minimum damage that needs to be dealt')
+    );
+    this.data.push(new DoubleValue("Max Damage", "dmg-max", 999)
+        .requireValue('trigger', damageTriggers)
+        .setTooltip('The maximum damage that needs to be dealt')
     );
 }
 

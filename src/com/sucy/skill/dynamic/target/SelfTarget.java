@@ -87,7 +87,6 @@ public class SelfTarget extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         final ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        list.add(caster);
         for (int i = 0; i < targets.size(); i++)
             list.add(caster);
 

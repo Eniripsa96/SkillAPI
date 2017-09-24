@@ -118,6 +118,7 @@ import com.sucy.skill.dynamic.mechanic.SoundMechanic;
 import com.sucy.skill.dynamic.mechanic.SpeedMechanic;
 import com.sucy.skill.dynamic.mechanic.StatusMechanic;
 import com.sucy.skill.dynamic.mechanic.TauntMechanic;
+import com.sucy.skill.dynamic.mechanic.TriggerMechanic;
 import com.sucy.skill.dynamic.mechanic.ValueAddMechanic;
 import com.sucy.skill.dynamic.mechanic.ValueAttributeMechanic;
 import com.sucy.skill.dynamic.mechanic.ValueHealthMechanic;
@@ -644,6 +645,7 @@ public abstract class EffectComponent
         put("sound", SoundMechanic.class);
         put("status", StatusMechanic.class);
         put("taunt", TauntMechanic.class);
+        put("trigger", TriggerMechanic.class);
         put("value add", ValueAddMechanic.class);
         put("value attribute", ValueAttributeMechanic.class);
         put("value health", ValueHealthMechanic.class);

@@ -26,7 +26,7 @@
  */
 package com.sucy.skill.dynamic.executors;
 
-import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.dynamic.TriggerHandler;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -48,6 +48,6 @@ public class CrouchExecutor implements EventExecutor
     @Override
     public void execute(Listener listener, Event event)
     {
-        ((DynamicSkill) listener).onCrouch((PlayerToggleSneakEvent) event);
+        ((TriggerHandler) listener).onCrouch((PlayerToggleSneakEvent) event);
     }
 }

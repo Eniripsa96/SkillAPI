@@ -264,7 +264,6 @@ public abstract class IOManager
             }
 
             acc.endInit();
-            acc.autoLevel();
 
             // Load binds
             DataSection binds = account.getSection(BINDS);

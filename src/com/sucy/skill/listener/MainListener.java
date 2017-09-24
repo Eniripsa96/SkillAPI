@@ -95,6 +95,7 @@ public class MainListener extends SkillAPIListener
 
         PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
         data.init(event.getPlayer());
+        data.autoLevel();
     }
 
     /**

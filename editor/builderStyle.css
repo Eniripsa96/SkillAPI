@@ -2,8 +2,8 @@
 
 h3 {
 	padding: 5px;
-	border-radius: 8px;
-	background-color: #111;
+	border-radius: 5px;
+	background-color: transparent;
 	
 	transition: background-color 600ms;
 }
@@ -41,10 +41,10 @@ h3:hover {
 .component {
 	padding: 5px;
 	margin: 5px;
-	border: 2px solid #ccc;
+	border: 2px solid #333;
 	border-radius: 10px;
 	font: 18px Sertig-Web;
-	background-color: #111;
+	background-color: #181818;
     width: 260px;
     height: 90px;
 }
@@ -55,17 +55,16 @@ h3:hover {
 
 .builderButton {
 	float: left;
-	background-color: #222;
+	background-color: #043;
 	width: 90px;
     height: 32px;
 	font: 16px Sertig-Web;
-	border-radius: 8px;
+	border-radius: 5px;
 	padding: 5px;
 	padding-left: 10px;
 	color: white;
 	cursor: pointer;
 	margin: 5px;
-	border: 1px solid #ccc;
 	
 	transition: background-color 600ms;
 }

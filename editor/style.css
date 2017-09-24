@@ -67,14 +67,20 @@ html, body {
 	display: none;
 }
 
+#componentChooser h5 {
+    background-color: #181818;
+}
+
+#componentChooser h5:hover {
+    background-color: #777;
+}
+
 #skills, #classes {
 	float: left;
-	width: calc(100% - 16px);
-	margin-left: 5px;
-	height: calc(100% - 55px);
-	border: 3px solid white;
+	width: 100%;
+	height: calc(100% - 45px);
 	background-color: black;
-	border-radius: 20px;
+	border-radius: 0;
 	overflow: hidden;
 }
 
@@ -112,11 +118,12 @@ html, body {
 	float: left;
 	width: 200px;
     font: 18px Sertig-Web;
-    background-color: #000;
+    background-color: #181818;
     color: white;
     font-weight: bold;
     height: 100%;
     padding: 5px;
+    border: none;
 }
 
 #skillList option, #classList option {
@@ -158,11 +165,11 @@ h5 {
 	float: left;
 	width: 225px;
 	padding: 10px 5px;
-	background-color: #111;
+	background-color: #043;
 	margin-bottom: 10px;
 	margin-left: 10px;
-	border-radius: 10px;
-	border: 2px solid #ccc;
+	border-radius: 5px;
+	border: 2px solid #333;
 	text-align: center;
 	font: 24px Sertig-Web;
 	font-weight: bold;
@@ -180,12 +187,11 @@ h6 {
 	display: inline-block;
 	width: calc(25% - 26px);
 	padding: 5px 5px;
-	background-color: #111;
-	margin: 0 3px;
+	background-color: #043;
+	margin-left: 3px;
 	margin-top: 10px;
 	margin-bottom: 5px;
-	border-radius: 10px;
-	border: 2px solid #ccc;
+	border-radius: 5px;
 	text-align: center;
 	font: 24px Sertig-Web;
 	font-weight: bold;
@@ -263,24 +269,42 @@ input, select, textarea {
 }
 
 .doneButton {
-	background-color: blue;
+	background-color: #008966;
+    border: 2px solid #004433;
 	color: white;
-	transition: background-color: 600ms, color 600ms;
+	transition: background-color 600ms, color 600ms;
 }
 
 .doneButton:hover {
-	background-color: white
-	color: red;
+	background-color: #004433;
+    border: 2px solid #002211;
+}
+
+hr {
+    display: block;
+    background-color: #888;
+    height: 1px;
+    width: 100%;
+    clear: both;
+}
+
+#saveSkill {
+	background-color: #375a7f;
+}
+}
+
+#saveSkill:hover {
+    background-color: #6af;
 }
 
 .ioButton {
 	height: 30px;
 	margin: 5px 10px;
 	width: calc(100% - 20px);
-	background-color: #333;
+	background-color: #375a7f;
 	color: white;
-	border: 2px solid white;
-	border-radius: 10px;
+    border: none;
+	border-radius: 5px;
 	font: 20px Sertig-Web;
 	font-weight: bold;
 	cursor: pointer;
@@ -288,7 +312,7 @@ input, select, textarea {
 }
 
 .ioButton:hover {
-	background-color: #888;
+	background-color: #6af;
 }
 
 .ioText {
@@ -297,11 +321,11 @@ input, select, textarea {
 	margin-bottom: 5px;
 }
 
-.premium {
-    background-color: #066;
+#componentChooser .premium {
+    background-color: #033;
 }
 
-.premium:hover {
+#componentChooser .premium:hover {
     background-color: #6aa;
 }
 
@@ -311,7 +335,6 @@ input, select, textarea {
     width: calc(45% - 36px);
     margin-left: 5px;
     background-color: black;
-    border: 3px solid #fff;
     border-bottom: none;
     margin: 5px 5px 0;
     color: white;
@@ -325,6 +348,7 @@ input, select, textarea {
 
 .tab {
     cursor: pointer;
+    background: #008966;
 }
 
 .tab:hover {
@@ -341,8 +365,8 @@ input, select, textarea {
     left: -1px;
     top: -1px;
     content: '';
-    border-top: 15px solid #fff;
-    border-right: 15px solid transparent;
+    border-top: 20px solid #333;
+    border-right: 20px solid transparent;
 }
 
 .tabLeft:after {
@@ -350,8 +374,8 @@ input, select, textarea {
     left: -3px;
     top: -3px;
     content: '';
-    border-top: 15px solid #333;
-    border-right: 15px solid transparent;
+    border-top: 20px solid #333;
+    border-right: 20px solid transparent;
 }
 
 .tabRight:before {
@@ -359,8 +383,8 @@ input, select, textarea {
     right: -1px;
     top: -1px;
     content: '';
-    border-top: 15px solid #fff;
-    border-left: 15px solid transparent;
+    border-top: 20px solid #333;
+    border-left: 20px solid transparent;
 }
 
 .tabRight:after {
@@ -368,8 +392,8 @@ input, select, textarea {
     right: -3px;
     top: -3px;
     content: '';
-    border-top: 15px solid #333;
-    border-left: 15px solid transparent;
+    border-top: 20px solid #333;
+    border-left: 20px solid transparent;
 }
 
 #io {
@@ -385,16 +409,20 @@ input, select, textarea {
 	font: 24px Sertig-Web;
 	font-weight: bold;
 	padding-top: 10px;
+	clear: both;
 }
 
 #skillForm input, #skillForm select, #classForm input, #classForm select, #skillForm .byteList, #classForm .byteList {
 	font: 20px Sertig-Web;
 	font-weight: bold;
-	background-color: #333;
-	border: 2px solid white;
-	border-radius: 10px;
+	background-color: #181818;
+	border: 1px solid #888;
+    border-top: none;
+    border-right: none;
+	border-radius: 5px;
 	color: white;
 	padding: 5px 10px;
+    padding-right: 0;
 	margin: 2px 5px; 
 	width: 40%;
 	float: left;
@@ -428,15 +456,21 @@ input, select, textarea {
 #skillForm textarea, #classForm textArea {
 	font: 20px Sertig-Web;
 	font-weight: bold;
-	background-color: #333;
-	border: 2px solid white;
-	border-radius: 10px;
+	background-color: #181818;
+	border: 1px solid #888;
+    border-top: none;
+    border-right: none;
+	border-radius: 5px;
 	color: white;
 	padding: 5px 10px;
 	margin: 2px 5px;
 	width: 40%;
 	float: left;
 	height: 200px;
+}
+
+textArea {
+    resize: vertical;
 }
 
 #skillForm p, #classForm p {
@@ -454,6 +488,7 @@ input, select, textarea {
 	margin: 0;
 	padding: 0;
 	padding-top: 10px;
+	clear: none;
 }
 
 #skillForm .base, #classForm .base {
@@ -475,7 +510,7 @@ input, select, textarea {
  
 ::-webkit-scrollbar-track {
     border-radius: 10px;
-	border: 2px solid #aaa;
+	border: 1px solid #aaa;
 }
  
 ::-webkit-scrollbar-thumb {
@@ -483,7 +518,7 @@ input, select, textarea {
 	background-color: #aaa;
 }
 
-@media screen and (max-width: 459px) {
+@media screen and (max-width: 599px) {
 	
 	#main {
 		display: none;

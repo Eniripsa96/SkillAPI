@@ -100,6 +100,7 @@ var Condition = {
 var Mechanic = {
     ATTRIBUTE:           { name: 'Attribute',           container: false, construct: MechanicAttribute          },
     BLOCK:               { name: 'Block',               container: false, construct: MechanicBlock              },
+    BUFF:                { name: 'Buff',                container: false, construct: MechanicBuff,              premium: true },
     CANCEL:              { name: 'Cancel',              container: false, construct: MechanicCancel             },
     CHANNEL:             { name: 'Channel',             container: true,  construct: MechanicChannel            },
     CLEANSE:             { name: 'Cleanse',             container: false, construct: MechanicCleanse            },
@@ -111,12 +112,16 @@ var Mechanic = {
     DEFENSE_BUFF:        { name: 'Defense Buff',        container: false, construct: MechanicDefenseBuff        },
     DELAY:               { name: 'Delay',               container: true,  construct: MechanicDelay              },
     DISGUISE:            { name: 'Disguise',            container: false, construct: MechanicDisguise           },
+    DURABILITY:          { name: 'Durability',          container: false, construct: MechanicDurability,        premium: true },
     EXPLOSION:           { name: 'Explosion',           container: false, construct: MechanicExplosion          },
     FIRE:                { name: 'Fire',                container: false, construct: MechanicFire               },
     FLAG:                { name: 'Flag',                container: false, construct: MechanicFlag               },
     FLAG_CLEAR:          { name: 'Flag Clear',          container: false, construct: MechanicFlagClear          },
     FLAG_TOGGLE:         { name: 'Flag Toggle',         container: false, construct: MechanicFlagToggle         },
+    FOOD:                { name: 'Food',                container: false, construct: MechanicFood,              premium: true },
+    FORGET_TARGETS:      { name: 'Forget Targets',      container: false, construct: MechanicForgetTargets,     premium: true },
     HEAL:                { name: 'Heal',                container: false, construct: MechanicHeal               },
+    HEALTH_SET:          { name: 'Health Set',          container: false, construct: MechanicHealthSet,         premium: true },
     HELD_ITEM:           { name: 'Held Item',           container: false, construct: MechanicHeldItem,          premium: true },
     IMMUNITY:            { name: 'Immunity',            container: false, construct: MechanicImmunity           },
     INTERRUPT:           { name: 'Interrupt',           container: false, construct: MechanicInterrupt          },
@@ -663,6 +668,9 @@ function TriggerSkillDamage()
     this.data.push(new DoubleValue("Max Damage", "dmg-max", 999)
         .setTooltip('The maximum damage that needs to be dealt')
     );
+    this.data.push(new StringValue('Category', 'category', '')
+        .setTooltip('The type of skill damage to apply for. Leave this empty to apply to all skill damage.')
+    );
 }
 
 extend('TriggerTookPhysicalDamage', 'Component');
@@ -701,6 +709,9 @@ function TriggerTookSkillDamage()
     );
     this.data.push(new DoubleValue("Max Damage", "dmg-max", 999)
         .setTooltip('The maximum damage that needs to be dealt')
+    );
+    this.data.push(new StringValue('Category', 'category', '')
+        .setTooltip('The type of skill damage to apply for. Leave this empty to apply to all skill damage.')
     );
 }
 
@@ -793,6 +804,9 @@ function TargetLocation()
     
     this.data.push(new AttributeValue('Range', 'range', 5, 0)
         .setTooltip('The max distance the location can be')
+    );
+    this.data.push(new ListValue('Ground Only', 'ground', [ 'True', 'False' ], 'True')
+        .setTooltip('Whether or not a player is only allowed to target the ground or other units')
     );
 }
 
@@ -1397,6 +1411,31 @@ function MechanicBlock()
     );
 }
 
+extend('MechanicBuff', 'Component');
+function MechanicBuff()
+{
+    this.super('Buff', Type.MECHANIC, false);
+
+    this.description = 'Buffs combat stats of the target';
+
+    this.data.push(new ListValue('Type', 'type', [ 'DAMAGE', 'DEFENSE', 'SKILL_DAMAGE', 'SKILL_DEFENSE', 'HEALING' ], 'DAMAGE')
+        .setTooltip('What type of buff to apply. DAMAGE/DEFENSE is for regular attacks, SKILL_DAMAGE/SKILL_DEFENSE are for damage from abilities, and HEALING is for healing from abilities')
+    );
+    this.data.push(new ListValue('Modifier', 'modifier', [ 'Flat', 'Multiplier' ], 'Flat')
+        .setTooltip('The sort of scaling for the buff. Flat will increase/reduce incoming damage by a fixed amount where Multiplier does it by a percentage of the damage. Multipliers above 1 will increase damage taken while multipliers below 1 reduce damage taken.')
+    );
+    this.data.push(new StringValue('Category', 'category', '')
+        .requireValue('type', [ 'SKILL_DAMAGE', 'SKILL_DEFENSE' ])
+        .setTooltip('What kind of skill damage to affect. If left empty, this will affect all skill damage.')
+    );
+    this.data.push(new AttributeValue('Value', 'value', 1, 0)
+        .setTooltip('The amount to increase/decrease incoming damage by')
+    );
+    this.data.push(new AttributeValue('Seconds', 'seconds', 3, 0)
+        .setTooltip('The duration of the buff in seconds')
+    );
+}
+
 extend('MechanicCancel', 'Component');
 function MechanicCancel()
 {
@@ -1496,6 +1535,9 @@ function MechanicDamage()
     this.data.push(new ListValue('True Damage', 'true', [ 'True', 'False' ], 'False')
         .setTooltip('Whether or not to deal true damage. True damage ignores armor and all plugin checks.')
     );
+    this.data.push(new StringValue('Classifier', 'classifier', 'default')
+        .setTooltip('[PREMIUM ONLY] The type of damage to deal. Can act as elemental damage or fake physical damage')
+    );
 }
 
 extend('MechanicDamageBuff', 'Component');
@@ -1537,6 +1579,9 @@ function MechanicDamageLore()
     );
     this.data.push(new ListValue('True Damage', 'true', [ 'True', 'False' ], 'False')
         .setTooltip('Whether or not to deal true damage. True damage ignores armor and all plugin checks.')
+    );
+    this.data.push(new StringValue('Classifier', 'classifier', 'default')
+        .setTooltip('[PREMIUM ONLY] The type of damage to deal. Can act as elemental damage or fake physical damage')
     );
 }
 
@@ -1611,6 +1656,21 @@ function MechanicDisguise()
     );
 }
 
+extend('MechanicDurability', 'Component');
+function MechanicDurability()
+{
+    this.super('Durability', Type.MECHANIC, false);
+
+    this.description = 'Lowers the durability of a held item';
+
+    this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
+        .setTooltip('Amount to reduce the item\'s durability by')
+    );
+    this.data.push(new ListValue('Offhand', 'offhand', [ 'True', 'False' ], 'False')
+        .setTooltip('Whether or not to apply to the offhand slot')
+    );
+}
+
 extend('MechanicExplosion', 'Component');
 function MechanicExplosion()
 {
@@ -1680,6 +1740,33 @@ function MechanicFlagToggle()
     );
 }
 
+extend('MechanicFood', 'Component');
+function MechanicFood()
+{
+    this.super('Food', Type.MECHANIC, false);
+
+    this.description = 'Adds or removes to a player\'s hunger and saturation';
+
+    this.data.push(new AttributeValue('Food', 'food', 1, 1)
+        .setTooltip('The amount of food to give. Use a negative number to lower the food meter.')
+    );
+    this.data.push(new AttributeValue('Saturation', 'saturation', 0, 0)
+        .setTooltip('How much saturation to give. Use a negative number to lower saturation. This is the hidden value that determines how long until food starts going down.')
+    );
+}
+
+extend('MechanicForgetTargets', 'Component');
+function MechanicForgetTargets() 
+{
+    this.super('Forget Targets', Type.MECHANIC, false);
+    
+    this.description = 'Clears targets stored by the "Remember Targets" mechanic';
+    
+    this.data.push(new StringValue('Key', 'key', 'key')
+        .setTooltip('The unique key the targets were stored under')
+    );
+}
+
 extend('MechanicHeal', 'Component');
 function MechanicHeal()
 {
@@ -1692,6 +1779,18 @@ function MechanicHeal()
     );
     this.data.push(new AttributeValue("Value", "value", 3, 1)
         .setTooltip('The amount of health to restore')
+    );
+}
+
+extend('MechanicHealthSet', 'Component');
+function MechanicHealthSet()
+{
+    this.super('Health Set', Type.MECHANIC, false);
+
+    this.description = 'Sets the target\'s health to the specified amount, ignoring resistances, damage buffs, and so on';
+
+    this.data.push(new AttributeValue("Health", "health", 1, 0)
+        .setTooltip('The health to set to')
     );
 }
 
@@ -1803,7 +1902,10 @@ function MechanicLaunch()
     this.super('Launch', Type.MECHANIC, false);
     
     this.description = 'Launches the target relative to their forward direction. Use negative values to go in the opposite direction (e.g. negative forward makes the target go backwards)';
-    
+
+    this.data.push(new ListValue('[PREM] Relative', 'relative', [ 'Target', 'Caster', 'Between'], 'Target')
+        .setTooltip('Determines what is considered "forward". Target uses the direction the target is facing, Caster uses the direction the caster is facing, and Between uses the direction from the caster to the target.')
+    );
     this.data.push(new AttributeValue('Forward Speed', 'forward', 0, 0)
         .setTooltip('The speed to give the target in the direction they are facing')
     );
@@ -1822,6 +1924,9 @@ function MechanicLightning()
     
     this.description = 'Strikes lightning on or near the target. Negative offsets will offset it in the opposite direction (e.g. negative forward offset puts it behind the target).';
     
+    this.data.push(new ListValue('Damage', 'damage', ['True', 'False'], 'True')
+        .setTooltip('Whether or not the lightning should deal damage')
+    );
     this.data.push(new AttributeValue('Forward Offset', 'forward', 0, 0)
         .setTooltip('How far in front of the target in blocks to place the lightning')
     );
@@ -1943,6 +2048,14 @@ function MechanicParticleProjectile()
     this.description = 'Launches a projectile using particles as its visual that applies child components upon landing. The target passed on will be the collided target or the location where it landed if it missed.';
     
     addProjectileOptions(this);
+
+    this.data.push(new DoubleValue('Gravity', 'gravity', 0)
+        .setTooltip('How much gravity to apply each tick. Negative values make it fall while positive values make it rise')
+    );
+    this.data.push(new ListValue('Pierce', 'pierce', [ 'True', 'False' ], 'False')
+        .setTooltip('Whether or not this projectile should pierce through initial targets and continue hitting those behind them')
+    );
+
     addParticleOptions(this);
     
     this.data.push(new DoubleValue('Frequency', 'frequency', 0.05)
@@ -2164,6 +2277,10 @@ function MechanicTaunt()
     this.super('Taunt', Type.MECHANIC, false);
     
     this.description = 'Draws aggro of targeted creatures. This only works on newer server versions.';
+
+    this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
+        .setTooltip('The amount of aggro to apply if MythicMobs is active. Use negative amounts to reduce aggro')
+    );
 }
 
 extend('MechanicValueAdd', 'Component');

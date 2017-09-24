@@ -29,6 +29,7 @@ function Skill(name)
 		new AttributeValue('Cost', 'cost', 1, 0).setTooltip('The amount of skill points needed to unlock and upgrade this skill'),
 		new AttributeValue('Cooldown', 'cooldown', 0, 0).setTooltip('The time in seconds before the skill can be cast again (only works with the Cast trigger)'),
 		new AttributeValue('Mana', 'mana', 0, 0).setTooltip('The amount of mana it takes to cast the skill (only works with the Cast trigger)'),
+		new AttributeValue('Min Spent', 'points-spent-req', 0, 0).setTooltip('The amount of skill points that need to be spent before upgrading this skill'),
 		new StringValue('Cast Message', 'msg', '&6{player} &2has cast &6{skill}').setTooltip('The message to display to players around the caster when the skill is cast. The radius of the area is in the config.yml options'),
         new StringValue('Combo', 'combo', '').setTooltip('The click combo to assign the skill (if enabled). Use L, R, and S for the types of clicks separated by spaces. For example, "L L R R" would work for 4 click combos.'),
         new ListValue('Indicator', 'indicator', [ '2D', '3D', 'None' ], '2D').setTooltip('[PREMIUM] What sort of display to use for cast previews. This applies to the "hover bar" in the casting bars setup.'),
@@ -43,7 +44,8 @@ function Skill(name)
 			'',
 			'&2Mana: {attr:mana}',
 			'&2Cooldown: {attr:cooldown}'
-		]).setTooltip('The description shown for the item in skill trees. Include values of mechanics such as damage dealt using their "Icon Key" values')
+		]).setTooltip('The description shown for the item in skill trees. Include values of mechanics such as damage dealt using their "Icon Key" values'),
+		new StringListValue('Incompatible', 'incompatible', []).setTooltip('List of skill names that must not be upgraded in order to upgrade this skill')
 	];
 }
 
@@ -74,8 +76,9 @@ Skill.prototype.createFormHTML = function()
 	header.innerHTML = 'Skill Details';
 	form.appendChild(header);
 	
-	var h = document.createElement('hr');
-	form.appendChild(h);
+    form.appendChild(document.createElement('hr'));
+    form.appendChild(this.createEditButton(form));
+    form.appendChild(document.createElement('hr'));
 	
 	this.data[3].list.splice(1, this.data[3].list.length - 1);
 	for (var i = 0; i < skills.length; i++)
@@ -93,7 +96,15 @@ Skill.prototype.createFormHTML = function()
 	var hr = document.createElement('hr');
 	form.appendChild(hr);
 	
-	var done = document.createElement('h5');
+	form.appendChild(this.createEditButton(form));
+	
+	var target = document.getElementById('skillForm');
+	target.innerHTML = '';
+	target.appendChild(form);
+}
+
+Skill.prototype.createEditButton = function(form) {
+    var done = document.createElement('h5');
 	done.className = 'doneButton';
 	done.innerHTML = 'Edit Effects',
 	done.skill = this;
@@ -105,11 +116,7 @@ Skill.prototype.createFormHTML = function()
 		this.form.parentNode.removeChild(this.form);
 		showSkillPage('builder');
 	});
-	form.appendChild(done);
-	
-	var target = document.getElementById('skillForm');
-	target.innerHTML = '';
-	target.appendChild(form);
+    return done;
 }
 
 /**
@@ -165,13 +172,13 @@ Skill.prototype.getSaveString = function()
 	saveString += this.data[0].value + ":\n";
 	for (var i = 0; i < this.data.length; i++)
 	{
-		if (this.data[i] instanceof AttributeValue) continue;
+		if (isAttribute(this.data[i])) continue;
 		saveString += this.data[i].getSaveString('  ');
 	}
 	saveString += '  attributes:\n';
 	for (var i = 0; i < this.data.length; i++)
 	{
-		if (this.data[i] instanceof AttributeValue)
+		if (isAttribute(this.data[i]))
 		{
 			saveString += this.data[i].getSaveString('    ');
 		}
@@ -186,6 +193,10 @@ Skill.prototype.getSaveString = function()
 		}
 	}
 	return saveString;
+}
+
+function isAttribute(input) {
+    return (input instanceof AttributeValue) || (input.key == 'incompatible');
 }
 
 /**

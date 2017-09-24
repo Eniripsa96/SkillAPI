@@ -255,7 +255,7 @@ ListValue.prototype.createHTML = function(target)
 		option.innerHTML = this.list[i];
 		this.select.add(option);
 		
-		var lower = this.list[i].toLowerCase();
+		var lower = this.list[i].toLowerCase().replace('_', ' ');
 		if (lower === vLower || (selected == -1 && this.list[i] == 'None'))
 		{
 			selected = i;

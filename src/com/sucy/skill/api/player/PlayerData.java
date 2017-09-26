@@ -110,6 +110,7 @@ public class PlayerData
     private double         bonusHealth;
     private double         bonusMana;
     private double         lastHealth;
+    private double         hunger;
     private boolean        init;
     private boolean        passive;
     private int            attribPoints;
@@ -129,6 +130,7 @@ public class PlayerData
         this.equips = new PlayerEquips(this);
         this.init = SkillAPI.isLoaded() && init;
         this.scheme = "default";
+        this.hunger = 1;
         for (String group : SkillAPI.getGroups())
         {
             GroupSettings settings = SkillAPI.getSettings().getGroupSettings(group);
@@ -225,6 +227,33 @@ public class PlayerData
     public void setLastHealth(double health)
     {
         lastHealth = health;
+    }
+
+    /**
+     * The hunger value here is not representative of the player's total hunger,
+     * rather the amount left of the next hunger point. This is manipulated by
+     * attributes were if an attribute says a player has twice as much "hunger"
+     * as normal, this will go down by decimals to slow the decay of hunger.
+     *
+     * @return amount of the next hunger point the player has
+     */
+    public double getHungerValue() {
+        return hunger;
+    }
+
+    /**
+     * @param hungerValue new hunger value
+     * @see PlayerData#getHungerValue
+     */
+    public void setHungerValue(final double hungerValue) {
+        this.hunger = hungerValue;
+    }
+
+    public int subtractHungerValue(final double amount) {
+        final double scaled = amount / scaleStat(AttributeManager.HUNGER, amount);
+        final int lost = scaled >= hunger ? (int)(scaled - hunger) + 1 : 0;
+        this.hunger += lost - amount;
+        return lost;
     }
 
     /**

@@ -325,6 +325,10 @@ public class PlayerEquips
                 || (classReq != null && (main == null || !classReq.contains(className))))
                 return false;
 
+            for (PlayerClass playerClass : player.getClasses())
+                if (!playerClass.getData().canUse(item.getType()))
+                    return false;
+
             if (skillReq != null)
                 for (Map.Entry<String, Integer> entry : skillReq.entrySet())
                     if (player.getSkillLevel(entry.getKey()) < entry.getValue())

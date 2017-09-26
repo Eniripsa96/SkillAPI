@@ -37,12 +37,13 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.GroupSettings;
 import com.sucy.skill.data.Permissions;
+import com.sucy.skill.gui.tool.IconHolder;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
-import com.sucy.skill.gui.tool.IconHolder;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -50,6 +51,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Represents a template for a class used in the RPG system. This is
@@ -59,6 +61,8 @@ public abstract class RPGClass implements IconHolder
 {
     private final HashMap<String, Skill> skillMap = new HashMap<String, Skill>();
     private final ArrayList<Skill>       skills   = new ArrayList<Skill>();
+
+    private final HashSet<Material> blacklist = new HashSet<Material>();
 
     private InventoryTree skillTree;
 
@@ -499,6 +503,10 @@ public abstract class RPGClass implements IconHolder
         return list;
     }
 
+    public boolean canUse(final Material type) {
+        return !blacklist.contains(type);
+    }
+
     ///////////////////////////////////////////////////////
     //                                                   //
     //                 Setting Methods                   //
@@ -621,6 +629,7 @@ public abstract class RPGClass implements IconHolder
     private static final String PERM   = "needs-permission";
     private static final String ATTR   = "attributes";
     private static final String TREE   = "tree";
+    private static final String BLACKLIST = "blacklist";
 
     /**
      * Saves the class template data to the config
@@ -684,6 +693,13 @@ public abstract class RPGClass implements IconHolder
         manaRegen = config.getDouble(REGEN, manaRegen);
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
         tree = DefaultTreeType.getByName(config.getString(TREE, "requirement"));
+        for (final String type : settings.getStringList(BLACKLIST)) {
+            try {
+                blacklist.add(Material.valueOf(type.toUpperCase().replace(' ', '_')));
+            } catch (final Exception ex) {
+                Logger.invalid(type + " is not a valid material for class " + name);
+            }
+        }
 
         settings.load(config.getSection(ATTR));
 

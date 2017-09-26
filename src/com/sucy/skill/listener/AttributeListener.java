@@ -46,6 +46,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -58,7 +60,7 @@ import java.util.HashMap;
  */
 public class AttributeListener extends SkillAPIListener
 {
-    private static HashMap<String, Double> bonuses = new HashMap<String, Double>();
+    private static HashMap<String, Double> BONUSES = new HashMap<String, Double>();
 
     /**
      * Cleans up the listener on shutdown
@@ -66,7 +68,7 @@ public class AttributeListener extends SkillAPIListener
     @Override
     public void cleanup()
     {
-        bonuses.clear();
+        BONUSES.clear();
     }
 
     /**
@@ -77,13 +79,13 @@ public class AttributeListener extends SkillAPIListener
     public static void clearBonuses(Player player)
     {
         clearLocalBonuses(player);
-        bonuses.remove(player.getName() + ":" + AttributeManager.HEALTH);
-        bonuses.remove(player.getName() + ":" + AttributeManager.MANA);
+        BONUSES.remove(player.getName() + ":" + AttributeManager.HEALTH);
+        BONUSES.remove(player.getName() + ":" + AttributeManager.MANA);
     }
 
     private static void clearLocalBonuses(Player player)
     {
-        bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
+        BONUSES.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
         player.setWalkSpeed(0.2f);
 
         if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
@@ -95,11 +97,11 @@ public class AttributeListener extends SkillAPIListener
     }
 
     private static void clear(Player player, Object attribute, String attribKey) {
-        if (!bonuses.containsKey(attribKey)) {
+        if (!BONUSES.containsKey(attribKey)) {
             return;
         }
 
-        double bonus = bonuses.remove(attribKey);
+        double bonus = BONUSES.remove(attribKey);
         AttributeInstance instance = player.getAttribute((Attribute) attribute);
         instance.setBaseValue(instance.getBaseValue() - bonus);
     }
@@ -288,6 +290,27 @@ public class AttributeListener extends SkillAPIListener
         }
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onHungerChange(final FoodLevelChangeEvent event) {
+        final Player player = (Player)event.getEntity();
+        if (event.getFoodLevel() < player.getFoodLevel()) {
+            final PlayerData data = SkillAPI.getPlayerData(player);
+            final int lost = data.subtractHungerValue(player.getFoodLevel() - event.getFoodLevel());
+            event.setFoodLevel(player.getFoodLevel() - lost);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onHungerHeal(final EntityRegainHealthEvent event) {
+        if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED
+                && event.getEntity() instanceof Player) {
+            final Player player = (Player)event.getEntity();
+            final PlayerData data = SkillAPI.getPlayerData(player);
+            final double scaled = data.scaleStat(AttributeManager.HUNGER_HEAL, event.getAmount());
+            event.setAmount(scaled);
+        }
+    }
+
     /**
      * Updates the stats of a player based on their current attributes
      *
@@ -336,7 +359,7 @@ public class AttributeListener extends SkillAPIListener
      */
     public static void refreshSpeed(Player player)
     {
-        bonuses.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
+        BONUSES.remove(player.getName() + ":" + AttributeManager.MOVE_SPEED);
         double speed = updateStat(SkillAPI.getPlayerData(player), AttributeManager.MOVE_SPEED, 0.2, -2, 1);
         player.setWalkSpeed((float) (0.2 + speed));
     }
@@ -356,9 +379,9 @@ public class AttributeListener extends SkillAPIListener
         if (player != null)
         {
             String mapKey = player.getName() + ":" + key;
-            double current = bonuses.containsKey(mapKey) ? bonuses.remove(mapKey) : 0;
+            double current = BONUSES.containsKey(mapKey) ? BONUSES.remove(mapKey) : 0;
             double updated = Math.max(min, Math.min(max, data.scaleStat(key, value - current) - value + current));
-            bonuses.put(mapKey, updated);
+            BONUSES.put(mapKey, updated);
             return updated - current;
         }
         return 0;

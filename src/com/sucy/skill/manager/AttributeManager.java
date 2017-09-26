@@ -70,6 +70,8 @@ public class AttributeManager
     public static final String LUCK             = "luck";
     public static final String ARMOR_TOUGHNESS  = "armor-toughness";
     public static final String EXPERIENCE       = "exp";
+    public static final String HUNGER           = "hunger";
+    public static final String HUNGER_HEAL      = "hunger-heal";
 
     private final HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
     private final HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();

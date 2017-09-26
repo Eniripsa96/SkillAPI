@@ -69,6 +69,7 @@ public abstract class IOManager
         COMBOS         = "combos",
         ATTRIBS        = "attribs",
         COOLDOWN       = "cd",
+        HUNGER         = "hunger",
         ATTRIB_POINTS  = "attrib-points";
 
     /**
@@ -258,6 +259,8 @@ public abstract class IOManager
                 acc.getCastBars().load(account.getSection(INSTANT), false);
             }
 
+            acc.setHungerValue(account.getDouble(HUNGER, 1));
+
             // Extra data
             if (account.has(EXTRA)) {
                 acc.getExtraData().applyDefaults(account.getSection(EXTRA));
@@ -377,6 +380,8 @@ public abstract class IOManager
                     acc.getCastBars().save(account.createSection(HOVER), true);
                     acc.getCastBars().save(account.createSection(INSTANT), false);
                 }
+
+                account.set(HUNGER, acc.getHungerValue());
 
                 // Extra data
                 if (acc.getExtraData().size() > 0) {

@@ -66,7 +66,7 @@ public class PassiveMechanic extends EffectComponent
             final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
             final int period = (int) (attr(caster, PERIOD, level, 1.0, isSelf) * 20);
             final PassiveTask task = new PassiveTask(caster, level, targets, period);
-            TASKS.put(skill.getName(), task);
+            TASKS.put(key, task);
 
             return true;
         }

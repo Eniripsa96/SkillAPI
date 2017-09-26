@@ -318,6 +318,10 @@ public class PlayerEquips
          */
         boolean isMet()
         {
+            if (item == null) {
+                return true;
+            }
+
             PlayerClass main = player.getMainClass();
             String className = main == null ? "null" : main.getData().getName().toLowerCase();
             if ((levelReq > 0 && (main == null || main.getLevel() < levelReq))

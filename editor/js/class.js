@@ -30,7 +30,7 @@ function Class(name)
 		new IntValue('Icon Data', 'icon-data', 0).setTooltip('The data/durability value of the item that represents the class in GUIs'),
 		new StringListValue('Icon Lore', 'icon-lore', [
 			'&d' + name
-		],
+		]),
 		new StringListValue('Unusable Items', 'blacklist', [ ]).setTooltip('The types of items that the class cannot use (one per line)')
 	];
     

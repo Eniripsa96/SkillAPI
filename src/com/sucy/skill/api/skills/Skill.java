@@ -805,10 +805,7 @@ public abstract class Skill implements IconHolder
     private static final String PERM      = "needs-permission";
     private static final String DESC      = "desc";
     private static final String ATTR      = "attributes";
-    private static final String ATTR_INFO = "attribute-info";
     private static final String COMBO     = "combo";
-    private static final String INCOMPATIBLE = "incompatible";
-    private static final String MIN_POINTS_REQ = "min-points-req";
 
     /**
      * Saves the skill data to the configuration, overwriting all previous data

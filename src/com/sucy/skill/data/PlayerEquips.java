@@ -27,6 +27,7 @@
 package com.sucy.skill.data;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Handles keeping track of and applying attribute
@@ -95,9 +97,9 @@ public class PlayerEquips
     public void update(Player player)
     {
         PlayerInventory inv = player.getInventory();
-        weapon = swap(inv, inv.getHeldItemSlot(), weapon);
+        weapon = swap(inv, inv.getHeldItemSlot(), weapon, true);
         for (int i = 0; i < other.length; i++)
-            other[i] = swap(inv, SkillAPI.getSettings().getSlots()[i], other[i]);
+            other[i] = swap(inv, SkillAPI.getSettings().getSlots()[i], other[i], i == offhand);
     }
 
     /**
@@ -109,7 +111,7 @@ public class PlayerEquips
      *
      * @return the used equip data
      */
-    private EquipData swap(PlayerInventory inv, int index, EquipData from)
+    private EquipData swap(PlayerInventory inv, int index, EquipData from, boolean weapon)
     {
         EquipData to = make(inv.getItem(index));
         if (Objects.equal(from.item, to.item))
@@ -117,14 +119,23 @@ public class PlayerEquips
             return to;
         }
 
-        from.revert();
-        if (!to.isMet())
+        if (from.isMet() && (!weapon || !from.isArmor)) {
+            from.revert();
+        }
+
+        if (weapon && to.isArmor) {
+            return to;
+        }
+        else if (!to.isMet())
         {
-            inv.setItem(index, TEMP);
-            for (ItemStack item : inv.addItem(to.item).values())
-                inv.getHolder().getWorld().dropItemNaturally(inv.getHolder().getLocation(), item);
-            inv.setItem(index, null);
-            return from;
+            if (SkillAPI.getSettings().isDropWeapon() || !weapon) {
+                inv.setItem(index, TEMP);
+                for (ItemStack item : inv.addItem(to.item).values())
+                    inv.getHolder().getWorld().dropItemNaturally(inv.getHolder().getLocation(), item);
+                inv.setItem(index, null);
+                return empty;
+            }
+            return to;
         }
         else
         {
@@ -133,12 +144,41 @@ public class PlayerEquips
         }
     }
 
+    private boolean isArmor(final ItemStack item) {
+        return item != null && ARMOR_TYPES.contains(item.getType());
+    }
+
+    private static final Set<Material> ARMOR_TYPES = ImmutableSet.<Material>builder()
+            .add(Material.LEATHER_BOOTS)
+            .add(Material.LEATHER_CHESTPLATE)
+            .add(Material.LEATHER_HELMET)
+            .add(Material.LEATHER_LEGGINGS)
+            .add(Material.IRON_BOOTS)
+            .add(Material.IRON_CHESTPLATE)
+            .add(Material.IRON_HELMET)
+            .add(Material.IRON_LEGGINGS)
+            .add(Material.GOLD_BOOTS)
+            .add(Material.GOLD_CHESTPLATE)
+            .add(Material.GOLD_HELMET)
+            .add(Material.GOLD_LEGGINGS)
+            .add(Material.DIAMOND_BOOTS)
+            .add(Material.DIAMOND_CHESTPLATE)
+            .add(Material.DIAMOND_HELMET)
+            .add(Material.DIAMOND_LEGGINGS)
+            .add(Material.CHAINMAIL_BOOTS)
+            .add(Material.CHAINMAIL_CHESTPLATE)
+            .add(Material.CHAINMAIL_HELMET)
+            .add(Material.CHAINMAIL_LEGGINGS)
+            .build();
+
     /**
      * Clears the weapon slot
      */
     public void clearWeapon()
     {
-        weapon.revert();
+        if (weapon.isMet() && !weapon.isArmor) {
+            weapon.revert();
+        }
         weapon = empty;
     }
 
@@ -149,7 +189,7 @@ public class PlayerEquips
      */
     public void updateWeapon(PlayerInventory inv)
     {
-        weapon = swap(inv, inv.getHeldItemSlot(), weapon);
+        weapon = swap(inv, inv.getHeldItemSlot(), weapon, true);
     }
 
     /**
@@ -181,6 +221,7 @@ public class PlayerEquips
 
         private ItemStack item;
         private int       levelReq;
+        private boolean   isArmor;
 
         /**
          * Sets up for an empty item slot
@@ -195,6 +236,7 @@ public class PlayerEquips
         EquipData(ItemStack item)
         {
             this.item = item;
+            this.isArmor = PlayerEquips.this.isArmor(item);
 
             if (!item.hasItemMeta())
                 return;
@@ -309,6 +351,10 @@ public class PlayerEquips
             if (attribs != null)
                 for (Map.Entry<String, Integer> entry : attribs.entrySet())
                     player.addBonusAttributes(entry.getKey(), -entry.getValue());
+        }
+
+        public boolean isArmor() {
+            return isArmor;
         }
 
         /**

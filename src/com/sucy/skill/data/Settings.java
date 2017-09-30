@@ -32,6 +32,7 @@ import com.rit.sucy.config.parse.NumberParser;
 import com.rit.sucy.player.Protection;
 import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
+import com.sucy.party.Parties;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.skills.Skill;
@@ -341,6 +342,7 @@ public class Settings
     private static final String TARGET_MONSTER = TARGET_BASE + "monsters-enemy";
     private static final String TARGET_PASSIVE = TARGET_BASE + "passive-ally";
     private static final String TARGET_PLAYER  = TARGET_BASE + "player-ally";
+    private static final String TARGET_PARTIES  = TARGET_BASE + "parties-ally";
 
     private ArrayList<String> monsterWorlds = new ArrayList<String>();
     private ArrayList<String> passiveWorlds = new ArrayList<String>();
@@ -349,6 +351,7 @@ public class Settings
     private boolean monsterEnemy;
     private boolean passiveAlly;
     private boolean playerAlly;
+    private boolean partiesAlly;
 
     /**
      * Checks whether or not something can be attacked
@@ -376,6 +379,11 @@ public class Settings
             {
                 if (playerAlly || playerWorlds.contains(attacker.getWorld().getName()))
                     return false;
+
+                if (partiesAlly) {
+                    final Parties parties = Parties.getPlugin(Parties.class);
+                    return parties.getJoinedParty((Player) attacker) == parties.getJoinedParty((Player) target);
+                }
             }
         }
         else if (attacker instanceof Tameable)
@@ -437,6 +445,8 @@ public class Settings
             playerAlly = false;
         }
         else playerAlly = config.getBoolean(TARGET_PLAYER);
+
+        partiesAlly = config.getBoolean(TARGET_PARTIES);
     }
 
     ///////////////////////////////////////////////////////

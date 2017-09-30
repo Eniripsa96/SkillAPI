@@ -61,6 +61,9 @@ Targeting:
   # - world1
   # - world2
   player-ally: false
+  #
+  # Whether or not to check for player allies via Parties
+  parties-ally: false
 #
 Saving:
   #

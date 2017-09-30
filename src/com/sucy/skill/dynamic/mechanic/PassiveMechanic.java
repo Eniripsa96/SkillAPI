@@ -35,6 +35,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Executes child components continuously
@@ -43,7 +45,7 @@ public class PassiveMechanic extends EffectComponent
 {
     private static final String PERIOD = "seconds";
 
-    private static final HashMap<String, PassiveTask> TASKS = new HashMap<String, PassiveTask>();
+    private static final HashMap<TaskKey, PassiveTask> TASKS = new HashMap<TaskKey, PassiveTask>();
 
     /**
      * Executes the component
@@ -57,7 +59,7 @@ public class PassiveMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        final String key = skill.getName() + caster.getUniqueId();
+        final TaskKey key = new TaskKey(skill.getName(), caster.getUniqueId(), getKey());
         if (TASKS.containsKey(key))
             return false;
 
@@ -65,7 +67,7 @@ public class PassiveMechanic extends EffectComponent
         {
             final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
             final int period = (int) (attr(caster, PERIOD, level, 1.0, isSelf) * 20);
-            final PassiveTask task = new PassiveTask(caster, level, targets, period);
+            final PassiveTask task = new PassiveTask(caster, level, targets, period, key);
             TASKS.put(key, task);
 
             return true;
@@ -81,9 +83,11 @@ public class PassiveMechanic extends EffectComponent
      */
     public static void stopTasks(LivingEntity player, String skill)
     {
-        final PassiveTask task = TASKS.remove(skill + player.getUniqueId());
-        if (task == null) return;
-        task.cancel();
+        final TaskKey key = new TaskKey(skill, player.getUniqueId(), null);
+        PassiveTask task;
+        while ((task = TASKS.remove(key)) != null) {
+            task.cancel();
+        }
     }
 
     /**
@@ -101,12 +105,14 @@ public class PassiveMechanic extends EffectComponent
         private List<LivingEntity> targets;
         private LivingEntity       caster;
         private int                level;
+        private TaskKey            key;
 
-        PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period)
+        PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period, TaskKey key)
         {
             this.targets = targets;
             this.caster = caster;
             this.level = level;
+            this.key = key;
 
             SkillAPI.schedule(this, 0, period);
         }
@@ -124,7 +130,7 @@ public class PassiveMechanic extends EffectComponent
             if (!skill.isActive(caster) || targets.size() == 0)
             {
                 cancel();
-                TASKS.remove(skill.getName() + caster.getUniqueId());
+                TASKS.remove(key);
                 return;
             }
             else if (caster instanceof Player)
@@ -133,12 +139,41 @@ public class PassiveMechanic extends EffectComponent
                 if (data == null || !data.isUnlocked() || !((Player) caster).isOnline())
                 {
                     cancel();
-                    TASKS.remove(skill.getName() + caster.getUniqueId());
+                    TASKS.remove(key);
                     return;
                 }
             }
             level = skill.getActiveLevel(caster);
             executeChildren(caster, level, targets);
+        }
+    }
+
+    /**
+     * Task key that allows multiple components to store tasks, but not providing
+     * a component matches all for when the tasks are being stopped.
+     */
+    private static class TaskKey {
+        private final String skillName;
+        private final UUID uuid;
+        private final String componentKey;
+
+        public TaskKey(String skillName, UUID uuid, String componentKey) {
+            this.skillName = skillName;
+            this.uuid = uuid;
+            this.componentKey = componentKey;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            final TaskKey taskKey = (TaskKey) other;
+            return taskKey.skillName.equals(skillName)
+                    && taskKey.uuid.equals(uuid)
+                    && (taskKey.componentKey == null || componentKey == null || taskKey.componentKey.equals(componentKey));
+        }
+
+        @Override
+        public int hashCode() {
+            return skillName.hashCode() + uuid.hashCode();
         }
     }
 }

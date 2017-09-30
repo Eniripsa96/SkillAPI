@@ -29,6 +29,8 @@ package com.sucy.skill.listener;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerAccountChangeEvent;
+import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.language.ErrorNodes;
 import org.bukkit.Material;
@@ -86,6 +88,21 @@ public class ItemListener extends SkillAPIListener
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
             SkillAPI.getPlayerData(event.getPlayer()).getEquips().update(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onSwitch(PlayerAccountChangeEvent event)
+    {
+        final Player player = event.getNewAccount().getPlayer();
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+            event.getNewAccount().getEquips().update(player);
+    }
+
+    @EventHandler
+    public void onProfess(PlayerClassChangeEvent event) {
+        final Player player = event.getPlayerData().getPlayer();
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+            event.getPlayerData().getEquips().update(player);
     }
 
     /**

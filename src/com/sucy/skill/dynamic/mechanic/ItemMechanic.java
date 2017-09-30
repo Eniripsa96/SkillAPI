@@ -90,11 +90,12 @@ public class ItemMechanic extends EffectComponent
             item.setItemMeta(meta);
         }
 
+        boolean worked = false;
         for (LivingEntity target : targets)
         {
             if (target instanceof Player)
             {
-                ((Player) target).getInventory().addItem(item);
+                worked = ((Player) target).getInventory().addItem(item).isEmpty() || worked;
             }
         }
         return targets.size() > 0;

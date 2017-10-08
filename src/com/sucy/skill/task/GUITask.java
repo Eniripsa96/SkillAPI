@@ -170,7 +170,7 @@ public class GUITask extends RepeatThreadTask
             {
                 Logger.log(LogType.GUI, 2, "Updating action bar (Working=" + ActionBar.isSupported() + ")");
                 PlayerClass main = data.getMainClass();
-                String filtered = actionText
+                String filtered = main.getData().hasActionBarText() ? actionText : main.getData().getActionBarText()
                     .replace("{combo}", data.getComboData().getCurrentComboString())
                     .replace("{class}", main.getData().getPrefix())
                     .replace("{level}", "" + main.getLevel())

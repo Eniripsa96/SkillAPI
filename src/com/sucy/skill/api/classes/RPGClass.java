@@ -66,6 +66,7 @@ public abstract class RPGClass implements IconHolder
 
     private InventoryTree skillTree;
 
+    private String    actionBar;
     private String    parent;
     private ItemStack icon;
     private TreeType  tree;
@@ -321,6 +322,17 @@ public abstract class RPGClass implements IconHolder
         meta.setDisplayName(name);
         item.setItemMeta(meta);
         return item;
+    }
+
+    /**
+     * @return text to display in the action bar for the class (nullable)
+     */
+    public String getActionBarText() {
+        return actionBar;
+    }
+
+    public boolean hasActionBarText() {
+        return actionBar.trim().length() > 0;
     }
 
     /**
@@ -621,6 +633,7 @@ public abstract class RPGClass implements IconHolder
     private static final String PARENT = "parent";
     private static final String NAME   = "name";
     private static final String PREFIX = "prefix";
+    private static final String ACTION_BAR = "action-bar";
     private static final String GROUP  = "group";
     private static final String MANA   = "mana";
     private static final String MAX    = "max-level";
@@ -639,6 +652,7 @@ public abstract class RPGClass implements IconHolder
     public void save(DataSection config)
     {
         config.set(NAME, name);
+        config.set(ACTION_BAR, actionBar.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(PREFIX, prefix.replace(ChatColor.COLOR_CHAR, '&'));
         config.set(GROUP, group);
         config.set(MANA, mana.replace(ChatColor.COLOR_CHAR, '&'));
@@ -685,6 +699,7 @@ public abstract class RPGClass implements IconHolder
         parent = config.getString(PARENT);
         icon = Data.parseIcon(config);
         name = config.getString(NAME, name);
+        actionBar = TextFormatter.colorString(config.getString(ACTION_BAR, ""));
         prefix = TextFormatter.colorString(config.getString(PREFIX, prefix));
         group = config.getString(GROUP, "class");
         mana = TextFormatter.colorString(config.getString(MANA, mana));

@@ -72,6 +72,7 @@ public class AttributeManager
     public static final String EXPERIENCE       = "exp";
     public static final String HUNGER           = "hunger";
     public static final String HUNGER_HEAL      = "hunger-heal";
+    public static final String COOLDOWN         = "cooldown";
 
     private final HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
     private final HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();
@@ -400,7 +401,7 @@ public class AttributeManager
                     values[i++] = new AttributeValue(formula);
                 target.put(lower, values);
 
-                if (!byComponent.containsKey(key))
+                if (!byComponent.containsKey(lower))
                     byComponent.put(lower, new ArrayList<Attribute>());
                 byComponent.get(lower).add(this);
             }

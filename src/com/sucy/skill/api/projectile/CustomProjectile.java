@@ -26,8 +26,8 @@
  */
 package com.sucy.skill.api.projectile;
 
-import com.rit.sucy.player.Protection;
 import com.rit.sucy.reflect.Reflection;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.particle.target.Followable;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Bukkit;
@@ -170,7 +170,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
                 continue;
             }
 
-            boolean ally = Protection.isAlly(getShooter(), entity);
+            boolean ally = SkillAPI.getSettings().isAlly(getShooter(), entity);
             if (ally && !this.ally) continue;
             if (!ally && !this.enemy) continue;
 

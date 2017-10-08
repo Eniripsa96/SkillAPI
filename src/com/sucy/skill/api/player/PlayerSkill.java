@@ -31,6 +31,7 @@ import com.sucy.skill.api.enums.SkillStatus;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorSettings;
+import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -325,7 +326,8 @@ public final class PlayerSkill
      */
     public void startCooldown()
     {
-        cooldown = System.currentTimeMillis() + (int) (skill.getCooldown(level) * 1000);
+        long cd = (long)player.scaleStat(AttributeManager.COOLDOWN, skill.getCooldown(level) * 1000L);
+        cooldown = System.currentTimeMillis() + cd;
     }
 
     /**

@@ -17,6 +17,7 @@ function Class(name)
 		new StringValue('Prefix', 'prefix', '&6' + name).setTooltip('The prefix given to players who profess as the class which can contain color codes'),
 		new StringValue('Group', 'group', 'class').setTooltip('A class group are things such as "race", "class", and "trade". Different groups can be professed through at the same time, one class from each group'),
 		new StringValue('Mana Name', 'mana', '&2Mana').setTooltip('The name the class uses for mana'),
+		new StringValue('Action Bar', 'action-bar', '').setTooltip('The format for the action bar. Leave blank to use the default formatting.'),
 		new IntValue('Max Level', 'max-level', 40).setTooltip('The maximum level the class can reach. If this class turns into other classes, this will also be the level it can profess into those classes.'),
 		new ListValue('Parent', 'parent', ['None'], 'None').setTooltip('The class that turns into this one. For example, if Fighter turns into Knight, then Knight would have its parent as Fighter'),
 		new ListValue('Permission', 'needs-permission', ['True', 'False'], 'False').setTooltip('Whether or not the class requires a permission to be professed as. The permission would be "skillapi.class.{className}"'),
@@ -80,12 +81,12 @@ Class.prototype.createFormHTML = function()
 	var h = document.createElement('hr');
 	form.appendChild(h);
 	
-	this.data[5].list.splice(1, this.data[5].list.length - 1);
+	this.data[6].list.splice(1, this.data[6].list.length - 1);
 	for (var i = 0; i < classes.length; i++)
 	{
 		if (classes[i] != this) 
 		{
-			this.data[5].list.push(classes[i].data[0].value);
+			this.data[6].list.push(classes[i].data[0].value);
 		}
 	}
 	for (var i = 0; i < this.data.length; i++)

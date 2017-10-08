@@ -153,6 +153,7 @@ var Mechanic = {
     TRIGGER:             { name: 'Trigger',             container: true,  construct: MechanicTrigger,           premium: true },
     VALUE_ADD:           { name: 'Value Add',           container: false, construct: MechanicValueAdd           },
     VALUE_ATTRIBUTE:     { name: 'Value Attribute',     container: false, construct: MechanicValueAttribute     },
+    VALUE_DISTANCE:      { name: 'Value Distance',      container: false, construct: MechanicValueDistance,     premium: true },
     VALUE_HEALTH:        { name: 'Value Health',        container: false, construct: MechanicValueHealth,       premium: true },
     VALUE_LOCATION:      { name: 'Value Location',      container: false, construct: MechanicValueLocation      },
     VALUE_LORE:          { name: 'Value Lore',          container: false, construct: MechanicValueLore          },
@@ -2385,6 +2386,18 @@ function MechanicValueAttribute()
     );
     this.data.push(new StringValue('Attribute', 'attribute', 'Vitality')
         .setTooltip('The name of the attribute you are loading the value of')
+    );
+}
+
+extend('MechanicValueDistance', 'Component');
+function MechanicValueDistance()
+{
+    this.super('Value Distance', Type.MECHANIC, false);
+
+    this.description = 'Stores the distance between the target and the caster into a value';
+
+    this.data.push(new StringValue('Key', 'key', 'attribute')
+        .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
     );
 }
 

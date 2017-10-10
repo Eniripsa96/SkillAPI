@@ -662,6 +662,7 @@ public abstract class RPGClass implements IconHolder
         settings.save(config.createSection(ATTR));
         config.set(REGEN, manaRegen);
         config.set(TREE, tree.toString());
+        config.set(BLACKLIST, new ArrayList<Material>(blacklist));
 
         ArrayList<String> skillNames = new ArrayList<String>();
         for (Skill skill : skills)
@@ -708,10 +709,11 @@ public abstract class RPGClass implements IconHolder
         manaRegen = config.getDouble(REGEN, manaRegen);
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
         tree = DefaultTreeType.getByName(config.getString(TREE, "requirement"));
-        for (final String type : settings.getStringList(BLACKLIST)) {
-            try {
-                blacklist.add(Material.valueOf(type.toUpperCase().replace(' ', '_')));
-            } catch (final Exception ex) {
+        for (final String type : config.getList(BLACKLIST)) {
+            final Material mat = Material.matchMaterial(type.toUpperCase().replace(' ', '_'));
+            if (mat != null) {
+                blacklist.add(mat);
+            } else {
                 Logger.invalid(type + " is not a valid material for class " + name);
             }
         }

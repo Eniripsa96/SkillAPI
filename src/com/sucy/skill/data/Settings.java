@@ -33,6 +33,7 @@ import com.rit.sucy.player.Protection;
 import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.party.Parties;
+import com.sucy.party.Party;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.skills.Skill;
@@ -40,13 +41,17 @@ import com.sucy.skill.cast.IndicatorSettings;
 import com.sucy.skill.data.formula.Formula;
 import com.sucy.skill.data.formula.value.CustomValue;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.NoCheatHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.log.Logger;
-import com.sucy.skill.gui.tool.GUITool;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
@@ -382,7 +387,9 @@ public class Settings
 
                 if (partiesAlly) {
                     final Parties parties = Parties.getPlugin(Parties.class);
-                    return parties.getJoinedParty((Player) attacker) == parties.getJoinedParty((Player) target);
+                    final Party p1 = parties.getJoinedParty((Player) attacker);
+                    final Party p2 = parties.getJoinedParty((Player) target);
+                    return p1 == null || p1 != p2;
                 }
             }
         }

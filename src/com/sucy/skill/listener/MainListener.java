@@ -43,6 +43,7 @@ import com.sucy.skill.dynamic.mechanic.ImmunityMechanic;
 import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -50,6 +51,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.ExpBottleEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -60,6 +62,7 @@ import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 /**
  * The main listener for SkillAPI  that handles general mechanics
@@ -156,6 +159,25 @@ public class MainListener extends SkillAPIListener
         {
             data.stopPassives(event.getEntity());
             data.loseExp();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDeath(final EntityDeathEvent event) {
+        DynamicSkill.clearCastData(event.getEntity());
+        FlagManager.clearFlags(event.getEntity());
+        BuffManager.clearData(event.getEntity());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onUnload(final ChunkUnloadEvent event) {
+        for (final Entity entity : event.getChunk().getEntities()) {
+            if (entity instanceof LivingEntity) {
+                final LivingEntity livingEntity = (LivingEntity) entity;
+                DynamicSkill.clearCastData(livingEntity);
+                FlagManager.clearFlags(livingEntity);
+                BuffManager.clearData(livingEntity);
+            }
         }
     }
 

@@ -39,6 +39,7 @@ import com.sucy.skill.dynamic.condition.AttributeCondition;
 import com.sucy.skill.dynamic.condition.BiomeCondition;
 import com.sucy.skill.dynamic.condition.BlockCondition;
 import com.sucy.skill.dynamic.condition.CastLevelCondition;
+import com.sucy.skill.dynamic.condition.CeilingCondition;
 import com.sucy.skill.dynamic.condition.ChanceCondition;
 import com.sucy.skill.dynamic.condition.ClassCondition;
 import com.sucy.skill.dynamic.condition.ClassLevelCondition;
@@ -340,6 +341,10 @@ public abstract class EffectComponent
      */
     protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        if (targets.isEmpty()) {
+            return false;
+        }
+
         boolean worked = false;
         for (EffectComponent child : children)
         {
@@ -562,6 +567,7 @@ public abstract class EffectComponent
         put("biome", BiomeCondition.class);
         put("block", BlockCondition.class);
         put("cast level", CastLevelCondition.class);
+        put("ceiling", CeilingCondition.class);
         put("chance", ChanceCondition.class);
         put("class", ClassCondition.class);
         put("class level", ClassLevelCondition.class);

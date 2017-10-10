@@ -149,6 +149,10 @@ public class RepeatMechanic extends EffectComponent
                 cancel();
                 TASKS.get(skill.getName()).remove(this);
             }
+
+            if (skill.checkCancelled()) {
+                cancel();
+            }
         }
     }
 }

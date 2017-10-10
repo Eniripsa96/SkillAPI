@@ -32,7 +32,11 @@ import com.sucy.skill.data.Click;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Handles transferring click actions by the player to
@@ -40,14 +44,28 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
  */
 public class ClickListener extends SkillAPIListener
 {
+    private HashMap<UUID, Long> lastClick = new HashMap<UUID, Long>();
+
+    @Override
+    public void cleanup() {
+        lastClick.clear();
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        lastClick.remove(event.getPlayer().getUniqueId());
+    }
+
     /**
      * Registers clicks as they happen
      *
      * @param event event details
      */
     @EventHandler
-    public void onClick(PlayerInteractEvent event)
-    {
+    public void onClick(PlayerInteractEvent event) {
+        if (lastClick.get(event.getPlayer().getUniqueId()) > System.currentTimeMillis() - 40) {
+            return;
+        }
 
         // Get the history
         PlayerCombos combo = SkillAPI.getPlayerData(event.getPlayer()).getComboData();
@@ -56,12 +74,14 @@ public class ClickListener extends SkillAPIListener
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
         {
             combo.applyClick(Click.LEFT);
+            lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
         }
 
         // Right clicks
         else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)
         {
             combo.applyClick(Click.RIGHT);
+            lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
         }
     }
 
@@ -71,10 +91,8 @@ public class ClickListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler
-    public void onShiftClick(PlayerToggleSneakEvent event)
-    {
-        if (event.isSneaking())
-        {
+    public void onShiftClick(PlayerToggleSneakEvent event) {
+        if (event.isSneaking()) {
             SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.SHIFT);
         }
     }

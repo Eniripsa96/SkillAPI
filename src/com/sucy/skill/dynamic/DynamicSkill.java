@@ -55,6 +55,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     private final HashMap<Integer, Integer>        active     = new HashMap<Integer, Integer>();
 
     private static final HashMap<Integer, HashMap<String, Object>> castData = new HashMap<Integer, HashMap<String, Object>>();
+    private static final HashMap<Integer, HashMap<String, Object>> targetData = new HashMap<Integer, HashMap<String, Object>>();
 
     private boolean cancel  = false;
 
@@ -123,10 +124,15 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     }
 
     void applyCancelled(final Cancellable event) {
-        if (cancel) {
+        if (checkCancelled()) {
             event.setCancelled(true);
-            cancel = false;
         }
+    }
+
+    public boolean checkCancelled() {
+        final boolean result = cancel;
+        cancel = false;
+        return result;
     }
 
     /**
@@ -149,14 +155,22 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         return map;
     }
 
+    public static HashMap<String, Object> getTargetData(final LivingEntity target) {
+        if (target == null) return null;
+        if (!targetData.containsKey(target.getEntityId())) {
+            targetData.put(target.getEntityId(), new HashMap<String, Object>());
+        }
+        return targetData.get(target.getEntityId());
+    }
+
     /**
      * Clears any stored cast data for the entity
      *
      * @param entity entity to clear cast data for
      */
-    public static void clearCastData(final LivingEntity entity)
-    {
+    public static void clearCastData(final LivingEntity entity) {
         castData.remove(entity.getEntityId());
+        targetData.remove(entity.getEntityId());
     }
 
     /**

@@ -145,6 +145,10 @@ public class PassiveMechanic extends EffectComponent
             }
             level = skill.getActiveLevel(caster);
             executeChildren(caster, level, targets);
+
+            if (skill.checkCancelled()) {
+                cancel();
+            }
         }
     }
 

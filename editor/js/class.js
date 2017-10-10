@@ -96,6 +96,10 @@ Class.prototype.createFormHTML = function()
         // Append attributes
         if (this.data[i].name == 'Mana')
         {
+            var dragInstructions = document.createElement('label');
+            dragInstructions.id = 'attribute-label';
+            dragInstructions.innerHTML = 'Drag/Drop your attributes.yml file to see custom attributes';
+            form.appendChild(dragInstructions);
             this.updateAttribs(i + 1);
         }
 	}

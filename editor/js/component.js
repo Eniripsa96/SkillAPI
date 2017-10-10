@@ -65,6 +65,7 @@ var Condition = {
     ATTRIBUTE:   { name: 'Attribute',   container: true, construct: ConditionAttribute  },
     BIOME:       { name: 'Biome',       container: true, construct: ConditionBiome      },
     BLOCK:       { name: 'Block',       container: true, construct: ConditionBlock      },
+    CEILING:     { name: 'Ceiling',     container: true, construct: ConditionCeiling,   premium: true },
     CHANCE:      { name: 'Chance',      container: true, construct: ConditionChance     },
     CLASS:       { name: 'Class',       container: true, construct: ConditionClass      },
     CLASS_LEVEL: { name: 'Class Level', container: true, construct: ConditionClassLevel },
@@ -957,6 +958,21 @@ function ConditionBlock()
     );
     this.data.push(new ListValue('Material', 'material', materialList, 'Dirt')
         .setTooltip('The type of the block to require the targets to stand on')
+    );
+}
+
+extend('ConditionCeiling', 'Component');
+function ConditionCeiling()
+{
+    this.super('Ceiling', Type.CONDITION, true);
+
+    this.description = 'Checks the height of the ceiling above each target';
+
+    this.data.push(new AttributeValue('Distance', 'distance', 5, 0)
+        .setTooltip('How high to check for the ceiling')
+    );
+    this.data.push(new ListValue('At least', 'at-least', [ 'True', 'False' ], 'True')
+        .setTooltip('When true, the ceiling must be at least the give number of blocks high. If false, the ceiling must be lower than the given number of blocks')
     );
 }
 

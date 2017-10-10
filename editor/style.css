@@ -50,6 +50,11 @@ html, body {
     background-color: black;
 }
 
+#attribute-label {
+    width: 90% !important;
+    color: #888;
+}
+
 #badBrowser p {
     text-align: center;
     margin-top: 40%;

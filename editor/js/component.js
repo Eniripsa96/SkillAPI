@@ -222,7 +222,7 @@ Component.prototype.dupe = function(parent)
     }
     for (i = ele.data.length; i < this.data.length; i++)
     {
-        ele.data.push(this.data[i].dupe());
+        ele.data.push(copyRequirements(this.data[i], this.data[i].dupe()));
     }
     return ele;
 }

@@ -52,6 +52,7 @@ html, body {
 
 #attribute-label {
     width: 90% !important;
+    text-align: center !important;
     color: #888;
 }
 

@@ -31,19 +31,21 @@ import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.data.Click;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 
 /**
  * Handles transferring click actions by the player to
  * combos that cast skills.
  */
-public class ClickListener extends SkillAPIListener
-{
+public class ClickListener extends SkillAPIListener {
     private HashMap<UUID, Long> lastClick = new HashMap<UUID, Long>();
 
     @Override
@@ -54,6 +56,7 @@ public class ClickListener extends SkillAPIListener
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         lastClick.remove(event.getPlayer().getUniqueId());
+        onGround.remove(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -63,7 +66,8 @@ public class ClickListener extends SkillAPIListener
      */
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
-        if (lastClick.get(event.getPlayer().getUniqueId()) > System.currentTimeMillis() - 40) {
+        final Long time = lastClick.get(event.getPlayer().getUniqueId());
+        if (time != null && time > System.currentTimeMillis() - 40) {
             return;
         }
 
@@ -71,16 +75,22 @@ public class ClickListener extends SkillAPIListener
         PlayerCombos combo = SkillAPI.getPlayerData(event.getPlayer()).getComboData();
 
         // Left clicks
-        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
-        {
-            combo.applyClick(Click.LEFT);
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if (event.getPlayer().isSneaking() && SkillAPI.getComboManager().isClickEnabled(Click.LEFT_SHIFT.getId())) {
+                combo.applyClick(Click.LEFT_SHIFT);
+            } else {
+                combo.applyClick(Click.LEFT);
+            }
             lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
         }
 
         // Right clicks
-        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)
-        {
-            combo.applyClick(Click.RIGHT);
+        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
+            if (event.getPlayer().isSneaking() && SkillAPI.getComboManager().isClickEnabled(Click.RIGHT_SHIFT.getId())) {
+                combo.applyClick(Click.RIGHT_SHIFT);
+            } else {
+                combo.applyClick(Click.RIGHT);
+            }
             lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
         }
     }
@@ -94,6 +104,30 @@ public class ClickListener extends SkillAPIListener
     public void onShiftClick(PlayerToggleSneakEvent event) {
         if (event.isSneaking()) {
             SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.SHIFT);
+        }
+    }
+
+    private HashSet<UUID> onGround = new HashSet<UUID>();
+
+    @EventHandler
+    public void onDrop(final PlayerDropItemEvent event) {
+        if (SkillAPI.getComboManager().isClickEnabled(Click.Q.getId())) {
+            event.setCancelled(true);
+            SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.Q);
+        }
+    }
+
+    @EventHandler
+    public void onJump(final PlayerMoveEvent event) {
+        if (event.getTo().getY() > event.getFrom().getY()
+                && event.getPlayer().getNoDamageTicks() == 0
+                && onGround.contains(event.getPlayer().getUniqueId())) {
+            SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.SPACE);
+        }
+        if (event.getPlayer().isOnGround()) {
+            onGround.add(event.getPlayer().getUniqueId());
+        } else {
+            onGround.remove(event.getPlayer().getUniqueId());
         }
     }
 }

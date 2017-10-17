@@ -51,12 +51,7 @@ public class ComboManager
     public ComboManager()
     {
         comboSize = Math.min(SkillAPI.getSettings().getComboSize(), Click.MAX_COMBO_SIZE);
-        clicks = new boolean[] {
-            false,
-            SkillAPI.getSettings().isComboLeft(),
-            SkillAPI.getSettings().isComboRight(),
-            SkillAPI.getSettings().isComboShift()
-        };
+        clicks = SkillAPI.getSettings().getEnabledClicks();
     }
 
     /**
@@ -290,7 +285,7 @@ public class ComboManager
         for (Click click : clicks)
         {
             if (result.length() > 0) result += ' ';
-            result += click.name().charAt(0);
+            result += click.getKey();
         }
         return result;
     }
@@ -312,17 +307,12 @@ public class ComboManager
         int i = 0;
         for (String part : parts)
         {
-            if (part.equals("l"))
-                clicks[i++] = Click.LEFT;
-            else if (part.equals("r"))
-                clicks[i++] = Click.RIGHT;
-            else if (part.equals("s"))
-                clicks[i++] = Click.SHIFT;
-            else
-            {
+            clicks[i] = Click.getByName(part);
+            if (clicks[i] == null) {
                 Logger.invalid("Invalid combo click type: " + part);
                 return -1;
             }
+            i++;
         }
 
         return convertCombo(clicks);

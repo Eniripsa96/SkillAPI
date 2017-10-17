@@ -64,8 +64,7 @@ import java.util.Map;
 /**
  * <p>The management class for SkillAPI's config.yml settings.</p>
  */
-public class Settings
-{
+public class Settings {
 
     private HashMap<String, GroupSettings> groups = new HashMap<String, GroupSettings>();
 
@@ -80,8 +79,7 @@ public class Settings
      *
      * @param plugin SkillAPI plugin reference
      */
-    public Settings(SkillAPI plugin)
-    {
+    public Settings(SkillAPI plugin) {
         this.plugin = plugin;
         CommentedConfig file = new CommentedConfig(plugin, "config");
         file.checkDefaults();
@@ -95,8 +93,7 @@ public class Settings
      * <p>This will fill in any missing values with default values
      * and trim any values that aren't supposed to be there.</p>
      */
-    public void reload()
-    {
+    public void reload() {
         loadExperienceSettings();
         loadAccountSettings();
         loadClassSettings();
@@ -129,8 +126,7 @@ public class Settings
     private boolean trackBreak;
     private boolean yieldsEnabled;
 
-    public void loadExperienceSettings()
-    {
+    public void loadExperienceSettings() {
         CommentedConfig file = new CommentedConfig(plugin, "exp");
         file.saveDefaultConfig();
         DataSection config = file.getConfig();
@@ -191,20 +187,16 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    public void loadGroupSettings()
-    {
+    public void loadGroupSettings() {
         CommentedConfig file = new CommentedConfig(plugin, "groups");
         DataSection config = file.getConfig();
         groups.clear();
 
-        for (String key : config.keys())
-        {
+        for (String key : config.keys()) {
             groups.put(key.toLowerCase(), new GroupSettings(config.getSection(key)));
         }
-        for (String group : SkillAPI.getGroups())
-        {
-            if (!groups.containsKey(group.toLowerCase()))
-            {
+        for (String group : SkillAPI.getGroups()) {
+            if (!groups.containsKey(group.toLowerCase())) {
                 GroupSettings settings = new GroupSettings();
                 groups.put(group.toLowerCase(), settings);
                 settings.save(config.createSection(group.toLowerCase()));
@@ -221,10 +213,8 @@ public class Settings
      *
      * @return settings for the class group
      */
-    public GroupSettings getGroupSettings(String group)
-    {
-        if (!groups.containsKey(group.toLowerCase()))
-        {
+    public GroupSettings getGroupSettings(String group) {
+        if (!groups.containsKey(group.toLowerCase())) {
             return new GroupSettings();
         }
         return groups.get(group.toLowerCase());
@@ -254,8 +244,7 @@ public class Settings
      *
      * @return main class group
      */
-    public String getMainGroup()
-    {
+    public String getMainGroup() {
         return mainGroup;
     }
 
@@ -265,8 +254,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isOnePerClass()
-    {
+    public boolean isOnePerClass() {
         return onePerClass;
     }
 
@@ -275,8 +263,7 @@ public class Settings
      *
      * @return max accounts allowed for most players
      */
-    public int getMaxAccounts()
-    {
+    public int getMaxAccounts() {
         return maxAccounts;
     }
 
@@ -288,50 +275,39 @@ public class Settings
      *
      * @return number of allowed accounts
      */
-    public int getMaxAccounts(Player player)
-    {
-        if (player == null)
-        {
+    public int getMaxAccounts(Player player) {
+        if (player == null) {
             return maxAccounts;
         }
         int max = maxAccounts;
-        for (Map.Entry<String, Integer> entry : permAccounts.entrySet())
-        {
-            if (player.hasPermission(entry.getKey()))
-            {
+        for (Map.Entry<String, Integer> entry : permAccounts.entrySet()) {
+            if (player.hasPermission(entry.getKey())) {
                 max = Math.max(max, entry.getValue());
             }
         }
         return max;
     }
 
-    private void loadAccountSettings()
-    {
+    private void loadAccountSettings() {
         mainGroup = config.getString(ACCOUNT_MAIN);
         onePerClass = config.getBoolean(ACCOUNT_EACH);
         maxAccounts = config.getInt(ACCOUNT_MAX);
 
         // Permission account amounts
         List<String> list = config.getList(ACCOUNT_PERM);
-        for (String item : list)
-        {
-            if (!item.contains(":"))
-            {
+        for (String item : list) {
+            if (!item.contains(":")) {
                 continue;
             }
 
             String[] pieces = item.split(":");
-            if (pieces.length != 2)
-            {
+            if (pieces.length != 2) {
                 continue;
             }
 
-            try
-            {
+            try {
                 permAccounts.put(pieces[0], Integer.parseInt(pieces[1]));
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 // Invalid setting value
             }
         }
@@ -347,7 +323,7 @@ public class Settings
     private static final String TARGET_MONSTER = TARGET_BASE + "monsters-enemy";
     private static final String TARGET_PASSIVE = TARGET_BASE + "passive-ally";
     private static final String TARGET_PLAYER  = TARGET_BASE + "player-ally";
-    private static final String TARGET_PARTIES  = TARGET_BASE + "parties-ally";
+    private static final String TARGET_PARTIES = TARGET_BASE + "parties-ally";
 
     private ArrayList<String> monsterWorlds = new ArrayList<String>();
     private ArrayList<String> passiveWorlds = new ArrayList<String>();
@@ -366,24 +342,14 @@ public class Settings
      *
      * @return true if can be attacked, false otherwise
      */
-    public boolean canAttack(LivingEntity attacker, LivingEntity target)
-    {
-        if (attacker instanceof Player)
-        {
-            if (target instanceof Animals && !(target instanceof Tameable))
-            {
-                if (passiveAlly || passiveWorlds.contains(attacker.getWorld().getName()))
-                    return false;
-            }
-            else if (target instanceof Monster)
-            {
-                if (monsterEnemy || monsterWorlds.contains(attacker.getWorld().getName()))
-                    return true;
-            }
-            else if (target instanceof Player)
-            {
-                if (playerAlly || playerWorlds.contains(attacker.getWorld().getName()))
-                    return false;
+    public boolean canAttack(LivingEntity attacker, LivingEntity target) {
+        if (attacker instanceof Player) {
+            if (target instanceof Animals && !(target instanceof Tameable)) {
+                if (passiveAlly || passiveWorlds.contains(attacker.getWorld().getName())) { return false; }
+            } else if (target instanceof Monster) {
+                if (monsterEnemy || monsterWorlds.contains(attacker.getWorld().getName())) { return true; }
+            } else if (target instanceof Player) {
+                if (playerAlly || playerWorlds.contains(attacker.getWorld().getName())) { return false; }
 
                 if (partiesAlly) {
                     final Parties parties = Parties.getPlugin(Parties.class);
@@ -392,27 +358,21 @@ public class Settings
                     return p1 == null || p1 != p2;
                 }
             }
-        }
-        else if (attacker instanceof Tameable)
-        {
+        } else if (attacker instanceof Tameable) {
             Tameable tameable = (Tameable) attacker;
-            if (tameable.isTamed() && (tameable.getOwner() instanceof LivingEntity))
-            {
+            if (tameable.isTamed() && (tameable.getOwner() instanceof LivingEntity)) {
                 return (tameable.getOwner() != target)
-                    && canAttack((LivingEntity) tameable.getOwner(), target);
+                        && canAttack((LivingEntity) tameable.getOwner(), target);
             }
-        }
-        else return !(target instanceof Monster);
+        } else { return !(target instanceof Monster); }
 
         boolean canAttack;
-        if (PluginChecker.isNoCheatActive() && attacker instanceof Player)
-        {
+        if (PluginChecker.isNoCheatActive() && attacker instanceof Player) {
             Player player = (Player) attacker;
             NoCheatHook.exempt(player);
             canAttack = Protection.canAttack(attacker, target);
             NoCheatHook.unexempt(player);
-        }
-        else canAttack = Protection.canAttack(attacker, target);
+        } else { canAttack = Protection.canAttack(attacker, target); }
 
         return canAttack;
     }
@@ -425,33 +385,25 @@ public class Settings
      *
      * @return true if an ally, false otherwise
      */
-    public boolean isAlly(LivingEntity attacker, LivingEntity target)
-    {
+    public boolean isAlly(LivingEntity attacker, LivingEntity target) {
         return !canAttack(attacker, target);
     }
 
-    private void loadTargetingSettings()
-    {
-        if (config.isList(TARGET_MONSTER))
-        {
+    private void loadTargetingSettings() {
+        if (config.isList(TARGET_MONSTER)) {
             monsterWorlds.addAll(config.getList(TARGET_MONSTER));
             monsterEnemy = false;
-        }
-        else monsterEnemy = config.getBoolean(TARGET_MONSTER);
+        } else { monsterEnemy = config.getBoolean(TARGET_MONSTER); }
 
-        if (config.isList(TARGET_PASSIVE))
-        {
+        if (config.isList(TARGET_PASSIVE)) {
             passiveWorlds.addAll(config.getList(TARGET_PASSIVE));
             passiveAlly = false;
-        }
-        else passiveAlly = config.getBoolean(TARGET_PASSIVE);
+        } else { passiveAlly = config.getBoolean(TARGET_PASSIVE); }
 
-        if (config.isList(TARGET_PLAYER))
-        {
+        if (config.isList(TARGET_PLAYER)) {
             playerWorlds.addAll(config.getList(TARGET_PLAYER));
             playerAlly = false;
-        }
-        else playerAlly = config.getBoolean(TARGET_PLAYER);
+        } else { playerAlly = config.getBoolean(TARGET_PLAYER); }
 
         partiesAlly = config.getBoolean(TARGET_PARTIES);
     }
@@ -484,8 +436,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isAutoSave()
-    {
+    public boolean isAutoSave() {
         return auto;
     }
 
@@ -494,8 +445,7 @@ public class Settings
      *
      * @return frequency of saves
      */
-    public int getSaveFreq()
-    {
+    public int getSaveFreq() {
         return minutes * 60 * 20;
     }
 
@@ -504,8 +454,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isUseSql()
-    {
+    public boolean isUseSql() {
         return useSql;
     }
 
@@ -514,8 +463,7 @@ public class Settings
      *
      * @return host IP for SQL database
      */
-    public String getSQLHost()
-    {
+    public String getSQLHost() {
         return sqlHost;
     }
 
@@ -524,8 +472,7 @@ public class Settings
      *
      * @return host port for SQL database
      */
-    public String getSQLPort()
-    {
+    public String getSQLPort() {
         return sqlPort;
     }
 
@@ -534,8 +481,7 @@ public class Settings
      *
      * @return SQL database name
      */
-    public String getSQLDatabase()
-    {
+    public String getSQLDatabase() {
         return sqlDatabase;
     }
 
@@ -544,8 +490,7 @@ public class Settings
      *
      * @return SQL database username
      */
-    public String getSQLUser()
-    {
+    public String getSQLUser() {
         return sqlUser;
     }
 
@@ -554,8 +499,7 @@ public class Settings
      *
      * @return SQL database password
      */
-    public String getSQLPass()
-    {
+    public String getSQLPass() {
         return sqlPass;
     }
 
@@ -566,14 +510,12 @@ public class Settings
         return sqlDelay;
     }
 
-    private void loadSaveSettings()
-    {
+    private void loadSaveSettings() {
         auto = config.getBoolean(SAVE_AUTO);
         minutes = config.getInt(SAVE_MINS);
         useSql = config.getBoolean(SAVE_SQL);
 
-        if (useSql)
-        {
+        if (useSql) {
             DataSection details = config.getSection(SAVE_SQLD);
             sqlHost = details.getString("host");
             sqlPort = details.getString("port");
@@ -610,8 +552,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isModifyHealth()
-    {
+    public boolean isModifyHealth() {
         return modifyHealth;
     }
 
@@ -620,8 +561,7 @@ public class Settings
      *
      * @return default health for classless players
      */
-    public int getDefaultHealth()
-    {
+    public int getDefaultHealth() {
         return defaultHealth;
     }
 
@@ -630,8 +570,7 @@ public class Settings
      *
      * @return true if shown, false otherwise
      */
-    public boolean isShowingAutoSkills()
-    {
+    public boolean isShowingAutoSkills() {
         return showAutoSkills;
     }
 
@@ -640,8 +579,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isAttributesEnabled()
-    {
+    public boolean isAttributesEnabled() {
         return attributesEnabled;
     }
 
@@ -650,8 +588,7 @@ public class Settings
      *
      * @return true if can refund, false otherwise
      */
-    public boolean isAttributesDowngrade()
-    {
+    public boolean isAttributesDowngrade() {
         return attributesDowngrade;
     }
 
@@ -661,8 +598,7 @@ public class Settings
      *
      * @return true if one is available, false otherwise
      */
-    public boolean hasLevelUpEffect()
-    {
+    public boolean hasLevelUpEffect() {
         return getLevelUpSkill() != null;
     }
 
@@ -671,14 +607,12 @@ public class Settings
      *
      * @return skill for level up effects
      */
-    public DynamicSkill getLevelUpSkill()
-    {
+    public DynamicSkill getLevelUpSkill() {
         Skill skill = SkillAPI.getSkill(levelUpSkill);
         return (skill instanceof DynamicSkill) ? (DynamicSkill) skill : null;
     }
 
-    private void loadClassSettings()
-    {
+    private void loadClassSettings() {
         modifyHealth = config.getBoolean(CLASS_MODIFY);
         defaultHealth = config.getInt(CLASS_HP);
         showAutoSkills = config.getBoolean(CLASS_SHOW);
@@ -705,8 +639,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isManaEnabled()
-    {
+    public boolean isManaEnabled() {
         return manaEnabled;
     }
 
@@ -715,13 +648,11 @@ public class Settings
      *
      * @return the frequency of mana gain
      */
-    public int getGainFreq()
-    {
+    public int getGainFreq() {
         return gainFreq;
     }
 
-    private void loadManaSettings()
-    {
+    private void loadManaSettings() {
         manaEnabled = config.getBoolean(MANA_ENABLED);
         gainFreq = (int) (config.getDouble(MANA_FREQ) * 20);
     }
@@ -751,8 +682,7 @@ public class Settings
      *
      * @return true if allowed, false otherwise
      */
-    public boolean isAllowDowngrade()
-    {
+    public boolean isAllowDowngrade() {
         return allowDowngrade;
     }
 
@@ -761,16 +691,14 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isShowSkillMessages()
-    {
+    public boolean isShowSkillMessages() {
         return showSkillMessages;
     }
 
     /**
      * @return whether or not knockback should be applied when dealing 0 damage
      */
-    public boolean isKnockback()
-    {
+    public boolean isKnockback() {
         return knockback;
     }
 
@@ -779,8 +707,7 @@ public class Settings
      *
      * @return skill message radius
      */
-    public int getMessageRadius()
-    {
+    public int getMessageRadius() {
         return messageRadius;
     }
 
@@ -789,13 +716,11 @@ public class Settings
      *
      * @return list of blocks
      */
-    public List<Material> getFilteredBlocks()
-    {
+    public List<Material> getFilteredBlocks() {
         return filteredBlocks;
     }
 
-    private void loadSkillSettings()
-    {
+    private void loadSkillSettings() {
         allowDowngrade = config.getBoolean(SKILL_DOWNGRADE);
         showSkillMessages = config.getBoolean(SKILL_MESSAGE);
         messageRadius = config.getInt(SKILL_RADIUS);
@@ -803,29 +728,20 @@ public class Settings
 
         filteredBlocks = new ArrayList<Material>();
         List<String> list = config.getList(SKILL_BLOCKS);
-        for (String item : list)
-        {
+        for (String item : list) {
             item = item.toUpperCase().replace(' ', '_');
-            if (item.endsWith("*"))
-            {
+            if (item.endsWith("*")) {
                 item = item.substring(0, item.length() - 1);
-                for (Material mat : Material.values())
-                {
-                    if (mat.name().contains(item))
-                    {
+                for (Material mat : Material.values()) {
+                    if (mat.name().contains(item)) {
                         filteredBlocks.add(mat);
                     }
                 }
-            }
-            else
-            {
-                try
-                {
+            } else {
+                try {
                     Material mat = Material.valueOf(item);
                     filteredBlocks.add(mat);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     Logger.invalid("Invalid block type \"" + item + "\"");
                 }
             }
@@ -869,40 +785,35 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isCheckLore()
-    {
+    public boolean isCheckLore() {
         return checkLore;
     }
 
     /**
      * @return true if should check for skill requirements
      */
-    public boolean isCheckSkillLore()
-    {
+    public boolean isCheckSkillLore() {
         return checkSkills;
     }
 
     /**
      * @return true if should check for attribute bonuses
      */
-    public boolean isCheckAttributes()
-    {
+    public boolean isCheckAttributes() {
         return checkAttribs;
     }
 
     /**
      * @return checks if weapons are dropped when hovered
      */
-    public boolean isDropWeapon()
-    {
+    public boolean isDropWeapon() {
         return dropWeapon;
     }
 
     /**
      * @return lore for skill requirements
      */
-    public String getSkillText(String skill)
-    {
+    public String getSkillText(String skill) {
         return skillPre + skill + skillPost;
     }
 
@@ -911,8 +822,7 @@ public class Settings
      *
      * @return lore text for class requirements
      */
-    public String getLoreClassText()
-    {
+    public String getLoreClassText() {
         return loreClassText;
     }
 
@@ -921,8 +831,7 @@ public class Settings
      *
      * @return lore text for level requirements
      */
-    public String getLoreLevelText()
-    {
+    public String getLoreLevelText() {
         return loreLevelText;
     }
 
@@ -931,8 +840,7 @@ public class Settings
      *
      * @return lore text for excluded classes
      */
-    public String getLoreExcludeText()
-    {
+    public String getLoreExcludeText() {
         return loreExcludeText;
     }
 
@@ -941,29 +849,25 @@ public class Settings
      *
      * @return lore text for attributes
      */
-    public String getAttrReqText(String attr)
-    {
+    public String getAttrReqText(String attr) {
         return attrReqPre + attr + attrReqPost;
     }
 
     /**
      * @return lore text for giving attributes
      */
-    public String getAttrGiveText(String attr)
-    {
+    public String getAttrGiveText(String attr) {
         return attrPre + attr + attrPost;
     }
 
     /**
      * @return slots checked for requirements and attributes
      */
-    public int[] getSlots()
-    {
+    public int[] getSlots() {
         return slots;
     }
 
-    private void loadItemSettings()
-    {
+    private void loadItemSettings() {
         checkLore = config.getBoolean(ITEM_LORE);
         dropWeapon = config.getBoolean(ITEM_DROP);
         checkSkills = config.getBoolean(ITEM_SKILLS);
@@ -988,11 +892,9 @@ public class Settings
         attrPost = temp.substring(index + 6);
 
         List<String> slotList = config.getList(ITEM_SLOTS);
-        if (!VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
-            slotList.remove("40");
+        if (!VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) { slotList.remove("40"); }
         slots = new int[slotList.size()];
-        for (int i = 0; i < slots.length; i++)
-            slots[i] = NumberParser.parseInt(slotList.get(i));
+        for (int i = 0; i < slots.length; i++) { slots[i] = NumberParser.parseInt(slotList.get(i)); }
     }
 
     ///////////////////////////////////////////////////////
@@ -1002,22 +904,22 @@ public class Settings
     ///////////////////////////////////////////////////////
 
     private static final String
-        GUI_BASE   = "GUI.",
-        GUI_OLD    = GUI_BASE + "old-health-bar",
-        GUI_FORCE  = GUI_BASE + "force-scaling",
-        GUI_LVLBAR = GUI_BASE + "level-bar",
-        GUI_FOOD   = GUI_BASE + "food-bar",
-        GUI_ACTION = GUI_BASE + "use-action-bar",
-        GUI_TEXT   = GUI_BASE + "action-bar-text",
-        GUI_BOARD  = GUI_BASE + "scoreboard-enabled",
-        GUI_NAME   = GUI_BASE + "show-class-name",
-        GUI_LEVEL  = GUI_BASE + "show-class-level",
-        GUI_LVLTXT = GUI_BASE + "class-level-text",
-        GUI_TITLE  = GUI_BASE + "title-enabled",
-        GUI_DUR    = GUI_BASE + "title-duration",
-        GUI_FADEI  = GUI_BASE + "title-fade-in",
-        GUI_FADEO  = GUI_BASE + "title-fade-out",
-        GUI_LIST   = GUI_BASE + "title-messages";
+            GUI_BASE   = "GUI.",
+            GUI_OLD    = GUI_BASE + "old-health-bar",
+            GUI_FORCE  = GUI_BASE + "force-scaling",
+            GUI_LVLBAR = GUI_BASE + "level-bar",
+            GUI_FOOD   = GUI_BASE + "food-bar",
+            GUI_ACTION = GUI_BASE + "use-action-bar",
+            GUI_TEXT   = GUI_BASE + "action-bar-text",
+            GUI_BOARD  = GUI_BASE + "scoreboard-enabled",
+            GUI_NAME   = GUI_BASE + "show-class-name",
+            GUI_LEVEL  = GUI_BASE + "show-class-level",
+            GUI_LVLTXT = GUI_BASE + "class-level-text",
+            GUI_TITLE  = GUI_BASE + "title-enabled",
+            GUI_DUR    = GUI_BASE + "title-duration",
+            GUI_FADEI  = GUI_BASE + "title-fade-in",
+            GUI_FADEO  = GUI_BASE + "title-fade-out",
+            GUI_LIST   = GUI_BASE + "title-messages";
 
     private List<String> titleMessages;
 
@@ -1041,16 +943,14 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isOldHealth()
-    {
+    public boolean isOldHealth() {
         return oldHealth;
     }
 
     /**
      * @return true if forces the SkillAPI health scaling, false otherwise
      */
-    public boolean isForceScaling()
-    {
+    public boolean isForceScaling() {
         return forceScaling;
     }
 
@@ -1059,8 +959,7 @@ public class Settings
      *
      * @return level bar setting
      */
-    public String getLevelBar()
-    {
+    public String getLevelBar() {
         return levelBar;
     }
 
@@ -1069,8 +968,7 @@ public class Settings
      *
      * @return food bar setting
      */
-    public String getFoodBar()
-    {
+    public String getFoodBar() {
         return foodBar;
     }
 
@@ -1079,8 +977,7 @@ public class Settings
      *
      * @return true if used, false otherwise
      */
-    public boolean isUseActionBar()
-    {
+    public boolean isUseActionBar() {
         return useActionBar;
     }
 
@@ -1089,8 +986,7 @@ public class Settings
      *
      * @return action bar text
      */
-    public String getActionText()
-    {
+    public String getActionText() {
         return actionText;
     }
 
@@ -1099,8 +995,7 @@ public class Settings
      *
      * @return true if shown, false otherwise
      */
-    public boolean isShowScoreboard()
-    {
+    public boolean isShowScoreboard() {
         return showScoreboard;
     }
 
@@ -1110,8 +1005,7 @@ public class Settings
      *
      * @return true if shown, false otherwise
      */
-    public boolean isShowClassName()
-    {
+    public boolean isShowClassName() {
         return showClassName;
     }
 
@@ -1121,16 +1015,14 @@ public class Settings
      *
      * @return true if shown, false otherwise
      */
-    public boolean isShowClassLevel()
-    {
+    public boolean isShowClassLevel() {
         return showClassLevel;
     }
 
     /**
      * @return text shown alongside the class level
      */
-    public String getLevelText()
-    {
+    public String getLevelText() {
         return levelText;
     }
 
@@ -1142,37 +1034,32 @@ public class Settings
      *
      * @return true if should use title display, false otherwise
      */
-    public boolean useTitle(TitleType type)
-    {
+    public boolean useTitle(TitleType type) {
         return useTitle && type != null && titleMessages.contains(type.name().toLowerCase());
     }
 
     /**
      * @return duration of the title display in ticks
      */
-    public int getTitleDuration()
-    {
+    public int getTitleDuration() {
         return titleDuration;
     }
 
     /**
      * @return fade in time of the title display in ticks
      */
-    public int getTitleFadeIn()
-    {
+    public int getTitleFadeIn() {
         return titleFadeIn;
     }
 
     /**
      * @return fade out time of the title display in ticks
      */
-    public int getTitleFadeOut()
-    {
+    public int getTitleFadeOut() {
         return titleFadeOut;
     }
 
-    private void loadGUISettings()
-    {
+    private void loadGUISettings() {
         oldHealth = config.getBoolean(GUI_OLD);
         forceScaling = config.getBoolean(GUI_FORCE);
         levelBar = config.getString(GUI_LVLBAR);
@@ -1219,65 +1106,55 @@ public class Settings
     /**
      * @return true if default casting is enabled
      */
-    public boolean isCastEnabled()
-    {
+    public boolean isCastEnabled() {
         return castEnabled;
     }
 
     /**
      * @return true if using bar format, false otherwise
      */
-    public boolean isUsingBars()
-    {
+    public boolean isUsingBars() {
         return castEnabled && castBars && !combatEnabled;
     }
 
-    public boolean isUsingWand()
-    {
+    public boolean isUsingWand() {
         return castEnabled && !castBars && !combatEnabled;
     }
 
-    public boolean isUsingCombat()
-    {
+    public boolean isUsingCombat() {
         return castEnabled && combatEnabled;
     }
 
     /**
      * @return slot the cast item is stored in
      */
-    public int getCastSlot()
-    {
+    public int getCastSlot() {
         return castSlot;
     }
 
     /**
      * @return global cooldown for casting
      */
-    public long getCastCooldown()
-    {
+    public long getCastCooldown() {
         return castCooldown;
     }
 
     /**
      * @return cast item to use in the slot
      */
-    public ItemStack getCastItem()
-    {
+    public ItemStack getCastItem() {
         return castItem;
     }
 
-    public ItemStack getHoverItem()
-    {
+    public ItemStack getHoverItem() {
         return hoverItem;
     }
 
-    public ItemStack getInstantItem()
-    {
+    public ItemStack getInstantItem() {
         return instantItem;
     }
 
-    private void loadCastSettings()
-    {
+    private void loadCastSettings() {
         castEnabled = config.getBoolean(CAST_ENABLED);
         castBars = config.getBoolean(CAST_BARS);
         combatEnabled = config.getBoolean(CAST_COMBAT);
@@ -1299,27 +1176,22 @@ public class Settings
     private static final String COMBO_BASE    = "Click Combos.";
     private static final String COMBO_ENABLED = COMBO_BASE + "enabled";
     private static final String COMBO_CUSTOM  = COMBO_BASE + "allow-custom";
-    private static final String COMBO_LEFT    = COMBO_BASE + "use-click-left";
-    private static final String COMBO_RIGHT   = COMBO_BASE + "use-click-right";
-    private static final String COMBO_SHIFT   = COMBO_BASE + "use-click-shift";
+    private static final String COMBO_CLICK   = COMBO_BASE + "use-click-";
     private static final String COMBO_SIZE    = COMBO_BASE + "combo-size";
     private static final String COMBO_TIME    = COMBO_BASE + "click-time";
 
-    private boolean combosEnabled;
-    private boolean customCombos;
-    private boolean comboLeft;
-    private boolean comboRight;
-    private boolean comboShift;
-    private int     comboSize;
-    private int     clickTime;
+    private boolean[] clicks;
+    private boolean   combosEnabled;
+    private boolean   customCombos;
+    private int       comboSize;
+    private int       clickTime;
 
     /**
      * Checks whether or not click combos are enabled
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isCombosEnabled()
-    {
+    public boolean isCombosEnabled() {
         return combosEnabled;
     }
 
@@ -1328,39 +1200,15 @@ public class Settings
      *
      * @return true if can customize them, false otherwise
      */
-    public boolean isCustomCombosAllowed()
-    {
+    public boolean isCustomCombosAllowed() {
         return customCombos;
     }
 
     /**
-     * Checks whether or not left clicks are enabled for combos
-     *
-     * @return true if enabled, false otherwise
+     * @return enabled clicks as an array of booleans indexed by click ID
      */
-    public boolean isComboLeft()
-    {
-        return comboLeft;
-    }
-
-    /**
-     * Checks whether or not right clicks are enabled for combos
-     *
-     * @return true if enabled, false otherwise
-     */
-    public boolean isComboRight()
-    {
-        return comboRight;
-    }
-
-    /**
-     * Checks whether or not shift clicks are enabled for combos
-     *
-     * @return true if enabled, false othewise
-     */
-    public boolean isComboShift()
-    {
-        return comboShift;
+    public boolean[] getEnabledClicks() {
+        return clicks;
     }
 
     /**
@@ -1368,8 +1216,7 @@ public class Settings
      *
      * @return max length of combos to be used
      */
-    public int getComboSize()
-    {
+    public int getComboSize() {
         return comboSize;
     }
 
@@ -1378,20 +1225,24 @@ public class Settings
      *
      * @return number of seconds before a click combo resets
      */
-    public int getClickTime()
-    {
+    public int getClickTime() {
         return clickTime;
     }
 
-    private void loadComboSettings()
-    {
+    private void loadComboSettings() {
         combosEnabled = config.getBoolean(COMBO_ENABLED);
         customCombos = combosEnabled && config.getBoolean(COMBO_CUSTOM);
-        comboLeft = config.getBoolean(COMBO_LEFT);
-        comboRight = config.getBoolean(COMBO_RIGHT);
-        comboShift = config.getBoolean(COMBO_SHIFT);
         comboSize = config.getInt(COMBO_SIZE);
         clickTime = (int) (1000 * config.getDouble(COMBO_TIME));
+
+        clicks = new boolean[Click.values().length + 1];
+        for (int i = 1; i <= Click.values().length; i++) {
+            final String key = COMBO_CLICK + Click.getById(i).name().toLowerCase().replace('_', '-');
+            clicks[i] = config.getBoolean(key);
+        }
+        if (clicks[Click.RIGHT_SHIFT.getId()] || clicks[Click.LEFT_SHIFT.getId()]) {
+            clicks[Click.SHIFT.getId()] = false;
+        }
     }
 
     ///////////////////////////////////////////////////////
@@ -1420,10 +1271,8 @@ public class Settings
      *
      * @return required experience to gain a level
      */
-    public int getRequiredExp(int level)
-    {
-        if (useCustomExp) return (int) expCustom.compute(level, 0);
-        else return expFormula.calculate(level);
+    public int getRequiredExp(int level) {
+        if (useCustomExp) { return (int) expCustom.compute(level, 0); } else { return expFormula.calculate(level); }
     }
 
     /**
@@ -1433,15 +1282,11 @@ public class Settings
      *
      * @return experience yield
      */
-    public double getYield(String mob)
-    {
+    public double getYield(String mob) {
         mob = mob.toLowerCase();
-        if (!yields.containsKey(mob))
-        {
+        if (!yields.containsKey(mob)) {
             return 0;
-        }
-        else
-        {
+        } else {
             return yields.get(mob);
         }
     }
@@ -1452,8 +1297,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isUseOrbs()
-    {
+    public boolean isUseOrbs() {
         return useOrbs;
     }
 
@@ -1463,8 +1307,7 @@ public class Settings
      *
      * @return true if blocked, false otherwise
      */
-    public boolean isBlockSpawner()
-    {
+    public boolean isBlockSpawner() {
         return blockSpawner;
     }
 
@@ -1474,8 +1317,7 @@ public class Settings
      *
      * @return true if blocked, false otherwise
      */
-    public boolean isBlockEgg()
-    {
+    public boolean isBlockEgg() {
         return blockEgg;
     }
 
@@ -1485,8 +1327,7 @@ public class Settings
      *
      * @return true if blocked, false otherwise
      */
-    public boolean isBlockCreative()
-    {
+    public boolean isBlockCreative() {
         return blockCreative;
     }
 
@@ -1496,8 +1337,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isShowExpMessages()
-    {
+    public boolean isShowExpMessages() {
         return showExpMessages;
     }
 
@@ -1507,8 +1347,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isShowLevelMessages()
-    {
+    public boolean isShowLevelMessages() {
         return showLevelMessages;
     }
 
@@ -1518,15 +1357,13 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isShowLossMessages()
-    {
+    public boolean isShowLossMessages() {
         return showLossMessages;
     }
 
     private static final String EXP_BASE = "Experience.";
 
-    private void loadExpSettings()
-    {
+    private void loadExpSettings() {
         this.useOrbs = config.getBoolean(EXP_BASE + "use-exp-orbs");
         this.blockSpawner = config.getBoolean(EXP_BASE + "block-mob-spawner");
         this.blockEgg = config.getBoolean(EXP_BASE + "block-mob-egg");
@@ -1546,8 +1383,7 @@ public class Settings
 
         DataSection yields = config.getSection(EXP_BASE + "yields");
         this.yields.clear();
-        for (String key : yields.keys())
-        {
+        for (String key : yields.keys()) {
             this.yields.put(key, yields.getDouble(key));
         }
     }
@@ -1569,8 +1405,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isSkillBarEnabled()
-    {
+    public boolean isSkillBarEnabled() {
         return skillBarEnabled;
     }
 
@@ -1579,8 +1414,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isSkillBarCooldowns()
-    {
+    public boolean isSkillBarCooldowns() {
         return skillBarCooldowns;
     }
 
@@ -1589,8 +1423,7 @@ public class Settings
      *
      * @return unassigned indicator
      */
-    public ItemStack getUnassigned()
-    {
+    public ItemStack getUnassigned() {
         return unassigned;
     }
 
@@ -1599,8 +1432,7 @@ public class Settings
      *
      * @return default skill bar layout
      */
-    public boolean[] getDefaultBarLayout()
-    {
+    public boolean[] getDefaultBarLayout() {
         return defaultBarLayout;
     }
 
@@ -1609,45 +1441,36 @@ public class Settings
      *
      * @return list of locked skill bar slots
      */
-    public boolean[] getLockedSlots()
-    {
+    public boolean[] getLockedSlots() {
         return lockedSlots;
     }
 
-    private void loadSkillBarSettings()
-    {
+    private void loadSkillBarSettings() {
         DataSection bar = config.getSection("Skill Bar");
         skillBarEnabled = bar.getBoolean("enabled", false) && !castEnabled;
         skillBarCooldowns = bar.getBoolean("show-cooldown", true);
 
         DataSection icon = bar.getSection("empty-icon");
         Material mat;
-        try
-        {
+        try {
             mat = Material.valueOf(icon.getString("material", "PUMPKIN_SEEDS").toUpperCase().replace(' ', '_'));
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             mat = Material.PUMPKIN_SEEDS;
         }
         unassigned = new ItemStack(mat);
         unassigned.setData(new MaterialData(mat, (byte) icon.getInt("data", 0)));
 
         ItemMeta meta = unassigned.getItemMeta();
-        if (icon.isList("text"))
-        {
+        if (icon.isList("text")) {
             List<String> format = TextFormatter.colorStringList(icon.getList("text"));
             meta.setDisplayName(format.remove(0));
             meta.setLore(format);
-        }
-        else
-            meta.setDisplayName(TextFormatter.colorString(icon.getString("text", "&7Unassigned")));
+        } else { meta.setDisplayName(TextFormatter.colorString(icon.getString("text", "&7Unassigned"))); }
         unassigned.setItemMeta(meta);
 
         DataSection layout = bar.getSection("layout");
         int skillCount = 0;
-        for (int i = 0; i < 9; i++)
-        {
+        for (int i = 0; i < 9; i++) {
             DataSection slot = layout.getSection((i + 1) + "");
             defaultBarLayout[i] = slot.getBoolean("skill", i <= 5);
             lockedSlots[i] = slot.getBoolean("locked", false);
@@ -1655,13 +1478,11 @@ public class Settings
                 lockedSlots[i] = true;
                 defaultBarLayout[i] = false;
             }
-            if (defaultBarLayout[i])
-            {
+            if (defaultBarLayout[i]) {
                 skillCount++;
             }
         }
-        if (skillCount == 9)
-        {
+        if (skillCount == 9) {
             Logger.invalid("Invalid Skill Bar Setup - Cannot have all 9 skill slots!");
             Logger.invalid("  -> Setting last slot to be a weapon slot");
             defaultBarLayout[8] = false;
@@ -1674,8 +1495,7 @@ public class Settings
     //                                                   //
     ///////////////////////////////////////////////////////
 
-    private void loadLoggingSettings()
-    {
+    private void loadLoggingSettings() {
         Logger.loadLevels(config.getSection("Logging"));
     }
 
@@ -1701,8 +1521,7 @@ public class Settings
      *
      * @return true if active, false otherwise
      */
-    public boolean isWorldEnabled(World world)
-    {
+    public boolean isWorldEnabled(World world) {
         return isWorldEnabled(world.getName());
     }
 
@@ -1714,13 +1533,11 @@ public class Settings
      *
      * @return true if active, false otherwise
      */
-    public boolean isWorldEnabled(String world)
-    {
+    public boolean isWorldEnabled(String world) {
         return !worldEnabled || (worldEnableList == worlds.contains(world));
     }
 
-    private void loadWorldSettings()
-    {
+    private void loadWorldSettings() {
         worldEnabled = config.getBoolean(WORLD_ENABLE);
         worldEnableList = config.getBoolean(WORLD_TYPE);
         worlds = config.getList(WORLD_LIST);

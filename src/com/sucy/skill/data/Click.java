@@ -29,36 +29,50 @@ package com.sucy.skill.data;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Represents a single click in a click combination
  */
 public enum Click
 {
-    LEFT(1),
-    RIGHT(2),
-    SHIFT(3),;
+    LEFT(1, "L"),
+    RIGHT(2, "R"),
+    SHIFT(3, "S"),
+    LEFT_SHIFT(4, "LS"),
+    RIGHT_SHIFT(5, "RS"),
+    SPACE(6, "P"),
+    Q(7, "Q");
 
-    public static final int BITS           = 2;
+    public static final int BITS           = 3;
     public static final int BIT_MASK       = (1 << BITS) - 1;
     public static final int MAX_COMBO_SIZE = 30 / BITS;
 
-    private static final Click[] CLICKS = new Click[] { null, LEFT, RIGHT, SHIFT };
+    private static final Click[] CLICKS = new Click[] { null, LEFT, RIGHT, SHIFT, LEFT_SHIFT, RIGHT_SHIFT, SPACE, Q };
 
     private int id;
+    private String key;
 
-    Click(int id)
+    Click(int id, String key)
     {
         this.id = id;
+        this.key = key;
     }
 
     /**
-     * Gets the ID of the click type used in compiling combos
-     *
-     * @return ID of the click type
+     * @return numeric ID of the click type
      */
     public int getId()
     {
         return id;
+    }
+
+    /**
+     * @return config key for the click
+     */
+    public String getKey() {
+        return key;
     }
 
     /**
@@ -97,11 +111,13 @@ public enum Click
     {
         if (name == null) return null;
         name = name.toLowerCase();
-        for (Click click : values())
-        {
-            if (name.equals(click.getName().toLowerCase()))
-                return click;
-        }
-        return null;
+        return CLICK_MAP.get(name);
     }
+
+    private static final Map<String, Click> CLICK_MAP = new HashMap<String, Click>() {{
+        for (final Click click : Click.values()) {
+            put(click.name().toLowerCase(), click);
+            put(click.key.toLowerCase(), click);
+        }
+    }};
 }

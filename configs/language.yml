@@ -63,3 +63,8 @@ Combo:
   left: '&6Left'
   right: '&6Right'
   shift: '&6Shift'
+  left_shift: '&6Shift L'
+  right_shift: '&6Shift R'
+  space: '&6Jump'
+  q: '&6Drop'
+

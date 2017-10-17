@@ -394,6 +394,21 @@ Click Combos:
   # Whether or not shift clicks are allowed at all
   use-click-shift: false
   #
+  # Whether or not shift clicks are allowed at all
+  # This will disable "use-click-shift" if enabled
+  use-click-right-shift: false
+  #
+  # Whether or not shift clicks are allowed at all
+  # This will disable "use-click-shift" if enabled
+  use-click-left-shift: false
+  #
+  # Whether or not shift clicks are allowed at all
+  use-click-space: false
+  #
+  # Whether or not Q clicks are allowed at all.
+  # Enabling this disables dropping items via Q outside of menus.
+  use-click-q: false
+  #
   # How many clicks are needed to perform a combo
   combo-size: 4
   #

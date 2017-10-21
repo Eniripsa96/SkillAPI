@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.util.ParticleHelper;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
@@ -65,7 +66,11 @@ public class ParticleMechanic extends EffectComponent
         double forward = settings.getDouble(FORWARD, 0);
         double upward = settings.getDouble(UPWARD, 0);
         double right = settings.getDouble(RIGHT, 0);
-        settings.set("level", level);
+
+        final Settings copy = new Settings(settings);
+        copy.set(ParticleHelper.PARTICLES_KEY, attr(caster, ParticleHelper.PARTICLES_KEY, level, 1, true), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, attr(caster, ParticleHelper.RADIUS_KEY, level, 0, true), 0);
+        copy.set("level", level);
 
         for (LivingEntity target : targets)
         {
@@ -74,7 +79,7 @@ public class ParticleMechanic extends EffectComponent
             Vector side = dir.clone().crossProduct(UP);
             loc.add(dir.multiply(forward)).add(0, upward, 0).add(side.multiply(right));
 
-            ParticleHelper.play(loc, settings);
+            ParticleHelper.play(loc, copy);
         }
 
         return targets.size() > 0;

@@ -27,6 +27,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.util.ParticleHelper;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
@@ -71,8 +72,11 @@ public class ParticleAnimationMechanic extends EffectComponent
             return false;
         }
 
-        settings.set("level", level);
-        new ParticleTask(caster, targets, level);
+        final Settings copy = new Settings(settings);
+        copy.set(ParticleHelper.PARTICLES_KEY, attr(caster, ParticleHelper.PARTICLES_KEY, level, 1, true), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, attr(caster, ParticleHelper.RADIUS_KEY, level, 0, true), 0);
+        copy.set("level", level);
+        new ParticleTask(caster, targets, level, copy);
         return targets.size() > 0;
     }
 
@@ -103,9 +107,12 @@ public class ParticleAnimationMechanic extends EffectComponent
         private double cos;
         private double sin;
 
-        ParticleTask(LivingEntity caster, List<LivingEntity> targets, int level)
+        private Settings settings;
+
+        ParticleTask(LivingEntity caster, List<LivingEntity> targets, int level, Settings settings)
         {
             this.targets = targets;
+            this.settings = settings;
 
             this.forward = settings.getDouble(FORWARD, 0);
             this.upward = settings.getDouble(UPWARD, 0);

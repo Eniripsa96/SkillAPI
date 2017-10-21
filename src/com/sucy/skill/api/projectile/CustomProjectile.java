@@ -169,6 +169,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
             if (pierce && hit.contains(entity.getEntityId())) {
                 continue;
             }
+            hit.add(entity.getEntityId());
 
             boolean ally = SkillAPI.getSettings().isAlly(getShooter(), entity);
             if (ally && !this.ally) continue;
@@ -183,8 +184,6 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
                 cancel();
                 return;
             }
-
-            hit.add(entity.getEntityId());
         }
     }
 
@@ -202,8 +201,9 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
             for (Object item : (List) list)
             {
                 Object bukkit = getBukkitEntity.invoke(item);
-                if (bukkit instanceof LivingEntity)
+                if (bukkit instanceof LivingEntity) {
                     result.add((LivingEntity) bukkit);
+                }
             }
         }
         // Fallback when reflection fails

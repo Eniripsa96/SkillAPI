@@ -48,7 +48,7 @@ public class ParticleProjectile extends CustomProjectile
     /**
      * Settings key for the projectile speed
      */
-    private static final String SPEED = "velocity";
+    public static final String SPEED = "velocity";
 
     /**
      * Settings key for the projectile lifespan

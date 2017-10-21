@@ -43,7 +43,15 @@ public class Settings
     private static final String BASE  = "-base";
     private static final String SCALE = "-scale";
 
-    private final HashMap<String, Object> settings = new LinkedHashMap<String, Object>();
+    private final HashMap<String, Object> settings;
+
+    public Settings() {
+        this.settings = new LinkedHashMap<String, Object>();
+    }
+
+    public Settings(final Settings settings) {
+        this.settings = new HashMap<String, Object>(settings.settings);
+    }
 
     /**
      * Sets the value for a setting. You should only provide a

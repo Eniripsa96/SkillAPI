@@ -541,7 +541,7 @@ public class PlayerData
             int amount = getAttribute(attribute.getKey());
             if (amount > 0)
             {
-                modified = attribute.modifyStat(stat, value, amount);
+                modified = attribute.modifyStat(stat, modified, amount);
             }
         }
         return modified;

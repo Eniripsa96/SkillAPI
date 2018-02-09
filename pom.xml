@@ -1,0 +1,114 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.sucy</groupId>
+    <artifactId>SkillAPI</artifactId>
+    <version>3.103</version>
+
+    <name>SkillAPI</name>
+    <url>https://github.com/Eniripsa96/SkillAPI/</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <scm>
+        <connection>scm:git:git://github.com/Eniripsa96/SkillAPI</connection>
+        <developerConnection>scm:git:git@github.com:Eniripsa96/SkillAPI.git</developerConnection>
+        <url>https://github.com/Eniripsa96/SkillAPI</url>
+        <tag>master</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>maven.elmakers.com</id>
+            <url>http://maven.elmakers.com/repository/</url>
+        </repository>
+        <snapshotRepository>
+            <id>maven.elmakers.com</id>
+            <url>http://maven.elmakers.com/repository/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>Spigot</artifactId>
+            <version>1.9-R0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/modules/spigot-1.9.jar</systemPath>
+        </dependency>
+
+        <dependency>
+			<groupId>net.milkbowl.vault</groupId>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.6</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/modules/Vault.jar</systemPath>
+        </dependency>
+
+        <dependency>
+			<groupId>LibsDisguises</groupId>
+			<artifactId>LibsDisguises</artifactId>
+			<version>9.0.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/modules/LibsDisguises.jar</systemPath>
+        </dependency>
+
+        <dependency>
+			<groupId>MCCore</groupId>
+			<artifactId>MCCore</artifactId>
+			<version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/modules/MCCore.jar</systemPath>
+        </dependency>
+
+        <dependency>
+			<groupId>NoCheatPlus</groupId>
+			<artifactId>NoCheatPlus</artifactId>
+			<version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/modules/NoCheatPlus.jar</systemPath>
+        </dependency>
+
+        <dependency>
+			<groupId>ProtocolLib</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>3.3.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/modules/ProtocolLib-3.3.1.jar</systemPath>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
+
+</project>

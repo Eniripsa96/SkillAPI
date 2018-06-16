@@ -207,8 +207,8 @@ IndexListValue.prototype.load = function(value)
  * 
  * @param {string} name  - the display name of the value
  * @param {string} key   - the config key for the value
- * @param {Array}  list  - the list of available options
- * @param {Number} value - the current selected value
+ * @param {string[]}  list  - the list of available options
+ * @param {string} value - the current selected value
  *
  * @constructor
  */ 

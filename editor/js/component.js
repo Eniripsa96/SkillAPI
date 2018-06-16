@@ -161,6 +161,7 @@ var Mechanic = {
     VALUE_LORE_SLOT:     { name: 'Value Lore Slot',     container: false, construct: MechanicValueLoreSlot,     premium: true},
     VALUE_MANA:          { name: 'Value Mana',          container: false, construct: MechanicValueMana,         premium: true },
     VALUE_MULTIPLY:      { name: 'Value Multiply',      container: false, construct: MechanicValueMultiply      },
+    VALUE_PLACEHOLDER:   { name: 'Value Placeholder',   container: false, construct: MechanicValuePlaceholder,  premium: true },
     VALUE_RANDOM:        { name: 'Value Random',        container: false, construct: MechanicValueRandom        },
     VALUE_SET:           { name: 'Value Set',           container: false, construct: MechanicValueSet           },
     WARP:                { name: 'Warp',                container: false, construct: MechanicWarp               },
@@ -220,10 +221,12 @@ Component.prototype.dupe = function(parent)
     {
         ele.components.push(this.components[i].dupe());
     }
+    ele.data = ele.data.slice(0, 1);
     for (i = ele.data.length; i < this.data.length; i++)
     {
         ele.data.push(copyRequirements(this.data[i], this.data[i].dupe()));
     }
+    ele.description = this.description;
     return ele;
 }
 
@@ -2499,14 +2502,32 @@ extend('MechanicValueMultiply', 'Component');
 function MechanicValueMultiply()
 {
     this.super('Value Multiply', Type.MECHANIC, false);
-    
+
     this.description = 'Multiplies a stored value under a unique key for the caster. If the value wasn\'t set before, this will not do anything.';
-    
+
     this.data.push(new StringValue('Key', 'key', 'value')
         .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
     );
     this.data.push(new AttributeValue('Multiplier', 'multiplier', 1, 0)
         .setTooltip('The amount to multiply the value by')
+    );
+}
+
+extend('MechanicValuePlaceholder', 'Component');
+function MechanicValuePlaceholder()
+{
+    this.super('Value Placeholder', Type.MECHANIC, false);
+
+    this.description = 'Uses a placeholder string and stores it as a value for the caster';
+
+    this.data.push(new StringValue('Key', 'key', 'value')
+        .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
+    );
+    this.data.push(new ListValue("Type", "Type", [ 'Number', 'String' ], 'Number')
+        .setTooltip('The type of value to store. Number values require numeric placeholders. String values can be used in messages or commands.')
+    );
+    this.data.push(new StringValue('Placeholder', 'placeholder', '%player_food_level%')
+        .setTooltip('The placeholder string to use. Can contain multiple placeholders if using the String type.')
     );
 }
 

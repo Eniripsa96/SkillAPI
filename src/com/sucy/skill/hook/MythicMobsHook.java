@@ -17,4 +17,8 @@ public class MythicMobsHook {
             MythicMobs.inst().getAPIHelper().reduceThreat(target, source, -amount);
         }
     }
+
+    public static boolean isMonster(final LivingEntity target) {
+        return MythicMobs.inst().getAPIHelper().isMythicMob(target);
+    }
 }

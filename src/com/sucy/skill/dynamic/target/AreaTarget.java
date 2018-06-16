@@ -131,15 +131,10 @@ public class AreaTarget extends EffectComponent
 
         List<LivingEntity> entities = Nearby.getLivingNearby(target.getLocation(), radius);
 
-        if (self)
-        {
-            list.add(caster);
-        }
-
         for (int i = 0; i < entities.size() && list.size() < max; i++)
         {
             LivingEntity t = entities.get(i);
-            if (t == caster && self)
+            if (t == caster && !self)
                 continue;
             if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, t.getEyeLocation()))
                 continue;

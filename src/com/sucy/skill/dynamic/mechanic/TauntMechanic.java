@@ -59,7 +59,7 @@ public class TauntMechanic extends EffectComponent
         {
             if (entity instanceof Creature && entity != caster)
             {
-                if (PluginChecker.isMythicMobsActive()) {
+                if (PluginChecker.isMythicMobsActive() && MythicMobsHook.isMonster(entity)) {
                     MythicMobsHook.taunt(entity, caster, amount);
                 }
                 else {

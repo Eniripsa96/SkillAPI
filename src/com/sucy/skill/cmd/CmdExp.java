@@ -1,3 +1,25 @@
+package com.sucy.skill.cmd;
+
+import com.rit.sucy.commands.CommandManager;
+import com.rit.sucy.commands.ConfigurableCommand;
+import com.rit.sucy.commands.IFunction;
+import com.rit.sucy.config.Filter;
+import com.rit.sucy.config.parse.NumberParser;
+import com.rit.sucy.version.VersionManager;
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.enums.ExpSource;
+import com.sucy.skill.api.player.PlayerClass;
+import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.manager.CmdManager;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.util.regex.Pattern;
+
 /**
  * SkillAPI
  * com.sucy.skill.cmd.CmdExp
@@ -24,31 +46,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.cmd;
-
-import com.rit.sucy.commands.CommandManager;
-import com.rit.sucy.commands.ConfigurableCommand;
-import com.rit.sucy.commands.IFunction;
-import com.rit.sucy.config.Filter;
-import com.rit.sucy.config.parse.NumberParser;
-import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.enums.ExpSource;
-import com.sucy.skill.api.player.PlayerClass;
-import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.language.RPGFilter;
-import com.sucy.skill.manager.CmdManager;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import java.util.regex.Pattern;
-
-/**
- * A command that gives a player class experience
- */
 public class CmdExp implements IFunction
 {
     private static final Pattern IS_NUMBER = Pattern.compile("[0-9]+");
@@ -69,7 +66,7 @@ public class CmdExp implements IFunction
      * @param args   argument list
      */
     @Override
-    public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
+    public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String... args)
     {
         // Disabled world
         if (sender instanceof Player && !SkillAPI.getSettings().isWorldEnabled(((Player) sender).getWorld()) && args.length == 1)
@@ -78,8 +75,7 @@ public class CmdExp implements IFunction
         }
 
         // Only can show info of a player so console needs to provide a name
-        else if ((args.length >= 1 && sender instanceof Player && IS_NUMBER.matcher(args[0]).matches())
-                || (args.length >= 2 && !IS_NUMBER.matcher(args[0]).matches()))
+        else if ((args.length >= 1 && sender instanceof Player && IS_NUMBER.matcher(args[0]).matches()) || args.length >= 2)
         {
             int numberIndex = IS_NUMBER.matcher(args[0]).matches() ? 0 : 1;
 

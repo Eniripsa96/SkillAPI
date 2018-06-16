@@ -41,7 +41,7 @@ public class PluginChecker
      */
     public static boolean isVaultActive()
     {
-        return Bukkit.getPluginManager().getPlugin("Vault") != null && VaultHook.isValid();
+        return Bukkit.getPluginManager().isPluginEnabled("Vault") && VaultHook.isValid();
     }
 
     /**
@@ -51,7 +51,7 @@ public class PluginChecker
      */
     public static boolean isDisguiseActive()
     {
-        return Bukkit.getPluginManager().getPlugin("LibsDisguises") != null;
+        return Bukkit.getPluginManager().isPluginEnabled("LibsDisguises");
     }
 
     /**
@@ -61,7 +61,7 @@ public class PluginChecker
      */
     public static boolean isNoCheatActive()
     {
-        return Bukkit.getPluginManager().getPlugin("NoCheatPlus") != null;
+        return Bukkit.getPluginManager().isPluginEnabled("NoCheatPlus");
     }
 
     /**
@@ -71,7 +71,11 @@ public class PluginChecker
      */
     public static boolean isRPGInventoryActive()
     {
-        return Bukkit.getPluginManager().getPlugin("RPGInventory") != null;
+        return Bukkit.getPluginManager().isPluginEnabled("RPGInventory");
+    }
+
+    public static boolean isPlaceholderAPIActive() {
+        return Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
     }
 
     /**
@@ -93,6 +97,6 @@ public class PluginChecker
     }
 
     public static boolean isMythicMobsActive() {
-        return Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
+        return Bukkit.getPluginManager().isPluginEnabled("MythicMobs");
     }
 }

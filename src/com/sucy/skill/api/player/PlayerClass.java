@@ -52,7 +52,7 @@ import org.bukkit.Bukkit;
  * rather what the player has within the class. For more general information
  * about the class, you should use the RPGClass class.</p>
  */
-public final class PlayerClass
+public class PlayerClass
 {
     private PlayerData player;
     private RPGClass   classData;

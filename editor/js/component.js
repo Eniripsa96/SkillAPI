@@ -161,6 +161,7 @@ var Mechanic = {
     VALUE_LORE_SLOT:     { name: 'Value Lore Slot',     container: false, construct: MechanicValueLoreSlot,     premium: true},
     VALUE_MANA:          { name: 'Value Mana',          container: false, construct: MechanicValueMana,         premium: true },
     VALUE_MULTIPLY:      { name: 'Value Multiply',      container: false, construct: MechanicValueMultiply      },
+    VALUE_PLACEHOLDER:   { name: 'Value Placeholder',   container: false, construct: MechanicValuePlaceholder,  premium: true },
     VALUE_RANDOM:        { name: 'Value Random',        container: false, construct: MechanicValueRandom        },
     VALUE_SET:           { name: 'Value Set',           container: false, construct: MechanicValueSet           },
     WARP:                { name: 'Warp',                container: false, construct: MechanicWarp               },
@@ -176,7 +177,7 @@ var saveIndex;
 
 /**
  * Represents a component of a dynamic skill
- *
+ * 
  * @param {string}    name      - name of the component
  * @param {string}    type      - type of the component
  * @param {boolean}   container - whether or not the component can contain others
@@ -207,7 +208,7 @@ function Component(name, type, container, parent)
             .setTooltip('Whether or not this trigger requires to be off cooldown to activate')
         );
     }
-
+    
     this.dataKey = 'data';
     this.componentKey = 'children';
 }
@@ -220,12 +221,14 @@ Component.prototype.dupe = function(parent)
     {
         ele.components.push(this.components[i].dupe());
     }
+    ele.data = ele.data.slice(0, 1);
     for (i = ele.data.length; i < this.data.length; i++)
     {
         ele.data.push(copyRequirements(this.data[i], this.data[i].dupe()));
     }
+    ele.description = this.description;
     return ele;
-}
+};
 
 /**
  * Creates the builder HTML element for the component and
@@ -241,7 +244,7 @@ Component.prototype.createBuilderHTML = function(target)
     if (this.type == Type.TRIGGER) {
         container.className = 'componentWrapper';
     }
-
+    
     var div = document.createElement('div');
     div.className = 'component ' + this.type;
     if (this.type != Type.TRIGGER) {
@@ -252,7 +255,7 @@ Component.prototype.createBuilderHTML = function(target)
     if (this.container) {
         div.ondragover = this.allowDrop;
     }
-
+    
     // Component label
     var label = document.createElement('h3');
     label.title = 'Edit ' + this.name + ' options';
@@ -264,20 +267,20 @@ Component.prototype.createBuilderHTML = function(target)
         showSkillPage('skillForm');
     });
     div.appendChild(label);
-
+    
     // Container components can add children so they get a button
-    if (this.container)
+    if (this.container) 
     {
         var add = document.createElement('div');
         add.className = 'builderButton';
         add.innerHTML = '+ Add Child';
         add.component = this;
         add.addEventListener('click', function(e) {
-            activeComponent = this.component;
+            activeComponent = this.component; 
             showSkillPage('componentChooser');
         });
         div.appendChild(add);
-
+        
         var vision = document.createElement('div');
         vision.title = 'Hide Children';
         vision.className = 'builderButton smallButton';
@@ -290,7 +293,7 @@ Component.prototype.createBuilderHTML = function(target)
                 comp.childDiv.style.display = 'block';
                 this.style.backgroundImage = 'url("editor/img/eye.png")';
             }
-            else
+            else 
             {
                 comp.childDiv.style.display = 'none';
                 this.style.backgroundImage = 'url("editor/img/eyeShaded.png")';
@@ -300,7 +303,7 @@ Component.prototype.createBuilderHTML = function(target)
         div.appendChild(vision);
         this.childrenHidden = false;
     }
-
+    
     // Add the duplicate button
     if (this.type != Type.TRIGGER)
     {
@@ -317,7 +320,7 @@ Component.prototype.createBuilderHTML = function(target)
         });
         div.appendChild(duplicate);
     }
-
+    
     // Add the remove button
     var remove = document.createElement('div');
     remove.title = 'Remove';
@@ -326,7 +329,7 @@ Component.prototype.createBuilderHTML = function(target)
     remove.component = this;
     remove.addEventListener('click', function(e) {
         var list = this.component.parent.components;
-        for (var i = 0; i < list.length; i++)
+        for (var i = 0; i < list.length; i++) 
         {
             if (list[i] == this.component)
             {
@@ -337,24 +340,24 @@ Component.prototype.createBuilderHTML = function(target)
         this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);
     });
     div.appendChild(remove);
-
+    
     container.appendChild(div);
-
+    
     // Apply child components
     var childContainer = document.createElement('div');
     childContainer.className = 'componentChildren';
     if (this.components.length > 0) {
-        for (var i = 0; i < this.components.length; i++)
+        for (var i = 0; i < this.components.length; i++) 
         {
             this.components[i].createBuilderHTML(childContainer);
         }
     }
     container.appendChild(childContainer);
     this.childDiv = childContainer;
-
+    
     // Append the content
     target.appendChild(container);
-
+       
     this.html = childContainer;
 }
 
@@ -398,7 +401,7 @@ Component.prototype.drop = function(e) {
         hoverSpace.style.marginBottom = '0px';
         hoverSpace = undefined;
     }
-
+    
     e.preventDefault();
     var thing = document.getElementById('dragComponent').parentNode;
     var target = e.target;
@@ -413,7 +416,7 @@ Component.prototype.drop = function(e) {
     target = target.parentNode.childNodes[1];
     thing.parentNode.removeChild(thing);
     target.appendChild(thing);
-
+    
     thingComp.parent.components.splice(thingComp.parent.components.indexOf(thingComp), 1);
     thingComp.parent = targetComp;
     thingComp.parent.components.push(thingComp);
@@ -426,25 +429,25 @@ Component.prototype.drop = function(e) {
 Component.prototype.createFormHTML = function()
 {
     var target = document.getElementById('skillForm');
-
+    
     var form = document.createElement('form');
-
+    
     var header = document.createElement('h4');
     header.innerHTML = this.name;
     form.appendChild(header);
-
+    
     if (this.description)
     {
         var desc = document.createElement('p');
         desc.innerHTML = this.description;
         form.appendChild(desc);
     }
-
-    if (this.data.length > 1)
+    
+    if (this.data.length > 1) 
     {
         var h = document.createElement('hr');
         form.appendChild(h);
-
+        
         var i = 1;
         for (var j = 1; j < this.data.length; j++) {
             if (this.data[j] instanceof AttributeValue) {
@@ -458,10 +461,10 @@ Component.prototype.createFormHTML = function()
             this.data[i].createHTML(form);
         }
     }
-
+    
     var hr = document.createElement('hr');
     form.appendChild(hr);
-
+    
     var done = document.createElement('h5');
     done.className = 'doneButton';
     done.innerHTML = 'Done';
@@ -472,13 +475,13 @@ Component.prototype.createFormHTML = function()
         showSkillPage('builder');
     });
     form.appendChild(done);
-
+    
     this.form = form;
-
+    
     target.innerHTML = '';
     target.appendChild(form);
     activeComponent = this;
-
+    
     for (var i = 0; i < this.data.length; i++)
     {
         this.data[i].applyRequireValues();
@@ -504,7 +507,7 @@ Component.prototype.update = function()
 Component.prototype.getSaveString = function(spacing)
 {
     this.createFormHTML();
-
+    
     var id = '';
     var index = saveIndex;
     while (index > 0 || id.length == 0)
@@ -514,7 +517,7 @@ Component.prototype.getSaveString = function(spacing)
     }
     var result = spacing + this.name + '-' + id + ":\n";
     saveIndex++;
-
+    
     result += spacing + "  type: '" + this.type + "'\n";
     if (this.data.length > 0)
     {
@@ -551,7 +554,7 @@ extend('TriggerCast', 'Component');
 function TriggerCast()
 {
     this.super('Cast', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player casts the skill using either the cast command, the skill bar, or click combos.';
 }
 
@@ -559,7 +562,7 @@ extend('TriggerCleanup', 'Component');
 function TriggerCleanup()
 {
     this.super('Cleanup', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when the player disconnects or unlearns the skill. This is always applied with a skill level of 1 just for the sake of math.';
 }
 
@@ -567,9 +570,9 @@ extend('TriggerCrouch', 'Component');
 function TriggerCrouch()
 {
     this.super('Crouch', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player starts or stops crouching using the shift key.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Start Crouching', 'Stop Crouching', 'Both' ], 'Start Crouching')
         .setTooltip('Whether or not you want to apply components when crouching or not crouching')
     );
@@ -579,7 +582,7 @@ extend('TriggerDeath', 'Component');
 function TriggerDeath()
 {
     this.super('Death', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player dies.';
 }
 
@@ -587,9 +590,9 @@ extend('TriggerEnvironmentDamage', 'Component');
 function TriggerEnvironmentDamage()
 {
     this.super('Environment Damage', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player takes environmental damage.';
-
+    
     this.data.push(new ListValue('Type', 'type', DAMAGE_TYPES, 'FALL')
         .setTooltip('The source of damage to apply for')
     );
@@ -600,7 +603,7 @@ extend('TriggerInitialize', 'Component');
 function TriggerInitialize()
 {
     this.super('Initialize', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects immediately. This can be used for passive abilities.';
 }
 
@@ -608,7 +611,7 @@ extend('TriggerKill', 'Component');
 function TriggerKill()
 {
     this.super('Kill', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects upon killing something';
 }
 
@@ -616,9 +619,9 @@ extend('TriggerLand', 'Component');
 function TriggerLand()
 {
     this.super('Land', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player lands on the ground.';
-
+    
     this.data.push(new DoubleValue('Min Distance', 'min-distance', 0)
         .setTooltip('The minimum distance the player should fall before effects activating.')
     );
@@ -628,9 +631,9 @@ extend('TriggerLaunch', 'Component');
 function TriggerLaunch()
 {
     this.super('Launch', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player launches a projectile.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Any', 'Arrow', 'Egg', 'Ender Pearl', 'Fireball', 'Fishing Hook', 'Snowball' ], 'Any')
         .setTooltip('The type of projectile that should be launched.')
     );
@@ -640,12 +643,12 @@ extend('TriggerPhysicalDamage', 'Component');
 function TriggerPhysicalDamage()
 {
     this.super('Physical Damage', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player deals physical (or non-skill) damage. This includes melee attacks and firing a bow.';
-
+    
     this.data.push(new ListValue('Target Caster', 'target', [ 'True', 'False' ], 'True')
         .setTooltip('True makes children target the caster. False makes children target the damaged entity')
-    );
+    ); 
     this.data.push(new ListValue('Type', 'type', [ 'Both', 'Melee', 'Projectile' ], 'Both')
         .setTooltip('The type of damage dealt')
     );
@@ -661,12 +664,12 @@ extend('TriggerSkillDamage', 'Component');
 function TriggerSkillDamage()
 {
     this.super('Skill Damage', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player deals damage with a skill.';
-
+    
     this.data.push(new ListValue('Target Caster', 'target', [ 'True', 'False' ], 'True')
         .setTooltip('True makes children target the caster. False makes children target the damaged entity')
-    );
+    ); 
     this.data.push(new DoubleValue("Min Damage", "dmg-min", 0)
         .setTooltip('The minimum damage that needs to be dealt')
     );
@@ -682,12 +685,12 @@ extend('TriggerTookPhysicalDamage', 'Component');
 function TriggerTookPhysicalDamage()
 {
     this.super('Took Physical Damage', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player takes physical (or non-skill) damage. This includes melee attacks and projectiles not fired by a skill.';
-
+    
     this.data.push(new ListValue('Target Caster', 'target', [ 'True', 'False' ], 'True')
         .setTooltip('True makes children target the caster. False makes children target the attacking entity')
-    );
+    ); 
     this.data.push(new ListValue('Type', 'type', [ 'Both', 'Melee', 'Projectile' ], 'Both')
         .setTooltip('The type of damage dealt')
     );
@@ -703,12 +706,12 @@ extend('TriggerTookSkillDamage', 'Component');
 function TriggerTookSkillDamage()
 {
     this.super('Took Skill Damage', Type.TRIGGER, true);
-
+    
     this.description = 'Applies skill effects when a player takes damage from a skill other than their own.';
-
+    
     this.data.push(new ListValue('Target Caster', 'target', [ 'True', 'False' ], 'True')
         .setTooltip('True makes children target the caster. False makes children target the attacking entity')
-    );
+    ); 
     this.data.push(new DoubleValue("Min Damage", "dmg-min", 0)
         .setTooltip('The minimum damage that needs to be dealt')
     );
@@ -726,9 +729,9 @@ extend('TargetArea', 'Component');
 function TargetArea()
 {
     this.super('Area', Type.TARGET, true);
-
+    
     this.description = 'Targets all units in a radius from the current target (the casting player is the default target).';
-
+    
     this.data.push(new AttributeValue("Radius", "radius", 3, 0)
         .setTooltip('The radius of the area to target in blocks')
     );
@@ -750,9 +753,9 @@ extend('TargetCone', 'Component');
 function TargetCone()
 {
     this.super('Cone', Type.TARGET, true);
-
+    
     this.description = 'Targets all units in a line in front of the current target (the casting player is the default target). If you include the caster, that counts towards the max amount.';
-
+    
     this.data.push(new AttributeValue("Range", "range", 5, 0)
         .setTooltip('The max distance away any target can be in blocks')
     );
@@ -777,9 +780,9 @@ extend('TargetLinear', 'Component');
 function TargetLinear()
 {
     this.super('Linear', Type.TARGET, true);
-
+    
     this.description = 'Targets all units in a line in front of the current target (the casting player is the default target).';
-
+    
     this.data.push(new AttributeValue("Range", "range", 5, 0)
         .setTooltip('The max distance away any target can be in blocks')
     );
@@ -804,9 +807,9 @@ extend('TargetLocation', 'Component');
 function TargetLocation()
 {
     this.super('Location', Type.TARGET, true);
-
+    
     this.description = 'Targets the reticle location of the target or caster. Combine this with another targeting type for ranged area effects.';
-
+    
     this.data.push(new AttributeValue('Range', 'range', 5, 0)
         .setTooltip('The max distance the location can be')
     );
@@ -819,9 +822,9 @@ extend('TargetNearest', 'Component');
 function TargetNearest()
 {
     this.super('Nearest', Type.TARGET, true);
-
+    
     this.description = 'Targets the closest unit(s) in a radius from the current target (the casting player is the default target). If you include the caster, that counts towards the max number.';
-
+    
     this.data.push(new AttributeValue("Radius", "radius", 3, 0)
         .setTooltip('The radius of the area to target in blocks')
     );
@@ -843,9 +846,9 @@ extend('TargetOffset', 'Component');
 function TargetOffset()
 {
     this.super('Offset', Type.TARGET, true);
-
+    
     this.description = 'Targets a location that is the given offset away from each target.';
-
+    
     this.data.push(new AttributeValue('Forward', 'forward', 0, 0)
         .setTooltip('The offset from the target in the direction they are facing. Negative numbers go backwards.')
     );
@@ -861,9 +864,9 @@ extend('TargetRemember', 'Component');
 function TargetRemember()
 {
     this.super('Remember', Type.TARGET, true);
-
+    
     this.description = 'Targets entities stored using the "Remember Targets" mechanic for the matching key. If it was never set, this will fail.';
-
+    
     this.data.push(new StringValue('Key', 'key', 'target')
         .setTooltip('The unique key for the target group that should match that used by the "Remember Targets" skill')
     );
@@ -873,7 +876,7 @@ extend('TargetSelf', 'Component');
 function TargetSelf()
 {
     this.super('Self', Type.TARGET, true);
-
+    
     this.description = 'Returns the current target back to the caster.';
 }
 
@@ -881,9 +884,9 @@ extend('TargetSingle', 'Component');
 function TargetSingle()
 {
     this.super('Single', Type.TARGET, true);
-
+    
     this.description = 'Targets a single unit in front of the current target (the casting player is the default target).';
-
+    
     this.data.push(new AttributeValue("Range", "range", 5, 0)
         .setTooltip('The max distance away any target can be in blocks')
     );
@@ -905,21 +908,21 @@ function ConditionArmor()
 {
     this.super('Armor', Type.CONDITION, true);
     this.description = "Applies child components when the target is wearing an armor item matching the given details.";
-
+    
     this.data.push(new ListValue('Armor', 'armor', [ 'Helmet', 'Chestplate', 'Leggings', 'Boots', 'Any' ], 'Any')
         .setTooltip('The type of armor to check')
     );
-
+    
     addItemOptions(this);
 }
 
 extend('ConditionAttribute', 'Component');
-function ConditionAttribute()
+function ConditionAttribute() 
 {
     this.super('Attribute', Type.CONDITION, true);
-
+    
     this.description = 'Requires the target to have a given number of attributes';
-
+    
     this.data.push(new StringValue('Attribute', 'attribute', 'Vitality')
         .setTooltip('The name of the attribute you are checking the value of')
     );
@@ -935,9 +938,9 @@ extend('ConditionBiome', 'Component');
 function ConditionBiome()
 {
     this.super('Biome', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when in a specified biome.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'In Biome', 'Not In Biome' ], 'In Biome')
         .setTooltip('Whether or not the target should be in the biome. If checking for in the biome, they must be in any one of the checked biomes. If checking for the opposite, they must not be in any of the checked biomes.')
     );
@@ -950,39 +953,24 @@ extend('ConditionBlock', 'Component');
 function ConditionBlock()
 {
     this.super('Block', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components if the target is currently standing on a block of the given type.';
-
+    
     this.data.push(new ListValue('Type', 'standing', [ 'On Block', 'Not On Block' ], 'On Block')
         .setTooltip('Whether or not the target should be in the biome. If checking for in the biome, they must be in any one of the checked biomes. If checking for the opposite, they must not be in any of the checked biomes.')
     );
     this.data.push(new ListValue('Material', 'material', materialList, 'Dirt')
         .setTooltip('The type of the block to require the targets to stand on')
-    );
-}
-
-extend('ConditionCeiling', 'Component');
-function ConditionCeiling()
-{
-    this.super('Ceiling', Type.CONDITION, true);
-
-    this.description = 'Checks the height of the ceiling above each target';
-
-    this.data.push(new AttributeValue('Distance', 'distance', 5, 0)
-        .setTooltip('How high to check for the ceiling')
-    );
-    this.data.push(new ListValue('At least', 'at-least', [ 'True', 'False' ], 'True')
-        .setTooltip('When true, the ceiling must be at least the give number of blocks high. If false, the ceiling must be lower than the given number of blocks')
-    );
+    ); 
 }
 
 extend('ConditionChance', 'Component');
 function ConditionChance()
 {
     this.super('Chance', Type.CONDITION, true);
-
+    
     this.description = 'Rolls a chance to apply child components.';
-
+    
     this.data.push(new AttributeValue('Chance', 'chance', 25, 0)
         .setTooltip('The chance to execute children as a percentage. "25" would be 25%.')
     );
@@ -992,9 +980,9 @@ extend('ConditionClass', 'Component');
 function ConditionClass()
 {
     this.super('Class', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target is the given class or optionally a profession of that class. For example, if you check for "Fighter" which professes into "Warrior", a "Warrior" will pass the check if you do not enable "exact".';
-
+    
     this.data.push(new StringValue('Class', 'class', 'Fighter')
         .setTooltip('The class the player should be')
     );
@@ -1007,9 +995,9 @@ extend('ConditionClassLevel', 'Component');
 function ConditionClassLevel()
 {
     this.super('Class Level', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the level of the class with this skill is within the range. This only checks the level of the caster, not the targets.';
-
+    
     this.data.push(new IntValue('Min Level', 'min-level', 2)
         .setTooltip('The minimum class level the player should be. If the player has multiple classes, this will be of their main class')
     );
@@ -1022,9 +1010,9 @@ extend('ConditionCombat', 'Component');
 function ConditionCombat()
 {
     this.super('Combat', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components to targets that are in/out of combat, depending on the settings.';
-
+    
     this.data.push(new ListValue('In Combat', 'combat', [ 'True', 'False' ], 'True')
         .setTooltip('Whether or not the target should be in or out of combat')
     );
@@ -1037,9 +1025,9 @@ extend('ConditionCrouch', 'Component');
 function ConditionCrouch()
 {
     this.super('Crouch', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components if the target player(s) are crouching';
-
+    
     this.data.push(new ListValue('Crouching', 'crouch', [ 'True', 'False' ], 'True')
         .setTooltip('Whether or not the player should be crouching')
     );
@@ -1049,9 +1037,9 @@ extend('ConditionDirection', 'Component');
 function ConditionDirection()
 {
     this.super('Direction', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target or caster is facing the correct direction relative to the other.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Target', 'Caster' ], 'Target')
         .setTooltip('The entity to check the direction of')
     );
@@ -1064,9 +1052,9 @@ extend('ConditionElevation', 'Component');
 function ConditionElevation()
 {
     this.super('Elevation', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the elevation of the target matches the settings.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Normal', 'Difference' ], 'Normal')
         .setTooltip('The type of comparison to make. Normal is just their Y-coordinate. Difference would be the difference between that the caster\'s Y-coordinate')
     );
@@ -1082,7 +1070,7 @@ extend('ConditionElse', 'Component');
 function ConditionElse()
 {
     this.super('Else', Type.CONDITION, true);
-
+    
     this.description = 'Applies child elements if the previous component failed to execute. This not only applies for conditions not passing, but mechanics failing due to no target or other cases.';
 }
 
@@ -1090,9 +1078,9 @@ extend('ConditionEntityType', 'Component');
 function ConditionEntityType()
 {
     this.super('Entity Type', Type.CONDITION, true);
-
+    
     this.description = 'Applies child elements if the target matches one of the selected entity types'
-
+    
     this.data.push(new MultiListValue('Types', 'types', [ 'BAT', 'BLAZE', 'CAVE_SPIDER', 'CHICKEN', 'COW', 'CREEPER', 'DONKEY', 'ELDER_GUARDIAN', 'ENDER_DRAGON', 'ENDERMAN', 'ENDERMITE', 'EVOKER', 'GHAST', 'GIANT', 'GUARDIAN', 'HORSE', 'HUSK', 'IRON_GOLEM', 'LLAMA', 'MAGMA_CUBE', 'MULE', 'MUSHROOM_COW', 'OCELOT', 'PIG', 'PIG_ZOMBIE', 'PLAYER', 'POLAR_BEAR', 'RABBIT', 'SHEEP', 'SHULKER', 'SILVERFISH', 'SKELETON', 'SKELETON_HORSE', 'SLIME', 'SNOWMAN', 'SPIDER', 'SQUID', 'VEX', 'VILLAGER', 'VINDICATOR', 'WITCH', 'WITHER', 'WITHER_SKELETON', 'WOLF', 'ZOMBIE', 'ZOMBIE_HORSE', 'ZOMBIE_VILLAGER' ])
         .setTooltip('The entity types to target')
     );
@@ -1102,9 +1090,9 @@ extend('ConditionFire', 'Component');
 function ConditionFire()
 {
     this.super('Fire', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target is on fire.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'On Fire', 'Not On Fire' ], 'On Fire')
         .setTooltip('Whether or not the target should be on fire')
     );
@@ -1114,9 +1102,9 @@ extend('ConditionFlag', 'Component');
 function ConditionFlag()
 {
     this.super('Flag', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target is marked by the appropriate flag.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Set', 'Not Set' ], 'Set')
         .setTooltip('Whether or not the flag should be set')
     );
@@ -1131,7 +1119,7 @@ function ConditionHealth()
     this.super('Health', Type.CONDITION, true);
 
     this.description = "Applies child components when the target's health matches the settings.";
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Health', 'Percent', 'Difference', 'Difference Percent' ], 'Health')
         .setTooltip('The type of measurement to use for the health. Health is their flat health left. Percent is the percentage of health they have left. Difference is the difference between the target\'s flat health and the caster\'s. Difference percent is the difference between the target\'s percentage health left and the caster\s')
     );
@@ -1148,7 +1136,7 @@ function ConditionItem()
 {
     this.super('Item', Type.CONDITION, true);
     this.description = "Applies child components when the target is wielding an item matching the given material.";
-
+    
     addItemOptions(this);
 }
 
@@ -1156,13 +1144,13 @@ extend('ConditionInventory', 'Component');
 function ConditionInventory()
 {
     this.super('Inventory', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target player contains the given item in their inventory. This does not work on mobs.';
-
+    
     this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
         .setTooltip('The amount of the item needed in the player\'s inventory')
     );
-
+    
     addItemOptions(this);
 }
 
@@ -1170,9 +1158,9 @@ extend('ConditionLight', 'Component');
 function ConditionLight()
 {
     this.super('Light', Type.CONDITION, true);
-
+    
     this.description = "Applies child components when the light level at the target's location matches the settings.";
-
+    
     this.data.push(new AttributeValue('Min Light', 'min-light', 0, 0)
         .setTooltip('The minimum light level needed. 16 is full brightness while 0 is complete darkness')
     );
@@ -1187,7 +1175,7 @@ function ConditionMana()
     this.super('Mana', Type.CONDITION, true);
 
     this.description = "Applies child components when the target's mana matches the settings.";
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Mana', 'Percent', 'Difference', 'Difference Percent' ], 'Mana')
         .setTooltip('The type of measurement to use for the mana. Mana is their flat mana left. Percent is the percentage of mana they have left. Difference is the difference between the target\'s flat mana and the caster\'s. Difference percent is the difference between the target\'s percentage mana left and the caster\s')
     );
@@ -1203,9 +1191,9 @@ extend('ConditionName', 'Component');
 function ConditionName()
 {
     this.super('Name', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target has a name matching the settings.';
-
+    
     this.data.push(new ListValue('Contains Text', 'contains', [ 'True', 'False' ], 'True')
         .setTooltip('Whether or not the target should have a name containing the text')
     );
@@ -1222,7 +1210,7 @@ function ConditionOffhand()
 {
     this.super('Offhand', Type.CONDITION, true);
     this.description = "Applies child components when the target is wielding an item matching the given material as an offhand item. This is for v1.9+ servers only.";
-
+    
     addItemOptions(this);
 }
 
@@ -1230,9 +1218,9 @@ extend('ConditionPermission', 'Component');
 function ConditionPermission()
 {
     this.super('Permission', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components if the caster has the required permission';
-
+    
     this.data.push(new StringValue('Permission', 'perm', 'some.permission')
         .setTooltip('The permission the player needs to have')
     );
@@ -1242,9 +1230,9 @@ extend('ConditionPotion', 'Component');
 function ConditionPotion()
 {
     this.super('Potion', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target has the potion effect.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Active', 'Not Active' ], 'Active')
         .setTooltip('Whether or not the potion should be active')
     );
@@ -1263,9 +1251,9 @@ extend('ConditionSkillLevel', 'Component');
 function ConditionSkillLevel(skill)
 {
     this.super('Skill Level', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the skill level is with the range. This checks the skill level of the caster, not the targets.';
-
+    
     this.data.push(new StringValue('Skill', 'skill', skill)
         .setTooltip('The name of the skill to check the level of. If you want to check the current skill, enter the current skill\'s name anyway')
     );
@@ -1282,11 +1270,11 @@ function ConditionSlot()
 {
     this.super('Slot', Type.CONDITION, true);
     this.description = "Applies child components when the target player has a matching item in the given slot.";
-
+    
     this.data.push(new StringListValue('Slots (one per line)', 'slot', [9])
         .setTooltip('The slots to look at. Slots 0-8 are the hot bar, 9-35 are the main inventory, 36-39 are armor, and 40 is the offhand slot. Multiple slots will check if any of the slots match.')
     );
-
+    
     addItemOptions(this);
 }
 
@@ -1294,9 +1282,9 @@ extend('ConditionStatus', 'Component');
 function ConditionStatus()
 {
     this.super('Status', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target has the status condition.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Active', 'Not Active' ], 'Active')
         .setTooltip('Whether or not the status should be active')
     );
@@ -1309,9 +1297,9 @@ extend('ConditionTime', 'Component');
 function ConditionTime()
 {
     this.super('Time', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the server time matches the settings.';
-
+    
     this.data.push(new ListValue('Time', 'time', [ 'Day', 'Night' ], 'Day')
         .setTooltip('The time to check for in the current world')
     );
@@ -1321,9 +1309,9 @@ extend('ConditionTool', 'Component');
 function ConditionTool()
 {
     this.super('Tool', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target is wielding a matching tool.';
-
+    
     this.data.push(new ListValue('Material', 'material', [ 'Any', 'Wood', 'Stone', 'Iron', 'Gold', 'Diamond' ], 'Any')
         .setTooltip('The material the held tool needs to be made out of')
     );
@@ -1336,9 +1324,9 @@ extend('ConditionValue', 'Component');
 function ConditionValue()
 {
     this.super('Value', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components if a stored value is within the given range.';
-
+    
     this.data.push(new StringValue('Key', 'key', 'value')
         .setTooltip('The unique string used for the value set by the Value mechanics.')
     );
@@ -1354,9 +1342,9 @@ extend('ConditionWater', 'Component');
 function ConditionWater()
 {
     this.super('Water', Type.CONDITION, true);
-
+    
     this.description = 'Applies child components when the target is in or out of water, depending on the settings.';
-
+    
     this.data.push(new ListValue('State', 'state', [ 'In Water', 'Out Of Water' ], 'In Water')
         .setTooltip('Whether or not the target needs to be in the water')
     );
@@ -1368,9 +1356,9 @@ extend('MechanicAttribute', 'Component');
 function MechanicAttribute()
 {
     this.super('Attribute', Type.MECHANIC, false);
-
+    
     this.description = 'Gives a player bonus attributes temporarily.';
-
+    
     this.data.push(new StringValue('Attribute', 'key', 'Intelligence')
         .setTooltip('The name of the attribute to add to')
     );
@@ -1383,12 +1371,12 @@ function MechanicAttribute()
 }
 
 extend('MechanicBlock', 'Component');
-function MechanicBlock()
+function MechanicBlock() 
 {
     this.super('Block', Type.MECHANIC, false);
-
+    
     this.description = 'Changes blocks to the given type of block for a limited duration.';
-
+    
     this.data.push(new ListValue('Shape', 'shape', [ 'Sphere', 'Cuboid' ], 'Sphere' )
         .setTooltip('The shape of the region to change the blocks for')
     );
@@ -1413,12 +1401,12 @@ function MechanicBlock()
     this.data.push(new AttributeValue('Right Offset', 'right', 0, 0)
         .setTooltip('How far to the right the region should be of the target. A negative value will put it to the left.')
     );
-
+    
     // Sphere options
     this.data.push(new AttributeValue('Radius', 'radius', 3, 0).requireValue('shape', [ 'Sphere' ])
         .setTooltip('The radius of the sphere region in blocks')
     );
-
+    
     // Cuboid options
     this.data.push(new AttributeValue('Width (X)', 'width', 5, 0).requireValue('shape', [ 'Cuboid' ])
         .setTooltip('The width of the cuboid in blocks')
@@ -1460,7 +1448,7 @@ extend('MechanicCancel', 'Component');
 function MechanicCancel()
 {
     this.super('Cancel', Type.MECHANIC, false);
-
+    
     this.description = 'Cancels the event that caused the trigger this is under to go off. For example, damage based triggers will stop the damage that was dealt while the Launch trigger would stop the projectile from firing.';
 }
 
@@ -1468,9 +1456,9 @@ extend('MechanicCancelEffect', 'Component');
 function MechanicCancelEffect()
 {
     this.super('Cancel Effect', Type.MECHANIC, false);
-
+    
     this.description = 'Stops a particle effect prematurely.';
-
+    
     this.data.push(new StringValue('Effect Key', 'effect-key', 'default')
         .setTooltip('The key used when setting up the effect')
     );
@@ -1480,9 +1468,9 @@ extend('MechanicChannel', 'Component');
 function MechanicChannel()
 {
     this.super('Channel', Type.MECHANIC, true);
-
+    
     this.description = 'Applies child effects after a duration which can be interrupted. During the channel, the player cannot move, attack, or use other spells.';
-
+    
     this.data.push(new ListValue('Still', 'still', [ 'True', 'False' ], 'True')
         .setTooltip('Whether or not to hold the player in place while channeling')
     );
@@ -1495,9 +1483,9 @@ extend('MechanicCleanse', 'Component');
 function MechanicCleanse()
 {
     this.super('Cleanse', Type.MECHANIC, false);
-
+    
     this.description = 'Cleanses negative potion or status effects from the targets.';
-
+    
     this.data.push(new ListValue('Potion', 'potion', [ 'None', 'All', 'Blindness', 'Confusion', 'Hunger', 'Levitation', 'Poison', 'Slow', 'Slow Digging', 'Weakness', 'Wither' ], 'All')
         .setTooltip('The type of potion effect to remove from the target')
     );
@@ -1510,9 +1498,9 @@ extend('MechanicCommand', 'Component');
 function MechanicCommand()
 {
     this.super('Command', Type.MECHANIC, false);
-
+    
     this.description ='Executes a command for each of the targets either from them directly by oping them or via the console using their name.';
-
+    
     this.data.push(new StringValue('Command', 'command', '')
         .setTooltip('The command to execute')
     );
@@ -1525,9 +1513,9 @@ extend('MechanicCooldown', 'Component');
 function MechanicCooldown()
 {
     this.super('Cooldown', Type.MECHANIC, false);
-
+    
     this.description = "Lowers the cooldowns of the target's skill(s). If you provide a negative amount, it will increase the cooldown.";
-
+    
     this.data.push(new StringValue('Skill (or "all")', 'skill', 'all')
         .setTooltip('The skill to modify the cooldown for')
     );
@@ -1543,9 +1531,9 @@ extend('MechanicDamage', 'Component');
 function MechanicDamage()
 {
     this.super('Damage', Type.MECHANIC, false);
-
+    
     this.description = 'Inflicts skill damage to each target. Multiplier type would be a percentage of the target health.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Damage', 'Multiplier', 'Percent Left', 'Percent Missing' ], 'Damage')
         .setTooltip('The unit to use for the amount of damage. Damage will deal flat damage, Multiplier will deal a percentage of the target\'s max health, Percent Left will deal a percentage of their current health, and Percent Missing will deal a percentage of the difference between their max health and current health')
     );
@@ -1564,9 +1552,9 @@ extend('MechanicDamageBuff', 'Component');
 function MechanicDamageBuff()
 {
     this.super('Damage Buff', Type.MECHANIC, false);
-
+    
     this.description = 'Modifies the physical damage dealt by each target by a multiplier or a flat amount for a limited duration. Negative flat amounts or multipliers less than one will reduce damage dealt while the opposite will increase damage dealt. (e.g. a 5% damage buff would be a multiplier or 1.05)';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Flat', 'Multiplier' ], 'Flat')
         .setTooltip('The type of buff to apply. Flat increases damage by a fixed amount while multiplier increases it by a percentage.')
     );
@@ -1585,9 +1573,9 @@ extend('MechanicDamageLore', 'Component');
 function MechanicDamageLore()
 {
     this.super('Damage Lore', Type.MECHANIC, false);
-
+    
     this.description = 'Damages each target based on a value found in the lore of the item held by the caster.';
-
+    
     this.data.push(new ListValue("Hand", "hand", [ 'Main', 'Offhand' ], 'Main')
         .setTooltip('The hand to check for the item. Offhand items are MC 1.9+ only.')
     );
@@ -1609,9 +1597,9 @@ extend('MechanicDefenseBuff', 'Component');
 function MechanicDefenseBuff()
 {
     this.super('Defense Buff', Type.MECHANIC, false);
-
+    
     this.description = 'Modifies the physical damage taken by each target by a multiplier or a flat amount for a limited duration. Negative flag amounts or multipliers less than one will reduce damage taken while the opposite will increase damage taken. (e.g. a 5% defense buff would be a multiplier or 0.95, since you would be taking 95% damage)';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Flat', 'Multiplier' ], 'Flat')
         .setTooltip('The type of buff to apply. Flat will increase/reduce incoming damage by a fixed amount where Multiplier does it by a percentage of the damage. Multipliers above 1 will increase damage taken while multipliers below 1 reduce damage taken.')
     );
@@ -1630,9 +1618,9 @@ extend('MechanicDelay', 'Component');
 function MechanicDelay()
 {
     this.super('Delay', Type.MECHANIC, true);
-
+    
     this.description = 'Applies child components after a delay.';
-
+    
     this.data.push(new AttributeValue('Delay', 'delay', 2, 0)
         .setTooltip('The amount of time to wait before applying child components in seconds')
     );
@@ -1642,16 +1630,16 @@ extend('MechanicDisguise', 'Component');
 function MechanicDisguise()
 {
     this.super('Disguise', Type.MECHANIC, false);
-
+    
     this.description = 'Disguises each target according to the settings. This mechanic requires the LibsDisguise plugin to be installed on your server.';
-
+    
     this.data.push(new AttributeValue('Duration', 'duration', -1, 0)
         .setTooltip('How long to apply the disguise for in seconds. Use a negative number to permanently disguise the targets.')
     );
     this.data.push(new ListValue('Type', 'type', [ 'Mob', 'Player', 'Misc' ], 'Mob')
         .setTooltip('The type of disguise to use, as defined by the LibsDisguise plugin.')
     );
-
+    
     this.data.push(new ListValue('Mob', 'mob', [ 'Bat', 'Blaze', 'Cave Spider', 'Chicken', 'Cow', 'Creeper', 'Donkey', 'Elder Guardian', 'Ender Dragon', 'Enderman', 'Endermite', 'Ghast', 'Giant', 'Guardian', 'Horse', 'Iron Golem', 'Magma Cube', 'Mule', 'Mushroom Cow', 'Ocelot', 'Pig', 'Pig Zombie', 'Rabbit', 'Sheep', 'Shulker', 'Silverfish', 'Skeleton', 'Slime', 'Snowman', 'Spider', 'Squid', 'Undead Horse', 'Villager', 'Witch', 'Wither', 'Wither Skeleton', 'Wolf', 'Zombie', 'Zombie Villager'], 'Zombie')
         .requireValue('type', [ 'Mob' ])
         .setTooltip('The type of mob to disguise the target as')
@@ -1660,12 +1648,12 @@ function MechanicDisguise()
         .requireValue('type', [ 'Mob' ])
         .setTooltip('Whether or not to use the adult variant of the mob')
     );
-
+    
     this.data.push(new StringValue('Player', 'player', 'Eniripsa96')
         .requireValue('type', [ 'Player' ])
         .setTooltip('The player to disguise the target as')
     );
-
+    
     this.data.push(new ListValue('Misc', 'misc', [ 'Area Effect Cloud', 'Armor Stand', 'Arrow', 'Boat', 'Dragon Fireball', 'Dropped Item', 'Egg', 'Ender Crystal', 'Ender Pearl', 'Ender Signal', 'Experience Orb', 'Falling Block', 'Fireball', 'Firework', 'Fishing Hook', 'Item Frame', 'Leash Hitch', 'Minecart', 'Minecart Chest', 'Minecart Command', 'Minecart Furnace', 'Minecart Hopper', 'Minecart Mob Spawner', 'Minecart TNT', 'Painting', 'Primed TNT', 'Shulker Bullet', 'Snowball', 'Spectral Arrow', 'Splash Potion', 'Tipped Arrow', 'Thrown EXP Bottle', 'Wither Skull' ], 'Painting')
         .requireValue('type', [ 'Misc' ])
         .setTooltip('The object to disguise the target as')
@@ -1695,9 +1683,9 @@ extend('MechanicExplosion', 'Component');
 function MechanicExplosion()
 {
     this.super('Explosion', Type.MECHANIC, false);
-
+    
     this.description = 'Causes an explosion at the current target\'s position';
-
+    
     this.data.push(new AttributeValue('Power', 'power', 3, 0)
         .setTooltip('The strength of the explosion')
     );
@@ -1713,9 +1701,9 @@ extend('MechanicFire', 'Component');
 function MechanicFire()
 {
     this.super('Fire', Type.MECHANIC, false);
-
+    
     this.description = 'Sets the target on fire for a duration.';
-
+    
     this.data.push(new AttributeValue('Seconds', 'seconds', 3, 1)
         .setTooltip('The duration of the fire in seconds')
     );
@@ -1725,24 +1713,24 @@ extend('MechanicFlag', 'Component');
 function MechanicFlag()
 {
     this.super('Flag', Type.MECHANIC, false);
-
+    
     this.description = 'Marks the target with a flag for a duration. Flags can be checked by other triggers, spells or the related for interesting synergies and effects.';
-
+    
     this.data.push(new StringValue('Key', 'key', 'key')
         .setTooltip('The unique string for the flag. Use the same key when checking it in a Flag Condition.')
     );
     this.data.push(new AttributeValue('Seconds', 'seconds', 3, 1)
         .setTooltip('The duration the flag should be set for. To set one indefinitely, use Flag Toggle.')
-    );
+    ); 
 }
 
 extend('MechanicFlagClear', 'Component');
 function MechanicFlagClear()
 {
     this.super('Flag Clear', Type.MECHANIC, false);
-
+    
     this.description = 'Clears a flag from the target.';
-
+    
     this.data.push(new StringValue('Key', 'key', 'key')
         .setTooltip('The unique string for the flag. This should match that of the mechanic that set the flag to begin with.')
     );
@@ -1752,9 +1740,9 @@ extend('MechanicFlagToggle', 'Component');
 function MechanicFlagToggle()
 {
     this.super('Flag Toggle', Type.MECHANIC, false);
-
+    
     this.description = 'Toggles a flag on or off for the target. This can be used to make toggle effects.';
-
+    
     this.data.push(new StringValue('Key', 'key', 'key')
         .setTooltip('The unique string for the flag. Use the same key when checking it in a Flag Condition')
     );
@@ -1776,12 +1764,12 @@ function MechanicFood()
 }
 
 extend('MechanicForgetTargets', 'Component');
-function MechanicForgetTargets()
+function MechanicForgetTargets() 
 {
     this.super('Forget Targets', Type.MECHANIC, false);
-
+    
     this.description = 'Clears targets stored by the "Remember Targets" mechanic';
-
+    
     this.data.push(new StringValue('Key', 'key', 'key')
         .setTooltip('The unique key the targets were stored under')
     );
@@ -1791,9 +1779,9 @@ extend('MechanicHeal', 'Component');
 function MechanicHeal()
 {
     this.super('Heal', Type.MECHANIC, false);
-
+    
     this.description = 'Restores health to each target.';
-
+    
     this.data.push(new ListValue("Type", "type", [ "Health", "Percent" ], "Health")
         .setTooltip('The unit to use for the amount of health to restore. Health restores a flat amount while Percent restores a percentage of their max health.')
     );
@@ -1818,9 +1806,9 @@ extend('MechanicHeldItem', 'Component');
 function MechanicHeldItem()
 {
     this.super('Held Item', Type.MECHANIC, false);
-
+    
     this.description = 'Sets the held item slot of the target player. This will do nothing if trying to set it to a skill slot.';
-
+    
     this.data.push(new AttributeValue("Slot", "slot", 0, 0)
         .setTooltip('The slot to set it to')
     );
@@ -1830,9 +1818,9 @@ extend('MechanicImmunity', 'Component');
 function MechanicImmunity()
 {
     this.super('Immunity', Type.MECHANIC, false);
-
+    
     this.description = 'Provides damage immunity from one source for a duration.'
-
+    
     this.data.push(new ListValue('Type', 'type', DAMAGE_TYPES, 'Poison')
         .setTooltip('The damage type to give an immunity for')
     );
@@ -1848,7 +1836,7 @@ extend('MechanicInterrupt', 'Component');
 function MechanicInterrupt()
 {
     this.super('Interrupt', Type.MECHANIC, false);
-
+    
     this.description = 'Interrupts any channeling being done by each target if applicable.';
 }
 
@@ -1856,9 +1844,9 @@ extend('MechanicItem', 'Component');
 function MechanicItem()
 {
     this.super('Item', Type.MECHANIC, false);
-
+    
     this.description = 'Gives each player target the item defined by the settings.';
-
+    
     this.data.push(new ListValue('Material', 'material', materialList, 'Arrow')
         .setTooltip('The type of item to give to the player')
     );
@@ -1874,7 +1862,7 @@ function MechanicItem()
     this.data.push(new ListValue('Custom', 'custom', [ 'True', 'False' ], 'False')
         .setTooltip('Whether or not to apply a custom name/lore to the item')
     );
-
+    
     this.data.push(new StringValue('Name', 'name', 'Name').requireValue('custom', [ 'True' ])
         .setTooltip('The name of the item')
     );
@@ -1887,17 +1875,17 @@ extend('MechanicItemProjectile', 'Component');
 function MechanicItemProjectile()
 {
     this.super('Item Projectile', Type.MECHANIC, true);
-
+    
     this.description = 'Launches a projectile using an item as its visual that applies child components upon landing. The target passed on will be the collided target or the location where it landed if it missed.';
-
-
+    
+    
     this.data.push(new ListValue('Item', 'item', materialList, 'Jack O Lantern')
         .setTooltip('The item type to use as a projectile')
     ),
     this.data.push(new IntValue('Item Data', 'item-data', 0)
         .setTooltip('The durability value for the item to use as a projectile, most notably for dyes or colored items like wool')
     ),
-
+    
     addProjectileOptions(this);
     addEffectOptions(this, true);
 }
@@ -1906,13 +1894,13 @@ extend('MechanicItemRemove', 'Component');
 function MechanicItemRemove()
 {
     this.super('Item Remove', Type.MECHANIC, false);
-
+    
     this.description = 'Removes an item from a player inventory. This does nothing to mobs.';
-
+    
     this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
         .setTooltip('The amount of the item needed in the player\'s inventory')
     );
-
+    
     addItemOptions(this);
 }
 
@@ -1920,7 +1908,7 @@ extend('MechanicLaunch', 'Component');
 function MechanicLaunch()
 {
     this.super('Launch', Type.MECHANIC, false);
-
+    
     this.description = 'Launches the target relative to their forward direction. Use negative values to go in the opposite direction (e.g. negative forward makes the target go backwards)';
 
     this.data.push(new ListValue('[PREM] Relative', 'relative', [ 'Target', 'Caster', 'Between'], 'Target')
@@ -1941,9 +1929,9 @@ extend('MechanicLightning', 'Component');
 function MechanicLightning()
 {
     this.super('Lightning', Type.MECHANIC, false);
-
+    
     this.description = 'Strikes lightning on or near the target. Negative offsets will offset it in the opposite direction (e.g. negative forward offset puts it behind the target).';
-
+    
     this.data.push(new ListValue('Damage', 'damage', ['True', 'False'], 'True')
         .setTooltip('Whether or not the lightning should deal damage')
     );
@@ -1959,9 +1947,9 @@ extend('MechanicMana', 'Component');
 function MechanicMana()
 {
     this.super('Mana', Type.MECHANIC, false);
-
+    
     this.description = 'Restores or deducts mana from the target.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Mana', 'Percent' ], 'Mana')
         .setTooltip('The unit to use for the amount of mana to restore/drain. Mana does a flat amount while Percent does a percentage of their max mana')
     );
@@ -1974,9 +1962,9 @@ extend('MechanicMessage', 'Component');
 function MechanicMessage()
 {
     this.super('Message', Type.MECHANIC, false);
-
+    
     this.description = 'Sends a message to each player target. To include numbers from Value mechanics, use the filters {<key>} where <key> is the key the value is stored under.'
-
+    
     this.data.push(new StringValue('Message', 'message', 'text')
         .setTooltip('The message to display')
     );
@@ -1986,11 +1974,11 @@ extend('MechanicParticle', 'Component');
 function MechanicParticle()
 {
     this.super('Particle', Type.MECHANIC, false);
-
+    
     this.description = 'Plays a particle effect about the target.';
-
+    
     addParticleOptions(this);
-
+    
     this.data.push(new DoubleValue('Forward Offset', 'forward', 0)
         .setTooltip('How far forward in front of the target in blocks to play the particles. A negative value will go behind.')
     );
@@ -2006,9 +1994,9 @@ extend('MechanicParticleAnimation', 'Component');
 function MechanicParticleAnimation()
 {
     this.super('Particle Animation', Type.MECHANIC, false);
-
+    
     this.description = 'Plays an animated particle effect at the location of each target over time by applying various transformations.';
-
+    
     this.data.push(new IntValue('Steps', 'steps', 1, 0)
         .setTooltip('The number of times to play particles and apply translations each application.')
     );
@@ -2036,9 +2024,9 @@ function MechanicParticleAnimation()
     this.data.push(new IntValue('V-Cycles', 'v-cycles', 1)
         .setTooltip('How many times to move the animation position throughout the animation. Every other cycle moves it back to where it started. For example, two cycles would move it up and then back down.')
     );
-
+    
     addParticleOptions(this);
-
+    
     this.data.push(new DoubleValue('Forward Offset', 'forward', 0)
         .setTooltip('How far forward in front of the target in blocks to play the particles. A negative value will go behind.')
     );
@@ -2054,9 +2042,9 @@ extend('MechanicParticleEffect', 'Component');
 function MechanicParticleEffect()
 {
     this.super('Particle Effect', Type.MECHANIC, false);
-
+    
     this.description = 'Plays a particle effect that follows the current target, using formulas to determine shape, size, and motion';
-
+    
     addEffectOptions(this, false);
 }
 
@@ -2064,9 +2052,9 @@ extend('MechanicParticleProjectile', 'Component');
 function MechanicParticleProjectile()
 {
     this.super('Particle Projectile', Type.MECHANIC, true);
-
+    
     this.description = 'Launches a projectile using particles as its visual that applies child components upon landing. The target passed on will be the collided target or the location where it landed if it missed.';
-
+    
     addProjectileOptions(this);
 
     this.data.push(new DoubleValue('Gravity', 'gravity', 0)
@@ -2077,14 +2065,14 @@ function MechanicParticleProjectile()
     );
 
     addParticleOptions(this);
-
+    
     this.data.push(new DoubleValue('Frequency', 'frequency', 0.05)
         .setTooltip('How often to play a particle effect where the projectile is. It is recommended not to change this value unless there are too many particles playing')
     );
     this.data.push(new DoubleValue('Lifespan', 'lifespan', 3)
         .setTooltip('How long in seconds before the projectile will expire in case it doesn\'t hit anything')
     );
-
+    
     addEffectOptions(this, true);
 }
 
@@ -2092,9 +2080,9 @@ extend('MechanicPassive', 'Component');
 function MechanicPassive()
 {
     this.super('Passive', Type.MECHANIC, true);
-
+    
     this.description = 'Applies child components continuously every period. The seconds value below is the period or how often it applies.';
-
+    
     this.data.push(new AttributeValue('Seconds', 'seconds', 1, 0)
         .setTooltip('The delay in seconds between each application')
     );
@@ -2104,9 +2092,9 @@ extend('MechanicPermission', 'Component');
 function MechanicPermission()
 {
     this.super('Permission', Type.MECHANIC, true);
-
+    
     this.description = 'Grants each player target a permission for a limited duration. This mechanic requires Vault with an accompanying permissions plugin in order to work.';
-
+    
     this.data.push(new StringValue('Permission', 'perm', 'plugin.perm.key')
         .setTooltip('The permission to give to the player')
     );
@@ -2119,9 +2107,9 @@ extend('MechanicPotion', 'Component');
 function MechanicPotion()
 {
     this.super('Potion', Type.MECHANIC, false);
-
+    
     this.description = 'Applies a potion effect to the target for a duration.';
-
+    
     this.data.push(new ListValue('Potion', 'potion', [ 'Absorption', 'Blindness', 'Confusion', 'Damage Resistance', 'Fast Digging', 'Fire Resistance', 'Glowing', 'Health Boost', 'Hunger', 'Increase Damage', 'Invisibility', 'Jump', 'Levitation', 'Luck', 'Night Vision', 'Poison', 'Regeneration', 'Saturation', 'Slow', 'Slow Digging', 'Speed', 'Unluck', 'Water Breathing', 'Weakness', 'Wither' ], 'Absorption')
         .setTooltip('The type of potion effect to apply')
     );
@@ -2140,9 +2128,9 @@ extend('MechanicPotionProjectile', 'Component');
 function MechanicPotionProjectile()
 {
     this.super('Potion Projectile', Type.MECHANIC, true);
-
+    
     this.description = 'Drops a splash potion from each target that does not apply potion effects by default. This will apply child elements when the potion lands. The targets supplied will be everything hit by the potion. If nothing is hit by the potion, the target will be the location it landed.';
-
+    
     this.data.push(new ListValue('Type', 'type', [ 'Fire Resistance', 'Instant Damage', 'Instant Heal', 'Invisibility', 'Night Vision', 'Poison', 'Regen', 'Slowness', 'Speed', 'Strength', 'Water', 'Water Breathing', 'Weakness' ], 'Fire Resistance')
         .setTooltip('The type of the potion to use for the visuals')
     );
@@ -2158,9 +2146,9 @@ extend('MechanicProjectile', 'Component');
 function MechanicProjectile()
 {
     this.super('Projectile', Type.MECHANIC, true);
-
+    
     this.description = 'Launches a projectile that applies child components on hit. The target supplied will be the struck target.';
-
+    
     this.data.push(new ListValue('Projectile', 'projectile', [ 'Arrow', 'Egg', 'Ghast Fireball', 'Snowball' ], 'Arrow')
         .setTooltip('The type of projectile to fire')
     );
@@ -2170,18 +2158,18 @@ function MechanicProjectile()
     this.data.push(new ListValue('Cost', 'cost', [ 'None', 'All', 'One' ], 'None')
         .setTooltip('The cost of the skill of the fired item. All will cost the same number of items as the skill fired.')
     );
-
+    
     addProjectileOptions(this);
     addEffectOptions(this, true);
 }
 
 extend('MechanicPurge', 'Component');
-function MechanicPurge()
+function MechanicPurge() 
 {
     this.super('Purge', Type.MECHANIC, false);
-
+    
     this.description = 'Purges the target of positive potion effects or statuses';
-
+    
     this.data.push(new ListValue('Potion', 'potion', [ 'None', 'All', 'Absorption', 'Damage Resistance', 'Fast Digging', 'Fire Resistance', 'Health Boost', 'Increase Damage', 'Invisibility', 'Jump', 'Night Vision', 'Regeneration', 'Saturation', 'Speed', 'Water Breathing' ], 'All')
         .setTooltip('The potion effect to remove from the target, if any')
     );
@@ -2194,9 +2182,9 @@ extend('MechanicPush', 'Component');
 function MechanicPush()
 {
     this.super('Push', Type.MECHANIC, false);
-
+    
     this.description = 'Pushes the target relative to the caster. This will do nothing if used with the caster as the target. Positive numbers apply knockback while negative numbers pull them in.';
-
+    
   this.data.push(new ListValue('Type', 'type', [ 'Fixed', 'Inverse', 'Scaled' ], 'Fixed')
     .setTooltip('How to scale the speed based on relative position. Fixed does the same speed to all targets. Inverse pushes enemies farther away faster. Scaled pushes enemies closer faster.')
   );
@@ -2209,9 +2197,9 @@ extend('MechanicRememberTargets', 'Component');
 function MechanicRememberTargets()
 {
     this.super('Remember Targets', Type.MECHANIC, false);
-
+    
     this.description = 'Stores the current targets for later use under a specified key';
-
+    
     this.data.push(new StringValue('Key', 'key', 'target')
         .setTooltip('The unique key to store the targets under. The "Remember" target will use this key to apply effects to the targets later on.')
     );
@@ -2221,9 +2209,9 @@ extend('MechanicRepeat', 'Component');
 function MechanicRepeat()
 {
     this.super('Repeat', Type.MECHANIC, true);
-
+    
     this.description = 'Applies child components multiple times. When it applies them is determined by the delay (seconds before the first application) and period (seconds between successive applications).';
-
+    
     this.data.push(new AttributeValue('Repetitions', 'repetitions', 3, 0)
         .setTooltip('How many times to activate child components')
     );
@@ -2239,20 +2227,20 @@ extend('MechanicSound', 'Component');
 function MechanicSound()
 {
     this.super('Sound', Type.MECHANIC, false);
-
+    
     this.description = "Plays a sound at the target's location.";
-
+    
     this.data.push(new ListValue('Server Version', 'version', [ '1.9+', 'Pre 1.9' ], '1.9+')
         .setTooltip('The version of the server this will be playing for. Servers 1.9 and later have much different sounds available')
     );
-
+    
     this.data.push(new ListValue('Sound', 'newsound', SOUNDS_POST, 'Ambience Cave').requireValue('version', [ '1.9+' ])
         .setTooltip('The sound clip to play')
     );
     this.data.push(new ListValue('Sound', 'sound', SOUNDS_PRE, 'Ambience Cave').requireValue('version', [ 'Pre 1.9' ])
         .setTooltip('The sound clip to play')
     );
-
+    
     this.data.push(new AttributeValue('Volume', 'volume', 100, 0)
         .setTooltip('The volume of the sound as a percentage. Numbers above 100 will not get any louder, but will be heard from a farther distance')
     );
@@ -2265,9 +2253,9 @@ extend('MechanicSpeed', 'Component');
 function MechanicSpeed()
 {
     this.super('Speed', Type.MECHANIC, false);
-
+    
     this.description = 'Modifies the base speed of a player using a multiplier (stacks with potions)';
-
+    
     this.data.push(new AttributeValue('Multiplier', 'multiplier', 1.2, 0)
         .setTooltip('The multiplier of the player\'s base speed to use')
     );
@@ -2280,9 +2268,9 @@ extend('MechanicStatus', 'Component');
 function MechanicStatus()
 {
     this.super('Status', Type.MECHANIC, false);
-
+    
     this.description = 'Applies a status effect to the target for a duration.';
-
+    
     this.data.push(new ListValue('Status', 'status', [ 'Absorb', 'Curse', 'Disarm', 'Invincible', 'Root', 'Silence', 'Stun' ], 'Stun')
         .setTooltip('The status to apply')
     );
@@ -2295,7 +2283,7 @@ extend('MechanicTaunt', 'Component');
 function MechanicTaunt()
 {
     this.super('Taunt', Type.MECHANIC, false);
-
+    
     this.description = 'Draws aggro of targeted creatures. This only works on newer server versions.';
 
     this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
@@ -2405,18 +2393,6 @@ function MechanicValueAttribute()
     );
 }
 
-extend('MechanicValueDistance', 'Component');
-function MechanicValueDistance()
-{
-    this.super('Value Distance', Type.MECHANIC, false);
-
-    this.description = 'Stores the distance between the target and the caster into a value';
-
-    this.data.push(new StringValue('Key', 'key', 'attribute')
-        .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
-    );
-}
-
 extend('MechanicValueHealth', 'Component');
 function MechanicValueHealth()
 {
@@ -2499,14 +2475,32 @@ extend('MechanicValueMultiply', 'Component');
 function MechanicValueMultiply()
 {
     this.super('Value Multiply', Type.MECHANIC, false);
-    
+
     this.description = 'Multiplies a stored value under a unique key for the caster. If the value wasn\'t set before, this will not do anything.';
-    
+
     this.data.push(new StringValue('Key', 'key', 'value')
         .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
     );
     this.data.push(new AttributeValue('Multiplier', 'multiplier', 1, 0)
         .setTooltip('The amount to multiply the value by')
+    );
+}
+
+extend('MechanicValuePlaceholder', 'Component');
+function MechanicValuePlaceholder()
+{
+    this.super('Value Placeholder', Type.MECHANIC, false);
+
+    this.description = 'Uses a placeholder string and stores it as a value for the caster';
+
+    this.data.push(new StringValue('Key', 'key', 'value')
+        .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
+    );
+    this.data.push(new ListValue("Type", "Type", [ 'Number', 'String' ], 'Number')
+        .setTooltip('The type of value to store. Number values require numeric placeholders. String values can be used in messages or commands.')
+    );
+    this.data.push(new StringValue('Placeholder', 'placeholder', '%player_food_level%')
+        .setTooltip('The placeholder string to use. Can contain multiple placeholders if using the String type.')
     );
 }
 

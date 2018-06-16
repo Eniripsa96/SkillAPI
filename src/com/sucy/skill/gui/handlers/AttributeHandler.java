@@ -27,33 +27,28 @@
 package com.sucy.skill.gui.handlers;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.gui.tool.GUIHolder;
+import com.sucy.skill.manager.AttributeManager;
 
 import java.util.HashMap;
 
-public class AttributeHandler extends GUIHolder<AttributeManager.Attribute>
-{
+public class AttributeHandler extends GUIHolder<AttributeManager.Attribute> {
     private HashMap<String, Integer> start = new HashMap<String, Integer>();
 
     @Override
-    protected void onSetup()
-    {
+    protected void onSetup() {
         AttributeManager manager = SkillAPI.getAttributeManager();
-        for (String key : manager.getKeys())
-            start.put(key, player.getAttribute(key));
+        for (String key : manager.getKeys()) { start.put(key, player.getAttribute(key)); }
     }
 
     @Override
-    public void onClick(AttributeManager.Attribute type, int slot, boolean left, boolean shift)
-    {
-        if (left)
-        {
-            if (player.upAttribute(type.getKey()))
+    public void onClick(AttributeManager.Attribute type, int slot, boolean left, boolean shift) {
+        if (left) {
+            if (player.upAttribute(type.getKey())) { setPage(page); }
+        } else if (SkillAPI.getSettings().isAttributesDowngrade() || player.getAttribute(type.getKey()) > start.get(type.getKey())) {
+            if (player.refundAttribute(type.getKey())) {
                 setPage(page);
+            }
         }
-        else if ((SkillAPI.getSettings().isAttributesDowngrade() || player.getAttribute(type.getKey()) > start.get(type.getKey()))
-            && player.refundAttribute(type.getKey()))
-            setPage(page);
     }
 }

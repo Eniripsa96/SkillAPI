@@ -128,7 +128,8 @@ public class Settings {
 
     public void loadExperienceSettings() {
         CommentedConfig file = new CommentedConfig(plugin, "exp");
-        file.saveDefaultConfig();
+        file.checkDefaults();
+        file.save();
         DataSection config = file.getConfig();
 
         DataSection breakData = config.getSection("break");
@@ -189,6 +190,7 @@ public class Settings {
 
     public void loadGroupSettings() {
         CommentedConfig file = new CommentedConfig(plugin, "groups");
+        file.saveDefaultConfig();
         DataSection config = file.getConfig();
         groups.clear();
 

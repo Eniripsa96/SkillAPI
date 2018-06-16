@@ -349,7 +349,7 @@ public class CastCombatListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onToggle(InventoryClickEvent event)
     {
         // Must click on an active skill bar

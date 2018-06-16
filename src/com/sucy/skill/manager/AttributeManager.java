@@ -284,8 +284,11 @@ public class AttributeManager
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(filter(data, meta.getDisplayName()));
             List<String> lore = meta.getLore();
-            for (int j = 0; j < lore.size(); j++)
-                lore.set(j, filter(data, lore.get(j)));
+            if (lore != null) {
+                for (int j = 0; j < lore.size(); j++)
+                    lore.set(j, filter(data, lore.get(j)));
+                meta.setLore(lore);
+            }
 
             item.setItemMeta(meta);
             return item;
@@ -308,7 +311,7 @@ public class AttributeManager
         {
             return text
                 .replace("{amount}", "" + data.getInvestedAttribute(key))
-                .replace("{total}", "" + getAttribute(key));
+                .replace("{total}", "" + data.getAttribute(key));
         }
 
         /**

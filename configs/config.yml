@@ -394,15 +394,15 @@ Click Combos:
   # Whether or not shift clicks are allowed at all
   use-click-shift: false
   #
-  # Whether or not shift clicks are allowed at all
+  # Whether or not right shift clicks are allowed at all
   # This will disable "use-click-shift" if enabled
   use-click-right-shift: false
   #
-  # Whether or not shift clicks are allowed at all
+  # Whether or not left shift clicks are allowed at all
   # This will disable "use-click-shift" if enabled
   use-click-left-shift: false
   #
-  # Whether or not shift clicks are allowed at all
+  # Whether or not jump clicks are allowed at all
   use-click-space: false
   #
   # Whether or not Q clicks are allowed at all.

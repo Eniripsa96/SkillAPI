@@ -108,7 +108,7 @@ Class.prototype.createFormHTML = function()
 	form.appendChild(hr);
 	
 	var save = document.createElement('h5');
-	save.innerHTML = 'Save',
+	save.innerHTML = 'Save Class',
 	save.classData = this;
 	save.addEventListener('click', function(e) {
 		this.classData.update();

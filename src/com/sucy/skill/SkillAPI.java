@@ -46,6 +46,7 @@ import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.gui.Menu;
 import com.sucy.skill.hook.PluginChecker;
+import com.sucy.skill.listener.AddonListener;
 import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.BarListener;
 import com.sucy.skill.listener.CastListener;
@@ -161,6 +162,7 @@ public class SkillAPI extends JavaPlugin
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);
         listen(new KillListener(), true);
+        listen(new AddonListener(), true);
         listen(new TreeListener(), !settings.isMapTreeEnabled());
         listen(new ItemListener(), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());

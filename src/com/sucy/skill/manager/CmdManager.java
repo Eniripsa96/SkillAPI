@@ -62,6 +62,7 @@ public class CmdManager
             new ConfigurableCommand(api, "acc", SenderType.PLAYER_ONLY, new CmdAccount(), "Changes account", "<accountId>", Permissions.BASIC),
             new ConfigurableCommand(api, "bind", SenderType.PLAYER_ONLY, new CmdBind(), "Binds a skill", "<skill>", Permissions.BASIC),
             new ConfigurableCommand(api, "cast", SenderType.PLAYER_ONLY, new CmdCast(), "Casts a skill", "<skill>", Permissions.BASIC),
+            new ConfigurableCommand(api, "changeclass", SenderType.ANYONE, new CmdChangeClass(), "Swaps classes", "<player> <group> <class>", Permissions.FORCE),
             new ConfigurableCommand(api, "clearbind", SenderType.PLAYER_ONLY, new CmdClearBinds(), "Clears skill binds", "", Permissions.BASIC),
             new ConfigurableCommand(api, "exp", SenderType.ANYONE, new CmdExp(), "Gives players exp", "[player] <amount>", Permissions.LVL),
             new ConfigurableCommand(api, "info", SenderType.ANYONE, new CmdInfo(), "Shows class info", "[player]", Permissions.BASIC),

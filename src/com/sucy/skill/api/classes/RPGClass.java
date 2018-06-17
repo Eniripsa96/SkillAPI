@@ -250,6 +250,12 @@ public abstract class RPGClass
         return SkillAPI.getClass(parent);
     }
 
+    public RPGClass getRoot() {
+        RPGClass root = this;
+        while (root.parent != null) root = root.getParent();
+        return root;
+    }
+
     /**
      * Retrieves the icon representing this class for menus
      *

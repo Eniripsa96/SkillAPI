@@ -41,21 +41,28 @@ public class GroupSettings
     private static final String STARTING_POINTS  = "starting-points";
     private static final String POINTS_PER_LEVEL = "points-per-level";
     private static final String PERMISSION       = "permission";
+    private static final String FRIENDLY         = "friendly";
     private static final String DEFAULT          = "default";
     private static final String STARTING_ATTRIBS = "starting-attribs";
     private static final String ATTRIB_PER_LEVEL = "attribs-per-level";
     private static final String SCOREBOARD       = "show-scoreboard";
 
-    private String  defaultClass;
-    private String  permission;
-    private boolean professReset;
-    private boolean showScoreboard;
-    private boolean canReset;
-    private double  deathPenalty;
-    private int     startingPoints;
-    private double  pointsPerLevel;
-    private double  attribsPerLevel;
-    private int     startingAttribs;
+    private String  defaultClass = "none";
+    private String  permission = "none";
+    private boolean professReset = false;
+    private boolean showScoreboard = true;
+    private boolean canReset = true;
+    private boolean friendly = false;
+    private double  deathPenalty = 0;
+    private int     startingPoints = 1;
+    private double  pointsPerLevel = 1;
+    private double  attribsPerLevel = 1;
+    private int     startingAttribs = 0;
+
+    /**
+     * Initializes group settings with default settings
+     */
+    public GroupSettings() { }
 
     /**
      * Initializes a new set of settings for a class group by
@@ -65,13 +72,12 @@ public class GroupSettings
      */
     public GroupSettings(DataSection config)
     {
-        this();
-
         defaultClass = config.getString(DEFAULT, defaultClass);
         permission = config.getString(PERMISSION, permission);
         professReset = config.getBoolean(PROFESS_RESET, professReset);
         showScoreboard = config.getBoolean(SCOREBOARD, showScoreboard);
         canReset = config.getBoolean(CAN_RESET, canReset);
+        friendly = config.getBoolean(FRIENDLY, friendly);
         deathPenalty = config.getDouble(EXP_LOST, deathPenalty);
         startingPoints = config.getInt(STARTING_POINTS, startingPoints);
         pointsPerLevel = config.getDouble(POINTS_PER_LEVEL, pointsPerLevel);
@@ -82,20 +88,10 @@ public class GroupSettings
     }
 
     /**
-     * Initializes a default collection of group settings
+     * @return true if players with the same class under this group are allies
      */
-    public GroupSettings()
-    {
-        defaultClass = "none";
-        permission = "none";
-        professReset = false;
-        showScoreboard = true;
-        canReset = true;
-        deathPenalty = 0;
-        startingPoints = 1;
-        pointsPerLevel = 1;
-        attribsPerLevel = 1;
-        startingAttribs = 0;
+    public boolean isFriendly() {
+        return friendly;
     }
 
     /**
@@ -239,6 +235,7 @@ public class GroupSettings
         config.set(PERMISSION, permission);
         config.set(PROFESS_RESET, professReset);
         config.set(CAN_RESET, canReset);
+        config.set(FRIENDLY, friendly);
         config.set(SCOREBOARD, showScoreboard);
         config.set(EXP_LOST, deathPenalty);
         config.set(STARTING_POINTS, startingPoints);

@@ -262,6 +262,12 @@ public abstract class RPGClass implements IconHolder
         return SkillAPI.getClass(parent);
     }
 
+    public RPGClass getRoot() {
+        RPGClass root = this;
+        while (root.parent != null) root = root.getParent();
+        return root;
+    }
+
     /**
      * Retrieves the icon representing this class for menus
      *

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.data;
 
+import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.config.parse.NumberParser;
@@ -60,11 +61,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>The management class for SkillAPI's config.yml settings.</p>
  */
-public class Settings {
+public class Settings{
 
     private HashMap<String, GroupSettings> groups = new HashMap<String, GroupSettings>();
 
@@ -109,6 +111,7 @@ public class Settings {
         loadWorldSettings();
         loadSaveSettings();
         loadTargetingSettings();
+        loadWorldGuardSettings();
     }
 
     ///////////////////////////////////////////////////////
@@ -1543,5 +1546,36 @@ public class Settings {
         worldEnabled = config.getBoolean(WORLD_ENABLE);
         worldEnableList = config.getBoolean(WORLD_TYPE);
         worlds = config.getList(WORLD_LIST);
+    }
+
+    ///////////////////////////////////////////////////////
+    //                                                   //
+    //               WorldGuard Settings                 //
+    //                                                   //
+    ///////////////////////////////////////////////////////
+
+    private static final String WG_SKILLS = "disable-skills";
+    private static final String WG_EXP = "disable-exp";
+
+    private Set<String> skillDisabledRegions;
+    private Set<String> expDisabledRegions;
+
+    public boolean areSkillsDisabledForRegion(final String region) {
+        return skillDisabledRegions.contains(region);
+    }
+
+    public boolean isExpDisabledForRegion(final String region) {
+        return expDisabledRegions.contains(region);
+    }
+
+    private void loadWorldGuardSettings() {
+        final CommentedConfig config = new CommentedConfig(plugin, "worldGuard");
+        config.checkDefaults();
+        config.trim();
+        config.save();
+        final DataSection data = config.getConfig();
+
+        skillDisabledRegions = ImmutableSet.copyOf(data.getList(WG_SKILLS));
+        expDisabledRegions = ImmutableSet.copyOf(data.getList(WG_EXP));
     }
 }

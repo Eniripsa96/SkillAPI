@@ -131,7 +131,7 @@ public class GUITool implements ToolMenu
             try
             {
                 ItemStack item = parseItem(custom.getSection(key));
-                items.put(key, item);
+                items.put(key.toUpperCase(), item);
             }
             catch (Exception ex)
             {
@@ -183,6 +183,10 @@ public class GUITool implements ToolMenu
         availableClasses = null;
         availableProfesses = null;
         availableGroups = null;
+    }
+
+    public static ItemStack getIcon(final String key) {
+        return items.get(key.toUpperCase());
     }
 
     public static boolean hasData(String key)

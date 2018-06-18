@@ -30,6 +30,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
@@ -375,6 +376,22 @@ public class PlayerEquips
                 || (classReq != null && (main == null || !classReq.contains(className))))
                 return false;
 
+            if (classExc != null)
+                for (PlayerClass playerClass : player.getClasses())
+                    if (matches(classExc, playerClass))
+                        return false;
+
+            if (classReq != null) {
+                boolean metClassReq = false;
+                for (PlayerClass playerClass : player.getClasses())
+                    if (matches(classReq, playerClass))
+                        metClassReq = true;
+
+                if (!metClassReq)
+                    return false;
+            }
+
+
             for (PlayerClass playerClass : player.getClasses())
                 if (!playerClass.getData().canUse(item.getType()))
                     return false;
@@ -390,6 +407,20 @@ public class PlayerEquips
                         return false;
 
             return true;
+        }
+
+        private boolean matches(final Set<String> names, final PlayerClass playerClass) {
+            if (playerClass == null) return false;
+
+            RPGClass current = playerClass.getData();
+            while (current != null) {
+                if (names.contains(current.getName().toLowerCase())) {
+                    return true;
+                }
+                current = current.getParent();
+            }
+
+            return false;
         }
     }
 }

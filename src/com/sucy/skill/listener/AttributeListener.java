@@ -230,8 +230,6 @@ public class AttributeListener extends SkillAPIListener
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSkillDamage(final SkillDamageEvent event)
     {
-        final String classified = AttributeManager.SKILL_DAMAGE + "-" + event.getClassification();
-
         // Skill Damage
         if (event.getDamager() instanceof Player)
         {
@@ -241,6 +239,7 @@ public class AttributeListener extends SkillAPIListener
 
             final PlayerData data = SkillAPI.getPlayerData(player);
 
+            final String classified = AttributeManager.SKILL_DAMAGE + "-" + event.getClassification();
             final double firstPass = data.scaleStat(classified, event.getDamage());
             final double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, firstPass);
             event.setDamage(newAmount);
@@ -255,6 +254,7 @@ public class AttributeListener extends SkillAPIListener
 
             final PlayerData data = SkillAPI.getPlayerData(player);
 
+            final String classified = AttributeManager.SKILL_DEFENSE + "-" + event.getClassification();
             final double firstPass = data.scaleStat(classified, event.getDamage());
             final double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, firstPass);
             event.setDamage(newAmount);

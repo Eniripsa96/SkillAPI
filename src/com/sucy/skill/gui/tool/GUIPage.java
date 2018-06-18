@@ -118,7 +118,7 @@ public class GUIPage
         else if (SkillAPI.isClassRegistered(key))
             item = SkillAPI.getClass(key).getToolIcon();
         else
-            item = ToolSettings.getIcon(key);
+            item = GUITool.getIcon(key);
 
         return item;
     }
@@ -152,6 +152,8 @@ public class GUIPage
             IconHolder holder = data.get(entry.getValue());
             if (holder != null && holder.isAllowed(bukkitPlayer))
                 contents[entry.getKey()] = holder.getIcon(player);
+            else
+                contents[entry.getKey()] = GUITool.getIcon(entry.getValue());
         }
 
         return contents;

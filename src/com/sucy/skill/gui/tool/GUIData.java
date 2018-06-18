@@ -28,8 +28,6 @@ package com.sucy.skill.gui.tool;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.skills.Skill;
-import com.sucy.skill.tree.SkillTree;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
@@ -37,7 +35,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class GUIData
 {
@@ -149,8 +146,12 @@ public class GUIData
     public void removePage()
     {
         pageMap.remove(nav);
-        pages -= 1;
+        pages--;
         nav = Math.min(nav, pages - 1);
+
+        if (pages == 0) {
+            addPage();
+        }
     }
 
     public void resize(int rows)

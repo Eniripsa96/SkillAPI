@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.event;
 
+import com.sucy.skill.api.skills.Skill;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -40,6 +41,7 @@ public class SkillDamageEvent extends Event implements Cancellable
     private static final HandlerList handlers = new HandlerList();
     private LivingEntity damager;
     private LivingEntity target;
+    private Skill        skill;
     private double       damage;
     private boolean      cancelled;
 
@@ -50,12 +52,20 @@ public class SkillDamageEvent extends Event implements Cancellable
      * @param target  entity receiving the damage
      * @param damage  the amount of damage dealt
      */
-    public SkillDamageEvent(LivingEntity damager, LivingEntity target, double damage)
+    public SkillDamageEvent(Skill skill, LivingEntity damager, LivingEntity target, double damage)
     {
+        this.skill = skill;
         this.damager = damager;
         this.target = target;
         this.damage = damage;
         this.cancelled = false;
+    }
+
+    /**
+     * @return skill used to deal the damage
+     */
+    public Skill getSkill() {
+        return skill;
     }
 
     /**

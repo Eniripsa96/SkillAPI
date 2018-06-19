@@ -42,7 +42,9 @@ import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerManaGainEvent;
 import com.sucy.skill.api.event.PlayerManaLossEvent;
+import com.sucy.skill.api.event.PlayerPreClassChangeEvent;
 import com.sucy.skill.api.event.PlayerRefundAttributeEvent;
+import com.sucy.skill.api.event.PlayerSkillCastFailedEvent;
 import com.sucy.skill.api.event.PlayerSkillDowngradeEvent;
 import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
 import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
@@ -78,6 +80,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.CANCELED;
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.CASTER_DEAD;
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.EFFECT_FAILED;
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NOT_UNLOCKED;
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NO_MANA;
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NO_TARGET;
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.ON_COOLDOWN;
 
 /**
  * Represents one account for a player which can contain one class from each group
@@ -1189,6 +1199,16 @@ public final class PlayerData
     {
         if (rpgClass != null && canProfess(rpgClass))
         {
+            final PlayerClass previousData = classes.get(rpgClass.getGroup());
+            final RPGClass previous = previousData == null ? null : previousData.getData();
+
+            // Pre-class change event in case someone wants to stop it
+            final PlayerPreClassChangeEvent event = new PlayerPreClassChangeEvent(previousData, previous, rpgClass);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return false;
+            }
+
             // Reset data if applicable
             if (SkillAPI.getSettings().getGroupSettings(rpgClass.getGroup()).isProfessReset())
             {
@@ -1196,19 +1216,17 @@ public final class PlayerData
             }
 
             // Inherit previous class data if any
-            PlayerClass current = classes.get(rpgClass.getGroup());
-            RPGClass previous;
-            if (current == null)
+            final PlayerClass current;
+            if (previousData == null)
             {
-                previous = null;
                 current = new PlayerClass(this, rpgClass);
                 classes.put(rpgClass.getGroup(), current);
                 attribPoints += rpgClass.getGroupSettings().getStartingAttribs();
             }
             else
             {
-                previous = current.getData();
-                current.setClassData(rpgClass);
+                current = previousData;
+                previousData.setClassData(rpgClass);
             }
 
             // Add skills
@@ -1765,13 +1783,13 @@ public final class PlayerData
         int level = skill.getLevel();
 
         // Not unlocked or on cooldown
-        if (level <= 0 || !check(skill, true, true))
+        if (!check(skill, true, true))
             return false;
 
         // Dead players can't cast skills
         Player p = getPlayer();
         if (p.isDead())
-            return false;
+            return PlayerSkillCastFailedEvent.invoke(skill, CASTER_DEAD);
 
         // Skill Shots
         if (skill.getData() instanceof SkillShot)
@@ -1793,17 +1811,18 @@ public final class PlayerData
                         }
                         if (SkillAPI.getSettings().isManaEnabled())
                         {
-                            useMana(skill.getManaCost(), ManaCost.SKILL_CAST);
+                            useMana(event.getManaCost(), ManaCost.SKILL_CAST);
                         }
                         return true;
-                    }
+                    } else return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);
                 }
                 catch (Exception ex)
                 {
                     Logger.bug("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
                     ex.printStackTrace();
+                    return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);
                 }
-            }
+            } else return PlayerSkillCastFailedEvent.invoke(skill, CANCELED);
         }
 
         // Target Skills
@@ -1813,7 +1832,7 @@ public final class PlayerData
 
             // Must have a target
             if (target == null)
-                return false;
+                return PlayerSkillCastFailedEvent.invoke(skill, NO_TARGET);
 
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
             Bukkit.getPluginManager().callEvent(event);
@@ -1832,17 +1851,18 @@ public final class PlayerData
                         }
                         if (SkillAPI.getSettings().isManaEnabled())
                         {
-                            useMana(skill.getManaCost(), ManaCost.SKILL_CAST);
+                            useMana(event.getManaCost(), ManaCost.SKILL_CAST);
                         }
                         return true;
-                    }
+                    } else return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);
                 }
                 catch (Exception ex)
                 {
                     Logger.bug("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
                     ex.printStackTrace();
+                    return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);
                 }
-            }
+            } else PlayerSkillCastFailedEvent.invoke(skill, CANCELED);
         }
 
         return false;
@@ -1867,9 +1887,8 @@ public final class PlayerData
         double cost = skill.getData().getManaCost(level);
 
         // Not unlocked
-        if (level <= 0)
-        {
-            return false;
+        if (level <= 0) {
+            return PlayerSkillCastFailedEvent.invoke(skill, NOT_UNLOCKED);
         }
 
         // On Cooldown
@@ -1882,7 +1901,7 @@ public final class PlayerData
                 RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
                 RPGFilter.SKILL.setReplacement(skill.getData().getName())
             );
-            return false;
+            return PlayerSkillCastFailedEvent.invoke(skill, ON_COOLDOWN);
         }
 
         // Not enough mana
@@ -1897,7 +1916,7 @@ public final class PlayerData
                 RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
                 RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + "")
             );
-            return false;
+            return PlayerSkillCastFailedEvent.invoke(skill, NO_MANA);
         }
 
         else return true;

@@ -336,7 +336,7 @@ public abstract class IOManager
                     DataSection skillBar = account.createSection(SKILL_BAR);
                     PlayerSkillBar bar = acc.getSkillBar();
                     skillBar.set(ENABLED, bar.isEnabled());
-                    skillBar.set(SLOTS, new ArrayList<Integer>(bar.getData().keySet()));
+                    skillBar.set(SLOTS, new ArrayList<>(bar.getData().keySet()));
                     for (Map.Entry<Integer, String> slotEntry : bar.getData().entrySet())
                     {
                         if (slotEntry.getValue().equals(UNASSIGNED))

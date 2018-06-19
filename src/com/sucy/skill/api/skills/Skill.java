@@ -720,7 +720,7 @@ public abstract class Skill implements IconHolder
     public void damage(LivingEntity target, double damage, LivingEntity source, String classification) {
         if (target instanceof TempEntity) return;
 
-        SkillDamageEvent event = new SkillDamageEvent(source, target, damage, classification);
+        SkillDamageEvent event = new SkillDamageEvent(this, source, target, damage, classification);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled())
         {
@@ -755,7 +755,7 @@ public abstract class Skill implements IconHolder
     {
         if (target instanceof TempEntity) return;
 
-        TrueDamageEvent event = new TrueDamageEvent(source, target, damage);
+        TrueDamageEvent event = new TrueDamageEvent(this, source, target, damage);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled() && event.getDamage() != 0)
             target.setHealth(Math.max(Math.min(target.getHealth() - event.getDamage(), target.getMaxHealth()), 0));

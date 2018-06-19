@@ -39,6 +39,7 @@ public class PlayerCastSkillEvent extends Event implements Cancellable
     private PlayerData  playerData;
     private PlayerSkill skill;
     private Player      player;
+    private double      manaCost;
     private boolean     cancelled;
 
     public PlayerCastSkillEvent(PlayerData playerData, PlayerSkill skill, Player player)
@@ -46,6 +47,7 @@ public class PlayerCastSkillEvent extends Event implements Cancellable
         this.playerData = playerData;
         this.skill = skill;
         this.player = player;
+        this.manaCost = skill.getManaCost();
         this.cancelled = false;
     }
 
@@ -62,6 +64,14 @@ public class PlayerCastSkillEvent extends Event implements Cancellable
     public PlayerSkill getSkill()
     {
         return skill;
+    }
+
+    public double getManaCost() {
+        return manaCost;
+    }
+
+    public void setManaCost(final double manaCost) {
+        this.manaCost = manaCost;
     }
 
     @Override

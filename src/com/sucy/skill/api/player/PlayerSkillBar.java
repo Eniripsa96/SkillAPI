@@ -160,7 +160,7 @@ public class PlayerSkillBar
 
         ItemStack[] items = p.getInventory().getContents();
         for (int i = 0; i < items.length; i++)
-            if (items[i] == null && !slots.containsKey(i + 1) && !reserved.contains(i))
+            if ((items[i] == null || items[i].getType() == Material.AIR) && !slots.containsKey(i + 1) && !reserved.contains(i))
                 count++;
 
         return count;

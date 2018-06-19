@@ -149,14 +149,20 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         // Hitting a solid block
         if (landed())
         {
-            cancel();
-            Bukkit.getPluginManager().callEvent(land());
-            if (callback != null)
-                callback.callback(this, null);
+            this.applyLanded();
             return false;
         }
 
         return true;
+    }
+
+    public void applyLanded() {
+        if (valid) {
+            cancel();
+            Bukkit.getPluginManager().callEvent(land());
+            if (callback != null)
+                callback.callback(this, null);
+        }
     }
 
     /**

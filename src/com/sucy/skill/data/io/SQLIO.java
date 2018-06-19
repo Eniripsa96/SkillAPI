@@ -94,11 +94,6 @@ public class SQLIO extends IOManager
     {
         if (player == null) return null;
 
-        try {
-            Thread.sleep(SkillAPI.getSettings().getSqlDelay());
-        }
-        catch (InterruptedException ex) { /* Shouldn't happen */ }
-
         SQLConnection connection = openConnection();
 
         PlayerAccounts result = load(connection, player);

@@ -96,8 +96,20 @@ public class MainListener extends SkillAPIListener
         if (event.getPlayer().hasMetadata("NPC"))
             return;
 
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        data.init(event.getPlayer());
+        final int delay = Math.min(100, SkillAPI.getSettings().getSqlDelay());
+        if (SkillAPI.getSettings().isUseSql() && delay > 0) {
+            SkillAPI.schedule(() -> {
+                SkillAPI.reloadPlayerData(event.getPlayer());
+                init(event.getPlayer());
+            }, delay);
+        } else {
+            init(event.getPlayer());
+        }
+    }
+
+    private void init(final Player player) {
+        final PlayerData data = SkillAPI.getPlayerData(player);
+        data.init(player);
         data.autoLevel();
     }
 

@@ -1456,14 +1456,13 @@ public class Settings{
         skillBarCooldowns = bar.getBoolean("show-cooldown", true);
 
         DataSection icon = bar.getSection("empty-icon");
-        Material mat;
-        try {
-            mat = Material.valueOf(icon.getString("material", "PUMPKIN_SEEDS").toUpperCase().replace(' ', '_'));
-        } catch (Exception ex) {
-            mat = Material.PUMPKIN_SEEDS;
-        }
+        Material mat = Material.matchMaterial(icon.getString("material", "PUMPKIN_SEEDS"));
+        if (mat == null) mat = Material.PUMPKIN_SEEDS;
         unassigned = new ItemStack(mat);
-        unassigned.setData(new MaterialData(mat, (byte) icon.getInt("data", 0)));
+
+        final int data = icon.getInt("data", 0);
+        unassigned.setDurability((short) data);
+        unassigned.setData(new MaterialData(mat, (byte) data));
 
         ItemMeta meta = unassigned.getItemMeta();
         if (icon.isList("text")) {

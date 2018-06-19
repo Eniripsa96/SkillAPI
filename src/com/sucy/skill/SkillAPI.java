@@ -47,17 +47,40 @@ import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
 import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
+import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.AddonListener;
-import com.sucy.skill.listener.*;
-import com.sucy.skill.manager.*;
+import com.sucy.skill.listener.AttributeListener;
+import com.sucy.skill.listener.BarListener;
+import com.sucy.skill.listener.BindListener;
+import com.sucy.skill.listener.BuffListener;
+import com.sucy.skill.listener.CastCombatListener;
+import com.sucy.skill.listener.CastItemListener;
+import com.sucy.skill.listener.CastListener;
+import com.sucy.skill.listener.CastOffhandListener;
+import com.sucy.skill.listener.ClickListener;
+import com.sucy.skill.listener.DeathListener;
+import com.sucy.skill.listener.ExperienceListener;
+import com.sucy.skill.listener.ItemListener;
+import com.sucy.skill.listener.KillListener;
+import com.sucy.skill.listener.LingeringPotionListener;
+import com.sucy.skill.listener.MainListener;
+import com.sucy.skill.listener.MechanicListener;
+import com.sucy.skill.listener.SkillAPIListener;
+import com.sucy.skill.listener.StatusListener;
+import com.sucy.skill.listener.ToolListener;
+import com.sucy.skill.manager.AttributeManager;
+import com.sucy.skill.manager.ClassBoardManager;
+import com.sucy.skill.manager.CmdManager;
+import com.sucy.skill.manager.ComboManager;
+import com.sucy.skill.manager.RegistrationManager;
+import com.sucy.skill.manager.ResourceManager;
 import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.GUITask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.task.SaveTask;
 import com.sucy.skill.thread.MainThread;
-import com.sucy.skill.gui.tool.GUITool;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -77,16 +100,15 @@ import java.util.List;
  * <p>The main class of the plugin which has the accessor methods into most of the API.</p>
  * <p>You can retrieve a reference to this through Bukkit the same way as any other plugin.</p>
  */
-public class SkillAPI extends JavaPlugin
-{
+public class SkillAPI extends JavaPlugin {
     private static SkillAPI singleton;
 
-    private final HashMap<String, Skill>          skills  = new HashMap<String, Skill>();
-    private final HashMap<String, RPGClass>       classes = new HashMap<String, RPGClass>();
-    private final HashMap<String, PlayerAccounts> players = new HashMap<String, PlayerAccounts>();
-    private final ArrayList<String>               groups  = new ArrayList<String>();
+    private final HashMap<String, Skill>          skills  = new HashMap<>();
+    private final HashMap<String, RPGClass>       classes = new HashMap<>();
+    private final HashMap<String, PlayerAccounts> players = new HashMap<>();
+    private final ArrayList<String>               groups  = new ArrayList<>();
 
-    private final List<SkillAPIListener> listeners = new ArrayList<SkillAPIListener>();
+    private final List<SkillAPIListener> listeners = new ArrayList<>();
 
     private CommentedLanguageConfig language;
     private Settings                settings;
@@ -106,11 +128,9 @@ public class SkillAPI extends JavaPlugin
      * should not be called by other plugins.</p>
      */
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         // Set up the singleton
-        if (singleton != null)
-            throw new IllegalStateException("Cannot enable SkillAPI twice!");
+        if (singleton != null) { throw new IllegalStateException("Cannot enable SkillAPI twice!"); }
         singleton = this;
 
         mainThread = new MainThread();
@@ -125,8 +145,7 @@ public class SkillAPI extends JavaPlugin
         language.save();
 
         // Hook plugins
-        if (PluginChecker.isBungeeActive())
-            BungeeHook.init(this);
+        if (PluginChecker.isBungeeActive()) { BungeeHook.init(this); }
 
         // Set up managers
         comboManager = new ComboManager();
@@ -135,8 +154,7 @@ public class SkillAPI extends JavaPlugin
         io = settings.isUseSql() ? new SQLIO(this) : new ConfigIO(this);
         PlayerStats.init();
         ClassBoardManager.registerText();
-        if (settings.isAttributesEnabled())
-            attributeManager = new AttributeManager(this);
+        if (settings.isAttributesEnabled()) { attributeManager = new AttributeManager(this); }
 
         // Load classes and skills
         registrationManager.initialize();
@@ -158,7 +176,9 @@ public class SkillAPI extends JavaPlugin
         listen(new ClickListener(), settings.isCombosEnabled());
         listen(new AttributeListener(), settings.isAttributesEnabled());
         listen(new CastListener(), settings.isUsingBars());
-        listen(new CastOffhandListener(), settings.isCastEnabled() && VersionManager.isVersionAtLeast(VersionManager.V1_9_0));
+        listen(
+                new CastOffhandListener(),
+                settings.isCastEnabled() && VersionManager.isVersionAtLeast(VersionManager.V1_9_0));
         listen(new CastItemListener(), settings.isUsingWand());
         listen(new CastCombatListener(), settings.isUsingCombat());
         listen(new DeathListener(), !VersionManager.isVersionAtLeast(11000));
@@ -166,20 +186,16 @@ public class SkillAPI extends JavaPlugin
         listen(new ExperienceListener(), settings.yieldsEnabled());
 
         // Set up tasks
-        if (settings.isManaEnabled())
-            MainThread.register(new ManaTask());
-        if (settings.isSkillBarCooldowns())
-            MainThread.register(new CooldownTask());
-        if (settings.isAutoSave())
-            MainThread.register(new SaveTask(this));
+        if (settings.isManaEnabled()) { MainThread.register(new ManaTask()); }
+        if (settings.isSkillBarCooldowns()) { MainThread.register(new CooldownTask()); }
+        if (settings.isAutoSave()) { MainThread.register(new SaveTask(this)); }
         MainThread.register(new GUITask(this));
 
         GUITool.init();
 
         // Load player data
         players.putAll(io.loadAll());
-        for (PlayerAccounts accounts : players.values())
-            accounts.getActiveData().init(accounts.getPlayer());
+        for (PlayerAccounts accounts : players.values()) { accounts.getActiveData().init(accounts.getPlayer()); }
 
         // Must initialize listeners AFTER player data is loaded since the
         // player objects would otherwise change and mess a lot of things up.
@@ -205,11 +221,9 @@ public class SkillAPI extends JavaPlugin
      * listeners. This should not be called by other plugins.</p>
      */
     @Override
-    public void onDisable()
-    {
+    public void onDisable() {
         // Validate instance
-        if (singleton != this)
-            throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
+        if (singleton != this) { throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!"); }
 
         GUITool.cleanUp();
         EffectManager.cleanUp();
@@ -223,21 +237,18 @@ public class SkillAPI extends JavaPlugin
         PassiveMechanic.stopAll();
         RepeatMechanic.stopAll();
 
-        for (SkillAPIListener listener : listeners)
-            listener.cleanup();
+        for (SkillAPIListener listener : listeners) { listener.cleanup(); }
         listeners.clear();
 
         // Clear scoreboards
         ClassBoardManager.clearAll();
 
         // Clear skill bars and stop passives before disabling
-        for (Player player : VersionManager.getOnlinePlayers())
-        {
+        for (Player player : VersionManager.getOnlinePlayers()) {
             PlayerData data = getPlayerData(player);
             data.stopPassives(player);
             data.getCastBars().restore(player);
-            if (player.getGameMode() != GameMode.CREATIVE && !player.isDead())
-                data.getSkillBar().clear(player);
+            if (player.getGameMode() != GameMode.CREATIVE && !player.isDead()) { data.getSkillBar().clear(player); }
             player.setMaxHealth(20);
             player.setWalkSpeed(0.2f);
         }
@@ -261,8 +272,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return true if loaded and set up, false otherwise
      */
-    public static boolean isLoaded()
-    {
+    public static boolean isLoaded() {
         return singleton != null && singleton.loaded;
     }
 
@@ -271,10 +281,11 @@ public class SkillAPI extends JavaPlugin
      *
      * @throws IllegalStateException if SkillAPI isn't enabled
      */
-    private static SkillAPI singleton()
-    {
-        if (singleton == null)
-            throw new IllegalStateException("Cannot use SkillAPI methods before it is enabled - add it to your plugin.yml as a dependency");
+    private static SkillAPI singleton() {
+        if (singleton == null) {
+            throw new IllegalStateException(
+                    "Cannot use SkillAPI methods before it is enabled - add it to your plugin.yml as a dependency");
+        }
         return singleton;
     }
 
@@ -283,8 +294,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return SkillAPI settings data
      */
-    public static Settings getSettings()
-    {
+    public static Settings getSettings() {
         return singleton().settings;
     }
 
@@ -293,8 +303,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return SkillAPI language file data
      */
-    public static CommentedLanguageConfig getLanguage()
-    {
+    public static CommentedLanguageConfig getLanguage() {
         return singleton().language;
     }
 
@@ -303,8 +312,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return click combo manager
      */
-    public static ComboManager getComboManager()
-    {
+    public static ComboManager getComboManager() {
         return singleton().comboManager;
     }
 
@@ -313,8 +321,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return attribute manager
      */
-    public static AttributeManager getAttributeManager()
-    {
+    public static AttributeManager getAttributeManager() {
         return singleton().attributeManager;
     }
 
@@ -326,10 +333,8 @@ public class SkillAPI extends JavaPlugin
      *
      * @return skill with the name or null if not found
      */
-    public static Skill getSkill(String name)
-    {
-        if (name == null)
-            return null;
+    public static Skill getSkill(String name) {
+        if (name == null) { return null; }
         return singleton().skills.get(name.toLowerCase());
     }
 
@@ -339,8 +344,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the map of registered skills
      */
-    public static HashMap<String, Skill> getSkills()
-    {
+    public static HashMap<String, Skill> getSkills() {
         return singleton().skills;
     }
 
@@ -351,8 +355,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return true if registered, false otherwise
      */
-    public static boolean isSkillRegistered(String name)
-    {
+    public static boolean isSkillRegistered(String name) {
         return getSkill(name) != null;
     }
 
@@ -363,8 +366,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return true if registered, false otherwise
      */
-    public static boolean isSkillRegistered(PlayerSkill skill)
-    {
+    public static boolean isSkillRegistered(PlayerSkill skill) {
         return isSkillRegistered(skill.getData().getName());
     }
 
@@ -375,8 +377,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return true if registered, false otherwise
      */
-    public static boolean isSkillRegistered(Skill skill)
-    {
+    public static boolean isSkillRegistered(Skill skill) {
         return isSkillRegistered(skill.getName());
     }
 
@@ -388,10 +389,8 @@ public class SkillAPI extends JavaPlugin
      *
      * @return class with the name or null if not found
      */
-    public static RPGClass getClass(String name)
-    {
-        if (name == null)
-            return null;
+    public static RPGClass getClass(String name) {
+        if (name == null) { return null; }
         return singleton().classes.get(name.toLowerCase());
     }
 
@@ -401,8 +400,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the map of registered skills
      */
-    public static HashMap<String, RPGClass> getClasses()
-    {
+    public static HashMap<String, RPGClass> getClasses() {
         return singleton().classes;
     }
 
@@ -411,12 +409,11 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the list of base classes
      */
-    public static ArrayList<RPGClass> getBaseClasses(String group)
-    {
-        ArrayList<RPGClass> list = new ArrayList<RPGClass>();
-        for (RPGClass c : singleton.classes.values())
-            if (!c.hasParent() && c.getGroup().equals(group))
-                list.add(c);
+    public static ArrayList<RPGClass> getBaseClasses(String group) {
+        ArrayList<RPGClass> list = new ArrayList<>();
+        for (RPGClass c : singleton.classes.values()) {
+            if (!c.hasParent() && c.getGroup().equals(group)) { list.add(c); }
+        }
         return list;
     }
 
@@ -427,8 +424,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return true if registered, false otherwise
      */
-    public static boolean isClassRegistered(String name)
-    {
+    public static boolean isClassRegistered(String name) {
         return getClass(name) != null;
     }
 
@@ -439,8 +435,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return true if registered, false otherwise
      */
-    public static boolean isClassRegistered(PlayerClass playerClass)
-    {
+    public static boolean isClassRegistered(PlayerClass playerClass) {
         return isClassRegistered(playerClass.getData().getName());
     }
 
@@ -451,8 +446,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return true if registered, false otherwise
      */
-    public static boolean isClassRegistered(RPGClass rpgClass)
-    {
+    public static boolean isClassRegistered(RPGClass rpgClass) {
         return isClassRegistered(rpgClass.getName());
     }
 
@@ -464,10 +458,8 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the class data of the player
      */
-    public static PlayerData getPlayerData(OfflinePlayer player)
-    {
-        if (player == null)
-            return null;
+    public static PlayerData getPlayerData(OfflinePlayer player) {
+        if (player == null) { return null; }
         return getPlayerAccountData(player).getActiveData();
     }
 
@@ -479,14 +471,12 @@ public class SkillAPI extends JavaPlugin
      *
      * @param player player to load the data for
      */
-    public static PlayerAccounts loadPlayerData(OfflinePlayer player)
-    {
-        if (player == null)
-            return null;
+    public static PlayerAccounts loadPlayerData(OfflinePlayer player) {
+        if (player == null) { return null; }
 
         // Already loaded for some reason, no need to load again
         String id = new VersionPlayer(player).getIdString();
-        if (singleton().players.containsKey(id)) return singleton.players.get(id);
+        if (singleton().players.containsKey(id)) { return singleton.players.get(id); }
 
         // Load the data
         PlayerAccounts data = singleton.io.loadData(player);
@@ -495,12 +485,20 @@ public class SkillAPI extends JavaPlugin
     }
 
     /**
+     * Do not use this method outside of onJoin. This will delete any progress a player
+     * has made since joining.
+     */
+    public static void reloadPlayerData(final Player player) {
+        singleton().players.remove(player.getUniqueId().toString());
+        loadPlayerData(player);
+    }
+
+    /**
      * Saves all player data to the configs. This
      * should be called asynchronously to avoid problems
      * with the main server loop.
      */
-    public static void saveData()
-    {
+    public static void saveData() {
         singleton().io.saveAll();
     }
 
@@ -514,8 +512,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return true if has loaded data, false otherwise
      */
-    public static boolean hasPlayerData(OfflinePlayer player)
-    {
+    public static boolean hasPlayerData(OfflinePlayer player) {
         return singleton != null && player != null && singleton.players.containsKey(new VersionPlayer(player).getIdString());
     }
 
@@ -525,23 +522,16 @@ public class SkillAPI extends JavaPlugin
      *
      * @param player player to unload data for
      */
-    public static void unloadPlayerData(final OfflinePlayer player)
-    {
-        if (singleton == null || player == null || !singleton.players.containsKey(new VersionPlayer(player).getIdString()))
+    public static void unloadPlayerData(final OfflinePlayer player) {
+        if (singleton == null || player == null || !singleton.players.containsKey(new VersionPlayer(player).getIdString())) {
             return;
+        }
 
-        singleton.getServer().getScheduler().runTaskAsynchronously(
-            singleton, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    PlayerAccounts accounts = getPlayerAccountData(player);
-                    singleton.io.saveData(accounts);
-                    singleton.players.remove(new VersionPlayer(player).getIdString());
-                }
-            }
-        );
+        singleton.getServer().getScheduler().runTaskAsynchronously(singleton, () -> {
+            PlayerAccounts accounts = getPlayerAccountData(player);
+            singleton.io.saveData(accounts);
+            singleton.players.remove(new VersionPlayer(player).getIdString());
+        });
     }
 
     /**
@@ -553,20 +543,15 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the class data of the player
      */
-    public static PlayerAccounts getPlayerAccountData(OfflinePlayer player)
-    {
-        if (player == null)
-            return null;
+    public static PlayerAccounts getPlayerAccountData(OfflinePlayer player) {
+        if (player == null) { return null; }
 
         String id = new VersionPlayer(player).getIdString();
-        if (!singleton().players.containsKey(id))
-        {
+        if (!singleton().players.containsKey(id)) {
             PlayerAccounts data = loadPlayerData(player);
             singleton.players.put(id, data);
             return data;
-        }
-        else
-            return singleton.players.get(id);
+        } else { return singleton.players.get(id); }
     }
 
     /**
@@ -575,8 +560,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return all SkillAPI player data
      */
-    public static HashMap<String, PlayerAccounts> getPlayerAccountData()
-    {
+    public static HashMap<String, PlayerAccounts> getPlayerAccountData() {
         return singleton().players;
     }
 
@@ -586,8 +570,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return list of active class groups
      */
-    public static List<String> getGroups()
-    {
+    public static List<String> getGroups() {
         return singleton().groups;
     }
 
@@ -597,12 +580,10 @@ public class SkillAPI extends JavaPlugin
      *
      * @param skill the dynamic skill to register
      */
-    public void addDynamicSkill(DynamicSkill skill)
-    {
-        if (registrationManager.isAddingDynamicSkills())
-            skills.put(skill.getName().toLowerCase(), skill);
-        else
+    public void addDynamicSkill(DynamicSkill skill) {
+        if (registrationManager.isAddingDynamicSkills()) { skills.put(skill.getName().toLowerCase(), skill); } else {
             throw new IllegalStateException("Cannot add dynamic skills from outside SkillAPI");
+        }
     }
 
     /**
@@ -612,11 +593,9 @@ public class SkillAPI extends JavaPlugin
      *
      * @param skill skill to register
      */
-    public void addSkill(Skill skill)
-    {
+    public void addSkill(Skill skill) {
         skill = registrationManager.validate(skill);
-        if (skill != null)
-            skills.put(skill.getName().toLowerCase(), skill);
+        if (skill != null) { skills.put(skill.getName().toLowerCase(), skill); }
     }
 
     /**
@@ -626,10 +605,8 @@ public class SkillAPI extends JavaPlugin
      *
      * @param skills skills to register
      */
-    public void addSkills(Skill... skills)
-    {
-        for (Skill skill : skills)
-            addSkill(skill);
+    public void addSkills(Skill... skills) {
+        for (Skill skill : skills) { addSkill(skill); }
     }
 
     /**
@@ -639,15 +616,12 @@ public class SkillAPI extends JavaPlugin
      *
      * @param rpgClass class to register
      */
-    public void addClass(RPGClass rpgClass)
-    {
+    public void addClass(RPGClass rpgClass) {
         rpgClass = registrationManager.validate(rpgClass);
-        if (rpgClass != null)
-        {
+        if (rpgClass != null) {
             classes.put(rpgClass.getName().toLowerCase(), rpgClass);
             ClassBoardManager.registerClass(rpgClass);
-            if (!groups.contains(rpgClass.getGroup()))
-                groups.add(rpgClass.getGroup());
+            if (!groups.contains(rpgClass.getGroup())) { groups.add(rpgClass.getGroup()); }
         }
     }
 
@@ -657,15 +631,12 @@ public class SkillAPI extends JavaPlugin
      *
      * @param rpgClass dynamic class to add
      */
-    public void addDynamicClass(DynamicClass rpgClass)
-    {
+    public void addDynamicClass(DynamicClass rpgClass) {
         String key;
-        if (rpgClass != null && !classes.containsKey(key = rpgClass.getName().toLowerCase()))
-        {
+        if (rpgClass != null && !classes.containsKey(key = rpgClass.getName().toLowerCase())) {
             classes.put(key, rpgClass);
             ClassBoardManager.registerClass(rpgClass);
-            if (!groups.contains(rpgClass.getGroup()))
-                groups.add(rpgClass.getGroup());
+            if (!groups.contains(rpgClass.getGroup())) { groups.add(rpgClass.getGroup()); }
         }
     }
 
@@ -676,10 +647,8 @@ public class SkillAPI extends JavaPlugin
      *
      * @param classes classes to register
      */
-    public void addClasses(RPGClass... classes)
-    {
-        for (RPGClass rpgClass : classes)
-            addClass(rpgClass);
+    public void addClasses(RPGClass... classes) {
+        for (RPGClass rpgClass : classes) { addClass(rpgClass); }
     }
 
     /**
@@ -688,8 +657,7 @@ public class SkillAPI extends JavaPlugin
      * @param runnable the task to schedule
      * @param delay    the delay in ticks
      */
-    public static void schedule(BukkitRunnable runnable, int delay)
-    {
+    public static void schedule(BukkitRunnable runnable, int delay) {
         runnable.runTaskLater(singleton(), delay);
     }
 
@@ -699,8 +667,7 @@ public class SkillAPI extends JavaPlugin
      * @param runnable the task to schedule
      * @param delay    the delay in ticks
      */
-    public static void schedule(Runnable runnable, int delay)
-    {
+    public static void schedule(Runnable runnable, int delay) {
         Bukkit.getScheduler().runTaskLater(singleton, runnable, delay);
     }
 
@@ -711,8 +678,7 @@ public class SkillAPI extends JavaPlugin
      * @param delay    the delay in ticks before the first tick
      * @param period   how often to run in ticks
      */
-    public static void schedule(BukkitRunnable runnable, int delay, int period)
-    {
+    public static void schedule(BukkitRunnable runnable, int delay, int period) {
         runnable.runTaskTimer(singleton(), delay, period);
     }
 
@@ -723,8 +689,7 @@ public class SkillAPI extends JavaPlugin
      * @param key    key to store under
      * @param value  value to store
      */
-    public static void setMeta(Metadatable target, String key, Object value)
-    {
+    public static void setMeta(Metadatable target, String key, Object value) {
         target.setMetadata(key, new FixedMetadataValue(singleton(), value));
     }
 
@@ -736,8 +701,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the stored value
      */
-    public static Object getMeta(Metadatable target, String key)
-    {
+    public static Object getMeta(Metadatable target, String key) {
         List<MetadataValue> meta = target.getMetadata(key);
         return meta == null || meta.size() == 0 ? null : meta.get(0).value();
     }
@@ -750,8 +714,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the stored value
      */
-    public static int getMetaInt(Metadatable target, String key)
-    {
+    public static int getMetaInt(Metadatable target, String key) {
         return target.getMetadata(key).get(0).asInt();
     }
 
@@ -763,8 +726,7 @@ public class SkillAPI extends JavaPlugin
      *
      * @return the stored value
      */
-    public static double getMetaDouble(Metadatable target, String key)
-    {
+    public static double getMetaDouble(Metadatable target, String key) {
         return target.getMetadata(key).get(0).asDouble();
     }
 
@@ -774,8 +736,7 @@ public class SkillAPI extends JavaPlugin
      * @param target entity to remove from
      * @param key    key metadata was stored under
      */
-    public static void removeMeta(Metadatable target, String key)
-    {
+    public static void removeMeta(Metadatable target, String key) {
         target.removeMetadata(key, singleton());
     }
 
@@ -786,16 +747,14 @@ public class SkillAPI extends JavaPlugin
      *
      * @return config data
      */
-    public static CommentedConfig getConfig(String name)
-    {
+    public static CommentedConfig getConfig(String name) {
         return new CommentedConfig(singleton, name);
     }
 
     /**
      * Reloads the plugin
      */
-    public static void reload()
-    {
+    public static void reload() {
         SkillAPI inst = singleton();
         inst.onDisable();
         inst.onEnable();

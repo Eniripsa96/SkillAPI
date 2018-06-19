@@ -83,7 +83,7 @@ Saving:
     database: plugins
     username: username
     password: password
-    # Time to wait on loading data from the SQL database in milliseconds.
+    # Time to wait on loading data from the SQL database in ticks.
     # Can be used to give time for other servers to synchronize data. Note:
     # this does not apply when loading player data on server startup since
     # players wouldn't be coming from another server.
@@ -500,6 +500,8 @@ Experience:
   use-custom: false
   #
   # The custom formula to use with 'lvl' being the current player level
+  # Note: this formula does not use x, y, or z. Use numbers directly
+  # in the formula instead.
   custom-formula: '25(1.1^(lvl-1))'
   #
   # The experience yields from each mob type

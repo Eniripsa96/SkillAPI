@@ -219,7 +219,7 @@ Component.prototype.dupe = function(parent)
     var ele = new Component(this.name, this.type, this.container, parent);
     for (i = 0; i < this.components.length; i++)
     {
-        ele.components.push(this.components[i].dupe());
+        ele.components.push(this.components[i].dupe(ele));
     }
     ele.data = ele.data.slice(0, 1);
     for (i = ele.data.length; i < this.data.length; i++)

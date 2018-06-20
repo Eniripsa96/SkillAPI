@@ -60,6 +60,7 @@ public class WolfMechanic extends EffectComponent
     private static final String DAMAGE  = "damage";
     private static final String SKILLS  = "skills";
     private static final String AMOUNT = "amount";
+    private static final String SITTING = "sitting";
 
     /**
      * Executes the component
@@ -85,6 +86,7 @@ public class WolfMechanic extends EffectComponent
         String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", player.getName()));
         double damage = attr(player, DAMAGE, level, 3.0, isSelf);
         double amount = attr(player, AMOUNT, level, 1.0, isSelf);
+        boolean sitting = settings.getString(SITTING, "false").equalsIgnoreCase("true");
         List<String> skills = settings.getStringList(SKILLS);
 
         DyeColor dye = null;
@@ -108,6 +110,7 @@ public class WolfMechanic extends EffectComponent
                 wolf.setOwner(player);
                 wolf.setMaxHealth(health);
                 wolf.setHealth(health);
+                wolf.setSitting(sitting);
                 SkillAPI.setMeta(wolf, MechanicListener.SUMMON_DAMAGE, damage);
 
                 List<LivingEntity> owner = new ArrayList<LivingEntity>(1);

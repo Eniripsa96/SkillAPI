@@ -347,7 +347,7 @@ public class PlayerData
             total += bonusAttrib.get(key);
         for (PlayerClass playerClass : classes.values())
             total += playerClass.getData().getAttribute(key, playerClass.getLevel());
-        return total;
+        return Math.max(0, total);
     }
 
     /**
@@ -443,9 +443,8 @@ public class PlayerData
     public void addBonusAttributes(String key, int amount)
     {
         key = SkillAPI.getAttributeManager().normalize(key);
-        if (bonusAttrib.containsKey(key))
-            amount += bonusAttrib.get(key);
-        bonusAttrib.put(key, Math.max(0, amount));
+        amount += bonusAttrib.getOrDefault(key, 0);
+        bonusAttrib.put(key, amount);
         AttributeListener.updatePlayer(this);
     }
 

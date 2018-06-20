@@ -266,7 +266,7 @@ public class PlayerEquips
                 else if (lower.startsWith(classText)) {
                     List<String> required = Arrays.asList(lower.substring(classText.length()).split(", "));
                     if (classReq == null)
-                        classReq = new HashSet<String>();
+                        classReq = new HashSet<>();
                     classReq.addAll(required);
                 }
 
@@ -274,7 +274,7 @@ public class PlayerEquips
                 else if (lower.startsWith(excludeText)) {
                     List<String> excluded = Arrays.asList(lower.substring(excludeText.length()).split(", "));
                     if (classExc == null)
-                        classExc = new HashSet<String>();
+                        classExc = new HashSet<>();
                     classExc.addAll(excluded);
                 }
                     
@@ -292,7 +292,7 @@ public class PlayerEquips
                             {
                                 done = true;
                                 if (skillReq == null)
-                                    skillReq = new HashMap<String, Integer>();
+                                    skillReq = new HashMap<>();
 
                                 skillReq.put(skill.getName(), NumberParser.parseInt(lower.substring(text.length())));
                                 break;
@@ -309,7 +309,7 @@ public class PlayerEquips
                             if (lower.startsWith(text))
                             {
                                 if (attrReq == null)
-                                    attrReq = new HashMap<String, Integer>();
+                                    attrReq = new HashMap<>();
 
                                 String normalized = SkillAPI.getAttributeManager().normalize(attr);
                                 attrReq.put(normalized, NumberParser.parseInt(lower.substring(text.length())));
@@ -320,7 +320,7 @@ public class PlayerEquips
                             if (lower.startsWith(text))
                             {
                                 if (attribs == null)
-                                    attribs = new HashMap<String, Integer>();
+                                    attribs = new HashMap<>();
 
                                 String normalized = SkillAPI.getAttributeManager().normalize(attr);
                                 int current = attribs.containsKey(attr) ? attribs.get(attr) : 0;

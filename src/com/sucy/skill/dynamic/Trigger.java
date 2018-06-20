@@ -26,7 +26,17 @@
  */
 package com.sucy.skill.dynamic;
 
+import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.event.PlayerLandEvent;
+import com.sucy.skill.api.event.SkillDamageEvent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.List;
 
@@ -35,75 +45,32 @@ import java.util.List;
  */
 public enum Trigger
 {
-    /**
-     * Trigger effects when a player casts the skill
-     */
-    CAST,
-
-    /**
-     * Trigger effects when the player quits or unlearns the skill
-     */
-    CLEANUP,
-
-    /**
-     * Trigger effects when the player crouches
-     */
-    CROUCH,
-
-    /**
-     * Trigger effects when the player dies
-     */
-    DEATH,
-
-    /**
-     * Trigger effects when the player takes environmental damage
-     */
-    ENVIRONMENT_DAMAGE,
-
-    /**
-     * Trigger effects when the player falls to a certain health percentage
-     */
+    BLOCK_BREAK(BlockBreakEvent.class),
+    BLOCK_PLACE(BlockPlaceEvent.class),
+    CAST(null),
+    CLEANUP(null),
+    CROUCH(PlayerToggleSneakEvent.class),
+    DEATH(EntityDeathEvent.class),
+    ENVIRONMENT_DAMAGE(EntityDamageEvent.class),
     //HEALTH,
+    INITIALIZE(null),
+    KILL(EntityDeathEvent.class),
+    LAND(PlayerLandEvent.class),
+    LAUNCH(ProjectileLaunchEvent.class),
+    PHYSICAL_DAMAGE(PhysicalDamageEvent.class),
+    SKILL_DAMAGE(SkillDamageEvent.class),
+    TOOK_PHYSICAL_DAMAGE(PhysicalDamageEvent.class),
+    TOOK_SKILL_DAMAGE(SkillDamageEvent.class);
 
-    /**
-     * Trigger effects when the skill is available
-     */
-    INITIALIZE,
+    private Class<? extends Event> event;
 
-    /**
-     * Trigger effects upon killing something
-     */
-    KILL,
+    Trigger(Class<? extends Event> event) {
+        this.event = event;
+    }
 
-    /**
-     * Trigger effects upon hitting the ground
-     */
-    LAND,
-
-    /**
-     * Trigger effects when launching a projectile
-     */
-    LAUNCH,
-
-    /**
-     * Trigger effects when the player inflicts non-skill damage
-     */
-    PHYSICAL_DAMAGE,
-
-    /**
-     * Trigger effects when the player inflicts skill damage
-     */
-    SKILL_DAMAGE,
-
-    /**
-     * Trigger effects when taking non-skill damage
-     */
-    TOOK_PHYSICAL_DAMAGE,
-
-    /**
-     * Trigger effects when taking skill damage
-     */
-    TOOK_SKILL_DAMAGE;
+    public Class<? extends Event> getEvent() {
+        return event;
+    }
 
     /**
      * Retrieves a new component for the trigger

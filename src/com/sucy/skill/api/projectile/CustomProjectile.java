@@ -26,8 +26,8 @@
  */
 package com.sucy.skill.api.projectile;
 
-import com.rit.sucy.player.Protection;
 import com.rit.sucy.reflect.Reflection;
+import com.sucy.skill.SkillAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -43,7 +43,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Base class for custom projectiles
@@ -72,7 +74,9 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         }
     }
 
-    private final HashMap<String, List<MetadataValue>> metadata = new HashMap<String, List<MetadataValue>>();
+    private final HashMap<String, List<MetadataValue>> metadata = new HashMap<>();
+
+    private final Set<Integer> hit = new HashSet<>();
 
     private ProjectileCallback callback;
     private LivingEntity       thrower;
@@ -159,7 +163,12 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     {
         for (LivingEntity entity : getColliding())
         {
-            boolean ally = Protection.isAlly(getShooter(), entity);
+            if (entity == thrower || hit.contains(entity.getEntityId())) {
+                continue;
+            }
+            hit.add(entity.getEntityId());
+
+            boolean ally = SkillAPI.getSettings().isAlly(getShooter(), entity);
             if (ally && !this.ally) continue;
             if (!ally && !this.enemy) continue;
 
@@ -179,7 +188,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     private List<LivingEntity> getColliding()
     {
         // Reflection for nms collision
-        List<LivingEntity> result = new ArrayList<LivingEntity>(1);
+        List<LivingEntity> result = new ArrayList<>(1);
         try
         {
             Object nmsWorld = getHandle.invoke(getLocation().getWorld());
@@ -226,7 +235,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
      */
     private List<LivingEntity> getNearbyEntities()
     {
-        List<LivingEntity> list = new ArrayList<LivingEntity>();
+        List<LivingEntity> list = new ArrayList<>();
         Location loc = getLocation();
         double radius = getCollisionRadius();
         int minX = (int) (loc.getX() - radius) >> 4;
@@ -282,7 +291,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     public void setMetadata(String key, MetadataValue meta)
     {
         boolean hasMeta = hasMetadata(key);
-        List<MetadataValue> list = hasMeta ? getMetadata(key) : new ArrayList<MetadataValue>();
+        List<MetadataValue> list = hasMeta ? getMetadata(key) : new ArrayList<>();
         list.add(meta);
         if (!hasMeta)
         {
@@ -360,10 +369,10 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         // Special cases
         if (amount <= 0)
         {
-            return new ArrayList<Vector>();
+            return new ArrayList<>();
         }
 
-        ArrayList<Vector> list = new ArrayList<Vector>();
+        ArrayList<Vector> list = new ArrayList<>();
 
         // One goes straight if odd amount
         if (amount % 2 == 1)
@@ -435,7 +444,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
      */
     public static ArrayList<Location> calcRain(Location loc, double radius, double height, int amount)
     {
-        ArrayList<Location> list = new ArrayList<Location>();
+        ArrayList<Location> list = new ArrayList<>();
         if (amount <= 0)
         {
             return list;

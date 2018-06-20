@@ -1396,7 +1396,7 @@ public class PlayerData
             final RPGClass previous = previousData == null ? null : previousData.getData();
 
             // Pre-class change event in case someone wants to stop it
-            final PlayerPreClassChangeEvent event = new PlayerPreClassChangeEvent(previousData, previous, rpgClass);
+            final PlayerPreClassChangeEvent event = new PlayerPreClassChangeEvent(this, previousData, previous, rpgClass);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return false;
@@ -1581,9 +1581,7 @@ public class PlayerData
     public void addMaxHealth(double amount)
     {
         bonusHealth += amount;
-        Player player = getPlayer();
-        if (player != null)
-            player.setMaxHealth(player.getMaxHealth() + amount);
+        updateHealthAndMana(getPlayer());
     }
 
     /**

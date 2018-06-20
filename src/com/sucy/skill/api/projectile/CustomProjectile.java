@@ -172,7 +172,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     {
         for (LivingEntity entity : getColliding())
         {
-            if (hit.contains(entity.getEntityId())) {
+            if (entity == thrower || hit.contains(entity.getEntityId())) {
                 continue;
             }
             hit.add(entity.getEntityId());

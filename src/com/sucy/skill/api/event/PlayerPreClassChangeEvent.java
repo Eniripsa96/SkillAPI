@@ -13,6 +13,7 @@ import org.bukkit.event.HandlerList;
  */
 public class PlayerPreClassChangeEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
+    private PlayerData  playerData;
     private PlayerClass playerClass;
     private RPGClass    previousClass;
     private RPGClass    newClass;
@@ -21,11 +22,13 @@ public class PlayerPreClassChangeEvent extends Event implements Cancellable {
     /**
      * Constructor
      *
+     * @param playerData    player information
      * @param playerClass   data of the player changing classes
      * @param previousClass previous class of the player (null if wasn't a profession)
      * @param newClass      new class of the player (null if using the reset command)
      */
-    public PlayerPreClassChangeEvent(PlayerClass playerClass, RPGClass previousClass, RPGClass newClass) {
+    public PlayerPreClassChangeEvent(PlayerData playerData, PlayerClass playerClass, RPGClass previousClass, RPGClass newClass) {
+        this.playerData = playerData;
         this.playerClass = playerClass;
         this.previousClass = previousClass;
         this.newClass = newClass;
@@ -33,7 +36,7 @@ public class PlayerPreClassChangeEvent extends Event implements Cancellable {
     }
 
     /**
-     * @return modified player class
+     * @return modified player class (null if not professed before)
      */
     public PlayerClass getPlayerClass() {
         return playerClass;
@@ -43,11 +46,11 @@ public class PlayerPreClassChangeEvent extends Event implements Cancellable {
      * @return Data of the player changing classes
      */
     public PlayerData getPlayerData() {
-        return playerClass.getPlayerData();
+        return playerData;
     }
 
     /**
-     * @return previous class of the player
+     * @return previous class of the player (null if not professed before)
      */
     public RPGClass getPreviousClass() {
         return previousClass;

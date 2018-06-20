@@ -27,6 +27,8 @@ var Type = {
  * Available triggers for activating skill effects
  */
 var Trigger = {
+    BLOCK_BREAK          : { name: 'Block Break',          container: true, construct: TriggerBlockBreak,        premium: true },
+    BLOCK_PLACE          : { name: 'Block Place',          container: true, construct: TriggerBlockPlace,        premium: true },
     CAST                 : { name: 'Cast',                 container: true, construct: TriggerCast               },
     CLEANUP              : { name: 'Cleanup',              container: true, construct: TriggerCleanup            },
     CROUCH               : { name: 'Crouch',               container: true, construct: TriggerCrouch             },
@@ -549,6 +551,32 @@ Component.prototype.getSaveString = function(spacing)
 Component.prototype.load = loadSection;
 
 // -- Trigger constructors ----------------------------------------------------- //
+
+extend('TriggerBlockBreak', 'Component');
+function TriggerBlockBreak() {
+    this.super('Block Break', Type.TRIGGER, true);
+    this.description = 'Applies skill effects when a player breaks a block matching  the given details';
+
+    this.data.push(new ListValue('Material', 'material', [ 'Any' ].concat(materialList), 'Any')
+        .setTooltip('The type of block expected to be broken')
+    );
+    this.data.push(new IntValue('Data', 'data', -1)
+        .setTooltip('The expected data value of the block (-1 for any data value)')
+    );
+}
+
+extend('TriggerBlockPlace', 'Component');
+function TriggerBlockPlace() {
+    this.super('Block Place', Type.TRIGGER, true);
+    this.description = 'Applies skill effects when a player places a block matching  the given details';
+
+    this.data.push(new ListValue('Material', 'material', [ 'Any' ].concat(materialList), 'Any')
+        .setTooltip('The type of block expected to be placed')
+    );
+    this.data.push(new IntValue('Data', 'data', -1)
+        .setTooltip('The expected data value of the block (-1 for any data value)')
+    );
+}
 
 extend('TriggerCast', 'Component');
 function TriggerCast()
@@ -2683,6 +2711,9 @@ function MechanicWolf()
     );
     this.data.push(new AttributeValue('Damage', 'damage', 3, 0)
         .setTooltip('The damage dealt by the wolf each attack')
+    );
+    this.data.push(new ListValue('Sitting', 'sitting', [ 'True', 'False' ], 'False')
+        .setTooltip('[PREMIUM] whether or not the wolf starts of sitting')
     );
     this.data.push(new AttributeValue('Duration', 'seconds', 10, 0)
         .setTooltip('How long to summon the wolf for')

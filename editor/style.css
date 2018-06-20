@@ -73,14 +73,6 @@ html, body {
 	display: none;
 }
 
-#componentChooser h5 {
-    background-color: #181818;
-}
-
-#componentChooser h5:hover {
-    background-color: #777;
-}
-
 #skills, #classes {
 	float: left;
 	width: 100%;
@@ -171,7 +163,7 @@ h5 {
 	float: left;
 	width: 225px;
 	padding: 10px 5px;
-	background-color: #043;
+	background-color: #181818;
 	margin-bottom: 10px;
 	margin-left: 10px;
 	border-radius: 5px;
@@ -184,7 +176,7 @@ h5 {
 }
 
 h5:hover {
-	background-color: #666;
+	background-color: #777;
 	cursor: pointer;
 }
 
@@ -297,7 +289,6 @@ hr {
 #saveSkill {
 	background-color: #375a7f;
 }
-}
 
 #saveSkill:hover {
     background-color: #6af;
@@ -327,11 +318,11 @@ hr {
 	margin-bottom: 5px;
 }
 
-#componentChooser .premium {
+.premium {
     background-color: #033;
 }
 
-#componentChooser .premium:hover {
+.premium:hover {
     background-color: #6aa;
 }
 

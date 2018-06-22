@@ -124,8 +124,14 @@ public class GUITask extends BukkitRunnable
             if (levelMana)
             {
                 Logger.log(LogType.GUI, 2, "Updating level bar with mana");
-                player.setLevel((int) data.getMana());
-                player.setExp((float) (0.999 * data.getMana() / data.getMaxMana()));
+                if (data.getMaxMana() == 0) {
+                    player.setLevel(0);
+                    player.setExp(0);
+                }
+                else {
+                    player.setLevel((int) data.getMana());
+                    player.setExp(Math.min(0.999f, (float) (0.999 * data.getMana() / data.getMaxMana())));
+                }
             }
             else if (levelLevel)
             {
@@ -148,11 +154,17 @@ public class GUITask extends BukkitRunnable
             {
                 Logger.log(LogType.GUI, 2, "Updating food bar with mana");
                 player.setSaturation(20);
-                player.setFoodLevel((int) Math.ceil(20 * data.getMana() / data.getMaxMana()));
+                if (data.getMaxMana() == 0) {
+                    player.setFoodLevel(20);;
+                }
+                else {
+                    player.setFoodLevel((int) Math.ceil(20 * data.getMana() / data.getMaxMana()));
+                }
             }
             else if (foodExp)
             {
                 Logger.log(LogType.GUI, 2, "Updating food bar with class level/exp");
+                player.setSaturation(20);
                 if (!data.hasClass())
                 {
                     player.setFoodLevel(0);

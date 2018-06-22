@@ -29,6 +29,7 @@ package com.sucy.skill.cmd;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
+import com.rit.sucy.config.parse.YAMLParser;
 import com.rit.sucy.sql.direct.SQLDatabase;
 import com.rit.sucy.sql.direct.SQLTable;
 import com.sucy.skill.SkillAPI;
@@ -104,13 +105,17 @@ public class CmdBackup implements IFunction
                 SQLTable table = database.createTable(api, "players");
                 ResultSet query = table.queryAll();
 
+                final File file = new File(api.getDataFolder(), "players");
+                file.mkdir();
+
                 // Go through every entry, saving it to disk
                 while (query.next())
                 {
-                    String yaml = query.getString(SQLIO.DATA);
+                    String sqlYaml = query.getString(SQLIO.DATA);
+                    String yaml = YAMLParser.parseText(sqlYaml, SQLIO.STRING).toString();
                     String name = query.getString("Name");
 
-                    FileOutputStream out = new FileOutputStream(new File("players/" + name + ".yml"));
+                    FileOutputStream out = new FileOutputStream(new File(file, name + ".yml"));
                     BufferedWriter write = new BufferedWriter(new OutputStreamWriter(out, Encoder.UTF_8));
 
                     write.write(yaml);
@@ -129,6 +134,7 @@ public class CmdBackup implements IFunction
                     "&4SQL database backup failed - backed up {amount} entries",
                     Filter.AMOUNT.setReplacement(count + "")
                 );
+                ex.printStackTrace();
             }
             database.closeConnection();
         }

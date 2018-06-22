@@ -119,7 +119,7 @@ public class GUITask extends RepeatThreadTask
                 }
                 else {
                     player.setLevel((int) data.getMana());
-                    player.setExp((float) (0.999 * data.getMana() / data.getMaxMana()));
+                    player.setExp(Math.min(0.999f, (float) (0.999 * data.getMana() / data.getMaxMana())));
                 }
             }
             else if (levelLevel)

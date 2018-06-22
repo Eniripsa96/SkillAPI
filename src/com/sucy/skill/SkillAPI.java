@@ -485,6 +485,16 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * Used to fake player data until SQL data is loaded when both SQL and the SQL delay are enabled.
+     * This should not be used by other plugins. If the player data already exists, this does nothing.
+     *
+     * @param player player to fake data for
+     */
+    public static void initFakeData(final OfflinePlayer player) {
+        singleton().players.computeIfAbsent(player.getUniqueId().toString(), id -> new PlayerAccounts(player));
+    }
+
+    /**
      * Do not use this method outside of onJoin. This will delete any progress a player
      * has made since joining.
      */

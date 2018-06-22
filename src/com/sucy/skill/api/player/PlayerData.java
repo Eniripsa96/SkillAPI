@@ -101,11 +101,11 @@ import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.ON_COOLD
  */
 public class PlayerData
 {
-    private final HashMap<String, PlayerClass>   classes     = new HashMap<String, PlayerClass>();
-    private final HashMap<String, PlayerSkill>   skills      = new HashMap<String, PlayerSkill>();
-    private final HashMap<Material, PlayerSkill> binds       = new HashMap<Material, PlayerSkill>();
-    private final HashMap<String, Integer>       attributes  = new HashMap<String, Integer>();
-    private final HashMap<String, Integer>       bonusAttrib = new HashMap<String, Integer>();
+    private final HashMap<String, PlayerClass>   classes     = new HashMap<>();
+    private final HashMap<String, PlayerSkill>   skills      = new HashMap<>();
+    private final HashMap<Material, PlayerSkill> binds       = new HashMap<>();
+    private final HashMap<String, Integer>       attributes  = new HashMap<>();
+    private final HashMap<String, Integer>       bonusAttrib = new HashMap<>();
 
     private DataSection    extraData = new DataSection();
     private OfflinePlayer player;
@@ -310,7 +310,7 @@ public class PlayerData
      */
     public HashMap<String, Integer> getAttributes()
     {
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
+        HashMap<String, Integer> map = new HashMap<>();
         for (String key : SkillAPI.getAttributeManager().getKeys())
             map.put(key, getAttribute(key));
         return map;
@@ -326,7 +326,7 @@ public class PlayerData
      */
     public HashMap<String, Integer> getInvestedAttributes()
     {
-        return new HashMap<String, Integer>(attributes);
+        return new HashMap<>(attributes);
     }
 
     /**
@@ -360,12 +360,7 @@ public class PlayerData
      */
     public int getInvestedAttribute(String key)
     {
-        key = key.toLowerCase();
-        if (!attributes.containsKey(key))
-        {
-            return 0;
-        }
-        return attributes.get(key);
+        return attributes.getOrDefault(key.toLowerCase(), 0);
     }
 
     /**
@@ -491,7 +486,7 @@ public class PlayerData
      */
     public void refundAttributes()
     {
-        ArrayList<String> keys = new ArrayList<String>(attributes.keySet());
+        ArrayList<String> keys = new ArrayList<>(attributes.keySet());
         for (String key : keys)
         {
             refundAttributes(key);
@@ -1002,7 +997,7 @@ public class PlayerData
     {
         if (classes.size() > 0 && player != null)
         {
-            HashMap<String, RPGClass> iconMap = new HashMap<String, RPGClass>();
+            HashMap<String, RPGClass> iconMap = new HashMap<>();
             for (Map.Entry<String, PlayerClass> entry : classes.entrySet()) {
                 iconMap.put(entry.getKey().toLowerCase(), entry.getValue().getData());
             }
@@ -1356,7 +1351,7 @@ public class PlayerData
      */
     public void resetAll()
     {
-        ArrayList<String> keys = new ArrayList<String>(classes.keySet());
+        ArrayList<String> keys = new ArrayList<>(classes.keySet());
         for (String key : keys)
             reset(key);
     }
@@ -1857,7 +1852,7 @@ public class PlayerData
      */
     public void clearBinds(Skill skill)
     {
-        ArrayList<Material> keys = new ArrayList<Material>(binds.keySet());
+        ArrayList<Material> keys = new ArrayList<>(binds.keySet());
         for (Material key : keys)
         {
             PlayerSkill bound = binds.get(key);

@@ -43,6 +43,7 @@ import com.sucy.skill.dynamic.mechanic.ImmunityMechanic;
 import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -77,12 +78,17 @@ public class MainListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onLogin(AsyncPlayerPreLoginEvent event)
-    {
+    public void onLogin(AsyncPlayerPreLoginEvent event) {
+        final OfflinePlayer player;
         if (VersionManager.isVersionAtLeast(VersionManager.V1_7_5))
-            SkillAPI.loadPlayerData(Bukkit.getOfflinePlayer(event.getUniqueId()));
+            player = Bukkit.getOfflinePlayer(event.getUniqueId());
         else
-            SkillAPI.loadPlayerData(VersionManager.getOfflinePlayer(event.getName()));
+            player = VersionManager.getOfflinePlayer(event.getName());
+
+        if (SkillAPI.getSettings().isUseSql() && SkillAPI.getSettings().getSqlDelay() > 0)
+            SkillAPI.initFakeData(player);
+        else
+            SkillAPI.loadPlayerData(player);
     }
 
     /**

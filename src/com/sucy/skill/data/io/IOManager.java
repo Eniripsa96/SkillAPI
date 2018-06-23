@@ -209,11 +209,7 @@ public abstract class IOManager
                         else if (SkillAPI.getSkill(key) != null)
                             bar.getData().put(skillBar.getInt(key), key);
                     }
-                    if (!enabled)
-                        bar.toggleEnabled();
-                    else if (player.isOnline())
-                        bar.setup(player.getPlayer());
-
+                    
                     bar.applySettings();
                 }
             }

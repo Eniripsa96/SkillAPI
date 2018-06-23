@@ -30,6 +30,7 @@ import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.util.DamageLoreRemover;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.formula.Formula;
 import com.sucy.skill.data.formula.value.CustomValue;
@@ -74,10 +75,10 @@ public class AttributeManager
     public static final String HUNGER_HEAL      = "hunger-heal";
     public static final String COOLDOWN         = "cooldown";
 
-    private final HashMap<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
-    private final HashMap<String, Attribute> lookup     = new HashMap<String, Attribute>();
-    private final HashMap<String, List<Attribute>> byStat = new HashMap<String, List<Attribute>>();
-    private final HashMap<String, List<Attribute>> byComponent = new HashMap<String, List<Attribute>>();
+    private final HashMap<String, Attribute> attributes = new LinkedHashMap<>();
+    private final HashMap<String, Attribute> lookup     = new HashMap<>();
+    private final HashMap<String, List<Attribute>> byStat = new HashMap<>();
+    private final HashMap<String, List<Attribute>> byComponent = new HashMap<>();
 
     /**
      * Sets up the attribute manager, loading the attribute
@@ -213,12 +214,12 @@ public class AttributeManager
         private int       max;
 
         // Dynamic global modifiers
-        private HashMap<String, AttributeValue[]> conditions = new HashMap<String, AttributeValue[]>();
-        private HashMap<String, AttributeValue[]> mechanics  = new HashMap<String, AttributeValue[]>();
-        private HashMap<String, AttributeValue[]> targets    = new HashMap<String, AttributeValue[]>();
+        private HashMap<String, AttributeValue[]> conditions = new HashMap<>();
+        private HashMap<String, AttributeValue[]> mechanics  = new HashMap<>();
+        private HashMap<String, AttributeValue[]> targets    = new HashMap<>();
 
         // General stat modifiers
-        private HashMap<String, Formula> statModifiers = new HashMap<String, Formula>();
+        private HashMap<String, Formula> statModifiers = new HashMap<>();
 
         /**
          * Creates a new attribute, loading the settings from the given
@@ -291,7 +292,7 @@ public class AttributeManager
             }
 
             item.setItemMeta(meta);
-            return item;
+            return DamageLoreRemover.removeAttackDmg(item);
         }
 
         @Override
@@ -405,7 +406,7 @@ public class AttributeManager
                 target.put(lower, values);
 
                 if (!byComponent.containsKey(lower))
-                    byComponent.put(lower, new ArrayList<Attribute>());
+                    byComponent.put(lower, new ArrayList<>());
                 byComponent.get(lower).add(this);
             }
         }
@@ -424,7 +425,7 @@ public class AttributeManager
                 statModifiers.put(key, new Formula(data.getString(key, "v"), new CustomValue("v"), new CustomValue("a")));
 
                 if (!byStat.containsKey(key))
-                    byStat.put(key, new ArrayList<Attribute>());
+                    byStat.put(key, new ArrayList<>());
                 byStat.get(key).add(this);
             }
         }
@@ -437,7 +438,7 @@ public class AttributeManager
     public class AttributeValue
     {
         private Formula formula;
-        private HashMap<String, String> conditions = new HashMap<String, String>();
+        private HashMap<String, String> conditions = new HashMap<>();
 
         /**
          * Loads the attribute value that starts with the formula

@@ -49,7 +49,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -60,7 +59,12 @@ import java.util.HashMap;
  */
 public class AttributeListener extends SkillAPIListener
 {
-    private static HashMap<String, Double> BONUSES = new HashMap<String, Double>();
+    private static HashMap<String, Double> BONUSES = new HashMap<>();
+
+    @Override
+    public void init() {
+        MainListener.register(this::onJoin);
+    }
 
     /**
      * Cleans up the listener on shutdown
@@ -111,13 +115,9 @@ public class AttributeListener extends SkillAPIListener
     /**
      * Gives players bonus stats on login
      */
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onJoin(PlayerJoinEvent event)
+    public void onJoin(final Player player)
     {
-        if (event.getPlayer().hasMetadata("NPC"))
-            return;
-
-        updatePlayer(SkillAPI.getPlayerData(event.getPlayer()));
+        updatePlayer(SkillAPI.getPlayerData(player));
     }
 
     /**

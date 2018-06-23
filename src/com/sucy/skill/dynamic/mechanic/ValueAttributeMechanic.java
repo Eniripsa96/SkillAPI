@@ -55,7 +55,7 @@ public class ValueAttributeMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        if (!settings.has(KEY) || !settings.has(ATTR) || !(caster instanceof Player))
+        if (!settings.has(KEY) || !settings.has(ATTR) || !(targets.get(0) instanceof Player))
         {
             return false;
         }
@@ -63,7 +63,7 @@ public class ValueAttributeMechanic extends EffectComponent
         String key = settings.getString(KEY);
         String attr = settings.getString(ATTR);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        data.put(key, (double) SkillAPI.getPlayerData((Player) caster).getAttribute(attr));
+        data.put(key, (double) SkillAPI.getPlayerData((Player) targets.get(0)).getAttribute(attr));
         return true;
     }
 }

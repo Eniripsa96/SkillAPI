@@ -53,7 +53,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -81,6 +80,7 @@ public class CastCombatListener extends SkillAPIListener
     @Override
     public void init()
     {
+        MainListener.register(this::init);
         for (Player player : Bukkit.getOnlinePlayers())
             init(player);
     }
@@ -168,17 +168,6 @@ public class CastCombatListener extends SkillAPIListener
             if (items[i] != null)
                 player.getInventory().setItem(i, items[i]);
         }
-    }
-
-    /**
-     * Sets up skill bars on joining
-     *
-     * @param event event details
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerJoinEvent event)
-    {
-        init(event.getPlayer());
     }
 
     /**

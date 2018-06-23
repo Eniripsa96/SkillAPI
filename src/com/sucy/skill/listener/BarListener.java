@@ -56,7 +56,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -74,6 +73,7 @@ public class BarListener extends SkillAPIListener
     @Override
     public void init()
     {
+        MainListener.register(this::onJoin);
         for (Player player : VersionManager.getOnlinePlayers())
         {
             if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
@@ -104,16 +104,13 @@ public class BarListener extends SkillAPIListener
 
     /**
      * Sets up skill bars on joining
-     *
-     * @param event event details
      */
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event)
+    public void onJoin(final Player player)
     {
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())) {
-            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
+            final PlayerData data = SkillAPI.getPlayerData(player);
             if (data.hasClass()) {
-                data.getSkillBar().setup(event.getPlayer());
+                data.getSkillBar().setup(player);
             }
         }
     }

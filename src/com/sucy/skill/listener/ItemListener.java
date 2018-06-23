@@ -54,6 +54,11 @@ import java.util.HashSet;
  */
 public class ItemListener extends SkillAPIListener
 {
+    @Override
+    public void init() {
+        MainListener.register(this::onJoin);
+    }
+
     /**
      * Removes weapon bonuses when dropped
      *
@@ -80,14 +85,11 @@ public class ItemListener extends SkillAPIListener
 
     /**
      * Updates equipment data on join
-     *
-     * @param event event details
      */
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event)
+    public void onJoin(final Player player)
     {
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            SkillAPI.getPlayerData(event.getPlayer()).getEquips().update(event.getPlayer());
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+            SkillAPI.getPlayerData(player).getEquips().update(player);
     }
 
     @EventHandler

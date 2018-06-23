@@ -45,7 +45,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -65,6 +64,7 @@ public class CastItemListener extends SkillAPIListener
     @Override
     public void init()
     {
+        MainListener.register(this::init);
         for (Player player : Bukkit.getOnlinePlayers())
             init(player);
     }
@@ -99,17 +99,6 @@ public class CastItemListener extends SkillAPIListener
     public void onClassChange(PlayerClassChangeEvent event)
     {
         data.get(event.getPlayerData().getPlayer().getUniqueId()).init(event.getPlayerData());
-    }
-
-    /**
-     * Initializes cast data on join
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event)
-    {
-        init(event.getPlayer());
     }
 
     /**

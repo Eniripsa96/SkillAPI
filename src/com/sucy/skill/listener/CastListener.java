@@ -49,7 +49,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -61,8 +60,10 @@ public class CastListener extends SkillAPIListener
 {
     private static int slot = SkillAPI.getSettings().getCastSlot();
 
+    @Override
     public void init()
     {
+        MainListener.register(this::init);
         for (Player player : Bukkit.getOnlinePlayers())
             init(player);
     }
@@ -104,12 +105,6 @@ public class CastListener extends SkillAPIListener
     public void onClassChange(PlayerClassChangeEvent event)
     {
         event.getPlayerData().getCastBars().reset();
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event)
-    {
-        init(event.getPlayer());
     }
 
     @EventHandler

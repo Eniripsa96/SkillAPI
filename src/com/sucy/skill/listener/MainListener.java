@@ -65,6 +65,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 /**
  * The main listener for SkillAPI  that handles general mechanics
  * such as loading/clearing data, controlling experience gains, and
@@ -72,6 +76,17 @@ import org.bukkit.event.world.ChunkUnloadEvent;
  */
 public class MainListener extends SkillAPIListener
 {
+    private static final List<Consumer<Player>> JOIN_HANDLERS = new ArrayList<>();
+
+    public static void register(final Consumer<Player> joinHandler) {
+        JOIN_HANDLERS.add(joinHandler);
+    }
+
+    @Override
+    public void cleanup() {
+        JOIN_HANDLERS.clear();
+    }
+
     /**
      * Loads player data asynchronously when a player tries to log in
      *
@@ -93,23 +108,21 @@ public class MainListener extends SkillAPIListener
 
     /**
      * Starts passives and applies class data when a player logs in.
-     *
-     * @param event event details
      */
     @EventHandler
-    public void onJoin(PlayerJoinEvent event)
-    {
-        if (event.getPlayer().hasMetadata("NPC"))
+    public void onJoin(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        if (player.hasMetadata("NPC"))
             return;
 
         final int delay = Math.min(100, SkillAPI.getSettings().getSqlDelay());
         if (SkillAPI.getSettings().isUseSql() && delay > 0) {
             SkillAPI.schedule(() -> {
-                SkillAPI.reloadPlayerData(event.getPlayer());
-                init(event.getPlayer());
+                SkillAPI.reloadPlayerData(player);
+                init(player);
             }, delay);
         } else {
-            init(event.getPlayer());
+            init(player);
         }
     }
 
@@ -117,6 +130,7 @@ public class MainListener extends SkillAPIListener
         final PlayerData data = SkillAPI.getPlayerData(player);
         data.init(player);
         data.autoLevel();
+        JOIN_HANDLERS.forEach(handler -> handler.accept(player));
     }
 
     /**

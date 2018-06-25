@@ -78,7 +78,7 @@ function checkRequireValue(e)
  */
 function setTooltip(text)
 {
-	this.tooltip = text;
+	this.tooltip = '[' + this.key + '] ' + text;
 	return this;
 }
 

@@ -1398,14 +1398,15 @@ public class PlayerData
             }
 
             // Reset data if applicable
-            if (SkillAPI.getSettings().getGroupSettings(rpgClass.getGroup()).isProfessReset())
+            final boolean isResetting = SkillAPI.getSettings().getGroupSettings(rpgClass.getGroup()).isProfessReset();
+            if (isResetting)
             {
                 reset(rpgClass.getGroup());
             }
 
             // Inherit previous class data if any
             final PlayerClass current;
-            if (previousData == null)
+            if (previousData == null || isResetting)
             {
                 current = new PlayerClass(this, rpgClass);
                 classes.put(rpgClass.getGroup(), current);

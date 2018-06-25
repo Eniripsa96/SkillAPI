@@ -32,6 +32,7 @@ import com.sucy.skill.log.Logger;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +55,18 @@ public class BuffData
     {
         this.plugin = SkillAPI.getPlugin(SkillAPI.class);
         this.entity = entity;
+    }
+
+    public double getMultiplier(final BuffType buffType, final String category) {
+        return category == null || category.isEmpty()
+                ? getMultiplier(buffType.name())
+                : getMultiplier(buffType.name(), buffType.name() + category);
+    }
+
+    public double getFlatBonus(final BuffType buffType, final String category) {
+        return category == null || category.isEmpty()
+                ? getFlatBonus(buffType.name())
+                : getFlatBonus(buffType.name(), buffType.name() + category);
     }
 
     /**
@@ -82,12 +95,7 @@ public class BuffData
     }
 
     private void doAddBuff(final String type, final Buff buff, final int ticks) {
-        if (!buffs.containsKey(type)) {
-            buffs.put(type, new HashMap<String, Buff>());
-        }
-
-        final Map<String, Buff> typeBuffs = buffs.get(type);
-
+        final Map<String, Buff> typeBuffs = buffs.computeIfAbsent(type, t -> new HashMap<>());
         final Buff conflict = typeBuffs.remove(buff.getKey());
         if (conflict != null)
             conflict.task.cancel();
@@ -175,6 +183,32 @@ public class BuffData
         if (multiplier <= 0) return 0;
 
         return Math.max(0, value * multiplier + bonus);
+    }
+
+    private double getFlatBonus(final String... types) {
+        double bonus = 0;
+        for (final String type : types) {
+            for (final Buff buff : buffs.getOrDefault(type, Collections.emptyMap()).values()) {
+                if (!buff.isPercent()) {
+                    bonus += buff.getValue();
+                }
+            }
+        }
+        // Negatives aren't well received by bukkit, so return 0 instead
+        return bonus;
+    }
+
+    private double getMultiplier(final String... types) {
+        double multiplier = 1;
+        for (final String type : types) {
+            for (final Buff buff : buffs.getOrDefault(type, Collections.emptyMap()).values()) {
+                if (buff.isPercent()) {
+                    multiplier *= buff.getValue();
+                }
+            }
+        }
+        // Negatives aren't well received by bukkit, so return 0 instead
+        return Math.max(0, multiplier);
     }
 
     /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */

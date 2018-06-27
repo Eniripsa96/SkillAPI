@@ -292,7 +292,7 @@ public class BarListener extends SkillAPIListener
             return;
 
         if ((event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
-                && !skillBar.isWeaponSlot(event.getHotbarButton()))
+                && (!skillBar.isWeaponSlot(event.getHotbarButton()) || !skillBar.isWeaponSlot(event.getSlot())))
         {
             event.setCancelled(true);
             return;

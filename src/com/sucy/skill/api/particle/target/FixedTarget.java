@@ -62,6 +62,11 @@ public class FixedTarget implements EffectTarget
     }
 
     @Override
+    public int hashCode() {
+        return loc.hashCode();
+    }
+
+    @Override
     public boolean equals(Object o)
     {
         return (o instanceof FixedTarget) && ((FixedTarget) o).loc.equals(loc);

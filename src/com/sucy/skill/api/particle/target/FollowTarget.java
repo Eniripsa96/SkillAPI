@@ -60,4 +60,14 @@ public class FollowTarget implements EffectTarget
     {
         return entity.isValid();
     }
+
+    @Override
+    public int hashCode() {
+        return entity.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        return (o instanceof FollowTarget) && (((FollowTarget) o).entity.equals(entity));
+    }
 }

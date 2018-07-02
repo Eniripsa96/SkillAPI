@@ -112,7 +112,7 @@ public class MainListener extends SkillAPIListener
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        if (player.hasMetadata("NPC"))
+        if (player.hasMetadata("NPC") || !SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
             return;
 
         final int delay = Math.min(100, SkillAPI.getSettings().getSqlDelay());
@@ -130,6 +130,7 @@ public class MainListener extends SkillAPIListener
         final PlayerData data = SkillAPI.getPlayerData(player);
         data.init(player);
         data.autoLevel();
+        data.updateScoreboard();
         JOIN_HANDLERS.forEach(handler -> handler.accept(player));
     }
 
@@ -419,12 +420,8 @@ public class MainListener extends SkillAPIListener
                 event.getPlayer().setFoodLevel(20);
             }
         }
-        else if (!oldEnabled && newEnabled)
-        {
-            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-            data.startPassives(event.getPlayer());
-            data.updateHealthAndMana(event.getPlayer());
-            data.updateScoreboard();
+        else if (!oldEnabled && newEnabled) {
+            init(event.getPlayer());
         }
     }
 }

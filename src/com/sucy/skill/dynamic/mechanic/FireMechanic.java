@@ -59,7 +59,8 @@ public class FireMechanic extends EffectComponent
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
-            target.setFireTicks(Math.max(ticks, target.getFireTicks()));
+            int newTicks = ticks <= 0 ? 0 : Math.max(ticks, target.getFireTicks());
+            target.setFireTicks(newTicks);
         }
         return targets.size() > 0;
     }

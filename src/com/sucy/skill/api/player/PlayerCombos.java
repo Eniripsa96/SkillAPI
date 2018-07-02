@@ -42,10 +42,9 @@ import java.util.List;
  * Represents the click combos available for a player to use along
  * with their current click pattern
  */
-public class PlayerCombos
-{
-    private HashMap<Integer, String> skills  = new HashMap<Integer, String>();
-    private HashMap<String, Integer> reverse = new HashMap<String, Integer>();
+public class PlayerCombos {
+    private HashMap<Integer, String> skills  = new HashMap<>();
+    private HashMap<String, Integer> reverse = new HashMap<>();
 
     private PlayerData player;
     private Click[]    clicks;
@@ -57,8 +56,7 @@ public class PlayerCombos
      *
      * @param data owning player's data
      */
-    public PlayerCombos(PlayerData data)
-    {
+    public PlayerCombos(PlayerData data) {
         this.player = data;
         this.clickIndex = 0;
         this.clicks = new Click[SkillAPI.getComboManager().getComboSize()];
@@ -72,8 +70,7 @@ public class PlayerCombos
      *
      * @return current number of clicks in the active combo
      */
-    public int getComboCount()
-    {
+    public int getComboCount() {
         return clickIndex;
     }
 
@@ -82,8 +79,7 @@ public class PlayerCombos
      *
      * @return map of combo IDs to skills
      */
-    public HashMap<Integer, String> getSkillMap()
-    {
+    public HashMap<Integer, String> getSkillMap() {
         return skills;
     }
 
@@ -92,8 +88,7 @@ public class PlayerCombos
      *
      * @return owning player's data
      */
-    public PlayerData getPlayerData()
-    {
+    public PlayerData getPlayerData() {
         return player;
     }
 
@@ -105,18 +100,15 @@ public class PlayerCombos
      *
      * @return skill name bound to the ID or null if none
      */
-    public String getSkillName(int id)
-    {
+    public String getSkillName(int id) {
         return skills.get(id);
     }
-
 
     /**
      * Clears the player's current click combo, causing them
      * to not count their recent clicks towards a combo
      */
-    public void clearCombo()
-    {
+    public void clearCombo() {
         clickIndex = 0;
     }
 
@@ -126,10 +118,9 @@ public class PlayerCombos
      *
      * @param click click to apply for the player
      */
-    public void applyClick(Click click)
-    {
+    public void applyClick(Click click) {
         // Don't count disabled clicks
-        if (!SkillAPI.getComboManager().isClickEnabled(click.getId())) return;
+        if (!SkillAPI.getComboManager().isClickEnabled(click.getId())) { return; }
 
         checkExpired();
 
@@ -139,13 +130,11 @@ public class PlayerCombos
 
         // Cast skill when combo is completed
         int id = SkillAPI.getComboManager().convertCombo(clicks, clickIndex);
-        if (clickIndex == clicks.length || skills.containsKey(id))
-        {
+        if (clickIndex == clicks.length || skills.containsKey(id)) {
             PlayerComboFinishEvent event = new PlayerComboFinishEvent(player, id, skills.get(id));
             Bukkit.getPluginManager().callEvent(event);
 
-            if (skills.containsKey(id) && !event.isCancelled())
-            {
+            if (skills.containsKey(id) && !event.isCancelled()) {
                 player.cast(skills.get(id));
             }
         }
@@ -154,12 +143,10 @@ public class PlayerCombos
     /**
      * Checks for when the combo times out
      */
-    private void checkExpired()
-    {
+    private void checkExpired() {
         // Reset combo if too much time passed
         if (clickIndex == clicks.length
-            || System.currentTimeMillis() - clickTime > SkillAPI.getSettings().getClickTime())
-        {
+                || System.currentTimeMillis() - clickTime > SkillAPI.getSettings().getClickTime()) {
             clearCombo();
         }
     }
@@ -169,24 +156,18 @@ public class PlayerCombos
      *
      * @return current combo string
      */
-    public String getCurrentComboString()
-    {
-        if (clickIndex == 0) return "";
-        else if (clickIndex == clicks.length)
-        {
-            int id = SkillAPI.getComboManager().convertCombo(clicks);
-            if (skills.containsKey(id))
-            {
-                return skills.get(id);
-            }
-            else return "";
+    public String getCurrentComboString() {
+        if (clickIndex == 0) { return ""; } else if (clickIndex == clicks.length) {
+            final int id = SkillAPI.getComboManager().convertCombo(clicks);
+            if (skills.containsKey(id)) {
+                return SkillAPI.getSkill(skills.get(id)).getName();
+            } else { return ""; }
         }
 
         checkExpired();
 
-        ArrayList<Click> active = new ArrayList<Click>(clickIndex);
-        for (int i = 0; i < clickIndex; i++)
-        {
+        ArrayList<Click> active = new ArrayList<>(clickIndex);
+        for (int i = 0; i < clickIndex; i++) {
             active.add(clicks[i]);
         }
         return SkillAPI.getComboManager().getComboString(active);
@@ -200,8 +181,7 @@ public class PlayerCombos
      *
      * @return true if conflict, false otherwise
      */
-    public boolean hasConflict(int id)
-    {
+    public boolean hasConflict(int id) {
         return getConflicts(id).size() > 0;
     }
 
@@ -213,14 +193,11 @@ public class PlayerCombos
      *
      * @return ID of conflict or -1 if no conflict
      */
-    public List<Integer> getConflicts(int id)
-    {
+    public List<Integer> getConflicts(int id) {
         ComboManager cm = SkillAPI.getComboManager();
-        List<Integer> conflicts = new ArrayList<Integer>();
-        for (int taken : skills.keySet())
-        {
-            if (cm.conflicts(id, taken))
-                conflicts.add(taken);
+        List<Integer> conflicts = new ArrayList<>();
+        for (int taken : skills.keySet()) {
+            if (cm.conflicts(id, taken)) { conflicts.add(taken); }
         }
         return conflicts;
     }
@@ -231,13 +208,11 @@ public class PlayerCombos
      *
      * @param skill skill to add
      */
-    public void addSkill(Skill skill)
-    {
-        if (skill == null || !skill.canCast() || !SkillAPI.getSettings().isCombosEnabled()) return;
+    public void addSkill(Skill skill) {
+        if (skill == null || !skill.canCast() || !SkillAPI.getSettings().isCombosEnabled()) { return; }
 
         // Can't already be added
-        if (skill.hasCombo())
-        {
+        if (skill.hasCombo()) {
             setSkill(skill, skill.getCombo());
             return;
         }
@@ -246,16 +221,13 @@ public class PlayerCombos
         ComboManager cm = SkillAPI.getComboManager();
         int combo = 1 << (Click.BITS * (cm.getComboSize() - 1));
         int max = (1 << (Click.BITS * cm.getComboSize())) - 1;
-        while (combo <= max && (!cm.isValidDefaultCombo(combo) || hasConflict(combo)))
-            combo++;
+        while (combo <= max && (!cm.isValidDefaultCombo(combo) || hasConflict(combo))) { combo++; }
 
         // Add it if valid
-        if (combo <= max)
-        {
+        if (combo <= max) {
             skills.put(combo, skill.getName().toLowerCase());
             reverse.put(skill.getName(), combo);
-        }
-        else Logger.invalid("Failed to assign combo for " + skill.getName() + " - no remaining combos");
+        } else { Logger.invalid("Failed to assign combo for " + skill.getName() + " - no remaining combos"); }
     }
 
     /**
@@ -263,9 +235,8 @@ public class PlayerCombos
      *
      * @param skill skill to remove
      */
-    public void removeSkill(Skill skill)
-    {
-        if (skill == null || !reverse.containsKey(skill.getName())) return;
+    public void removeSkill(Skill skill) {
+        if (skill == null || !reverse.containsKey(skill.getName())) { return; }
         skills.remove(reverse.remove(skill.getName()));
     }
 
@@ -277,8 +248,7 @@ public class PlayerCombos
      *
      * @return true if active, false otherwise
      */
-    public boolean isComboUsed(int id)
-    {
+    public boolean isComboUsed(int id) {
         return skills.containsKey(id);
     }
 
@@ -289,8 +259,7 @@ public class PlayerCombos
      *
      * @return true if valid, false otherwise
      */
-    public boolean isValidCombo(int id)
-    {
+    public boolean isValidCombo(int id) {
         return SkillAPI.getComboManager().isValidCombo(id);
     }
 
@@ -301,8 +270,7 @@ public class PlayerCombos
      *
      * @return true if has a combo, false otherwise
      */
-    public boolean hasCombo(Skill skill)
-    {
+    public boolean hasCombo(Skill skill) {
         return reverse.containsKey(skill.getName());
     }
 
@@ -317,18 +285,14 @@ public class PlayerCombos
      *
      * @return true if set successfully, false otherwise
      */
-    public boolean setSkill(Skill skill, int id)
-    {
-        if (skill == null || !skill.canCast() || !isValidCombo(id)) return false;
+    public boolean setSkill(Skill skill, int id) {
+        if (skill == null || !skill.canCast() || !isValidCombo(id)) { return false; }
 
         removeSkill(skill);
         List<Integer> conflicts = getConflicts(id);
-        if (conflicts.size() > 0)
-        {
-            for (int conflict : conflicts)
-            {
-                if (conflict == id)
-                {
+        if (conflicts.size() > 0) {
+            for (int conflict : conflicts) {
+                if (conflict == id) {
                     Skill old = SkillAPI.getSkill(skills.get(conflict));
                     old.clearCombo();
                     addSkill(old);
@@ -336,19 +300,15 @@ public class PlayerCombos
             }
             skills.put(id, skill.getName().toLowerCase());
             reverse.put(skill.getName(), id);
-            for (int conflict : conflicts)
-            {
-                if (conflict != id)
-                {
+            for (int conflict : conflicts) {
+                if (conflict != id) {
                     Skill old = SkillAPI.getSkill(skills.get(conflict));
                     old.clearCombo();
                     addSkill(old);
                     reverse.remove(skills.remove(conflict));
                 }
             }
-        }
-        else
-        {
+        } else {
             skills.put(id, skill.getName().toLowerCase());
             reverse.put(skill.getName(), id);
         }
@@ -363,8 +323,7 @@ public class PlayerCombos
      *
      * @return combo string
      */
-    public String getComboString(Skill skill)
-    {
+    public String getComboString(Skill skill) {
         int combo = reverse.get(skill.getName());
         return SkillAPI.getComboManager().getComboString(combo);
     }

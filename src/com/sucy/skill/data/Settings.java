@@ -193,7 +193,6 @@ public class Settings{
 
     public void loadGroupSettings() {
         CommentedConfig file = new CommentedConfig(plugin, "groups");
-        file.saveDefaultConfig();
         DataSection config = file.getConfig();
         groups.clear();
 

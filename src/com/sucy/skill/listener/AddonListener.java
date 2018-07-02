@@ -8,7 +8,6 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.WorldGuardHook;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -118,7 +117,7 @@ public class AddonListener extends SkillAPIListener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onAllyCheckArmorStand(EntityDamageByEntityEvent e) {
-        if (e.getEntityType().equals(EntityType.ARMOR_STAND) && e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) {
+        if (e.getEntityType().name().equals("ARMOR_STAND") && e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) {
             e.setCancelled(true);
         }
     }
@@ -128,7 +127,7 @@ public class AddonListener extends SkillAPIListener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSkillDamageArmorStand(SkillDamageEvent e) {
-        if (e.getTarget().getType().equals(EntityType.ARMOR_STAND)) {
+        if (e.getTarget().getType().name().equals("ARMOR_STAND")) {
             e.setCancelled(true);
         }
     }

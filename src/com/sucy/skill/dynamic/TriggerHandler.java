@@ -9,7 +9,6 @@ import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -306,7 +305,7 @@ public class TriggerHandler implements Listener {
     }
 
     boolean trigger(final LivingEntity user, final LivingEntity target, final int level) {
-        if (user == null || target == null || running || target.getType() == EntityType.ARMOR_STAND) { return false; }
+        if (user == null || target == null || running || target.getType().name().equals("ARMOR_STAND")) { return false; }
 
         if (user instanceof Player) {
             final PlayerData data = SkillAPI.getPlayerData((Player) user);
@@ -323,10 +322,12 @@ public class TriggerHandler implements Listener {
         final ArrayList<LivingEntity> targets = new ArrayList<>();
         targets.add(target);
 
-        running = true;
-        final boolean result = component.execute(user, level, targets);
-        running = false;
-        return result;
+        try {
+            running = true;
+            return component.execute(user, level, targets);
+        } finally {
+            running = false;
+        }
     }
 
     private static final Map<Trigger, EventExecutor> EXECUTORS = new EnumMap<>(

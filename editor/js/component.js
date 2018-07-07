@@ -2962,7 +2962,7 @@ function addEffectOptions(component, optional)
     component.data.push(opt(new StringValue('Shape Size', '-shape-size', '1')
         .setTooltip('Formula for deciding the size of the shape. This can be any sort of formula using the operations defined in the wiki.')
     ));
-    component.data.push(opt(new StringValue('Animation', '-animation', 'circle')
+    component.data.push(opt(new StringValue('Animation', '-animation', 'one-circle')
         .setTooltip('Key of a formula for deciding where the particle effect moves relative to the target. View "effects.yml" for a list of defined formulas and their keys.')
     ));
     component.data.push(opt(new ListValue('Animation Direction', '-anim-dir', [ 'XY', 'YZ', 'XZ' ], 'XZ')

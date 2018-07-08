@@ -2330,7 +2330,7 @@ function MechanicTaunt()
 {
     this.super('Taunt', Type.MECHANIC, false);
 
-    this.description = 'Draws aggro of targeted creatures. This only works on newer server versions.';
+    this.description = 'Draws aggro of targeted creatures. Regular mobs are set to attack the caster. The Spigot/Bukkit API for this was not functional on older versions, so it may not work on older servers. For MythicMobs, this uses their aggro system using the amount chosen below.';
 
     this.data.push(new AttributeValue('Amount', 'amount', 1, 0)
         .setTooltip('The amount of aggro to apply if MythicMobs is active. Use negative amounts to reduce aggro')

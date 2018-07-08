@@ -2264,6 +2264,9 @@ function MechanicRepeat()
     this.data.push(new DoubleValue('Delay', 'delay', 0)
         .setTooltip('The initial delay before starting to apply child components')
     );
+    this.data.push(new ListValue('Stop on Fail', 'stop-on-fail', [ 'True', 'False' ], 'False')
+        .setTooltip('Whether or not to stop the repeat task early if the effects fail')
+    );
 }
 
 extend('MechanicSound', 'Component');

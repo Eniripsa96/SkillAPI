@@ -124,7 +124,7 @@ public class ConeTarget extends EffectComponent
         for (int i = list.size() - 1; i >= 0; i--)
         {
             LivingEntity target = list.get(i);
-            if (i >= max || target == caster
+            if (i >= max || target == caster || !SkillAPI.getSettings().isValidTarget(target)
                 || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                 || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
             {

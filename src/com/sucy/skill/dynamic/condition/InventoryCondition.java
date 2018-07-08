@@ -57,7 +57,7 @@ public class InventoryCondition extends EffectComponent
         {
             if (!(target instanceof Player)) continue;
 
-            if (ItemChecker.check((Player) target, level, settings, false))
+            if (ItemChecker.check((Player) target, level, this, false))
             {
                 list.add(target);
             }

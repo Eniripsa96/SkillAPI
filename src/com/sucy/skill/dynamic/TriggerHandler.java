@@ -305,7 +305,7 @@ public class TriggerHandler implements Listener {
     }
 
     boolean trigger(final LivingEntity user, final LivingEntity target, final int level) {
-        if (user == null || target == null || running || target.getType().name().equals("ARMOR_STAND")) { return false; }
+        if (user == null || target == null || running || !SkillAPI.getSettings().isValidTarget(target)) { return false; }
 
         if (user instanceof Player) {
             final PlayerData data = SkillAPI.getPlayerData((Player) user);

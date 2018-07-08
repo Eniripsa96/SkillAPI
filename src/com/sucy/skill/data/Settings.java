@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.data;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
@@ -205,6 +206,10 @@ public class Settings{
                 groups.put(group.toLowerCase(), settings);
                 settings.save(config.createSection(group.toLowerCase()));
             }
+            config.setComments(group.toLowerCase(), ImmutableList.of("",
+                    " Settings for classes with the group " + group,
+                    " If new classes are loaded with different groups,",
+                    " the new groups will show up in this file after the first load."));
         }
 
         file.save();
@@ -328,6 +333,8 @@ public class Settings{
     private static final String TARGET_PASSIVE = TARGET_BASE + "passive-ally";
     private static final String TARGET_PLAYER  = TARGET_BASE + "player-ally";
     private static final String TARGET_PARTIES = TARGET_BASE + "parties-ally";
+    private static final String TARGET_NPC     = TARGET_BASE + "affect-npcs";
+    private static final String TARGET_STANDS  = TARGET_BASE + "affect-armor-stands";
 
     private ArrayList<String> monsterWorlds = new ArrayList<String>();
     private ArrayList<String> passiveWorlds = new ArrayList<String>();
@@ -337,6 +344,8 @@ public class Settings{
     private boolean passiveAlly;
     private boolean playerAlly;
     private boolean partiesAlly;
+    private boolean affectNpcs;
+    private boolean affectArmorStands;
 
     /**
      * Checks whether or not something can be attacked
@@ -393,6 +402,17 @@ public class Settings{
         return !canAttack(attacker, target);
     }
 
+    /**
+     * Checks whether or not a target is a valid target.
+     *
+     * @param target target to check
+     * @return true if a valid target, false otherwise
+     */
+    public boolean isValidTarget(final LivingEntity target) {
+        return (!target.hasMetadata("NPC") || affectNpcs)
+                && (!target.getType().name().equals("ARMOR_STAND") || affectArmorStands);
+    }
+
     private void loadTargetingSettings() {
         if (config.isList(TARGET_MONSTER)) {
             monsterWorlds.addAll(config.getList(TARGET_MONSTER));
@@ -410,6 +430,8 @@ public class Settings{
         } else { playerAlly = config.getBoolean(TARGET_PLAYER); }
 
         partiesAlly = config.getBoolean(TARGET_PARTIES);
+        affectArmorStands = config.getBoolean(TARGET_STANDS);
+        affectNpcs = config.getBoolean(TARGET_NPC);
     }
 
     ///////////////////////////////////////////////////////

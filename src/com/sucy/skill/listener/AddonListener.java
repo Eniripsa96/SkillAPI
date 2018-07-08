@@ -3,7 +3,6 @@ package com.sucy.skill.listener;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.api.event.PlayerExperienceGainEvent;
-import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.hook.PluginChecker;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -109,26 +107,6 @@ public class AddonListener extends SkillAPIListener {
                     .anyMatch(id -> SkillAPI.getSettings().isExpDisabledForRegion(id))) {
                 e.setCancelled(true);
             }
-        }
-    }
-
-    /**
-     * Cancels ally checks done on armor stands
-     */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onAllyCheckArmorStand(EntityDamageByEntityEvent e) {
-        if (e.getEntityType().name().equals("ARMOR_STAND") && e.getCause() == EntityDamageEvent.DamageCause.CUSTOM) {
-            e.setCancelled(true);
-        }
-    }
-
-    /**
-     * Cancels damage done to armor stands
-     */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onSkillDamageArmorStand(SkillDamageEvent e) {
-        if (e.getTarget().getType().name().equals("ARMOR_STAND")) {
-            e.setCancelled(true);
         }
     }
 }

@@ -448,7 +448,7 @@ public abstract class Skill implements IconHolder
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
 
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         lore.add("Level: " + getLevelReq(0));
         lore.add("Cost: " + getCost(0));
         meta.setLore(lore);

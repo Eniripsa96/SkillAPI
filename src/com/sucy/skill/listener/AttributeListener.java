@@ -337,7 +337,7 @@ public class AttributeListener extends SkillAPIListener
                 update(data, player, Attribute.GENERIC_ARMOR, AttributeManager.ARMOR, 0, 30);
                 update(data, player, Attribute.GENERIC_LUCK, AttributeManager.LUCK, -1024, 1024);
             }
-            else if (VersionManager.isVersionAtLeast(11200)) {
+            if (VersionManager.isVersionAtLeast(110200)) {
                 update(data, player, Attribute.GENERIC_ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS, 0, 20);
             }
         }

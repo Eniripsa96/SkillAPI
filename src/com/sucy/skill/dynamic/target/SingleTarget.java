@@ -119,7 +119,7 @@ public class SingleTarget extends EffectComponent
         Location wallCheckLoc = target.getLocation().add(0, 0.5, 0);
 
         target = TargetHelper.getLivingTarget(target, range, tolerance);
-        if (target != null)
+        if (target != null && SkillAPI.getSettings().isValidTarget(target))
         {
             if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
             {

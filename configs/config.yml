@@ -64,6 +64,12 @@ Targeting:
   #
   # Whether or not to check for player allies via Parties
   parties-ally: false
+  #
+  # Whether or not for skills to affect NPCs
+  affect-npcs: false
+  #
+  # Whether or not for skills to affect armor stands
+  affect-armor-stands: false
 #
 Saving:
   #

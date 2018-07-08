@@ -78,6 +78,7 @@ public class CmdExp implements IFunction
         else if ((args.length >= 1 && sender instanceof Player && IS_NUMBER.matcher(args[0]).matches()) || args.length >= 2)
         {
             int numberIndex = IS_NUMBER.matcher(args[0]).matches() ? 0 : 1;
+            if (args.length > 1 && IS_NUMBER.matcher(args[1]).matches()) numberIndex = 1;
 
             // Get the player data
             OfflinePlayer target = numberIndex == 0 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);

@@ -43,6 +43,7 @@ public class RepeatMechanic extends EffectComponent
     private static final String REPETITIONS = "repetitions";
     private static final String DELAY       = "delay";
     private static final String PERIOD      = "period";
+    private static final String STOP_ON_FAIL = "stop-on-fail";
 
     private static final HashMap<String, ArrayList<RepeatTask>> TASKS = new HashMap<String, ArrayList<RepeatTask>>();
 
@@ -68,9 +69,10 @@ public class RepeatMechanic extends EffectComponent
             }
             int delay = (int) (settings.getDouble(DELAY, 0.0) * 20);
             int period = (int) (settings.getDouble(PERIOD, 1.0) * 20);
-            RepeatTask task = new RepeatTask(caster, level, targets, count, delay, period);
+            boolean stopOnFail = settings.getBool(STOP_ON_FAIL, false);
+            RepeatTask task = new RepeatTask(caster, level, targets, count, delay, period, stopOnFail);
 
-            if (!TASKS.containsKey(skill.getName())) TASKS.put(skill.getName(), new ArrayList<RepeatTask>());
+            if (!TASKS.containsKey(skill.getName())) TASKS.put(skill.getName(), new ArrayList<>());
             TASKS.get(skill.getName()).add(task);
 
             return true;
@@ -116,13 +118,15 @@ public class RepeatMechanic extends EffectComponent
         private LivingEntity       caster;
         private int                level;
         private int                count;
+        private boolean            stopOnFail;
 
-        public RepeatTask(LivingEntity caster, int level, List<LivingEntity> targets, int count, int delay, int period)
+        public RepeatTask(LivingEntity caster, int level, List<LivingEntity> targets, int count, int delay, int period, boolean stopOnFail)
         {
             this.targets = targets;
             this.caster = caster;
             this.level = level;
             this.count = count;
+            this.stopOnFail = stopOnFail;
 
             SkillAPI.schedule(this, delay, period);
         }
@@ -144,7 +148,7 @@ public class RepeatMechanic extends EffectComponent
             level = skill.getActiveLevel(caster);
 
             boolean success = executeChildren(caster, level, targets);
-            if (--count <= 0 || !success)
+            if (--count <= 0 || (!success && stopOnFail))
             {
                 cancel();
                 TASKS.get(skill.getName()).remove(this);

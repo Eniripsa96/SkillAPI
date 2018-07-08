@@ -33,6 +33,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.util.DamageLoreRemover;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import org.bukkit.ChatColor;
@@ -152,7 +153,7 @@ public class GUITool implements ToolMenu
         meta.setDisplayName(TextFormatter.colorString(data.getString("name")));
         meta.setLore(TextFormatter.colorStringList(data.getList("lore")));
         item.setItemMeta(meta);
-        return item;
+        return DamageLoreRemover.removeAttackDmg(item);
     }
 
     public static void cleanUp()
@@ -385,7 +386,7 @@ public class GUITool implements ToolMenu
         ItemStack copy = custom.clone();
         ItemMeta meta = copy.getItemMeta();
         meta.setDisplayName(key);
-        meta.setLore(new ArrayList<String>());
+        meta.setLore(new ArrayList<>());
         copy.setItemMeta(meta);
         return copy;
     }

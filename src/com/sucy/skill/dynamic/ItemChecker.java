@@ -57,16 +57,18 @@ public class ItemChecker
     /**
      * Checks the player inventory for items matching the settings
      *
-     * @param player   player to check
-     * @param level    level of the effect
-     * @param settings settings to apply
-     * @param remove   whether or not to remove matching items
+     * @param player    player to check
+     * @param level     level of the effect
+     * @param component effect component checking for
+     * @param remove    whether or not to remove matching items
      *
      * @return true if all conditions met, false otherwise
      */
-    public static boolean check(Player player, int level, Settings settings, boolean remove)
+    public static boolean check(Player player, int level, EffectComponent component, boolean remove)
     {
-        int count = (int) settings.getAttr(AMOUNT, level, 1);
+        final Settings settings = component.getSettings();
+
+        int count = (int) component.attr(player, AMOUNT, level, 1, true);
 
         // Checks to do
         boolean mat = settings.getBool(CHECK_MAT, true);

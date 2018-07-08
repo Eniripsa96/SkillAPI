@@ -30,6 +30,7 @@ import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.player.TargetHelper;
+import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -73,6 +74,8 @@ import com.sucy.skill.task.ScoreboardTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -1574,10 +1577,21 @@ public class PlayerData
      *
      * @param amount amount of bonus health to give
      */
-    public void addMaxHealth(double amount)
-    {
+    public void addMaxHealth(double amount) {
         bonusHealth += amount;
-        updateHealthAndMana(getPlayer());
+        final Player player = getPlayer();
+        if (player != null) {
+            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+                final AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                attribute.setBaseValue(attribute.getBaseValue() + amount);
+            } else {
+                final double newHealth = player.getMaxHealth() + amount;
+                player.setMaxHealth(newHealth);
+                if (player.getMaxHealth() > newHealth) {
+                    player.setMaxHealth(newHealth * 2 - player.getMaxHealth());
+                }
+            }
+        }
     }
 
     /**

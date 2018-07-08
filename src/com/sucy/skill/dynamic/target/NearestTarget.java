@@ -35,7 +35,6 @@ import com.sucy.skill.cast.IndicatorType;
 import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -137,12 +136,10 @@ public class NearestTarget extends EffectComponent
         }
 
         // Grab nearby targets
-        for (Entity entity : entities)
+        for (LivingEntity target : entities)
         {
-            if (!(entity instanceof LivingEntity) || entity == caster)
+            if (target == caster || !SkillAPI.getSettings().isValidTarget(target))
                 continue;
-
-            LivingEntity target = (LivingEntity) entity;
             Location targetLoc = target.getLocation().add(0, 0.5, 0);
             if ((!throughWall && TargetHelper.isObstructed(wallCheckLoc, targetLoc))
                 || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))

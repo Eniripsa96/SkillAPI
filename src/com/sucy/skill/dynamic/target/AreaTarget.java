@@ -134,7 +134,7 @@ public class AreaTarget extends EffectComponent
         for (int i = 0; i < entities.size() && list.size() < max; i++)
         {
             LivingEntity t = entities.get(i);
-            if (t == caster && !self)
+            if (t == caster && !self || !SkillAPI.getSettings().isValidTarget(t))
                 continue;
             if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, t.getEyeLocation()))
                 continue;

@@ -56,7 +56,7 @@ public class ItemRemoveMechanic extends EffectComponent
             if (target instanceof Player)
             {
                 players = true;
-                ItemChecker.check((Player) target, level, settings, true);
+                ItemChecker.check((Player) target, level, this, true);
             }
         }
         return players;

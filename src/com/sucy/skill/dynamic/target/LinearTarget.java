@@ -78,7 +78,7 @@ public class LinearTarget extends EffectComponent
             List<LivingEntity> result = TargetHelper.getLivingTargets(t, range, tolerance);
             for (LivingEntity target : result)
             {
-                if (target == caster)
+                if (target == caster || !SkillAPI.getSettings().isValidTarget(target))
                     continue;
                 if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
                 {

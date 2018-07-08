@@ -64,7 +64,7 @@ public class Data {
                 meta.setLore(colored);
                 item.setItemMeta(meta);
             }
-            return item;
+            return DamageLoreRemover.removeAttackDmg(item);
         } catch (final Exception ex) {
             return new ItemStack(Material.JACK_O_LANTERN);
         }

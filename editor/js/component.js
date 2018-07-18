@@ -2554,7 +2554,7 @@ function MechanicValuePlaceholder()
     this.data.push(new StringValue('Key', 'key', 'value')
         .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
     );
-    this.data.push(new ListValue("Type", "Type", [ 'Number', 'String' ], 'Number')
+    this.data.push(new ListValue("Type", "type", [ 'Number', 'String' ], 'Number')
         .setTooltip('The type of value to store. Number values require numeric placeholders. String values can be used in messages or commands.')
     );
     this.data.push(new StringValue('Placeholder', 'placeholder', '%player_food_level%')

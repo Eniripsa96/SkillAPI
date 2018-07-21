@@ -42,6 +42,7 @@ import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
 import com.sucy.skill.manager.TitleManager;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 /**
  * <p>Represents a player's class progress.</p>
@@ -454,7 +455,11 @@ public class PlayerClass
         getPlayerData().giveAttribPoints(classData.getGroupSettings().getAttribsForLevels(level, level - amount));
 
         // Update health/mana
-        getPlayerData().updateHealthAndMana(getPlayerData().getPlayer());
+        final Player player = getPlayerData().getPlayer();
+        if (player != null) {
+            getPlayerData().updateHealthAndMana(getPlayerData().getPlayer());
+            getPlayerData().getEquips().update(getPlayerData().getPlayer());
+        }
         getPlayerData().autoLevel();
 
         // Call the event
@@ -465,7 +470,7 @@ public class PlayerClass
         if (SkillAPI.getSettings().hasLevelUpEffect())
         {
             DynamicSkill skill = SkillAPI.getSettings().getLevelUpSkill();
-            skill.cast(player.getPlayer(), level);
+            skill.cast(player, level);
         }
     }
 

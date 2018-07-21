@@ -74,6 +74,7 @@ public class AttributeManager
     public static final String HUNGER           = "hunger";
     public static final String HUNGER_HEAL      = "hunger-heal";
     public static final String COOLDOWN         = "cooldown";
+    public static final String KNOCKBACK_RESIST = "knockback-resist";
 
     private final HashMap<String, Attribute> attributes = new LinkedHashMap<>();
     private final HashMap<String, Attribute> lookup     = new HashMap<>();

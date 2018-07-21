@@ -336,6 +336,7 @@ public class AttributeListener extends SkillAPIListener
                 update(data, player, Attribute.GENERIC_ATTACK_SPEED, AttributeManager.ATTACK_SPEED, 0, 1024);
                 update(data, player, Attribute.GENERIC_ARMOR, AttributeManager.ARMOR, 0, 30);
                 update(data, player, Attribute.GENERIC_LUCK, AttributeManager.LUCK, -1024, 1024);
+                update(data, player, Attribute.GENERIC_KNOCKBACK_RESISTANCE, AttributeManager.KNOCKBACK_RESIST, 0, 1.0);
             }
             if (VersionManager.isVersionAtLeast(110200)) {
                 update(data, player, Attribute.GENERIC_ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS, 0, 20);

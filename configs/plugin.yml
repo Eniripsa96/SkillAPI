@@ -1,6 +1,6 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 1.77
+version: 1.78
 author: Eniripsa96
 depend: [MCCore]
 softdepend: [Vault]

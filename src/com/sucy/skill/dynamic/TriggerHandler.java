@@ -1,6 +1,7 @@
 package com.sucy.skill.dynamic;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaCost;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
@@ -20,6 +21,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.plugin.EventExecutor;
 
@@ -27,7 +29,9 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collector;
 
 /**
  * SkillAPI © 2017
@@ -40,6 +44,7 @@ public class TriggerHandler implements Listener {
     private final DynamicSkill skill;
     private final Trigger trigger;
     private final EffectComponent component;
+    private final Set<String> transformed;
 
     private boolean running;
 
@@ -47,6 +52,29 @@ public class TriggerHandler implements Listener {
         this.skill = skill;
         this.trigger = trigger;
         this.component = component;
+
+        switch (trigger) {
+            case BLOCK_BREAK:
+            case BLOCK_PLACE:
+                transformed = component.settings.getStringList("material").stream()
+                        .map(String::toUpperCase)
+                        .collect(toImmutableSet());
+                break;
+            case SKILL_DAMAGE:
+            case TOOK_SKILL_DAMAGE:
+                transformed = ImmutableSet.copyOf(component.settings.getStringList("category"));
+                break;
+            default:
+                transformed = ImmutableSet.of();
+        }
+    }
+
+    private <T> Collector<T, ?, ImmutableSet<T>> toImmutableSet() {
+        return Collector.of(
+                ImmutableSet.Builder<T>::new,
+                ImmutableSet.Builder<T>::add,
+                (l, r) -> l.addAll(r.build()),
+                ImmutableSet.Builder::build);
     }
 
     public Trigger getTrigger() {
@@ -71,7 +99,7 @@ public class TriggerHandler implements Listener {
      * @param plugin plugin reference
      */
     public void register(final SkillAPI plugin) {
-        if (!EXECUTORS.containsKey(trigger)) return;
+        if (!EXECUTORS.containsKey(trigger)) { return; }
 
         plugin.getServer().getPluginManager().registerEvent(
                 trigger.getEvent(), this, EventPriority.HIGHEST, EXECUTORS.get(trigger), plugin, true);
@@ -86,12 +114,11 @@ public class TriggerHandler implements Listener {
     }
 
     private void onBlockEvent(final Player player, final Block block, final Cancellable event) {
-        if (player == null || !active.containsKey(player.getEntityId())) return;
+        if (player == null || !active.containsKey(player.getEntityId())) { return; }
 
-        final String type = component.getSettings().getString("material", "any").toUpperCase();
         final int data = component.getSettings().getInt("data", -1);
         final int level = active.get(player.getEntityId());
-        if ((type.equals("ANY") || type.equals(block.getType().name()))
+        if (transformed.isEmpty() || transformed.contains("ANY") || transformed.contains(block.getType().name())
                 && (data == -1 || block.getData() == data)) {
             final Map<String, Object> castData = DynamicSkill.getCastData(player);
             castData.put("api-block-type", block.getType().name());
@@ -242,10 +269,8 @@ public class TriggerHandler implements Listener {
         final boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
         final double min = component.settings.getDouble("dmg-min");
         final double max = component.settings.getDouble("dmg-max");
-        final String category = component.settings.getString("category", "");
 
-        if (event.getDamage() >= min && event.getDamage() <= max && (category.length() == 0 || event.getClassification()
-                .equals(category))) {
+        if (event.getDamage() >= min && event.getDamage() <= max && (transformed.isEmpty() || transformed.contains(event.getClassification()))) {
             DynamicSkill.getCastData(target).put("api-taken", event.getDamage());
             trigger(target, caster ? target : damager, active.get(event.getTarget().getEntityId()));
             skill.applyCancelled(event);
@@ -266,10 +291,8 @@ public class TriggerHandler implements Listener {
         final boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
         final double min = component.settings.getDouble("dmg-min");
         final double max = component.settings.getDouble("dmg-max");
-        final String category = component.settings.getString("category", "");
 
-        if (event.getDamage() >= min && event.getDamage() <= max && (category.length() == 0 || event.getClassification()
-                .equals(category))) {
+        if (event.getDamage() >= min && event.getDamage() <= max && (transformed.isEmpty() || transformed.contains(event.getClassification()))) {
             DynamicSkill.getCastData(damager).put("api-dealt", event.getDamage());
             trigger(damager, caster ? damager : target, active.get(damager.getEntityId()));
         }
@@ -304,8 +327,25 @@ public class TriggerHandler implements Listener {
         }
     }
 
+    /**
+     * Move trigger
+     *
+     * @param event event details
+     */
+    public void onMove(final PlayerMoveEvent event) {
+        if (!active.containsKey(event.getPlayer().getEntityId())) return;
+        if (event.getTo().getWorld() != event.getFrom().getWorld()) return;
+
+        final double distance = event.getTo().getWorld() == event.getFrom().getWorld()
+                ? event.getTo().distance(event.getFrom()) : 0;
+        DynamicSkill.getCastData(event.getPlayer()).put("api-moved", distance);
+        trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()));
+    }
+
     boolean trigger(final LivingEntity user, final LivingEntity target, final int level) {
-        if (user == null || target == null || running || !SkillAPI.getSettings().isValidTarget(target)) { return false; }
+        if (user == null || target == null || running || !SkillAPI.getSettings().isValidTarget(target)) {
+            return false;
+        }
 
         if (user instanceof Player) {
             final PlayerData data = SkillAPI.getPlayerData((Player) user);
@@ -340,6 +380,7 @@ public class TriggerHandler implements Listener {
                     .put(Trigger.KILL, create(TriggerHandler::onKill))
                     .put(Trigger.LAND, create(TriggerHandler::onLand))
                     .put(Trigger.LAUNCH, create(TriggerHandler::onLaunch))
+                    .put(Trigger.MOVE, create(TriggerHandler::onMove))
                     .put(Trigger.PHYSICAL_DAMAGE, create(TriggerHandler::onDealtPhysical))
                     .put(Trigger.SKILL_DAMAGE, create(TriggerHandler::onSkillDealt))
                     .put(Trigger.TOOK_PHYSICAL_DAMAGE, create(TriggerHandler::onPhysical))

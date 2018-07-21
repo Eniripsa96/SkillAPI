@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api;
 
+import com.google.common.collect.ImmutableList;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.log.Logger;
@@ -38,19 +39,18 @@ import java.util.List;
 /**
  * <p>Represents a set of settings that store configurable data for an object.</p>
  */
-public class Settings
-{
+public class Settings {
     private static final String BASE  = "-base";
     private static final String SCALE = "-scale";
 
     private final HashMap<String, Object> settings;
 
     public Settings() {
-        this.settings = new LinkedHashMap<String, Object>();
+        this.settings = new LinkedHashMap<>();
     }
 
     public Settings(final Settings settings) {
-        this.settings = new HashMap<String, Object>(settings.settings);
+        this.settings = new HashMap<>(settings.settings);
     }
 
     /**
@@ -61,8 +61,7 @@ public class Settings
      * @param key   setting key
      * @param value setting value
      */
-    public void set(String key, Object value)
-    {
+    public void set(String key, Object value) {
         settings.put(key, value);
     }
 
@@ -77,8 +76,7 @@ public class Settings
      * @param base  base value
      * @param scale value scale
      */
-    public void set(String key, double base, double scale)
-    {
+    public void set(String key, double base, double scale) {
         settings.put(key + BASE, base);
         settings.put(key + SCALE, scale);
     }
@@ -94,10 +92,8 @@ public class Settings
      * @param key   scaling setting name
      * @param value new base value
      */
-    public void setBase(String key, double value)
-    {
-        if (!settings.containsKey(key + SCALE))
-        {
+    public void setBase(String key, double value) {
+        if (!settings.containsKey(key + SCALE)) {
             settings.put(key + SCALE, 0.0);
         }
         settings.put(key + BASE, value);
@@ -114,10 +110,8 @@ public class Settings
      * @param key   scaling setting name
      * @param value new scale value
      */
-    public void setScale(String key, double value)
-    {
-        if (!settings.containsKey(key + BASE))
-        {
+    public void setScale(String key, double value) {
+        if (!settings.containsKey(key + BASE)) {
             settings.put(key + BASE, 0.0);
         }
         settings.put(key + SCALE, value);
@@ -131,8 +125,7 @@ public class Settings
      *
      * @return double setting value
      */
-    public double getDouble(String key)
-    {
+    public double getDouble(String key) {
         return getDouble(key, 0);
     }
 
@@ -145,14 +138,10 @@ public class Settings
      *
      * @return double setting value
      */
-    public double getDouble(String key, double defaultValue)
-    {
-        if (settings.containsKey(key))
-        {
+    public double getDouble(String key, double defaultValue) {
+        if (settings.containsKey(key)) {
             return NumberParser.parseDouble(settings.get(key).toString());
-        }
-        else
-        {
+        } else {
             set(key, defaultValue);
             return defaultValue;
         }
@@ -166,8 +155,7 @@ public class Settings
      *
      * @return integer setting value
      */
-    public int getInt(String key)
-    {
+    public int getInt(String key) {
         return getInt(key, 0);
     }
 
@@ -180,14 +168,10 @@ public class Settings
      *
      * @return integer setting value
      */
-    public int getInt(String key, int defaultValue)
-    {
-        if (settings.containsKey(key))
-        {
+    public int getInt(String key, int defaultValue) {
+        if (settings.containsKey(key)) {
             return Integer.parseInt(settings.get(key).toString());
-        }
-        else
-        {
+        } else {
             set(key, defaultValue);
             return defaultValue;
         }
@@ -201,8 +185,7 @@ public class Settings
      *
      * @return boolean setting value
      */
-    public boolean getBool(String key)
-    {
+    public boolean getBool(String key) {
         return settings.containsKey(key) && Boolean.parseBoolean(settings.get(key).toString());
     }
 
@@ -215,14 +198,10 @@ public class Settings
      *
      * @return boolean setting value
      */
-    public boolean getBool(String key, boolean defaultValue)
-    {
-        if (settings.containsKey(key))
-        {
+    public boolean getBool(String key, boolean defaultValue) {
+        if (settings.containsKey(key)) {
             return Boolean.parseBoolean(settings.get(key).toString());
-        }
-        else
-        {
+        } else {
             set(key, defaultValue);
             return defaultValue;
         }
@@ -236,8 +215,7 @@ public class Settings
      *
      * @return String setting value
      */
-    public String getString(String key)
-    {
+    public String getString(String key) {
         return getString(key, null);
     }
 
@@ -250,14 +228,10 @@ public class Settings
      *
      * @return String setting value
      */
-    public String getString(String key, String defaultValue)
-    {
-        if (settings.containsKey(key) && settings.get(key) != null)
-        {
+    public String getString(String key, String defaultValue) {
+        if (settings.containsKey(key) && settings.get(key) != null) {
             return settings.get(key).toString();
-        }
-        else
-        {
+        } else {
             set(key, defaultValue);
             return defaultValue;
         }
@@ -271,15 +245,16 @@ public class Settings
      * @return string list or empty list if not found
      */
     @SuppressWarnings("unchecked")
-    public List<String> getStringList(String key)
-    {
-        if (settings.containsKey(key) && settings.get(key) instanceof List<?>)
-        {
-            return (List<String>) settings.get(key);
-        }
-        else
-        {
-            return new ArrayList<String>();
+    public List<String> getStringList(String key) {
+        if (settings.containsKey(key)) {
+            final Object value = settings.get(key);
+            if (value instanceof List<?>) {
+                return (List<String>) settings.get(key);
+            } else {
+                return ImmutableList.of(value.toString());
+            }
+        } else {
+            return new ArrayList<>();
         }
     }
 
@@ -292,8 +267,7 @@ public class Settings
      *
      * @return scaled setting value
      */
-    public double getAttr(String key, int level)
-    {
+    public double getAttr(String key, int level) {
         return getAttr(key, level, 0);
     }
 
@@ -308,10 +282,8 @@ public class Settings
      *
      * @return scaled setting value
      */
-    public double getAttr(String key, int level, double defaultValue)
-    {
-        if (!has(key))
-        {
+    public double getAttr(String key, int level, double defaultValue) {
+        if (!has(key)) {
             set(key, defaultValue, 0);
             return defaultValue;
         }
@@ -326,14 +298,10 @@ public class Settings
      *
      * @return base value
      */
-    public double getBase(String key)
-    {
-        if (!settings.containsKey(key + BASE))
-        {
+    public double getBase(String key) {
+        if (!settings.containsKey(key + BASE)) {
             return 0;
-        }
-        else
-        {
+        } else {
             return NumberParser.parseDouble(settings.get(key + BASE).toString());
         }
     }
@@ -346,14 +314,10 @@ public class Settings
      *
      * @return change in value per level
      */
-    public double getScale(String key)
-    {
-        if (!settings.containsKey(key + SCALE))
-        {
+    public double getScale(String key) {
+        if (!settings.containsKey(key + SCALE)) {
             return 0;
-        }
-        else
-        {
+        } else {
             return NumberParser.parseDouble(settings.get(key + SCALE).toString());
         }
     }
@@ -367,18 +331,12 @@ public class Settings
      *
      * @return attribute value or 0 if not found
      */
-    public Object getObj(String key, int level)
-    {
-        if (settings.containsKey(key))
-        {
+    public Object getObj(String key, int level) {
+        if (settings.containsKey(key)) {
             return settings.get(key);
-        }
-        else if (settings.containsKey(key + BASE))
-        {
+        } else if (settings.containsKey(key + BASE)) {
             return getAttr(key, level);
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -392,8 +350,7 @@ public class Settings
      *
      * @return true if defined, false otherwise
      */
-    public boolean has(String key)
-    {
+    public boolean has(String key) {
         return settings.containsKey(key) || settings.containsKey(key + BASE);
     }
 
@@ -403,8 +360,7 @@ public class Settings
      *
      * @param key name of the attribute
      */
-    public void remove(String key)
-    {
+    public void remove(String key) {
         settings.remove(key);
         settings.remove(key + BASE);
         settings.remove(key + SCALE);
@@ -420,10 +376,8 @@ public class Settings
      * @param defaultBase  default base value
      * @param defaultScale default scale value
      */
-    public void checkDefault(String key, double defaultBase, double defaultScale)
-    {
-        if (!has(key))
-        {
+    public void checkDefault(String key, double defaultBase, double defaultScale) {
+        if (!has(key)) {
             set(key, defaultBase, defaultScale);
         }
     }
@@ -434,14 +388,11 @@ public class Settings
      *
      * @param config configuration section to save to
      */
-    public void save(DataSection config)
-    {
-        if (config == null)
-        {
+    public void save(DataSection config) {
+        if (config == null) {
             return;
         }
-        for (String key : settings.keySet())
-        {
+        for (String key : settings.keySet()) {
             config.set(key, settings.get(key));
         }
     }
@@ -457,15 +408,12 @@ public class Settings
      *
      * @param config configuration section to load from
      */
-    public void load(DataSection config)
-    {
-        if (config == null)
-        {
+    public void load(DataSection config) {
+        if (config == null) {
             return;
         }
 
-        for (String key : config.keys())
-        {
+        for (String key : config.keys()) {
             settings.put(key, config.get(key));
         }
     }
@@ -473,11 +421,9 @@ public class Settings
     /**
      * Dumps the settings to the console for debugging purposes
      */
-    public void dumpToConsole()
-    {
+    public void dumpToConsole() {
         Logger.log("Settings:");
-        for (String key : settings.keySet())
-        {
+        for (String key : settings.keySet()) {
             Logger.log("- " + key + ": " + settings.get(key).toString());
         }
     }

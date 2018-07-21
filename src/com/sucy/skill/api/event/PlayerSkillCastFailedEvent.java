@@ -19,7 +19,8 @@ public class PlayerSkillCastFailedEvent extends Event {
         NO_MANA,
         NO_TARGET,
         NOT_UNLOCKED,
-        ON_COOLDOWN
+        ON_COOLDOWN,
+        SPECTATOR
     }
 
     private static final HandlerList handlers = new HandlerList();

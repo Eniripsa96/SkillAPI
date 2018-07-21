@@ -72,6 +72,7 @@ import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.task.ScoreboardTask;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
@@ -93,6 +94,7 @@ import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NOT_UNLO
 import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NO_MANA;
 import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NO_TARGET;
 import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.ON_COOLDOWN;
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.SPECTATOR;
 
 /**
  * Represents one account for a player which can contain one class from each group
@@ -1997,6 +1999,10 @@ public class PlayerData
         if (p.isDead())
             return PlayerSkillCastFailedEvent.invoke(skill, CASTER_DEAD);
 
+        // Disable casting in spectator mode
+        if (p.getGameMode() == GameMode.SPECTATOR)
+            return PlayerSkillCastFailedEvent.invoke(skill, SPECTATOR);
+
         // Skill Shots
         if (skill.getData() instanceof SkillShot)
         {
@@ -2143,9 +2149,9 @@ public class PlayerData
         AttributeListener.updatePlayer(this);
         getEquips().update(player);
         this.updateHealthAndMana(player);
-        if (this.getLastHealth() > 0 && !player.isDead())
-            player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
         this.startPassives(player);
         this.updateScoreboard();
+        if (this.getLastHealth() > 0 && !player.isDead())
+            player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
     }
 }

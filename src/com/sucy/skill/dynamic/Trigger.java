@@ -36,6 +36,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.List;
@@ -57,6 +58,7 @@ public enum Trigger
     KILL(EntityDeathEvent.class),
     LAND(PlayerLandEvent.class),
     LAUNCH(ProjectileLaunchEvent.class),
+    MOVE(PlayerMoveEvent.class),
     PHYSICAL_DAMAGE(PhysicalDamageEvent.class),
     SKILL_DAMAGE(SkillDamageEvent.class),
     TOOK_PHYSICAL_DAMAGE(PhysicalDamageEvent.class),

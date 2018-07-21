@@ -87,9 +87,11 @@ public class AttributeMechanic extends EffectComponent
                 else
                     data.addBonusAttributes(key, amount);
 
-                AttribTask task = new AttribTask(data, key, amount);
-                tasks.put(data.getPlayerName(), task);
-                SkillAPI.schedule(task, ticks);
+                if (ticks >= 0) {
+                    AttribTask task = new AttribTask(data, key, amount);
+                    tasks.put(data.getPlayerName(), task);
+                    SkillAPI.schedule(task, ticks);
+                }
             }
         }
         return worked;

@@ -158,8 +158,8 @@ public class MainListener extends SkillAPIListener
         PlayerData data = SkillAPI.getPlayerData(player);
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
-            data.stopPassives(player);
             data.record(player);
+            data.stopPassives(player);
         }
 
         FlagManager.clearFlags(player);

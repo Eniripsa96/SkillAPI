@@ -73,7 +73,7 @@ public abstract class Skill implements IconHolder
 {
     private static final DecimalFormat FORMAT = new DecimalFormat("#########0.0#");
 
-    private final ArrayList<String> description = new ArrayList<String>();
+    private final ArrayList<String> description = new ArrayList<>();
 
     private List<String> iconLore;
     private ItemStack    indicator;

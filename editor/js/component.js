@@ -38,6 +38,7 @@ var Trigger = {
     KILL                 : { name: 'Kill',                 container: true, construct: TriggerKill               },
     LAND                 : { name: 'Land',                 container: true, construct: TriggerLand               },
     LAUNCH               : { name: 'Launch',               container: true, construct: TriggerLaunch             },
+    MOVE                 : { name: 'Move',                 container: true, construct: TriggerMove,              premium: true },
     PHYSICAL_DAMAGE      : { name: 'Physical Damage',      container: true, construct: TriggerPhysicalDamage     },
     SKILL_DAMAGE         : { name: 'Skill Damage',         container: true, construct: TriggerSkillDamage        },
     TOOK_PHYSICAL_DAMAGE : { name: 'Took Physical Damage', container: true, construct: TriggerTookPhysicalDamage },
@@ -557,7 +558,7 @@ function TriggerBlockBreak() {
     this.super('Block Break', Type.TRIGGER, true);
     this.description = 'Applies skill effects when a player breaks a block matching  the given details';
 
-    this.data.push(new ListValue('Material', 'material', [ 'Any' ].concat(materialList), 'Any')
+    this.data.push(new MultiListValue('Material', 'material', [ 'Any' ].concat(materialList), [ 'Any' ])
         .setTooltip('The type of block expected to be broken')
     );
     this.data.push(new IntValue('Data', 'data', -1)
@@ -570,7 +571,7 @@ function TriggerBlockPlace() {
     this.super('Block Place', Type.TRIGGER, true);
     this.description = 'Applies skill effects when a player places a block matching  the given details';
 
-    this.data.push(new ListValue('Material', 'material', [ 'Any' ].concat(materialList), 'Any')
+    this.data.push(new MultiListValue('Material', 'material', [ 'Any' ].concat(materialList), [ 'Any' ])
         .setTooltip('The type of block expected to be placed')
     );
     this.data.push(new IntValue('Data', 'data', -1)
@@ -667,6 +668,14 @@ function TriggerLaunch()
     );
 }
 
+extend('TriggerMove', 'Component');
+function TriggerMove()
+{
+    this.super('Move', Type.TRIGGER, true);
+
+    this.description = 'Applies skill effects when a player moves around. This triggers every tick the player is moving, so use this sparingly. Use the "api-moved" value to check/use the distance traveled.';
+}
+
 extend('TriggerPhysicalDamage', 'Component');
 function TriggerPhysicalDamage()
 {
@@ -704,7 +713,7 @@ function TriggerSkillDamage()
     this.data.push(new DoubleValue("Max Damage", "dmg-max", 999)
         .setTooltip('The maximum damage that needs to be dealt')
     );
-    this.data.push(new StringValue('Category', 'category', '')
+    this.data.push(new StringListValue('Category', 'category', [ 'default' ] )
         .setTooltip('The type of skill damage to apply for. Leave this empty to apply to all skill damage.')
     );
 }
@@ -746,7 +755,7 @@ function TriggerTookSkillDamage()
     this.data.push(new DoubleValue("Max Damage", "dmg-max", 999)
         .setTooltip('The maximum damage that needs to be dealt')
     );
-    this.data.push(new StringValue('Category', 'category', '')
+    this.data.push(new StringListValue('Category', 'category', [ 'default' ] )
         .setTooltip('The type of skill damage to apply for. Leave this empty to apply to all skill damage.')
     );
 }

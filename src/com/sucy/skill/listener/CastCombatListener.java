@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.listener;
 
-import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerAccountChangeEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
@@ -50,12 +49,10 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -80,7 +77,8 @@ public class CastCombatListener extends SkillAPIListener
     @Override
     public void init()
     {
-        MainListener.register(this::init);
+        MainListener.registerJoin(this::init);
+        MainListener.registerClear(this::handleClear);
         for (Player player : Bukkit.getOnlinePlayers())
             init(player);
     }
@@ -443,39 +441,11 @@ public class CastCombatListener extends SkillAPIListener
             toggle(data.getPlayer());
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onCommand(final PlayerCommandPreprocessEvent event) {
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            return;
-
-        if (event.getMessage().equals("/clear")) {
-            handleClear(event.getPlayer());
-        }
-        else if (event.getMessage().startsWith("/clear ")) {
-            handleClear(VersionManager.getPlayer(event.getMessage().substring(7)));
-        }
-    }
-
-    @EventHandler
-    public void onCommand(final ServerCommandEvent event) {
-        if (event.getCommand().startsWith("clear ")) {
-            handleClear(VersionManager.getPlayer(event.getCommand().substring(6)));
-        }
-    }
-
     private void handleClear(final Player player) {
-        if (player == null)
-            return;
-
         backup.put(player.getUniqueId(), new ItemStack[9]);
-        SkillAPI.schedule(new Runnable() {
-            @Override
-            public void run() {
-                PlayerSkillBar skillBar = SkillAPI.getPlayerData(player).getSkillBar();
-                if (skillBar.isSetup())
-                    skillBar.update(player);
-                player.getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
-            }
-        }, 1);
+        PlayerSkillBar skillBar = SkillAPI.getPlayerData(player).getSkillBar();
+        if (skillBar.isSetup())
+            skillBar.update(player);
+        player.getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
     }
 }

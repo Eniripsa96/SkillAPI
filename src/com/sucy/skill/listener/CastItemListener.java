@@ -42,7 +42,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -64,7 +63,8 @@ public class CastItemListener extends SkillAPIListener
     @Override
     public void init()
     {
-        MainListener.register(this::init);
+        MainListener.registerJoin(this::init);
+        MainListener.registerClear(this::handleClear);
         for (Player player : Bukkit.getOnlinePlayers())
             init(player);
     }
@@ -232,18 +232,7 @@ public class CastItemListener extends SkillAPIListener
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onCommand(final PlayerCommandPreprocessEvent event) {
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            return;
-
-        if (event.getMessage().equals("/clear")) {
-            SkillAPI.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    event.getPlayer().getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
-                }
-            }, 1);
-        }
+    private void handleClear(final Player player) {
+        player.getInventory().setItem(slot, SkillAPI.getSettings().getCastItem());
     }
 }

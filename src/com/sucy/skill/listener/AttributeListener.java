@@ -28,6 +28,7 @@ package com.sucy.skill.listener;
 
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerExperienceGainEvent;
@@ -63,7 +64,7 @@ public class AttributeListener extends SkillAPIListener
 
     @Override
     public void init() {
-        MainListener.register(this::onJoin);
+        MainListener.registerJoin(this::onJoin);
     }
 
     /**
@@ -277,8 +278,10 @@ public class AttributeListener extends SkillAPIListener
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onExp(final PlayerExperienceGainEvent event) {
-        final double newExp = event.getPlayerData().scaleStat(AttributeManager.EXPERIENCE, event.getExp());
-        event.setExp(newExp);
+        if (event.getSource() != ExpSource.COMMAND) {
+            final double newExp = event.getPlayerData().scaleStat(AttributeManager.EXPERIENCE, event.getExp());
+            event.setExp(newExp);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

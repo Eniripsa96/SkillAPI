@@ -56,7 +56,7 @@ public class ItemListener extends SkillAPIListener
 {
     @Override
     public void init() {
-        MainListener.register(this::onJoin);
+        MainListener.registerJoin(this::onJoin);
     }
 
     /**

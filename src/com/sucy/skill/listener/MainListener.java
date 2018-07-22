@@ -44,6 +44,7 @@ import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -59,10 +60,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 import java.util.ArrayList;
@@ -77,9 +80,14 @@ import java.util.function.Consumer;
 public class MainListener extends SkillAPIListener
 {
     private static final List<Consumer<Player>> JOIN_HANDLERS = new ArrayList<>();
+    private static final List<Consumer<Player>> CLEAR_HANDLERS = new ArrayList<>();
 
-    public static void register(final Consumer<Player> joinHandler) {
+    public static void registerJoin(final Consumer<Player> joinHandler) {
         JOIN_HANDLERS.add(joinHandler);
+    }
+
+    public static void registerClear(final Consumer<Player> joinHandler) {
+        CLEAR_HANDLERS.add(joinHandler);
     }
 
     @Override
@@ -168,7 +176,12 @@ public class MainListener extends SkillAPIListener
         DynamicSkill.clearCastData(player);
 
         player.setDisplayName(player.getName());
-        player.setMaxHealth(20);
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+        } else {
+            player.setMaxHealth(20);
+        }
+        player.setWalkSpeed(0.2f);
         SkillAPI.unloadPlayerData(player);
     }
 
@@ -422,6 +435,37 @@ public class MainListener extends SkillAPIListener
         }
         else if (!oldEnabled && newEnabled) {
             init(event.getPlayer());
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onCommand(final PlayerCommandPreprocessEvent event) {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        if (event.getMessage().equals("/clear")) {
+            handleClear(event.getPlayer());
+        }
+        else if (event.getMessage().startsWith("/clear ")) {
+            handleClear(VersionManager.getPlayer(event.getMessage().substring(7)));
+        }
+    }
+
+    @EventHandler
+    public void onCommand(final ServerCommandEvent event) {
+        if (event.getCommand().startsWith("clear ")) {
+            handleClear(VersionManager.getPlayer(event.getCommand().substring(6)));
+        }
+    }
+
+    private void handleClear(final Player player) {
+        if (player != null) {
+            SkillAPI.schedule(() -> {
+                final PlayerData data = SkillAPI.getPlayerData(player);
+                data.getEquips().update(player);
+
+                CLEAR_HANDLERS.forEach(handler -> handler.accept(player));
+            }, 1);
         }
     }
 }

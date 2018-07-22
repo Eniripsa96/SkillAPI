@@ -82,7 +82,6 @@ import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.task.SaveTask;
 import com.sucy.skill.thread.MainThread;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -122,6 +121,7 @@ public class SkillAPI extends JavaPlugin {
     private MainThread mainThread;
 
     private boolean loaded = false;
+    private boolean disabling = false;
 
     /**
      * <p>Enables SkillAPI, setting up listeners, managers, and loading data. This
@@ -225,6 +225,8 @@ public class SkillAPI extends JavaPlugin {
         // Validate instance
         if (singleton != this) { throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!"); }
 
+        disabling = true;
+
         GUITool.cleanUp();
         EffectManager.cleanUp();
 
@@ -245,12 +247,7 @@ public class SkillAPI extends JavaPlugin {
 
         // Clear skill bars and stop passives before disabling
         for (Player player : VersionManager.getOnlinePlayers()) {
-            PlayerData data = getPlayerData(player);
-            data.stopPassives(player);
-            data.getCastBars().restore(player);
-            if (player.getGameMode() != GameMode.CREATIVE && !player.isDead()) { data.getSkillBar().clear(player); }
-            player.setMaxHealth(20);
-            player.setWalkSpeed(0.2f);
+            MainListener.unload(player);
         }
 
         io.saveAll();
@@ -263,6 +260,7 @@ public class SkillAPI extends JavaPlugin {
         cmd.clear();
 
         loaded = false;
+        disabling = false;
         singleton = null;
     }
 
@@ -533,7 +531,7 @@ public class SkillAPI extends JavaPlugin {
      * @param player player to unload data for
      */
     public static void unloadPlayerData(final OfflinePlayer player) {
-        if (singleton == null || player == null || !singleton.players.containsKey(new VersionPlayer(player).getIdString())) {
+        if (singleton == null || player == null || singleton.disabling || !singleton.players.containsKey(new VersionPlayer(player).getIdString())) {
             return;
         }
 

@@ -53,7 +53,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -73,7 +72,8 @@ public class BarListener extends SkillAPIListener
     @Override
     public void init()
     {
-        MainListener.register(this::onJoin);
+        MainListener.registerJoin(this::onJoin);
+        MainListener.registerClear(this::handleClear);
         for (Player player : VersionManager.getOnlinePlayers())
         {
             if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
@@ -392,34 +392,13 @@ public class BarListener extends SkillAPIListener
         else if (event.getPlayer().getGameMode() == GameMode.CREATIVE && data.hasClass())
         {
             final Player player = event.getPlayer();
-            SkillAPI.schedule(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    SkillAPI.getPlayerData(player).getSkillBar().setup(player);
-                }
-            }, 0);
+            SkillAPI.schedule(() -> SkillAPI.getPlayerData(player).getSkillBar().setup(player), 0);
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onCommand(final PlayerCommandPreprocessEvent event) {
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            return;
-
-        final PlayerSkillBar skillBar = SkillAPI.getPlayerData(event.getPlayer()).getSkillBar();
-        if (!skillBar.isSetup())
-            return;
-
-        if (event.getMessage().equals("/cleanUp")) {
-            SkillAPI.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (skillBar.isSetup())
-                        skillBar.update(event.getPlayer());
-                }
-            }, 1);
-        }
+    private void handleClear(final Player player) {
+        final PlayerSkillBar skillBar = SkillAPI.getPlayerData(player).getSkillBar();
+        if (skillBar.isSetup())
+            skillBar.update(player);
     }
 }

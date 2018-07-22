@@ -323,9 +323,11 @@ public class TempEntity implements LivingEntity {
 
     }
 
-    public void setAI(boolean b) {
+    public boolean isSwimming() { return false; }
 
-    }
+    public void setSwimming(final boolean b) { }
+
+    public void setAI(boolean b) { }
 
     public boolean hasAI() {
         return false;

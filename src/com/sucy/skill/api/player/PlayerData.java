@@ -1753,6 +1753,8 @@ public class PlayerData
     {
         bonusMana = 0;
         bonusHealth = 0;
+        bonusAttrib.clear();
+        equips = new PlayerEquips(this);
     }
 
     ///////////////////////////////////////////////////////

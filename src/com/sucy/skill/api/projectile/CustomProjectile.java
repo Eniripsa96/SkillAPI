@@ -180,6 +180,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
             boolean ally = SkillAPI.getSettings().isAlly(getShooter(), entity);
             if (ally && !this.ally) continue;
             if (!ally && !this.enemy) continue;
+            if (!SkillAPI.getSettings().isValidTarget(entity)) continue;
 
             Bukkit.getPluginManager().callEvent(hit(entity));
 

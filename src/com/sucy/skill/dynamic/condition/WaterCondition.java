@@ -57,7 +57,7 @@ public class WaterCondition extends EffectComponent
         for (LivingEntity target : targets)
         {
             Material block = target.getLocation().getBlock().getType();
-            if (out != (block == Material.WATER || block == Material.STATIONARY_WATER))
+            if (out != (block.name().contains("WATER")))
             {
                 list.add(target);
             }

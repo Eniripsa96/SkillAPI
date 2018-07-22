@@ -228,8 +228,8 @@ public class PlayerAccounts
 
             ClassBoardManager.clear(new VersionPlayer(player));
             getActiveData().stopPassives(player);
-            getActiveData().clearBonuses();
             AttributeListener.clearBonuses(player);
+            getActiveData().clearBonuses();
             if (getActiveData().hasClass() && SkillAPI.getSettings().isSkillBarEnabled())
             {
                 getActiveData().getSkillBar().clear(player);
@@ -243,6 +243,7 @@ public class PlayerAccounts
             {
                 getActiveData().getSkillBar().setup(player);
             }
+            getActiveData().getEquips().update(player);
         }
     }
 }

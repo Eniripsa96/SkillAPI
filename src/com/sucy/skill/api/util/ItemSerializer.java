@@ -299,7 +299,7 @@ public class ItemSerializer {
                 {
                     ItemMeta meta = is.getItemMeta();
                     List<String> lore = meta.getLore();
-                    if (lore == null) lore = new ArrayList<String>();
+                    if (lore == null) lore = new ArrayList<>();
                     lore.add(itemAttribute[1]);
                     meta.setLore(lore);
                     is.setItemMeta(meta);

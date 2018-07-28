@@ -1340,7 +1340,7 @@ function ConditionStatus()
     this.data.push(new ListValue('Type', 'type', [ 'Active', 'Not Active' ], 'Active')
         .setTooltip('Whether or not the status should be active')
     );
-    this.data.push(new ListValue('Status', 'status', [ 'Any', 'Curse', 'Disarm', 'Root', 'Silence', 'Stun' ], 'Any')
+    this.data.push(new ListValue('Status', 'status', [ 'Any', 'Absorb', 'Curse', 'Disarm', 'Invincible', 'Root', 'Silence', 'Stun' ], 'Any')
         .setTooltip('The status to look for')
     );
 }

@@ -157,6 +157,7 @@ var Mechanic = {
     TRIGGER:             { name: 'Trigger',             container: true,  construct: MechanicTrigger,           premium: true },
     VALUE_ADD:           { name: 'Value Add',           container: false, construct: MechanicValueAdd           },
     VALUE_ATTRIBUTE:     { name: 'Value Attribute',     container: false, construct: MechanicValueAttribute     },
+    VALUE_COPY:          { name: 'Value Copy',          container: false, construct: MechanicValueCopy,         premium: true },
     VALUE_DISTANCE:      { name: 'Value Distance',      container: false, construct: MechanicValueDistance,     premium: true },
     VALUE_HEALTH:        { name: 'Value Health',        container: false, construct: MechanicValueHealth,       premium: true },
     VALUE_LOCATION:      { name: 'Value Location',      container: false, construct: MechanicValueLocation      },
@@ -1478,7 +1479,11 @@ function MechanicBuff()
 
     this.description = 'Buffs combat stats of the target';
 
+    this.data.push(new ListValue('Immediate', 'immediate', [ 'True', 'False' ], 'False')
+        .setTooltip('Whether or not to apply the buff to the current damage trigger.')
+    );
     this.data.push(new ListValue('Type', 'type', [ 'DAMAGE', 'DEFENSE', 'SKILL_DAMAGE', 'SKILL_DEFENSE', 'HEALING' ], 'DAMAGE')
+        .requireValue('immediate', [ 'False' ])
         .setTooltip('What type of buff to apply. DAMAGE/DEFENSE is for regular attacks, SKILL_DAMAGE/SKILL_DEFENSE are for damage from abilities, and HEALING is for healing from abilities')
     );
     this.data.push(new ListValue('Modifier', 'modifier', [ 'Flat', 'Multiplier' ], 'Flat')
@@ -1492,6 +1497,7 @@ function MechanicBuff()
         .setTooltip('The amount to increase/decrease incoming damage by')
     );
     this.data.push(new AttributeValue('Seconds', 'seconds', 3, 0)
+        .requireValue('immediate', [ 'False' ])
         .setTooltip('The duration of the buff in seconds')
     );
 }
@@ -2445,6 +2451,21 @@ function MechanicValueAttribute()
     );
     this.data.push(new StringValue('Attribute', 'attribute', 'Vitality')
         .setTooltip('The name of the attribute you are loading the value of')
+    );
+}
+
+extend('MechanicValueCopy', 'Component');
+function MechanicValueCopy()
+{
+    this.super('Value Copy', Type.MECHANIC, false);
+    
+    this.description = 'Copies a stored value from the caster to the target or vice versa';
+    
+    this.data.push(new StringValue('Key', 'key', 'value')
+        .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
+    );
+    this.data.push(new ListValue('To target', 'to-target', [ 'True', 'False' ], 'True')
+        .setTooltip('The amount to add to the value')
     );
 }
 

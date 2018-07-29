@@ -2491,6 +2491,9 @@ function MechanicValueHealth()
     this.data.push(new StringValue('Key', 'key', 'value')
         .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
     );
+    this.data.push(new ListValue('Type', 'type', [ 'Current', 'Max', 'Missing', 'Percent' ], 'Current')
+        .setTooltip('Current provides the health the target has, max provides their total health, missing provides how much health they have lost, and percent is the ratio of health to total health.')
+    );
 }
 
 extend('MechanicValueLocation', 'Component');
@@ -2556,6 +2559,9 @@ function MechanicValueMana()
     
     this.data.push(new StringValue('Key', 'key', 'value')
         .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
+    );
+    this.data.push(new ListValue('Type', 'type', [ 'Current', 'Max', 'Missing', 'Percent' ], 'Current')
+        .setTooltip('Current provides the mana the target has, max provides their total mana, missing provides how much mana they have lost, and percent is the ratio of health to total mana.')
     );
 }
 

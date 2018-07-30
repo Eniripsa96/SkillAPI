@@ -33,9 +33,9 @@ import org.bukkit.entity.LivingEntity;
 import java.util.HashMap;
 import java.util.List;
 
-public class ValueHealthMechanic extends EffectComponent
-{
-    private static final String KEY = "key";
+public class ValueHealthMechanic extends EffectComponent {
+    private static final String KEY  = "key";
+    private static final String TYPE = "type";
 
     /**
      * Executes the component
@@ -47,11 +47,22 @@ public class ValueHealthMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        String key = settings.getString(KEY);
-        HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        data.put(key, targets.get(0).getHealth());
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        final String key = settings.getString(KEY);
+        final String type = settings.getString(TYPE, "current").toLowerCase();
+        final HashMap<String, Object> data = DynamicSkill.getCastData(caster);
+
+        final LivingEntity target = targets.get(0);
+        switch (type) {
+            case "max":
+                data.put(key, target.getMaxHealth());
+            case "percent":
+                data.put(key, target.getHealth() / target.getMaxHealth());
+            case "missing":
+                data.put(key, target.getMaxHealth() - target.getHealth());
+            default: // current
+                data.put(key, target.getHealth());
+        }
         return true;
     }
 }

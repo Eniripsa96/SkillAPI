@@ -27,8 +27,10 @@
 package com.sucy.skill.api.util;
 
 import com.rit.sucy.reflect.Particle;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.Direction;
+import com.sucy.skill.api.particle.SpigotParticles;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
@@ -45,8 +47,7 @@ import java.util.Random;
 /**
  * Helper class for playing particles via config strings in various ways.
  */
-public class ParticleHelper
-{
+public class ParticleHelper {
     /**
      * Settings key for the arrangement type of particles
      */
@@ -130,8 +131,7 @@ public class ParticleHelper
      * @param loc    location to play the effect
      * @param effect entity effect to play
      */
-    public static void play(Location loc, EntityEffect effect)
-    {
+    public static void play(Location loc, EntityEffect effect) {
         Wolf wolf = (Wolf) loc.getWorld().spawnEntity(loc, EntityType.WOLF);
         wolf.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100));
         wolf.playEffect(effect);
@@ -144,46 +144,32 @@ public class ParticleHelper
      * @param loc      location to center the effect around
      * @param settings data to play the particles with
      */
-    public static void play(Location loc, Settings settings)
-    {
+    public static void play(Location loc, Settings settings) {
         String particle = settings.getString(PARTICLE_KEY, "invalid");
-        if (settings.has(ARRANGEMENT_KEY))
-        {
+        if (settings.has(ARRANGEMENT_KEY)) {
             int level = settings.getInt(LEVEL, 1);
             double radius = settings.getAttr(RADIUS_KEY, level, 3.0);
             int amount = (int) settings.getAttr(PARTICLES_KEY, level, 10);
 
             String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
-            if (arrangement.equals("circle"))
-            {
+            if (arrangement.equals("circle")) {
                 Direction dir = null;
-                if (settings.has(DIRECTION_KEY))
-                {
-                    try
-                    {
+                if (settings.has(DIRECTION_KEY)) {
+                    try {
                         dir = Direction.valueOf(settings.getString(DIRECTION_KEY));
-                    }
-                    catch (Exception ex)
-                    { /* Use default value */ }
+                    } catch (Exception ex) { /* Use default value */ }
                 }
-                if (dir == null)
-                {
+                if (dir == null) {
                     dir = Direction.XZ;
                 }
 
                 fillCircle(loc, particle, settings, radius, amount, dir);
-            }
-            else if (arrangement.equals("sphere"))
-            {
+            } else if (arrangement.equals("sphere")) {
                 fillSphere(loc, particle, settings, radius, amount);
-            }
-            else if (arrangement.equals("hemisphere"))
-            {
+            } else if (arrangement.equals("hemisphere")) {
                 fillHemisphere(loc, particle, settings, radius, amount);
             }
-        }
-        else
-        {
+        } else {
             play(loc, particle, settings);
         }
     }
@@ -195,62 +181,59 @@ public class ParticleHelper
      * @param particle particle to play
      * @param settings data to play the particle with
      */
-    public static void play(Location loc, String particle, Settings settings)
-    {
+    public static void play(Location loc, String particle, Settings settings) {
         particle = particle.toLowerCase().replace("_", " ");
+        final int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
+        final float dx = (float)settings.getDouble(DX_KEY, 0.0);
+        final float dy = (float)settings.getDouble(DY_KEY, 0.0);
+        final float dz = (float)settings.getDouble(DZ_KEY, 0.0);
+        final int amount = settings.getInt(AMOUNT_KEY, 1);
+        final float speed = (float) settings.getDouble(SPEED_KEY, 1.0);
+        final Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
 
-        // Normal bukkit effects
-        if (BUKKIT_EFFECTS.containsKey(particle))
-        {
-            loc.getWorld().playEffect(loc, BUKKIT_EFFECTS.get(particle), settings.getInt(DATA_KEY, 0));
-        }
-
-        // Entity effects
-        else if (ENTITY_EFFECTS.containsKey(particle))
-        {
-            play(loc, ENTITY_EFFECTS.get(particle));
-        }
-
-        // Reflection particles
-        else if (REFLECT_PARTICLES.containsKey(particle))
-        {
-            int num = settings.getInt(AMOUNT_KEY, 1);
-            Particle.play(REFLECT_PARTICLES.get(particle), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), num);
-        }
-
-        // Block break particle
-        else if (particle.equals("block crack"))
-        {
-            try
-            {
-                Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
-                Particle.playBlockCrack(mat, (short) settings.getInt(TYPE_KEY, 0), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(SPEED_KEY, 1.0));
+        try {
+            // Normal bukkit effects
+            if (BUKKIT_EFFECTS.containsKey(particle)) {
+                loc.getWorld().playEffect(loc, BUKKIT_EFFECTS.get(particle), settings.getInt(DATA_KEY, 0));
             }
-            catch (Exception ex)
-            {
-                Logger.invalid(ex.getCause().getMessage());
-            }
-        }
 
-        // Icon break particle
-        else if (particle.equals("icon crack"))
-        {
-            try
-            {
-                Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
-                Particle.playIconCrack(mat, (short) settings.getInt(TYPE_KEY, 0), loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(SPEED_KEY, 1.0));
+            // Entity effects
+            else if (ENTITY_EFFECTS.containsKey(particle)) {
+                play(loc, ENTITY_EFFECTS.get(particle));
             }
-            catch (Exception ex)
-            {
-                Logger.invalid(ex.getCause().getMessage());
-            }
-        }
 
-        // 1.9+ particles
-        else
-        {
-            int num = settings.getInt(AMOUNT_KEY, 1);
-            Particle.play(particle, loc, settings.getInt(VISIBLE_RADIUS_KEY, 25), (float) settings.getDouble(DX_KEY, 0.0), (float) settings.getDouble(DY_KEY, 0.0), (float) settings.getDouble(DZ_KEY, 0.0), (float) settings.getDouble(SPEED_KEY, 1.0), num);
+            // v1.13 particles
+            else if (VersionManager.isVersionAtLeast(11300)) {
+                if (particle.startsWith("block")) {
+                    SpigotParticles.playBlock(loc, particle, dx, dy, dz, amount, speed, rad, mat);
+                } else if (particle.startsWith("icon")) {
+                    SpigotParticles.playItem(loc, particle, dx, dy, dz, amount, speed, rad, mat);
+                } else {
+                    SpigotParticles.play(loc, particle, dx, dy, dz, amount, speed, rad);
+                }
+            }
+
+            // Reflection particles
+            else if (REFLECT_PARTICLES.containsKey(particle)) {
+                Particle.play(REFLECT_PARTICLES.get(particle), loc, rad, dx, dy, dz, speed, amount);
+            }
+
+            // Block break particle
+            else if (particle.equals("block crack")) {
+                Particle.playBlockCrack(mat, (short) settings.getInt(TYPE_KEY, 0), loc, rad, speed);
+            }
+
+            // Icon break particle
+            else if (particle.equals("icon crack")) {
+                Particle.playIconCrack(mat, (short) settings.getInt(TYPE_KEY, 0), loc, rad, speed);
+            }
+
+            // 1.9+ particles
+            else {
+                Particle.play(particle, loc, rad, dx, dy, dz, speed, amount);
+            }
+        } catch (Exception ex) {
+            Logger.invalid(ex.getCause().getMessage());
         }
     }
 
@@ -263,31 +246,31 @@ public class ParticleHelper
      * @param radius   radius of the circle
      * @param amount   amount of particles to play
      */
-    public static void fillCircle(Location loc, String particle, Settings settings, double radius, int amount, Direction direction)
-    {
+    public static void fillCircle(
+            Location loc,
+            String particle,
+            Settings settings,
+            double radius,
+            int amount,
+            Direction direction) {
         Location temp = loc.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
         int index = 0;
 
         // Play the particles
-        while (index < amount)
-        {
-            if (direction == Direction.XY || direction == Direction.XZ)
-            {
+        while (index < amount) {
+            if (direction == Direction.XY || direction == Direction.XZ) {
                 temp.setX(loc.getX() + random.nextDouble() * twoRadius - radius);
             }
-            if (direction == Direction.XY || direction == Direction.YZ)
-            {
+            if (direction == Direction.XY || direction == Direction.YZ) {
                 temp.setY(loc.getY() + random.nextDouble() * twoRadius - radius);
             }
-            if (direction == Direction.XZ || direction == Direction.YZ)
-            {
+            if (direction == Direction.XZ || direction == Direction.YZ) {
                 temp.setZ(loc.getZ() + random.nextDouble() * twoRadius - radius);
             }
 
-            if (temp.distanceSquared(loc) > rSquared)
-            {
+            if (temp.distanceSquared(loc) > rSquared) {
                 continue;
             }
 
@@ -305,22 +288,19 @@ public class ParticleHelper
      * @param radius   radius of the sphere
      * @param amount   amount of particles to use
      */
-    public static void fillSphere(Location loc, String particle, Settings settings, double radius, int amount)
-    {
+    public static void fillSphere(Location loc, String particle, Settings settings, double radius, int amount) {
         Location temp = loc.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
         int index = 0;
 
         // Play the particles
-        while (index < amount)
-        {
+        while (index < amount) {
             temp.setX(loc.getX() + random.nextDouble() * twoRadius - radius);
             temp.setY(loc.getY() + random.nextDouble() * twoRadius - radius);
             temp.setZ(loc.getZ() + random.nextDouble() * twoRadius - radius);
 
-            if (temp.distanceSquared(loc) > rSquared)
-            {
+            if (temp.distanceSquared(loc) > rSquared) {
                 continue;
             }
 
@@ -338,22 +318,19 @@ public class ParticleHelper
      * @param radius   radius of the sphere
      * @param amount   amount of particles to use
      */
-    public static void fillHemisphere(Location loc, String particle, Settings settings, double radius, int amount)
-    {
+    public static void fillHemisphere(Location loc, String particle, Settings settings, double radius, int amount) {
         Location temp = loc.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
         int index = 0;
 
         // Play the particles
-        while (index < amount)
-        {
+        while (index < amount) {
             temp.setX(loc.getX() + random.nextDouble() * twoRadius - radius);
             temp.setY(loc.getY() + random.nextDouble() * radius);
             temp.setZ(loc.getZ() + random.nextDouble() * twoRadius - radius);
 
-            if (temp.distanceSquared(loc) > rSquared)
-            {
+            if (temp.distanceSquared(loc) > rSquared) {
                 continue;
             }
 
@@ -362,16 +339,14 @@ public class ParticleHelper
         }
     }
 
-    private static final HashMap<String, Effect> BUKKIT_EFFECTS = new HashMap<String, Effect>()
-    {{
+    private static final HashMap<String, Effect> BUKKIT_EFFECTS = new HashMap<String, Effect>() {{
         put("smoke", Effect.SMOKE);
         put("ender signal", Effect.ENDER_SIGNAL);
         put("mobspawner flames", Effect.MOBSPAWNER_FLAMES);
         put("potion break", Effect.POTION_BREAK);
     }};
 
-    private static final HashMap<String, EntityEffect> ENTITY_EFFECTS = new HashMap<String, EntityEffect>()
-    {{
+    private static final HashMap<String, EntityEffect> ENTITY_EFFECTS = new HashMap<String, EntityEffect>() {{
         put("death", EntityEffect.DEATH);
         put("hurt", EntityEffect.HURT);
         put("sheep eat", EntityEffect.SHEEP_EAT);
@@ -380,8 +355,7 @@ public class ParticleHelper
         put("wolf smoke", EntityEffect.WOLF_SMOKE);
     }};
 
-    private static final HashMap<String, String> REFLECT_PARTICLES = new HashMap<String, String>()
-    {{
+    private static final HashMap<String, String> REFLECT_PARTICLES = new HashMap<String, String>() {{
         put("angry villager", "angryVillager");
         put("bubble", "bubble");
         put("cloud", "cloud");

@@ -41,6 +41,7 @@ import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
+import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -71,8 +72,10 @@ public class AttributeListener extends SkillAPIListener
      * Cleans up the listener on shutdown
      */
     @Override
-    public void cleanup()
-    {
+    public void cleanup() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            clearBonuses(player);
+        }
         BONUSES.clear();
     }
 
@@ -97,6 +100,7 @@ public class AttributeListener extends SkillAPIListener
             clear(player, Attribute.GENERIC_ATTACK_SPEED, AttributeManager.ATTACK_SPEED);
             clear(player, Attribute.GENERIC_ARMOR, AttributeManager.ARMOR);
             clear(player, Attribute.GENERIC_LUCK, AttributeManager.LUCK);
+            clear(player, Attribute.GENERIC_KNOCKBACK_RESISTANCE, AttributeManager.LUCK);
         }
         if (VersionManager.isVersionAtLeast(11200)) {
             clear(player, Attribute.GENERIC_ARMOR_TOUGHNESS, AttributeManager.ARMOR_TOUGHNESS);

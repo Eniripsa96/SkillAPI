@@ -27,6 +27,7 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
@@ -37,7 +38,8 @@ import java.util.List;
 
 public class ValueManaMechanic extends EffectComponent
 {
-    private static final String KEY = "key";
+    private static final String KEY  = "key";
+    private static final String TYPE = "type";
 
     /**
      * Executes the component
@@ -49,15 +51,24 @@ public class ValueManaMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.get(0) instanceof Player)
-        {
-            String key = settings.getString(KEY);
-            HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-            data.put(key, SkillAPI.getPlayerData((Player) targets.get(0)).getMana());
-            return true;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (!(targets.get(0) instanceof Player)) return false;
+
+        final PlayerData player = SkillAPI.getPlayerData((Player)targets.get(0));
+        final String key = settings.getString(KEY);
+        final String type = settings.getString(TYPE, "current").toLowerCase();
+        final HashMap<String, Object> data = DynamicSkill.getCastData(caster);
+
+        switch (type) {
+            case "max":
+                data.put(key, player.getMaxMana());
+            case "percent":
+                data.put(key, player.getMana() / player.getMaxMana());
+            case "missing":
+                data.put(key, player.getMaxMana() - player.getMana());
+            default: // current
+                data.put(key, player.getMana());
         }
-        return false;
+        return true;
     }
 }

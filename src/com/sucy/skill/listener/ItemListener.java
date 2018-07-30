@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.listener;
 
+import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
@@ -43,11 +44,16 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Listener that handles weapon item lore requirements
@@ -153,7 +159,7 @@ public class ItemListener extends SkillAPIListener
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())
             && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
             && event.getPlayer().getItemInHand() != null
-            && ARMOR.contains(event.getPlayer().getItemInHand().getType()))
+            && ARMOR_TYPES.contains(event.getPlayer().getItemInHand().getType()))
         {
             SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
         }
@@ -221,29 +227,20 @@ public class ItemListener extends SkillAPIListener
                 || bow == entity.getEquipment().getItemInMainHand();
     }
 
-    private static final HashSet<Material> ARMOR = new HashSet<Material>()
-    {{
-        add(Material.LEATHER_HELMET);
-        add(Material.IRON_HELMET);
-        add(Material.CHAINMAIL_HELMET);
-        add(Material.GOLD_HELMET);
-        add(Material.DIAMOND_HELMET);
-        add(Material.LEATHER_CHESTPLATE);
-        add(Material.IRON_CHESTPLATE);
-        add(Material.CHAINMAIL_CHESTPLATE);
-        add(Material.GOLD_CHESTPLATE);
-        add(Material.DIAMOND_CHESTPLATE);
-        add(Material.LEATHER_LEGGINGS);
-        add(Material.IRON_LEGGINGS);
-        add(Material.CHAINMAIL_LEGGINGS);
-        add(Material.GOLD_LEGGINGS);
-        add(Material.DIAMOND_LEGGINGS);
-        add(Material.LEATHER_BOOTS);
-        add(Material.IRON_BOOTS);
-        add(Material.CHAINMAIL_BOOTS);
-        add(Material.GOLD_BOOTS);
-        add(Material.DIAMOND_BOOTS);
-    }};
+    public static final Set<Material> ARMOR_TYPES = getArmorMaterials();
+
+    private static Set<Material> getArmorMaterials() {
+        final Set<String> armorSuffixes = ImmutableSet.of("BOOTS", "LEGGINGS", "CHESTPLATE", "HELMET");
+        final ImmutableSet.Builder<Material> builder = ImmutableSet.builder();
+        for (Material material : Material.values()) {
+            final int index = material.name().lastIndexOf('_') + 1;
+            final String suffix = material.name().substring(index);
+            if (armorSuffixes.contains(suffix)) {
+                builder.add(material);
+            }
+        }
+        return builder.build();
+    }
 
     /**
      * Handles updating equipped armor

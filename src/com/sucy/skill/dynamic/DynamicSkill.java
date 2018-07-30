@@ -58,6 +58,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     private static final HashMap<Integer, HashMap<String, Object>> targetData = new HashMap<Integer, HashMap<String, Object>>();
 
     private boolean cancel  = false;
+    private double multiplier = 1;
+    private double bonus = 0;
 
     /**
      * Initializes a new dynamic skill
@@ -132,6 +134,21 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public boolean checkCancelled() {
         final boolean result = cancel;
         cancel = false;
+        return result;
+    }
+
+    public void setImmediateBuff(final double value, final boolean flat) {
+        if (flat) {
+            this.bonus = value;
+        } else {
+            this.multiplier = value;
+        }
+    }
+
+    double applyImmediateBuff(final double damage) {
+        final double result = damage * multiplier + bonus;
+        multiplier = 1;
+        bonus = 0;
         return result;
     }
 

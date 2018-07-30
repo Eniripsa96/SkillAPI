@@ -19,6 +19,7 @@ public class BuffMechanic extends EffectComponent {
     private static final String TYPE     = "type";
     private static final String VALUE    = "value";
     private static final String SECONDS  = "seconds";
+    private static final String IMMEDIATE = "immediate";
 
     /**
      * Executes the component
@@ -34,9 +35,17 @@ public class BuffMechanic extends EffectComponent {
         if (targets.size() == 0) return false;
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        BuffType buffType = BuffType.valueOf(settings.getString(TYPE, "DAMAGE"));
-        boolean percent = settings.getString(MODIFIER, "flat").toLowerCase().equals("multiplier");
+
+        boolean immediate = settings.getString(IMMEDIATE, "false").equalsIgnoreCase("true");
         double value = attr(caster, VALUE, level, 1.0, isSelf);
+        boolean percent = settings.getString(MODIFIER, "flat").equalsIgnoreCase("multiplier");
+
+        if (immediate) {
+            skill.setImmediateBuff(value, !percent);
+            return true;
+        }
+
+        BuffType buffType = BuffType.valueOf(settings.getString(TYPE, "DAMAGE"));
         double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
         String category = settings.getString(CATEGORY, null);
         int ticks = (int) (seconds * 20);
@@ -44,7 +53,7 @@ public class BuffMechanic extends EffectComponent {
             BuffManager.getBuffData(target).addBuff(
                     buffType,
                     category,
-                    new Buff(this.skill.getName() + "-" + percent, value, percent),
+                    new Buff(this.skill.getName() + "-" + caster.getName(), value, percent),
                     ticks);
         }
         return targets.size() > 0;

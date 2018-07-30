@@ -200,6 +200,15 @@ public class ProjectileMechanic extends EffectComponent
     {{
         put("arrow", Material.ARROW);
         put("egg", Material.EGG);
-        put("snowball", Material.SNOW_BALL);
+        put("snowball", snowBall());
     }};
+
+    private static Material snowBall() {
+        for (Material material : Material.values()) {
+            if (material.name().startsWith("SNOW") && material.name().endsWith("BALL")) {
+                return material;
+            }
+        }
+        return Material.SNOW;
+    }
 }

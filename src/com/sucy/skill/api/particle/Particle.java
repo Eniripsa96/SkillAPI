@@ -40,12 +40,12 @@ import java.util.List;
 /**
  * Simplified particle utility compared to MCCore's
  */
-public class Particle
-{
+public class Particle {
     private static Constructor<?> packet;
 
     private static Class<?> particleEnum;
 
+    private static Method toNms;
     private static Method getHandle;
     private static Method sendPacket;
 
@@ -56,37 +56,71 @@ public class Particle
     /**
      * Initializes the SkillAPI particle utility
      */
-    public static void init()
-    {
-        try
-        {
+    public static void init() {
+        try {
             String version = Bukkit.getServer().getClass().getPackage().getName().substring(23);
             String nms = "net.minecraft.server." + version + '.';
             String craft = "org.bukkit.craftbukkit." + version + '.';
             getHandle = Class.forName(craft + "entity.CraftPlayer").getMethod("getHandle");
             connection = Class.forName(nms + "EntityPlayer").getDeclaredField("playerConnection");
-            sendPacket = Class.forName(nms + "PlayerConnection").getDeclaredMethod("sendPacket", Class.forName(nms + "Packet"));
+            sendPacket = Class.forName(nms + "PlayerConnection")
+                    .getDeclaredMethod("sendPacket", Class.forName(nms + "Packet"));
+
+            Class<?> packetClass;
+            // 1.13+ Servers
+            if (VersionManager.isVersionAtLeast(11300)) {
+                Class<?> craftParticle = Class.forName(craft + "CraftParticle");
+                toNms = craftParticle.getDeclaredMethod("toNMS", org.bukkit.Particle.class);
+                particleEnum = Class.forName(nms + "ParticleParam");
+                packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
+                packet = packetClass.getConstructor(
+                        particleEnum,
+                        boolean.class,
+                        float.class,
+                        float.class,
+                        float.class,
+                        float.class,
+                        float.class,
+                        float.class,
+                        float.class,
+                        int.class);
+            }
 
             // 1.8+ servers
-            Class<?> packetClass;
-            if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0))
-            {
+            else if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
                 particleEnum = Class.forName(nms + "EnumParticle");
-                for (Object value : particleEnum.getEnumConstants())
-                    particleTypes.put(value.toString(), value);
+                for (Object value : particleEnum.getEnumConstants()) { particleTypes.put(value.toString(), value); }
                 packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
-                packet = packetClass.getConstructor(particleEnum, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE, int[].class);
+                packet = packetClass.getConstructor(
+                        particleEnum,
+                        Boolean.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Integer.TYPE,
+                        int[].class);
             }
 
             // 1.7.x servers
-            else
-            {
+            else {
                 packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
-                packet = packetClass.getConstructor(String.class, Boolean.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Float.TYPE, Integer.TYPE);
+                packet = packetClass.getConstructor(
+                        String.class,
+                        Boolean.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Float.TYPE,
+                        Integer.TYPE);
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println("Failed to set up particles, are you using Cauldron?");
         }
     }
@@ -100,11 +134,9 @@ public class Particle
      * @throws Exception
      */
     public static void send(Player player, List<Object> packets)
-        throws Exception
-    {
+            throws Exception {
         Object network = connection.get(getHandle.invoke(player));
-        for (Object packet : packets)
-            sendPacket.invoke(network, packet);
+        for (Object packet : packets) { sendPacket.invoke(network, packet); }
     }
 
     /**
@@ -116,11 +148,9 @@ public class Particle
      * @throws Exception
      */
     public static void send(Player player, Object[] packets)
-        throws Exception
-    {
+            throws Exception {
         Object network = connection.get(getHandle.invoke(player));
-        for (Object packet : packets)
-            sendPacket.invoke(network, packet);
+        for (Object packet : packets) { sendPacket.invoke(network, packet); }
     }
 
     /**
@@ -130,13 +160,12 @@ public class Particle
      * @param packets packets from the effect
      * @param range   range to play for
      */
-    public static void send(Location loc, List<Object> packets, int range)
-        throws Exception
-    {
+    public static void send(Location loc, List<Object> packets, double range)
+            throws Exception {
         range *= range;
-        for (Player player : loc.getWorld().getPlayers())
-            if (player.getLocation().distanceSquared(loc) < range)
-                send(player, packets);
+        for (Player player : loc.getWorld().getPlayers()) {
+            if (player.getLocation().distanceSquared(loc) < range) { send(player, packets); }
+        }
     }
 
     /**
@@ -146,13 +175,12 @@ public class Particle
      * @param packets packets from the effect
      * @param range   range to play for
      */
-    public static void send(Location loc, Object[] packets, int range)
-        throws Exception
-    {
+    public static void send(Location loc, Object[] packets, double range)
+            throws Exception {
         range *= range;
-        for (Player player : loc.getWorld().getPlayers())
-            if (player.getLocation().distanceSquared(loc) < range)
-                send(player, packets);
+        for (Player player : loc.getWorld().getPlayers()) {
+            if (player.getLocation().distanceSquared(loc) < range) { send(player, packets); }
+        }
     }
 
     /**
@@ -166,8 +194,7 @@ public class Particle
      * @throws Exception
      */
     public static Object make(ParticleSettings settings, Location loc)
-        throws Exception
-    {
+            throws Exception {
         return make(settings, loc.getX(), loc.getY(), loc.getZ());
     }
 
@@ -183,48 +210,33 @@ public class Particle
      *
      * @throws Exception
      */
-    public static Object make(ParticleSettings settings, double x, double y, double z)
-        throws Exception
-    {
+    public static Object make(ParticleSettings settings, double x, double y, double z) throws Exception {
         // Invalid particle settings
-        if (settings == null || settings.type == null)
-            return null;
+        if (settings == null || settings.type == null) { return null; }
 
-            // 1.8+ servers use an enum value to validate the particle type
-        else if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0))
-        {
-            Object enumType = particleTypes.get(settings.type.name());
-            return packet.newInstance(
-                enumType,
-                true,
-                (float) x,
-                (float) y,
-                (float) z,
-                settings.dx,
-                settings.dy,
-                settings.dz,
-                settings.speed,
-                settings.amount,
-                settings.data
-            );
+        return make(settings.type.name(), x, y, z, settings.dx, settings.dy, settings.dz, settings.speed, settings.amount, null);
+    }
+
+    public static Object make(final String name, double x, double y, double z, float dx, float dy, float dz, float speed, int amount, Object data) throws Exception {
+
+        // 1.13+ servers
+        if (VersionManager.isVersionAtLeast(11300)) {
+            final org.bukkit.Particle bukkit = org.bukkit.Particle.valueOf(name);
+            final Object particle = toNms.invoke(null, bukkit);
+            return packet.newInstance(particle, true, (float) x, (float) y, (float) z, dx, dy, dz, speed, amount);
+        }
+
+        // 1.8+ servers use an enum value to validate the particle type
+        else if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
+            Object enumType = particleTypes.get(name);
+            return packet.newInstance(enumType, true, (float) x, (float) y, (float) z, dx, dy, dz, speed, amount, (int[])data);
         }
 
         // 1.7.x servers just use a string for the type,
         // so make sure it is a usable type before blindly
         // sending it through
-        else
-        {
-            return packet.newInstance(
-                settings.type.oldName(),
-                (float) x,
-                (float) y,
-                (float) z,
-                settings.dx,
-                settings.dy,
-                settings.dz,
-                settings.amount,
-                1
-            );
+        else {
+            return packet.newInstance(name, (float) x, (float) y, (float) z, dx, dy, dz, amount, 1);
         }
     }
 }

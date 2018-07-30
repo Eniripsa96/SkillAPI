@@ -122,6 +122,7 @@ import com.sucy.skill.dynamic.mechanic.TauntMechanic;
 import com.sucy.skill.dynamic.mechanic.TriggerMechanic;
 import com.sucy.skill.dynamic.mechanic.ValueAddMechanic;
 import com.sucy.skill.dynamic.mechanic.ValueAttributeMechanic;
+import com.sucy.skill.dynamic.mechanic.ValueCopyMechanic;
 import com.sucy.skill.dynamic.mechanic.ValueDistanceMechanic;
 import com.sucy.skill.dynamic.mechanic.ValueHealthMechanic;
 import com.sucy.skill.dynamic.mechanic.ValueLocationMechanic;
@@ -169,7 +170,7 @@ public abstract class EffectComponent
     /**
      * Child components
      */
-    public final ArrayList<EffectComponent> children = new ArrayList<EffectComponent>();
+    public final ArrayList<EffectComponent> children = new ArrayList<>();
 
     /**
      * The settings for the component
@@ -504,22 +505,19 @@ public abstract class EffectComponent
             {
                 String type = children.getSection(key).getString(TYPE, "missing").toLowerCase();
                 HashMap<String, Class<? extends EffectComponent>> map;
-                if (type.equals("target"))
-                {
-                    map = targets;
-                }
-                else if (type.equals("condition"))
-                {
-                    map = conditions;
-                }
-                else if (type.equals("mechanic"))
-                {
-                    map = mechanics;
-                }
-                else
-                {
-                    Logger.invalid("Invalid component type - " + type);
-                    continue;
+                switch (type) {
+                    case "target":
+                        map = targets;
+                        break;
+                    case "condition":
+                        map = conditions;
+                        break;
+                    case "mechanic":
+                        map = mechanics;
+                        break;
+                    default:
+                        Logger.invalid("Invalid component type - " + type);
+                        continue;
                 }
                 String mkey = key.toLowerCase().replaceAll("-.+", "");
                 if (map.containsKey(mkey))
@@ -656,6 +654,7 @@ public abstract class EffectComponent
         put("trigger", TriggerMechanic.class);
         put("value add", ValueAddMechanic.class);
         put("value attribute", ValueAttributeMechanic.class);
+        put("value copy", ValueCopyMechanic.class);
         put("value distance", ValueDistanceMechanic.class);
         put("value health", ValueHealthMechanic.class);
         put("value location", ValueLocationMechanic.class);

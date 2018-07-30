@@ -27,7 +27,6 @@
 package com.sucy.skill.data;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -46,6 +45,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.sucy.skill.listener.ItemListener.ARMOR_TYPES;
 
 /**
  * Handles keeping track of and applying attribute
@@ -148,29 +149,6 @@ public class PlayerEquips
     private boolean isArmor(final ItemStack item) {
         return item != null && ARMOR_TYPES.contains(item.getType());
     }
-
-    private static final Set<Material> ARMOR_TYPES = ImmutableSet.<Material>builder()
-            .add(Material.LEATHER_BOOTS)
-            .add(Material.LEATHER_CHESTPLATE)
-            .add(Material.LEATHER_HELMET)
-            .add(Material.LEATHER_LEGGINGS)
-            .add(Material.IRON_BOOTS)
-            .add(Material.IRON_CHESTPLATE)
-            .add(Material.IRON_HELMET)
-            .add(Material.IRON_LEGGINGS)
-            .add(Material.GOLD_BOOTS)
-            .add(Material.GOLD_CHESTPLATE)
-            .add(Material.GOLD_HELMET)
-            .add(Material.GOLD_LEGGINGS)
-            .add(Material.DIAMOND_BOOTS)
-            .add(Material.DIAMOND_CHESTPLATE)
-            .add(Material.DIAMOND_HELMET)
-            .add(Material.DIAMOND_LEGGINGS)
-            .add(Material.CHAINMAIL_BOOTS)
-            .add(Material.CHAINMAIL_CHESTPLATE)
-            .add(Material.CHAINMAIL_HELMET)
-            .add(Material.CHAINMAIL_LEGGINGS)
-            .build();
 
     /**
      * Clears the weapon slot

@@ -26,6 +26,8 @@
  */
 package com.sucy.skill.api.util;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.rit.sucy.reflect.Reflection;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -222,7 +224,7 @@ public class ItemSerializer {
                     for (Map.Entry<Enchantment,Integer> ench : isEnch.entrySet())
                     {
                         builder.append(":e@");
-                        builder.append(ench.getKey().getId());
+                        builder.append(ENCHANT_IDS.get(ench.getKey().getName()));
                         builder.append('@');
                         builder.append(ench.getValue());
                     }
@@ -274,7 +276,10 @@ public class ItemSerializer {
                 String[] itemAttribute = itemInfo.split("@");
                 if (itemAttribute[0].equals("t"))
                 {
-                    is = new ItemStack(Material.getMaterial(Integer.valueOf(itemAttribute[1])));
+                    int id = Integer.valueOf(itemAttribute[1]);
+                    if (id >= 2256) id -= 2267 - Material.values().length;
+                    final Material mat = Material.values()[id];
+                    is = new ItemStack(mat);
                     createdItemStack = true;
                 }
                 else if (itemAttribute[0].equals("d") && createdItemStack)
@@ -287,7 +292,8 @@ public class ItemSerializer {
                 }
                 else if (itemAttribute[0].equals("e") && createdItemStack)
                 {
-                    is.addUnsafeEnchantment(Enchantment.getById(Integer.valueOf(itemAttribute[1])), Integer.valueOf(itemAttribute[2]));
+                    final String name = ENCHANT_IDS.inverse().getOrDefault(Integer.valueOf(itemAttribute[1]), "OXYGEN");
+                    is.addUnsafeEnchantment(Enchantment.getByName(name), Integer.valueOf(itemAttribute[2]));
                 }
                 else if (itemAttribute[0].equals("n") && createdItemStack)
                 {
@@ -310,4 +316,41 @@ public class ItemSerializer {
 
         return deserializedInventory;
     }
+
+    private static final BiMap<String, Integer> ENCHANT_IDS = ImmutableBiMap.<String, Integer>builder()
+            .put("PROTECTION_ENVIRONMENTAL", 0)
+            .put("PROTECTION_FIRE", 1)
+            .put("PROTECTION_FALL", 2)
+            .put("PROTECTION_EXPLOSIONS", 3)
+            .put("PROTECTION_PROJECTILE", 4)
+            .put("OXYGEN", 5)
+            .put("WATER_WORKER", 6)
+            .put("THORNS", 7)
+            .put("DEPTH_STRIDER", 8)
+            .put("FROST_WALKER", 9)
+            .put("BINDING_CURSE", 10)
+            .put("DAMAGE_ALL", 16)
+            .put("DAMAGE_UNDEAD", 17)
+            .put("DAMAGE_ARTHROPODS", 18)
+            .put("KNOCKBACK", 19)
+            .put("FIRE_ASPECT", 20)
+            .put("LOOT_BONUS_MOBS", 21)
+            .put("SWEEPING_EDGE", 22)
+            .put("DIG_SPEED", 32)
+            .put("SILK_TOUCH", 33)
+            .put("DURABILITY", 34)
+            .put("LOOT_BONUS_BLOCKS", 35)
+            .put("ARROW_DAMAGE", 48)
+            .put("ARROW_KNOCKBACK", 49)
+            .put("ARROW_FIRE", 50)
+            .put("ARROW_INFINITE", 51)
+            .put("LUCK", 61)
+            .put("LURE", 62)
+            .put("MENDING", 70)
+            .put("VANISHING_CURSE", 71)
+            .put("LOYALTY", 80)
+            .put("IMPALING", 81)
+            .put("RIPTIDE", 82)
+            .put("CHANNELING", 83)
+            .build();
 }

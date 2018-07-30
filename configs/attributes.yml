@@ -4,14 +4,29 @@
 # http://dev.bukkit.org/bukkit-plugins/skillapi/pages/attributes/
 #
 # List of available stats to modify:
-#   health           - the max health of the player
-#   mana             - the amount of mana the player has
-#   mana-regen       - how much mana the player regenerates over time
-#   physical-damage  - damage dealt without using skills
-#   physical-defense - damage taken from non-skill attacks
-#   skill-damage     - damage dealt with skills
-#   skill-defense    - damage taken from skills
-#   move-speed       - movement speed of the player
+#   armor            | [PREM, 1.9+] Vanilla damage mitigation
+#   armor-toughness  | [PREM, 1.9+] Secondary vanilla damage mitigation
+#   attack-speed	 | [PREM, 1.9+] Weapon recharge time
+#   cooldown         | [PREM] Modifies skill cooldowns
+#   defense-<type>   | [PREM] Reduces damage taken from various damage sources.
+#                    |     See the DamageCause docs to see supported types.
+#                    |     Use lower-case versions of it, such as "defense-block_explosion".
+#   exp              | [PREM] increases all class experience gained
+#   health           | The max health of the player
+#   hunger           | [PREM] Increases how long hunger lasts. This attribute is always based off of a base value of 1. A resulting value of 2 would double how long the hunger bar lasts, for example.
+#   hunger-heal      | [PREM] Increases how much you heal while satiated
+#   knockback-resist | [PREM, 1.9+] Probability of resisting knockback as a decimal (1.0 is 100% change to resist)
+#   luck	         | [PREM, 1.9+] loot table chances
+#   mana	         | The max mana of the player
+#   mana-regen       | The amount of mana regeneration the player has
+#   move-speed       | The movement speed of the player
+#   physical-damage  | The amount of damage done by physical (basic or projectile) attacks
+#   physical-defense | The amount of damage taken by physical (basic or projectile) attacks
+#   skill-damage	 | The amount of damage done by skills
+#   skill-defense    | The amount of damage taken by skills
+
+#   skill-damage-<classification>  | [PREM] The amount of damage done by skills with the specified classification
+#   skill-defense-<classification> | [PREM] The amount of damage taken by skills with the specified classification
 vitality:
   display: 'Vitality'
   max: 999

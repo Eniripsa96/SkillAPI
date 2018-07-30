@@ -195,6 +195,7 @@ public class TriggerHandler implements Listener {
             DynamicSkill.getCastData(target).put("api-taken", event.getDamage());
             trigger(target, target, active.get(target.getEntityId()));
             skill.applyCancelled(event);
+            event.setDamage(skill.applyImmediateBuff(event.getDamage()));
         }
     }
 
@@ -223,6 +224,7 @@ public class TriggerHandler implements Listener {
             DynamicSkill.getCastData(target).put("api-taken", event.getDamage());
             trigger(target, caster ? target : damager, active.get(target.getEntityId()));
             skill.applyCancelled(event);
+            event.setDamage(skill.applyImmediateBuff(event.getDamage()));
         }
     }
 
@@ -251,6 +253,7 @@ public class TriggerHandler implements Listener {
             DynamicSkill.getCastData(damager).put("api-dealt", event.getDamage());
             trigger(damager, caster ? damager : target, active.get(damager.getEntityId()));
             skill.applyCancelled(event);
+            event.setDamage(skill.applyImmediateBuff(event.getDamage()));
         }
     }
 
@@ -274,6 +277,7 @@ public class TriggerHandler implements Listener {
             DynamicSkill.getCastData(target).put("api-taken", event.getDamage());
             trigger(target, caster ? target : damager, active.get(event.getTarget().getEntityId()));
             skill.applyCancelled(event);
+            event.setDamage(skill.applyImmediateBuff(event.getDamage()));
         }
     }
 
@@ -295,6 +299,7 @@ public class TriggerHandler implements Listener {
         if (event.getDamage() >= min && event.getDamage() <= max && (transformed.isEmpty() || transformed.contains(event.getClassification()))) {
             DynamicSkill.getCastData(damager).put("api-dealt", event.getDamage());
             trigger(damager, caster ? damager : target, active.get(damager.getEntityId()));
+            event.setDamage(skill.applyImmediateBuff(event.getDamage()));
         }
     }
 

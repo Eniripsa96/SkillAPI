@@ -78,6 +78,7 @@ public class TriggerMechanic extends EffectComponent {
         contexts.remove(context);
         if (contexts.isEmpty()) {
             CASTER_MAP.remove(target.getEntityId());
+            triggerHandler.cleanup(target);
         }
     }
 

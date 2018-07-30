@@ -31,12 +31,13 @@ import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.config.parse.NumberParser;
-import com.rit.sucy.player.Protection;
 import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.party.Parties;
 import com.sucy.party.Party;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.CombatProtection;
+import com.sucy.skill.api.DefaultCombatProtection;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.cast.IndicatorSettings;
@@ -44,8 +45,6 @@ import com.sucy.skill.data.formula.Formula;
 import com.sucy.skill.data.formula.value.CustomValue;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.gui.tool.GUITool;
-import com.sucy.skill.hook.NoCheatHook;
-import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -67,7 +66,7 @@ import java.util.Set;
 /**
  * <p>The management class for SkillAPI's config.yml settings.</p>
  */
-public class Settings{
+public class Settings {
 
     private HashMap<String, GroupSettings> groups = new HashMap<String, GroupSettings>();
 
@@ -206,7 +205,8 @@ public class Settings{
                 groups.put(group.toLowerCase(), settings);
                 settings.save(config.createSection(group.toLowerCase()));
             }
-            config.setComments(group.toLowerCase(), ImmutableList.of("",
+            config.setComments(group.toLowerCase(), ImmutableList.of(
+                    "",
                     " Settings for classes with the group " + group,
                     " If new classes are loaded with different groups,",
                     " the new groups will show up in this file after the first load."));
@@ -347,6 +347,8 @@ public class Settings{
     private boolean affectNpcs;
     private boolean affectArmorStands;
 
+    private CombatProtection combatProtection = new DefaultCombatProtection();
+
     /**
      * Checks whether or not something can be attacked
      *
@@ -357,6 +359,7 @@ public class Settings{
      */
     public boolean canAttack(LivingEntity attacker, LivingEntity target) {
         if (attacker instanceof Player) {
+            final Player player = (Player) attacker;
             if (target instanceof Animals && !(target instanceof Tameable)) {
                 if (passiveAlly || passiveWorlds.contains(attacker.getWorld().getName())) { return false; }
             } else if (target instanceof Monster) {
@@ -366,11 +369,13 @@ public class Settings{
 
                 if (partiesAlly) {
                     final Parties parties = Parties.getPlugin(Parties.class);
-                    final Party p1 = parties.getJoinedParty((Player) attacker);
+                    final Party p1 = parties.getJoinedParty(player);
                     final Party p2 = parties.getJoinedParty((Player) target);
                     return p1 == null || p1 != p2;
                 }
+                return combatProtection.canAttack(player, (Player) target);
             }
+            return combatProtection.canAttack(player, target);
         } else if (attacker instanceof Tameable) {
             Tameable tameable = (Tameable) attacker;
             if (tameable.isTamed() && (tameable.getOwner() instanceof LivingEntity)) {
@@ -379,15 +384,7 @@ public class Settings{
             }
         } else { return !(target instanceof Monster); }
 
-        boolean canAttack;
-        if (PluginChecker.isNoCheatActive() && attacker instanceof Player) {
-            Player player = (Player) attacker;
-            NoCheatHook.exempt(player);
-            canAttack = Protection.canAttack(attacker, target);
-            NoCheatHook.unexempt(player);
-        } else { canAttack = Protection.canAttack(attacker, target); }
-
-        return canAttack;
+        return combatProtection.canAttack(attacker, target);
     }
 
     /**
@@ -411,6 +408,15 @@ public class Settings{
     public boolean isValidTarget(final LivingEntity target) {
         return (!target.hasMetadata("NPC") || affectNpcs)
                 && (!target.getType().name().equals("ARMOR_STAND") || affectArmorStands);
+    }
+
+    /**
+     * Swaps out the default combat protection for a custom one
+     *
+     * @param combatProtection combat protection to use
+     */
+    public void setCombatProtection(final CombatProtection combatProtection) {
+        this.combatProtection = combatProtection;
     }
 
     private void loadTargetingSettings() {
@@ -1478,7 +1484,7 @@ public class Settings{
 
         DataSection icon = bar.getSection("empty-icon");
         Material mat = Material.matchMaterial(icon.getString("material", "PUMPKIN_SEEDS"));
-        if (mat == null) mat = Material.PUMPKIN_SEEDS;
+        if (mat == null) { mat = Material.PUMPKIN_SEEDS; }
         unassigned = new ItemStack(mat);
 
         final int data = icon.getInt("data", 0);
@@ -1575,7 +1581,7 @@ public class Settings{
     ///////////////////////////////////////////////////////
 
     private static final String WG_SKILLS = "disable-skills";
-    private static final String WG_EXP = "disable-exp";
+    private static final String WG_EXP    = "disable-exp";
 
     private Set<String> skillDisabledRegions;
     private Set<String> expDisabledRegions;

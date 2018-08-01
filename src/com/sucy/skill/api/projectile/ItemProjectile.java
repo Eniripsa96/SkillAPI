@@ -51,7 +51,7 @@ public class ItemProjectile extends CustomProjectile
     private static final String NAME = "SkillAPI#";
     private static       int    NEXT = 0;
 
-    private Item item;
+    private final Item item;
 
     /**
      * <p>Constructs a new item projectile.</p>

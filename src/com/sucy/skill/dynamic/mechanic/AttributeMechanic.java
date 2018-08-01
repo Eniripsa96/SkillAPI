@@ -46,6 +46,7 @@ public class AttributeMechanic extends EffectComponent
     private static final String KEY     = "key";
     private static final String AMOUNT  = "amount";
     private static final String SECONDS = "seconds";
+    private static final String STACKABLE = "stackable";
 
     /**
      * Executes the component
@@ -68,6 +69,7 @@ public class AttributeMechanic extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         int amount = (int) attr(caster, AMOUNT, level, 5, isSelf);
         double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+        boolean stackable = settings.getString(STACKABLE, "false").equalsIgnoreCase("true");
         int ticks = (int) (seconds * 20);
         boolean worked = false;
         for (LivingEntity target : targets)
@@ -77,7 +79,7 @@ public class AttributeMechanic extends EffectComponent
                 worked = true;
                 PlayerData data = SkillAPI.getPlayerData((Player) target);
 
-                if (tasks.containsKey(data.getPlayerName()))
+                if (tasks.containsKey(data.getPlayerName()) && !stackable)
                 {
                     AttribTask old = tasks.remove(data.getPlayerName());
                     if (amount != old.amount)

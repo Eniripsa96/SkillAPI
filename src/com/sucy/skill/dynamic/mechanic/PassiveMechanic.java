@@ -35,7 +35,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -147,6 +146,7 @@ public class PassiveMechanic extends EffectComponent
             executeChildren(caster, level, targets);
 
             if (skill.checkCancelled()) {
+                TASKS.remove(key);
                 cancel();
             }
         }

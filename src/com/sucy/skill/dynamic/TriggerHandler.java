@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * SkillAPI © 2017
@@ -58,7 +58,7 @@ public class TriggerHandler implements Listener {
             case BLOCK_PLACE:
                 transformed = component.settings.getStringList("material").stream()
                         .map(String::toUpperCase)
-                        .collect(toImmutableSet());
+                        .collect(Collectors.toSet());
                 break;
             case SKILL_DAMAGE:
             case TOOK_SKILL_DAMAGE:
@@ -67,14 +67,6 @@ public class TriggerHandler implements Listener {
             default:
                 transformed = ImmutableSet.of();
         }
-    }
-
-    private <T> Collector<T, ?, ImmutableSet<T>> toImmutableSet() {
-        return Collector.of(
-                ImmutableSet.Builder<T>::new,
-                ImmutableSet.Builder<T>::add,
-                (l, r) -> l.addAll(r.build()),
-                ImmutableSet.Builder::build);
     }
 
     public Trigger getTrigger() {

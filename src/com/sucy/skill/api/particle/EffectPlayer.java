@@ -134,7 +134,7 @@ public class EffectPlayer
                     (float) settings.getDouble(keyMod + DZ),
                     (float) settings.getDouble(keyMod + SPEED, 1),
                     settings.getInt(keyMod + AMOUNT, 1),
-                    Material.valueOf(settings.getString(keyMod + MAT, "DIRT")),
+                    Material.matchMaterial(settings.getString(keyMod + MAT, "DIRT")),
                     settings.getInt(keyMod + DATA)
                 );
             }

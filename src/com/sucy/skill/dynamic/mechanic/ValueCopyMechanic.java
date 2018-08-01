@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class ValueCopyMechanic extends EffectComponent {
     private static final String KEY       = "key";
+    private static final String TARGET    = "destination";
     private static final String TO_TARGET = "to-target";
 
     @Override
@@ -23,22 +24,22 @@ public class ValueCopyMechanic extends EffectComponent {
         }
 
         final String key = settings.getString(KEY);
+        final String destination = settings.getString(TARGET, key);
         final boolean toTarget = settings.getString(TO_TARGET, "true").equalsIgnoreCase("true");
 
         if (toTarget) {
-            targets.forEach(target -> apply(caster, target, key));
+            targets.forEach(target -> apply(caster, target, key, destination));
         } else {
-            apply(targets.get(0), caster, key);
+            apply(targets.get(0), caster, key, destination);
         }
 
         return true;
     }
 
-    private boolean apply(final LivingEntity from, final LivingEntity to, final String key) {
+    private boolean apply(final LivingEntity from, final LivingEntity to, final String key, final String destination) {
         final Object value = DynamicSkill.getCastData(from).get(key);
-        System.out.println(from.getType() + " -> " + to.getType() + " with " + value);
         if (value == null) return false;
-        DynamicSkill.getCastData(to).put(key, value);
+        DynamicSkill.getCastData(to).put(destination, value);
         return true;
     }
 }

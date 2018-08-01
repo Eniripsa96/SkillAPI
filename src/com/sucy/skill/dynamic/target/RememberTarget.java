@@ -98,14 +98,18 @@ public class RememberTarget extends EffectComponent
         return targets != null && executeChildren(caster, level, targets);
     }
 
-    @SuppressWarnings("unchecked")
-    private List<LivingEntity> getTargets(LivingEntity caster)
-    {
-        String key = settings.getString(KEY);
+    private List<LivingEntity> getTargets(LivingEntity caster) {
+        return getTargets(caster, settings.getString(KEY));
+    }
+
+    public static List<LivingEntity> getTargets(final LivingEntity target, final String key) {
         try
         {
-            Object data = DynamicSkill.getCastData(caster).get(key);
-            List<LivingEntity> remembered = (List<LivingEntity>) data;
+            Object data = DynamicSkill.getCastData(target).get(key);
+            if (data == null) return null;
+
+            //noinspection unchecked - proper skill setup should cause this to work
+            final List<LivingEntity> remembered = (List<LivingEntity>) data;
             for (int i = 0; i < remembered.size(); i++)
             {
                 if (remembered.get(i).isDead() || !remembered.get(i).isValid())

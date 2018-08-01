@@ -27,6 +27,8 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.target.RememberTarget;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
@@ -35,9 +37,9 @@ import java.util.List;
 /**
  * Launches the target in a given direction relative to their forward direction
  */
-public class PushMechanic extends EffectComponent
-{
-    private static final String SPEED = "speed";
+public class PushMechanic extends EffectComponent {
+    private static final String SPEED  = "speed";
+    private static final String SOURCE = "source";
 
     /**
      * Executes the component
@@ -49,30 +51,28 @@ public class PushMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double speed = attr(caster, SPEED, level, 3.0, isSelf);
+        final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        final double speed = attr(caster, SPEED, level, 3.0, isSelf);
+        final String type = settings.getString("type", "scaled").toLowerCase();
+
+        final List<LivingEntity> sources = RememberTarget.getTargets(caster, settings.getString(SOURCE, "_none"));
+        final Location center = sources == null ? caster.getLocation() : sources.get(0).getLocation();
+
         boolean worked = false;
-        String type = settings.getString("type", "scaled").toLowerCase();
-        for (LivingEntity target : targets)
-        {
-            Vector vel = target.getLocation().subtract(caster.getLocation()).toVector();
-            if (vel.lengthSquared() == 0)
-            {
+        for (LivingEntity target : targets) {
+            final Vector vel = target.getLocation().subtract(center).toVector();
+            if (vel.lengthSquared() == 0) {
                 continue;
-            }
-            if (type.equals("inverse"))
-                vel.multiply(speed);
-            else if (type.equals("fixed"))
+            } else if (type.equals("inverse")) { vel.multiply(speed); } else if (type.equals("fixed")) {
                 vel.multiply(speed / vel.length());
-            else // "scaled"
+            } else { // "scaled"
                 vel.multiply(speed / vel.lengthSquared());
+            }
             vel.setY(vel.getY() / 5 + 0.5);
             target.setVelocity(vel);
             worked = true;

@@ -1421,6 +1421,9 @@ function MechanicAttribute()
     this.data.push(new AttributeValue('Seconds', 'seconds', 3, 0)
         .setTooltip('How long in seconds to give the attributes to the player')
     );
+    this.data.push(new ListValue('Stackable', 'stackable', [ 'True', 'False' ], 'False')
+        .setTooltip('[PREM] Whether or not applying multiple times stacks the effects')
+    );
 }
 
 extend('MechanicBlock', 'Component');
@@ -2249,6 +2252,9 @@ function MechanicPush()
     this.data.push(new AttributeValue('Speed', 'speed', 3, 1)
       .setTooltip('How fast to push the target away. Use a negative value to pull them closer.')
   );
+    this.data.push(new StringValue('Source', 'source', 'none')
+        .setTooltip('The source to push/pull from. This should be a key used in a Remember Targets mechanic. If no targets are remembered, this will default to the caster.')
+    );
 }
 
 extend('MechanicRememberTargets', 'Component');
@@ -2463,6 +2469,9 @@ function MechanicValueCopy()
     
     this.data.push(new StringValue('Key', 'key', 'value')
         .setTooltip('The unique key to store the value under. This key can be used in place of attribute values to use the stored value.')
+    );
+    this.data.push(new StringValue('Destination', 'destination', 'value')
+        .setTooltip('The key to copy the original value to')
     );
     this.data.push(new ListValue('To target', 'to-target', [ 'True', 'False' ], 'True')
         .setTooltip('The amount to add to the value')

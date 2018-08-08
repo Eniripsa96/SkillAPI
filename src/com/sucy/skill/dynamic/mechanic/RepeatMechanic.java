@@ -34,18 +34,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Executes child components multiple times
  */
-public class RepeatMechanic extends EffectComponent
-{
-    private static final String REPETITIONS = "repetitions";
-    private static final String DELAY       = "delay";
-    private static final String PERIOD      = "period";
+public class RepeatMechanic extends EffectComponent {
+    private static final String REPETITIONS  = "repetitions";
+    private static final String DELAY        = "delay";
+    private static final String PERIOD       = "period";
     private static final String STOP_ON_FAIL = "stop-on-fail";
 
-    private static final HashMap<String, ArrayList<RepeatTask>> TASKS = new HashMap<String, ArrayList<RepeatTask>>();
+    private final Map<Integer, List<RepeatTask>> tasks = new HashMap<>();
 
     /**
      * Executes the component
@@ -57,74 +57,47 @@ public class RepeatMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() > 0)
-        {
-            boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-            int count = (int) attr(caster, REPETITIONS, level, 3.0, isSelf);
-            if (count <= 0)
-            {
-                return false;
-            }
-            int delay = (int) (settings.getDouble(DELAY, 0.0) * 20);
-            int period = (int) (settings.getDouble(PERIOD, 1.0) * 20);
-            boolean stopOnFail = settings.getBool(STOP_ON_FAIL, false);
-            RepeatTask task = new RepeatTask(caster, level, targets, count, delay, period, stopOnFail);
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() > 0) {
+            final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+            final int count = (int) attr(caster, REPETITIONS, level, 3.0, isSelf);
+            if (count <= 0) { return false; }
 
-            if (!TASKS.containsKey(skill.getName())) TASKS.put(skill.getName(), new ArrayList<>());
-            TASKS.get(skill.getName()).add(task);
+            final int delay = (int) (settings.getDouble(DELAY, 0.0) * 20);
+            final int period = (int) (settings.getDouble(PERIOD, 1.0) * 20);
+            final boolean stopOnFail = settings.getBool(STOP_ON_FAIL, false);
+            final RepeatTask task = new RepeatTask(caster, targets, count, delay, period, stopOnFail);
+            tasks.computeIfAbsent(caster.getEntityId(), ArrayList::new).add(task);
 
             return true;
         }
         return false;
     }
 
-    /**
-     * Stops all repeat tasks for the player
-     *
-     * @param player player to cancel tasks for
-     * @param skill  skill to cancel
-     */
-    public static void stopTasks(LivingEntity player, String skill)
-    {
-        ArrayList<RepeatTask> tasks = TASKS.get(skill);
-        if (tasks == null) return;
-        for (int i = 0; i < tasks.size(); i++)
-        {
-            if (tasks.get(i).caster == player)
-            {
-                tasks.get(i).cancel();
-                tasks.remove(i);
-                i--;
-            }
+    @Override
+    protected void doCleanUp(final LivingEntity caster) {
+        final List<RepeatTask> casterTasks = tasks.remove(caster.getEntityId());
+        if (casterTasks != null) {
+            casterTasks.forEach(RepeatTask::cancel);
         }
     }
 
-    /**
-     * Stops all passive tasks
-     */
-    public static void stopAll()
-    {
-        for (ArrayList<RepeatTask> list : TASKS.values())
-            for (RepeatTask task : list)
-                task.cancel();
-        TASKS.clear();
-    }
+    private class RepeatTask extends BukkitRunnable {
+        private final List<LivingEntity> targets;
+        private final LivingEntity       caster;
+        private final boolean            stopOnFail;
 
-    private class RepeatTask extends BukkitRunnable
-    {
-        private List<LivingEntity> targets;
-        private LivingEntity       caster;
-        private int                level;
-        private int                count;
-        private boolean            stopOnFail;
+        private int count;
 
-        public RepeatTask(LivingEntity caster, int level, List<LivingEntity> targets, int count, int delay, int period, boolean stopOnFail)
-        {
+        RepeatTask(
+                LivingEntity caster,
+                List<LivingEntity> targets,
+                int count,
+                int delay,
+                int period,
+                boolean stopOnFail) {
             this.targets = targets;
             this.caster = caster;
-            this.level = level;
             this.count = count;
             this.stopOnFail = stopOnFail;
 
@@ -132,26 +105,27 @@ public class RepeatMechanic extends EffectComponent
         }
 
         @Override
-        public void run()
-        {
-            for (int i = 0; i < targets.size(); i++)
-                if (targets.get(i).isDead() || !targets.get(i).isValid())
-                    targets.remove(i);
+        public void cancel() {
+            super.cancel();
+            tasks.get(caster.getEntityId()).remove(this);
+        }
 
-            if (!skill.isActive(caster) || targets.size() == 0)
-            {
+        @Override
+        public void run() {
+            for (int i = 0; i < targets.size(); i++) {
+                if (targets.get(i).isDead() || !targets.get(i).isValid()) { targets.remove(i); }
+            }
+
+            if (!skill.isActive(caster) || targets.size() == 0) {
                 cancel();
-                TASKS.get(skill.getName()).remove(this);
                 return;
             }
 
-            level = skill.getActiveLevel(caster);
-
+            final int level = skill.getActiveLevel(caster);
             boolean success = executeChildren(caster, level, targets);
-            if (--count <= 0 || (!success && stopOnFail))
-            {
+
+            if (--count <= 0 || (!success && stopOnFail)) {
                 cancel();
-                TASKS.get(skill.getName()).remove(this);
             }
 
             if (skill.checkCancelled()) {

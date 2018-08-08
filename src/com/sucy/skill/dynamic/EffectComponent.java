@@ -358,6 +358,13 @@ public abstract class EffectComponent
         return worked;
     }
 
+    public void cleanUp(final LivingEntity caster) {
+        doCleanUp(caster);
+        children.forEach(child -> child.cleanUp(caster));
+    }
+
+    protected void doCleanUp(final LivingEntity caster) { }
+
     /**
      * Gets the skill data for the caster
      *

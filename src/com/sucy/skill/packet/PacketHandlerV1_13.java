@@ -45,6 +45,7 @@ class PacketHandlerV1_13 extends ChannelDuplexHandler {
                 callEvent(KeyPressEvent.Key.LEFT);
                 break;
             case "PacketPlayInUseItem":
+            case "PacketPlayInBlockPlace":
                 callEvent(KeyPressEvent.Key.RIGHT);
         }
         super.channelRead(c, m);

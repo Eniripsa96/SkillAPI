@@ -32,17 +32,16 @@ import org.bukkit.Material;
 /**
  * Settings for playing a particle
  */
-public class ParticleSettings
-{
+public class ParticleSettings {
     private static final String
-        PARTICLE_KEY = "particle",
-        MATERIAL_KEY = "material",
-        DATA_KEY     = "type",
-        AMOUNT_KEY   = "amount",
-        DX_KEY       = "dx",
-        DY_KEY       = "dy",
-        DZ_KEY       = "dz",
-        SPEED_KEY    = "speed";
+            PARTICLE_KEY = "particle",
+            MATERIAL_KEY = "material",
+            DATA_KEY     = "type",
+            AMOUNT_KEY   = "amount",
+            DX_KEY       = "dx",
+            DY_KEY       = "dy",
+            DZ_KEY       = "dz",
+            SPEED_KEY    = "speed";
 
     // Particle type
     public final ParticleType type;
@@ -57,7 +56,8 @@ public class ParticleSettings
     public final int amount;
 
     // Particle extra data
-    public final int[] data;
+    public final Material material;
+    public final int data;
 
     /**
      * Sets up a particle that doesn't require material data
@@ -69,18 +69,19 @@ public class ParticleSettings
      * @param speed  particle speed
      * @param amount particle amount
      */
-    public ParticleSettings(ParticleType type, float dx, float dy, float dz, float speed, int amount)
-    {
+    public ParticleSettings(ParticleType type, float dx, float dy, float dz, float speed, int amount) {
         this.type = type;
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
         this.speed = speed;
         this.amount = amount;
-        if (type.usesMat())
+        if (type.usesMat()) {
             throw new IllegalArgumentException("Must provide material data for " + type.name());
-        else
-            this.data = new int[0];
+        } else {
+            material = null;
+            data = 0;
+        }
     }
 
     /**
@@ -95,22 +96,28 @@ public class ParticleSettings
      * @param material material to use
      * @param data     material data value
      */
-    public ParticleSettings(ParticleType type, float dx, float dy, float dz, float speed, int amount, Material material, int data)
-    {
+    public ParticleSettings(
+            ParticleType type,
+            float dx,
+            float dy,
+            float dz,
+            float speed,
+            int amount,
+            Material material,
+            int data) {
         this.type = type;
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
         this.speed = speed;
         this.amount = amount;
-        if (type.usesMat())
-        {
-            this.data = new int[] {
-                material.ordinal(),
-                data
-            };
+        if (type.usesMat()) {
+            this.material = material;
+            this.data = data;
+        } else {
+            this.material = material;
+            this.data = data;
         }
-        else this.data = new int[0];
     }
 
     /**
@@ -118,8 +125,7 @@ public class ParticleSettings
      *
      * @param config config data to load from
      */
-    public ParticleSettings(DataSection config)
-    {
+    public ParticleSettings(DataSection config) {
         String type = config.getString(PARTICLE_KEY);
         this.type = ParticleLookup.find(type);
         this.dx = config.getFloat(DX_KEY, 0);
@@ -128,18 +134,19 @@ public class ParticleSettings
         this.speed = config.getFloat(SPEED_KEY, 1);
         this.amount = config.getInt(AMOUNT_KEY, 1);
 
-        if (this.type.usesMat())
-        {
-            this.data = new int[2];
-            try
-            {
-                this.data[0] = Material.valueOf(config.getString(MATERIAL_KEY).toUpperCase().replace(" ", "_")).ordinal();
-                this.data[1] = config.getInt(DATA_KEY);
-            }
-            catch (Exception ex) { /* */ }
+        if (this.type.usesMat()) {
+            Material mat = null;
+            int data = 0;
+            try {
+                mat = Material.valueOf(config.getString(MATERIAL_KEY).toUpperCase().replace(" ", "_"));
+                data = config.getInt(DATA_KEY);
+            } catch (Exception ex) { /* */ }
+            this.material = mat;
+            this.data = data;
+        } else {
+            this.material = null;
+            this.data = 0;
         }
-        else
-            this.data = new int[0];
     }
 
     /**
@@ -154,8 +161,7 @@ public class ParticleSettings
      * @throws Exception
      */
     public Object instance(double x, double y, double z)
-        throws Exception
-    {
+            throws Exception {
         return Particle.make(this, x, y, z);
     }
 }

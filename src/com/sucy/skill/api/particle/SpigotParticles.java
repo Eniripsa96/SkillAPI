@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
@@ -21,21 +20,21 @@ public class SpigotParticles {
     }
 
     public static void playItem(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material) {
-        play(loc, particle, dx, dy, dz, count, speed, distance, new ItemStack(material));
+        play(loc, particle, dx, dy, dz, count, speed, distance, material);
     }
 
     public static void playBlock(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material) {
-        play(loc, particle, dx, dy, dz, count, speed, distance, material.createBlockData());
+        play(loc, particle, dx, dy, dz, count, speed, distance, material);
     }
 
-    private static void play(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Object data) {
+    private static void play(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material) {
         final String key = particle.toLowerCase().replace('_', ' ');
         final Particle effect = CONVERSION.get(key);
         if (effect == null) return;
 
         try {
             final Object packet = com.sucy.skill.api.particle.Particle.make(
-                    effect.name(), loc.getX(), loc.getY(), loc.getZ(), dx, dy, dz, speed, count, data);
+                    effect.name(), loc.getX(), loc.getY(), loc.getZ(), dx, dy, dz, speed, count, material, 0);
             com.sucy.skill.api.particle.Particle.send(loc, ImmutableList.of(packet), distance);
         } catch (final Exception ex) {
             if (error) {

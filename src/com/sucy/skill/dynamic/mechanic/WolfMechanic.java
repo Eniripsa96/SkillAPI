@@ -40,27 +40,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Applies a flag to each target
  */
-public class WolfMechanic extends EffectComponent
-{
-    public static final String SKILL_META = "sapi_wolf_skills";
-    public static final String LEVEL      = "sapi_wolf_level";
+public class WolfMechanic extends EffectComponent {
+    public static final  String SKILL_META = "sapi_wolf_skills";
+    public static final  String LEVEL      = "sapi_wolf_level";
+    private static final String COLOR      = "color";
+    private static final String HEALTH     = "health";
+    private static final String SECONDS    = "seconds";
+    private static final String NAME       = "name";
+    private static final String DAMAGE     = "damage";
+    private static final String SKILLS     = "skills";
+    private static final String AMOUNT     = "amount";
+    private static final String SITTING    = "sitting";
 
-    private static final ArrayList<RemoveTask> tasks = new ArrayList<RemoveTask>();
-
-    private static final String COLOR   = "color";
-    private static final String HEALTH  = "health";
-    private static final String SECONDS = "seconds";
-    private static final String NAME    = "name";
-    private static final String DAMAGE  = "damage";
-    private static final String SKILLS  = "skills";
-    private static final String AMOUNT = "amount";
-    private static final String SITTING = "sitting";
+    private final Map<Integer, RemoveTask> tasks = new HashMap<>();
 
     /**
      * Executes the component
@@ -72,13 +71,14 @@ public class WolfMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (!(caster instanceof Player))
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (!(caster instanceof Player)) {
             return false;
         }
-        final Player player = (Player)caster;
+
+        cleanUp(caster);
+
+        final Player player = (Player) caster;
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == player;
         String color = settings.getString(COLOR);
@@ -90,21 +90,16 @@ public class WolfMechanic extends EffectComponent
         List<String> skills = settings.getStringList(SKILLS);
 
         DyeColor dye = null;
-        if (color != null)
-        {
-            try
-            {
+        if (color != null) {
+            try {
                 dye = DyeColor.valueOf(color);
-            }
-            catch (Exception ex)
-            { /* Invalid color */ }
+            } catch (Exception ex) { /* Invalid color */ }
         }
 
         double seconds = attr(player, SECONDS, level, 10.0, isSelf);
         int ticks = (int) (seconds * 20);
-        ArrayList<LivingEntity> wolves = new ArrayList<LivingEntity>();
-        for (LivingEntity target : targets)
-        {
+        List<LivingEntity> wolves = new ArrayList<>();
+        for (LivingEntity target : targets) {
             for (int i = 0; i < amount; i++) {
                 Wolf wolf = target.getWorld().spawn(target.getLocation(), Wolf.class);
                 wolf.setOwner(player);
@@ -113,7 +108,7 @@ public class WolfMechanic extends EffectComponent
                 wolf.setSitting(sitting);
                 SkillAPI.setMeta(wolf, MechanicListener.SUMMON_DAMAGE, damage);
 
-                List<LivingEntity> owner = new ArrayList<LivingEntity>(1);
+                List<LivingEntity> owner = new ArrayList<>(1);
                 owner.add(player);
                 DynamicSkill.getCastData(wolf).put("api-owner", owner);
 
@@ -135,52 +130,27 @@ public class WolfMechanic extends EffectComponent
                 SkillAPI.setMeta(wolf, SKILL_META, skills);
                 SkillAPI.setMeta(wolf, LEVEL, level);
 
-                RemoveTask task = new RemoveTask(wolf, ticks);
-                tasks.add(task);
                 wolves.add(wolf);
             }
         }
 
+        final RemoveTask task = new RemoveTask(wolves, ticks);
+        tasks.put(caster.getEntityId(), task);
+
         // Apply children to the wolves
-        if (wolves.size() > 0)
-        {
+        if (wolves.size() > 0) {
             executeChildren(player, level, wolves);
             return true;
         }
         return false;
     }
 
-    /**
-     * Removes all of the currently summoned wolves. This would be used
-     * to clean up before the plugin is disabled or the server is shut down.
-     */
-    public static void removeWolves()
-    {
-        for (RemoveTask task : tasks)
-        {
-            task.run();
+    @Override
+    public void cleanUp(final LivingEntity caster) {
+        final RemoveTask task = tasks.remove(caster.getEntityId());
+        if (task != null) {
             task.cancel();
-        }
-        tasks.clear();
-    }
-
-    /**
-     * Removes any wolves summoned by the given player
-     *
-     * @param player player to desummon wolves for
-     */
-    public static void removeWolves(Player player)
-    {
-        Iterator<RemoveTask> iterator = tasks.iterator();
-        while (iterator.hasNext())
-        {
-            RemoveTask task = iterator.next();
-            if (task.isOwnedBy(player))
-            {
-                task.run();
-                task.cancel();
-                iterator.remove();
-            }
+            task.run();
         }
     }
 }

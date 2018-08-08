@@ -83,6 +83,7 @@ public class TriggerHandler implements Listener {
 
     public void cleanup(final LivingEntity entity) {
         active.remove(entity.getEntityId());
+        component.cleanUp(entity);
     }
 
     /**

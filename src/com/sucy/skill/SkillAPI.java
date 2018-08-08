@@ -43,10 +43,6 @@ import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.data.io.SQLIO;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.mechanic.BlockMechanic;
-import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
-import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
-import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PluginChecker;
@@ -239,12 +235,6 @@ public class SkillAPI extends JavaPlugin {
 
         mainThread.disable();
         mainThread = null;
-
-        // Clear tasks
-        WolfMechanic.removeWolves();
-        BlockMechanic.revertAll();
-        PassiveMechanic.stopAll();
-        RepeatMechanic.stopAll();
 
         for (SkillAPIListener listener : listeners) { listener.cleanup(); }
         listeners.clear();

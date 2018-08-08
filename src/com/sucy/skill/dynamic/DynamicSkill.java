@@ -33,8 +33,6 @@ import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.cast.IIndicator;
-import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
-import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -50,12 +48,12 @@ import java.util.List;
  */
 public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener
 {
-    private final HashMap<Trigger, TriggerHandler> triggers = new HashMap<Trigger, TriggerHandler>();
-    private final HashMap<String, EffectComponent> attribKeys = new HashMap<String, EffectComponent>();
-    private final HashMap<Integer, Integer>        active     = new HashMap<Integer, Integer>();
+    private final HashMap<Trigger, TriggerHandler> triggers = new HashMap<>();
+    private final HashMap<String, EffectComponent> attribKeys = new HashMap<>();
+    private final HashMap<Integer, Integer>        active     = new HashMap<>();
 
-    private static final HashMap<Integer, HashMap<String, Object>> castData = new HashMap<Integer, HashMap<String, Object>>();
-    private static final HashMap<Integer, HashMap<String, Object>> targetData = new HashMap<Integer, HashMap<String, Object>>();
+    private static final HashMap<Integer, HashMap<String, Object>> castData = new HashMap<>();
+    private static final HashMap<Integer, HashMap<String, Object>> targetData = new HashMap<>();
 
     private boolean cancel  = false;
     private double multiplier = 1;
@@ -165,7 +163,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         HashMap<String, Object> map = castData.get(caster.getEntityId());
         if (map == null)
         {
-            map = new HashMap<String, Object>();
+            map = new HashMap<>();
             map.put("caster", caster);
             castData.put(caster.getEntityId(), map);
         }
@@ -174,10 +172,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
 
     public static HashMap<String, Object> getTargetData(final LivingEntity target) {
         if (target == null) return null;
-        if (!targetData.containsKey(target.getEntityId())) {
-            targetData.put(target.getEntityId(), new HashMap<String, Object>());
-        }
-        return targetData.get(target.getEntityId());
+        return targetData.computeIfAbsent(target.getEntityId(), HashMap::new);
     }
 
     /**
@@ -239,8 +234,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      */
     @Override
     public void stopEffects(final LivingEntity user, final int level) {
-        RepeatMechanic.stopTasks(user, getName());
-        PassiveMechanic.stopTasks(user, getName());
         active.remove(user.getEntityId());
         for (final TriggerHandler triggerHandler : triggers.values()) {
             triggerHandler.cleanup(user);

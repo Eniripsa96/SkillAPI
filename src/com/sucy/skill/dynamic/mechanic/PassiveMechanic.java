@@ -35,16 +35,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 /**
  * Executes child components continuously
  */
-public class PassiveMechanic extends EffectComponent
-{
+public class PassiveMechanic extends EffectComponent {
     private static final String PERIOD = "seconds";
 
-    private static final HashMap<TaskKey, PassiveTask> TASKS = new HashMap<TaskKey, PassiveTask>();
+    private final Map<Integer, PassiveTask> tasks = new HashMap<>();
 
     /**
      * Executes the component
@@ -56,89 +55,61 @@ public class PassiveMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        final TaskKey key = new TaskKey(skill.getName(), caster.getUniqueId(), getKey());
-        if (TASKS.containsKey(key))
-            return false;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (tasks.containsKey(caster.getEntityId())) { return false; }
 
-        if (targets.size() > 0)
-        {
+        if (targets.size() > 0) {
             final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
             final int period = (int) (attr(caster, PERIOD, level, 1.0, isSelf) * 20);
-            final PassiveTask task = new PassiveTask(caster, level, targets, period, key);
-            TASKS.put(key, task);
+            final PassiveTask task = new PassiveTask(caster, level, targets, period);
+            tasks.put(caster.getEntityId(), task);
 
             return true;
         }
         return false;
     }
 
-    /**
-     * Stops all passive tasks for the player
-     *
-     * @param player player to cancel tasks for
-     * @param skill  skill to cancel
-     */
-    public static void stopTasks(LivingEntity player, String skill)
-    {
-        final TaskKey key = new TaskKey(skill, player.getUniqueId(), null);
-        PassiveTask task;
-        while ((task = TASKS.remove(key)) != null) {
+    @Override
+    protected void doCleanUp(final LivingEntity caster) {
+        final PassiveTask task = tasks.remove(caster.getEntityId());
+        if (task != null) {
             task.cancel();
         }
     }
 
-    /**
-     * Stops all passive tasks
-     */
-    public static void stopAll()
-    {
-        for (PassiveTask task : TASKS.values())
-            task.cancel();
-        TASKS.clear();
-    }
-
-    private class PassiveTask extends BukkitRunnable
-    {
+    private class PassiveTask extends BukkitRunnable {
         private List<LivingEntity> targets;
         private LivingEntity       caster;
         private int                level;
-        private TaskKey            key;
 
-        PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period, TaskKey key)
-        {
+        PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period) {
             this.targets = targets;
             this.caster = caster;
             this.level = level;
-            this.key = key;
 
             SkillAPI.schedule(this, 0, period);
         }
 
         @Override
-        public void run()
-        {
-            for (int i = 0; i < targets.size(); i++)
-            {
-                if (targets.get(i).isDead() || !targets.get(i).isValid())
-                {
+        public void cancel() {
+            super.cancel();
+            tasks.remove(caster.getEntityId());
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < targets.size(); i++) {
+                if (targets.get(i).isDead() || !targets.get(i).isValid()) {
                     targets.remove(i);
                 }
             }
-            if (!skill.isActive(caster) || targets.size() == 0)
-            {
+            if (!skill.isActive(caster) || targets.size() == 0) {
                 cancel();
-                TASKS.remove(key);
                 return;
-            }
-            else if (caster instanceof Player)
-            {
+            } else if (caster instanceof Player) {
                 PlayerSkill data = getSkillData(caster);
-                if (data == null || !data.isUnlocked() || !((Player) caster).isOnline())
-                {
+                if (data == null || !data.isUnlocked() || !((Player) caster).isOnline()) {
                     cancel();
-                    TASKS.remove(key);
                     return;
                 }
             }
@@ -146,38 +117,8 @@ public class PassiveMechanic extends EffectComponent
             executeChildren(caster, level, targets);
 
             if (skill.checkCancelled()) {
-                TASKS.remove(key);
                 cancel();
             }
-        }
-    }
-
-    /**
-     * Task key that allows multiple components to store tasks, but not providing
-     * a component matches all for when the tasks are being stopped.
-     */
-    private static class TaskKey {
-        private final String skillName;
-        private final UUID uuid;
-        private final String componentKey;
-
-        public TaskKey(String skillName, UUID uuid, String componentKey) {
-            this.skillName = skillName;
-            this.uuid = uuid;
-            this.componentKey = componentKey;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            final TaskKey taskKey = (TaskKey) other;
-            return taskKey.skillName.equals(skillName)
-                    && taskKey.uuid.equals(uuid)
-                    && (taskKey.componentKey == null || componentKey == null || taskKey.componentKey.equals(componentKey));
-        }
-
-        @Override
-        public int hashCode() {
-            return skillName.hashCode() + uuid.hashCode();
         }
     }
 }

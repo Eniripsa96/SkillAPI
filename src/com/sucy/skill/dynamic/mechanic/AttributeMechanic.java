@@ -31,7 +31,9 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +85,7 @@ public class AttributeMechanic extends EffectComponent {
                     old.cancel();
                 } else { data.addBonusAttributes(key, amount); }
 
-                final AttribTask task = new AttribTask(data, key, amount);
+                final AttribTask task = new AttribTask(caster.getEntityId(), data, key, amount);
                 casterTasks.put(data.getPlayerName(), task);
                 if (ticks >= 0) {
                     SkillAPI.schedule(task, ticks);
@@ -97,7 +99,7 @@ public class AttributeMechanic extends EffectComponent {
     protected void doCleanUp(final LivingEntity user) {
         final Map<String, AttribTask> casterTasks = tasks.remove(user.getEntityId());
         if (casterTasks != null) {
-            casterTasks.values().forEach(AttribTask::cancel);
+            casterTasks.values().forEach(AttribTask::stop);
         }
     }
 
@@ -105,17 +107,40 @@ public class AttributeMechanic extends EffectComponent {
         private PlayerData data;
         private String     attrib;
         private int        amount;
+        private int        id;
+        private boolean running = false;
+        private boolean stopped = false;
 
-        public AttribTask(PlayerData data, String attrib, int amount) {
+        AttribTask(int id, PlayerData data, String attrib, int amount) {
+            this.id = id;
             this.data = data;
             this.attrib = attrib;
             this.amount = amount;
         }
 
+        public void stop() {
+            if (!stopped) {
+                stopped = true;
+                run();
+                if (running) {
+                    cancel();
+                }
+            }
+        }
+
+        @Override
+        public BukkitTask runTaskLater(final Plugin plugin, final long delay) {
+            running = true;
+            return super.runTaskLater(plugin, delay);
+        }
+
         @Override
         public void run() {
             data.addBonusAttributes(attrib, -amount);
-            tasks.remove(data.getPlayerName());
+            if (tasks.containsKey(id)) {
+                tasks.get(id).remove(data.getPlayerName());
+            }
+            running = false;
         }
     }
 }

@@ -81,48 +81,4 @@ public interface Trigger<E extends Event> {
      * @return the one being affected by the trigger (initial target)
      */
     LivingEntity getTarget(final E event, final Settings settings);
-
-    /*
-    BLOCK_BREAK(BlockBreakEvent.class),
-    BLOCK_PLACE(BlockPlaceEvent.class),
-    CAST(null),
-    CLEANUP(null),
-    CROUCH(PlayerToggleSneakEvent.class),
-    DEATH(EntityDeathEvent.class),
-    ENVIRONMENT_DAMAGE(EntityDamageEvent.class),
-    //HEALTH,
-    INITIALIZE(null),
-    KILL(EntityDeathEvent.class),
-    LAND(PlayerLandEvent.class),
-    LAUNCH(ProjectileLaunchEvent.class),
-    MOVE(PlayerMoveEvent.class),
-    PHYSICAL_DAMAGE(PhysicalDamageEvent.class),
-    SKILL_DAMAGE(SkillDamageEvent.class),
-    TOOK_PHYSICAL_DAMAGE(PhysicalDamageEvent.class),
-    TOOK_SKILL_DAMAGE(SkillDamageEvent.class);
-
-    private Class<? extends Event> event;
-
-    Trigger(Class<? extends Event> event) {
-        this.event = event;
-    }
-
-    public Class<? extends Event> getEvent() {
-        return event;
-    }
-
-    public TriggerComponent getComponent()
-    {
-        return new TriggerComponent();
-    }
-
-    public class TriggerComponent extends EffectComponent
-    {
-        @Override
-        public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-        {
-            return executeChildren(caster, level, targets);
-        }
-    }
-    */
 }

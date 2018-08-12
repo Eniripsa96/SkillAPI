@@ -3,11 +3,18 @@
     margin: 0;
 }
 
-a, a:visited, a:hover
-{
-    color: #00AAFF;
-    text-decoration: underline;
+a, a:visited {
+    color: #0ce3ac;
+    display: inline-block;
+    padding: 1px 3px;
+    text-decoration: none;
     cursor: pointer;
+    border-radius: 5px;
+}
+
+a:hover {
+    color: white;
+    background: #008966;
 }
 
 body {
@@ -119,9 +126,9 @@ ul li
     display: block;
     margin: 2px;
     padding: 5px;
-    background-color: black;
-    border: 2px solid #666;
-    border-radius: 10px;
+    background-color: #222;
+    border: none;
+    border-radius: 0;
     font-size: 18px;
     overflow: hidden;
     transition: background-color 500ms;
@@ -130,11 +137,16 @@ ul li
 }
 
 .packageLink:hover, .classLink:hover {
-    background-color: #999;
+    background-color: #0c9;
+    color: white;
+    text-decoration: none;
 }
 
 .selectedPackage, .selectedPackage:visited, .selectedPackage:hover, .selectedClass, .selectedClass:visited, .selectedClass:hover {
-    background-color: #0d58a6;
+    background-color: #008966;
+    color: white;
+    text-decoration: none;
+    cursor: default;
 }
 
 /***************

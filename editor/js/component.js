@@ -552,6 +552,42 @@ Component.prototype.getSaveString = function(spacing)
  */
 Component.prototype.load = loadSection;
 
+// -- Custom constructor ------------------------------------------------------- //
+
+extend('CustomComponent', 'Component');
+function CustomComponent(data) {
+    this.super(data.display, data.type.toLowerCase(), data.container);
+    this.description = data.description;
+
+    for (var i = 0; i < data.options.length; i++) {
+        var option = data.options[i];
+        switch (option.type) {
+            case 'NUMBER':
+                this.data.push(new AttributeValue(option.display, option.key, option.base, option.scale)
+                    .setTooltip(option.description)
+                );
+                break;
+            case 'TEXT':
+                this.data.push(new StringValue(option.display, option.key, option.default)
+                    .setTooltip(option.description)
+                );
+                break;
+            case 'DROPDOWN':
+                this.data.push(new ListValue(option.display, option.key, option.options, option.options[0])
+                    .setTooltip(option.description)
+                );
+                break;
+            case 'LIST':
+                this.data.push(new MultiListValue(option.display, option.key, option.options, [ ])
+                    .setTooltip(option.description)
+                );
+                break;
+            default:
+                throw new Error("Invalid component with key " + data.key);
+        }
+    }
+}
+
 // -- Trigger constructors ----------------------------------------------------- //
 
 extend('TriggerBlockBreak', 'Component');

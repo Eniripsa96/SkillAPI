@@ -27,43 +27,80 @@
 package com.sucy.skill.listener;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.KeyPressEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.data.Click;
+import com.sucy.skill.packet.PacketInjector;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Handles transferring click actions by the player to
  * combos that cast skills.
  */
-public class ClickListener extends SkillAPIListener
-{
+public class ClickListener extends SkillAPIListener {
+    private HashMap<UUID, Long> lastClick = new HashMap<>();
+
+    private PacketInjector injector;
+
+    public ClickListener(final PacketInjector injector) {
+        this.injector = injector;
+    }
+
+    @Override
+    public void init() {
+        Bukkit.getServer().getOnlinePlayers().forEach(injector::addPlayer);
+    }
+
+    @Override
+    public void cleanup() {
+        lastClick.clear();
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        injector.addPlayer(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        lastClick.remove(event.getPlayer().getUniqueId());
+        injector.removePlayer(event.getPlayer());
+    }
+
     /**
      * Registers clicks as they happen
      *
      * @param event event details
      */
     @EventHandler
-    public void onClick(PlayerInteractEvent event)
-    {
+    public void onClick(final KeyPressEvent event) {
+        final Long time = lastClick.get(event.getPlayer().getUniqueId());
+        if (time != null && time > System.currentTimeMillis()) {
+            return;
+        }
 
         // Get the history
         PlayerCombos combo = SkillAPI.getPlayerData(event.getPlayer()).getComboData();
 
-        // Left clicks
-        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
-        {
-            combo.applyClick(Click.LEFT);
+        switch (event.getKey()) {
+            case LEFT:
+                combo.applyClick(Click.LEFT);
+                break;
+            case RIGHT:
+                combo.applyClick(Click.RIGHT);
+                break;
+            default:
+                return;
         }
 
-        // Right clicks
-        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)
-        {
-            combo.applyClick(Click.RIGHT);
-        }
+        lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis() + 40);
     }
 
     /**
@@ -72,10 +109,8 @@ public class ClickListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler
-    public void onShiftClick(PlayerToggleSneakEvent event)
-    {
-        if (event.isSneaking())
-        {
+    public void onShiftClick(PlayerToggleSneakEvent event) {
+        if (event.isSneaking()) {
             SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.SHIFT);
         }
     }

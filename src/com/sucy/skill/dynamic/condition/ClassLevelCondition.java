@@ -26,47 +26,37 @@
  */
 package com.sucy.skill.dynamic.condition;
 
+import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerClass;
-import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-/**
- * A condition for dynamic skills that requires the caster's class level to be within a range
- */
-public class ClassLevelCondition extends EffectComponent
+public class ClassLevelCondition extends ConditionComponent
 {
     private static final String MIN_LEVEL = "min-level";
     private static final String MAX_LEVEL = "max-level";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    private int min, max;
+
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (!(caster instanceof Player))
-            return false;
+    public String getKey() {
+        return "class level";
+    }
 
-        int min = settings.getInt(MIN_LEVEL);
-        int max = settings.getInt(MAX_LEVEL);
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        min = settings.getInt(MIN_LEVEL);
+        max = settings.getInt(MAX_LEVEL);
+    }
 
-        PlayerSkill skill = getSkillData(caster);
-        PlayerClass data = skill == null
-            ? SkillAPI.getPlayerData((Player) caster).getMainClass()
-            : skill.getPlayerClass();
-        return data.getLevel() >= min
-            && data.getLevel() <= max
-            && executeChildren(caster, level, targets);
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        if (!(target instanceof Player)) return false;
+
+        final PlayerClass playerClass = SkillAPI.getPlayerData((Player) target).getMainClass();
+        return playerClass != null && playerClass.getLevel() >= min && playerClass.getLevel() <= max;
     }
 }

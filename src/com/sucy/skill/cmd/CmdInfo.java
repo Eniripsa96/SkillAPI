@@ -105,7 +105,11 @@ public class CmdInfo implements IFunction
                     }
 
                     // Compose the message
-                    cmd.sendMessage(sender, CATEGORY, ChatColor.GOLD + "{group}" + ChatColor.GRAY + ": ", RPGFilter.GROUP.setReplacement(TextFormatter.format(group)));
+                    cmd.sendMessage(
+                            sender,
+                            CATEGORY,
+                            ChatColor.GOLD + "{group}" + ChatColor.GRAY + ": ",
+                            RPGFilter.GROUP.setReplacement(TextFormatter.format(group)));
                     PlayerClass profession = data.getClass(group);
                     if (profession == null)
                     {

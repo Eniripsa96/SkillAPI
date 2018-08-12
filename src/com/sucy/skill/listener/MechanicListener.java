@@ -31,10 +31,10 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.FlagExpireEvent;
 import com.sucy.skill.api.event.PlayerLandEvent;
+import com.sucy.skill.api.projectile.ItemProjectile;
 import com.sucy.skill.dynamic.mechanic.BlockMechanic;
 import com.sucy.skill.dynamic.mechanic.PotionProjectileMechanic;
 import com.sucy.skill.dynamic.mechanic.ProjectileMechanic;
-import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.hook.DisguiseHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.hook.VaultHook;
@@ -46,8 +46,11 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -62,6 +65,9 @@ public class MechanicListener extends SkillAPIListener
     public static final String SUMMON_DAMAGE     = "sapiSumDamage";
     public static final String P_CALL            = "pmCallback";
     public static final String POTION_PROJECTILE = "potionProjectile";
+    public static final String ITEM_PROJECTILE = "itemProjectile";
+    public static final String SKILL_LEVEL       = "skill_level";
+    public static final String SKILL_CASTER      = "caster";
     public static final String SPEED_KEY         = "sapiSpeedKey";
     public static final String DISGUISE_KEY      = "sapiDisguiseKey";
 
@@ -113,31 +119,8 @@ public class MechanicListener extends SkillAPIListener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        WolfMechanic.removeWolves(event.getPlayer());
         flying.remove(event.getPlayer().getUniqueId());
         event.getPlayer().setWalkSpeed(0.2f);
-    }
-
-    /**
-     * Remove wolves of a player upon changing worlds
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onChangeWorld(PlayerChangedWorldEvent event)
-    {
-        WolfMechanic.removeWolves(event.getPlayer());
-    }
-
-    /**
-     * Remove wolves of a dead player
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onDeath(PlayerDeathEvent event)
-    {
-        WolfMechanic.removeWolves(event.getEntity());
     }
 
     /**
@@ -188,16 +171,25 @@ public class MechanicListener extends SkillAPIListener
     public void onLand(final ProjectileHitEvent event)
     {
         if (event.getEntity().hasMetadata(P_CALL))
-            SkillAPI.schedule(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    Object obj = SkillAPI.getMeta(event.getEntity(), P_CALL);
-                    if (obj != null)
-                        ((ProjectileMechanic) obj).callback(event.getEntity(), null);
-                }
+            SkillAPI.schedule(() -> {
+                final Object obj = SkillAPI.getMeta(event.getEntity(), P_CALL);
+                if (obj != null)
+                    ((ProjectileMechanic) obj).callback(event.getEntity(), null);
             }, 1);
+    }
+
+    /**
+     * Prevent item projectiles from being absorbed by hoppers
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onItemLand(final InventoryPickupItemEvent event) {
+        final Object meta = SkillAPI.getMeta(event.getItem(), ITEM_PROJECTILE);
+        if (meta != null) {
+            event.setCancelled(true);
+            ((ItemProjectile) meta).applyLanded();
+        }
     }
 
     /**

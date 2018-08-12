@@ -104,7 +104,11 @@ public class CmdBind implements IFunction
             else
             {
                 player.bind(item.getType(), skill);
-                command.sendMessage(sender, SKILL_BOUND, "&6{skill} &2has been bound to &6{item}", RPGFilter.SKILL.setReplacement(skill.getData().getName()), RPGFilter.ITEM.setReplacement(TextFormatter.format(item.getType().name())));
+                command.sendMessage(sender,
+                        SKILL_BOUND,
+                        "&6{skill} &2has been bound to &6{item}",
+                        RPGFilter.SKILL.setReplacement(skill.getData().getName()),
+                        RPGFilter.ITEM.setReplacement(TextFormatter.format(item.getType().name())));
             }
         }
         else

@@ -26,43 +26,33 @@
  */
 package com.sucy.skill.dynamic.target;
 
-import com.sucy.skill.dynamic.EffectComponent;
+import com.google.common.collect.ImmutableList;
+import com.sucy.skill.cast.IIndicator;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Applies child components to the caster
  */
-public class SelfTarget extends EffectComponent
-{
-    private static final String REPEATED = "repeated";
+public class SelfTarget extends TargetComponent {
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean worked = false;
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        list.add(caster);
-        for (LivingEntity t : targets)
-        {
-            worked = executeChildren(caster, level, list) || worked;
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
+        makeCircleIndicator(list, caster, 0.5);
+    }
 
-            if (!settings.getBool(REPEATED))
-            {
-                break;
-            }
-        }
-        return worked;
+    /** {@inheritDoc} */
+    @Override
+    List<LivingEntity> getTargets(
+            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        return ImmutableList.of(caster);
+    }
+
+    @Override
+    public String getKey() {
+        return "self";
     }
 }

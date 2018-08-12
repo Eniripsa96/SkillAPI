@@ -30,6 +30,7 @@ import com.rit.sucy.config.Filter;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.items.InventoryManager;
 import com.rit.sucy.player.TargetHelper;
+import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
@@ -70,6 +71,8 @@ import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -241,11 +244,9 @@ public final class PlayerData
      *
      * @return attribute totals
      */
-    public HashMap<String, Integer> getAttributes()
-    {
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
-        for (String key : SkillAPI.getAttributeManager().getKeys())
-            map.put(key, getAttribute(key));
+    public HashMap<String, Integer> getAttributes() {
+        HashMap<String, Integer> map = new HashMap<>();
+        for (String key : SkillAPI.getAttributeManager().getKeys()) { map.put(key, getAttribute(key)); }
         return map;
     }
 
@@ -257,9 +258,8 @@ public final class PlayerData
      *
      * @return attribute totals
      */
-    public HashMap<String, Integer> getInvestedAttributes()
-    {
-        return new HashMap<String, Integer>(attributes);
+    public HashMap<String, Integer> getInvestedAttributes() {
+        return new HashMap<>(attributes);
     }
 
     /**
@@ -270,17 +270,15 @@ public final class PlayerData
      *
      * @return number of total points
      */
-    public int getAttribute(String key)
-    {
+    public int getAttribute(String key) {
         key = key.toLowerCase();
         int total = 0;
-        if (attributes.containsKey(key))
-            total += attributes.get(key);
-        if (bonusAttrib.containsKey(key))
-            total += bonusAttrib.get(key);
-        for (PlayerClass playerClass : classes.values())
+        if (attributes.containsKey(key)) { total += attributes.get(key); }
+        if (bonusAttrib.containsKey(key)) { total += bonusAttrib.get(key); }
+        for (PlayerClass playerClass : classes.values()) {
             total += playerClass.getData().getAttribute(key, playerClass.getLevel());
-        return total;
+        }
+        return Math.max(0, total);
     }
 
     /**
@@ -291,14 +289,8 @@ public final class PlayerData
      *
      * @return number of invested points
      */
-    public int getInvestedAttribute(String key)
-    {
-        key = key.toLowerCase();
-        if (!attributes.containsKey(key))
-        {
-            return 0;
-        }
-        return attributes.get(key);
+    public int getInvestedAttribute(String key) {
+        return attributes.getOrDefault(key.toLowerCase(), 0);
     }
 
     /**
@@ -309,8 +301,7 @@ public final class PlayerData
      *
      * @return true if any points are invested, false otherwise
      */
-    public boolean hasAttribute(String key)
-    {
+    public boolean hasAttribute(String key) {
         return getAttribute(key) > 0;
     }
 
@@ -320,25 +311,25 @@ public final class PlayerData
      * has no remaining points, this will do nothing.
      *
      * @param key attribute key
+     *
+     * @return whether or not it was successfully upgraded
      */
-    public void upAttribute(String key)
-    {
+    public boolean upAttribute(String key) {
         key = key.toLowerCase();
         int current = getInvestedAttribute(key);
         int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
-        if (attribPoints > 0 && current < max)
-        {
+        if (attribPoints > 0 && current < max) {
             attributes.put(key, current + 1);
             attribPoints--;
 
             PlayerUpAttributeEvent event = new PlayerUpAttributeEvent(this, key);
             Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled())
-            {
+            if (event.isCancelled()) {
                 attributes.put(key, current);
                 attribPoints++;
-            }
+            } else { return true; }
         }
+        return false;
     }
 
     /**
@@ -348,14 +339,12 @@ public final class PlayerData
      * @param key    attribute to give points for
      * @param amount amount to give
      */
-    public void giveAttribute(String key, int amount)
-    {
+    public void giveAttribute(String key, int amount) {
         key = key.toLowerCase();
         int current = getInvestedAttribute(key);
         int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
         amount = Math.min(amount + current, max);
-        if (amount > current)
-        {
+        if (amount > current) {
             attributes.put(key, amount);
             AttributeListener.updatePlayer(this);
         }
@@ -368,12 +357,10 @@ public final class PlayerData
      * @param key    attribute key
      * @param amount amount to add
      */
-    public void addBonusAttributes(String key, int amount)
-    {
+    public void addBonusAttributes(String key, int amount) {
         key = SkillAPI.getAttributeManager().normalize(key);
-        if (bonusAttrib.containsKey(key))
-            amount += bonusAttrib.get(key);
-        bonusAttrib.put(key, Math.max(0, amount));
+        amount += bonusAttrib.getOrDefault(key, 0);
+        bonusAttrib.put(key, amount);
         AttributeListener.updatePlayer(this);
     }
 
@@ -384,28 +371,28 @@ public final class PlayerData
      *
      * @param key attribute key
      */
-    public void refundAttribute(String key)
-    {
+    public boolean refundAttribute(String key) {
         key = key.toLowerCase();
         int current = getInvestedAttribute(key);
-        if (current > 0)
-        {
+        if (current > 0) {
             PlayerRefundAttributeEvent event = new PlayerRefundAttributeEvent(this, key);
             Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled()) return;
+            if (event.isCancelled()) { return false; }
 
             attribPoints += 1;
             attributes.put(key, current - 1);
-            if (current - 1 <= 0) attributes.remove(key);
+            if (current - 1 <= 0) { attributes.remove(key); }
             AttributeListener.updatePlayer(this);
+
+            return true;
         }
+        return false;
     }
 
     /**
      * Refunds all spent attribute points for a specific attribute
      */
-    public void refundAttributes(String key)
-    {
+    public void refundAttributes(String key) {
         key = key.toLowerCase();
         attribPoints += getInvestedAttribute(key);
         attributes.remove(key);
@@ -415,11 +402,9 @@ public final class PlayerData
     /**
      * Refunds all spent attribute points
      */
-    public void refundAttributes()
-    {
-        ArrayList<String> keys = new ArrayList<String>(attributes.keySet());
-        for (String key : keys)
-        {
+    public void refundAttributes() {
+        ArrayList<String> keys = new ArrayList<>(attributes.keySet());
+        for (String key : keys) {
             refundAttributes(key);
         }
     }
@@ -429,8 +414,7 @@ public final class PlayerData
      *
      * @return attribute point total
      */
-    public int getAttributePoints()
-    {
+    public int getAttributePoints() {
         return attribPoints;
     }
 
@@ -439,8 +423,7 @@ public final class PlayerData
      *
      * @param amount amount of attribute points
      */
-    public void giveAttribPoints(int amount)
-    {
+    public void giveAttribPoints(int amount) {
         attribPoints += amount;
     }
 
@@ -449,8 +432,7 @@ public final class PlayerData
      *
      * @param amount amount of points to have
      */
-    public void setAttribPoints(int amount)
-    {
+    public void setAttribPoints(int amount) {
         attribPoints = amount;
     }
 
@@ -462,19 +444,21 @@ public final class PlayerData
      *
      * @return modified value
      */
-    public double scaleStat(String stat, double value)
-    {
-        AttributeManager manager = SkillAPI.getAttributeManager();
-        if (manager == null) return value;
-        for (String key : manager.getKeys())
-        {
-            int amount = getAttribute(key);
-            if (amount > 0)
-            {
-                value = manager.getAttribute(key).modifyStat(stat, value, amount);
+    public double scaleStat(final String stat, final double value) {
+        final AttributeManager manager = SkillAPI.getAttributeManager();
+        if (manager == null) { return value; }
+
+        final List<AttributeManager.Attribute> matches = manager.forStat(stat);
+        if (matches == null) { return value; }
+
+        double modified = value;
+        for (final AttributeManager.Attribute attribute : matches) {
+            int amount = getAttribute(attribute.getKey());
+            if (amount > 0) {
+                modified = attribute.modifyStat(stat, modified, amount);
             }
         }
-        return value;
+        return modified;
     }
 
     /**
@@ -483,20 +467,20 @@ public final class PlayerData
      * @param component component holding the value
      * @param key       key of the value
      * @param value     unmodified value
-     * @param self      whether or not the player is the target
      *
      * @return the modified value
      */
-    public double scaleDynamic(EffectComponent component, String key, double value, boolean self)
-    {
-        AttributeManager manager = SkillAPI.getAttributeManager();
-        if (manager == null) return value;
-        for (String attr : manager.getKeys())
-        {
-            int amount = getAttribute(attr);
-            if (amount > 0)
-            {
-                value = manager.getAttribute(attr).modify(component, key, self, value, amount);
+    public double scaleDynamic(EffectComponent component, String key, double value) {
+        final AttributeManager manager = SkillAPI.getAttributeManager();
+        if (manager == null) { return value; }
+
+        final List<AttributeManager.Attribute> matches = manager.forComponent(component, key);
+        if (matches == null) { return value; }
+
+        for (final AttributeManager.Attribute attribute : matches) {
+            int amount = getAttribute(attribute.getKey());
+            if (amount > 0) {
+                value = attribute.modify(component, key, value, amount);
             }
         }
         return value;
@@ -529,6 +513,7 @@ public final class PlayerData
                 ItemMeta meta = icon.getItemMeta();
                 meta.setDisplayName(filter(meta.getDisplayName(), key));
                 List<String> lore = meta.getLore();
+                if (lore == null) lore = new ArrayList<>();
                 for (int j = 0; j < lore.size(); j++)
                     lore.set(j, filter(lore.get(j), key));
 
@@ -553,8 +538,7 @@ public final class PlayerData
      *
      * @return the player's attribute data
      */
-    public HashMap<String, Integer> getAttributeData()
-    {
+    public HashMap<String, Integer> getAttributeData() {
         return attributes;
     }
 
@@ -1286,25 +1270,18 @@ public final class PlayerData
      * @param amount amount of levels to give
      * @param source source of the levels
      */
-    public void giveLevels(int amount, ExpSource source)
+    public boolean giveLevels(int amount, ExpSource source)
     {
-        for (PlayerClass playerClass : classes.values())
-        {
+        boolean success = false;
+        for (PlayerClass playerClass : classes.values()) {
             RPGClass data = playerClass.getData();
-            if (data.receivesExp(source))
-            {
-                int exp = 0;
-                int count = 0;
-                int temp = amount;
-                while (temp > 0)
-                {
-                    temp--;
-                    exp += data.getRequiredExp(playerClass.getLevel() + count++);
-                }
-                playerClass.giveExp(exp, source);
+            if (data.receivesExp(source)) {
+                success = true;
+                playerClass.giveLevels(amount);
             }
         }
         updateHealthAndMana(getPlayer());
+        return success;
     }
 
     /**
@@ -1337,39 +1314,31 @@ public final class PlayerData
      */
     public void updateHealthAndMana(Player player)
     {
-        if (player == null)
-        {
+        if (player == null) {
             return;
         }
 
         // Update maxes
         double health = bonusHealth;
         maxMana = bonusMana;
-        for (PlayerClass c : classes.values())
-        {
+        for (PlayerClass c : classes.values()) {
             health += c.getHealth();
             maxMana += c.getMana();
         }
-        if (health == bonusHealth)
-        {
+        if (health == bonusHealth) {
             health += SkillAPI.getSettings().getDefaultHealth();
         }
-        if (health == 0)
-        {
-            health = 20;
+        if (health <= 0) {
+            health = SkillAPI.getSettings().getDefaultHealth();
         }
-        if (SkillAPI.getSettings().isModifyHealth())
-            player.setMaxHealth(health);
+        if (SkillAPI.getSettings().isModifyHealth()) { player.setMaxHealth(health); }
         mana = Math.min(mana, maxMana);
 
         // Health scaling is available starting with 1.6.2
-        if (SkillAPI.getSettings().isOldHealth())
-        {
+        if (SkillAPI.getSettings().isOldHealth()) {
             player.setHealthScaled(true);
             player.setHealthScale(20);
-        }
-        else
-        {
+        } else {
             player.setHealthScaled(false);
         }
     }
@@ -1384,7 +1353,19 @@ public final class PlayerData
     public void addMaxHealth(double amount)
     {
         bonusHealth += amount;
-        updateHealthAndMana(getPlayer());
+        final Player player = getPlayer();
+        if (player != null) {
+            if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+                final AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                attribute.setBaseValue(attribute.getBaseValue() + amount);
+            } else {
+                final double newHealth = player.getMaxHealth() + amount;
+                player.setMaxHealth(newHealth);
+                if (player.getMaxHealth() > newHealth) {
+                    player.setMaxHealth(newHealth * 2 - player.getMaxHealth());
+                }
+            }
+        }
     }
 
     /**
@@ -1544,6 +1525,8 @@ public final class PlayerData
     {
         bonusMana = 0;
         bonusHealth = 0;
+        bonusAttrib.clear();
+        InventoryTask.clear(player.getUniqueId());
     }
 
     ///////////////////////////////////////////////////////
@@ -1932,8 +1915,8 @@ public final class PlayerData
             return;
 
         AttributeListener.updatePlayer(this);
-        InventoryTask.check(player);
         this.updateHealthAndMana(player);
+        InventoryTask.check(player);
         if (this.getLastHealth() > 0 && !player.isDead())
             player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
         this.startPassives(player);

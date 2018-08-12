@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.util.FlagManager;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -35,10 +34,15 @@ import java.util.List;
 /**
  * Applies a flag to each target
  */
-public class StatusMechanic extends EffectComponent
+public class StatusMechanic extends MechanicComponent
 {
     private static final String KEY      = "status";
     private static final String DURATION = "duration";
+
+    @Override
+    public String getKey() {
+        return "status";
+    }
 
     /**
      * Executes the component
@@ -59,7 +63,7 @@ public class StatusMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY, "stun").toLowerCase();
-        double seconds = attr(caster, DURATION, level, 3.0, isSelf);
+        double seconds = parseValues(caster, DURATION, level, 3.0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {

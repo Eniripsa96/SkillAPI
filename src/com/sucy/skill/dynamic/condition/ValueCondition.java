@@ -27,41 +27,35 @@
 package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
 
-/**
- * A condition for dynamic skills that requires the target to have a specified flag active
- */
-public class ValueCondition extends EffectComponent
-{
+public class ValueCondition extends ConditionComponent {
     private static final String KEY = "key";
     private static final String MIN = "min-value";
     private static final String MAX = "max-value";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        String key = settings.getString(KEY);
-        double min = attr(caster, MIN, level, 1, true);
-        double max = attr(caster, MAX, level, 999, true);
-        Object data = DynamicSkill.getCastData(caster).get(key);
+    public String getKey() {
+        return "value";
+    }
 
-        if (data != null)
-        {
+    @Override
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        return test(caster, level, null) && executeChildren(caster, level, targets);
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        final String key = settings.getString(KEY);
+        final double min = parseValues(caster, MIN, level, 1);
+        final double max = parseValues(caster, MAX, level, 999);
+        final Object data = DynamicSkill.getCastData(caster).get(key);
+
+        if (data != null) {
             double value = (Double) data;
-            return value >= min && value <= max && executeChildren(caster, level, targets);
+            return value >= min && value <= max;
         }
 
         return false;

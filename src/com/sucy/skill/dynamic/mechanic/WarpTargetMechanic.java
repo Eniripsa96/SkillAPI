@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -34,9 +33,14 @@ import java.util.List;
 /**
  * Strikes lightning about each target with an offset
  */
-public class WarpTargetMechanic extends EffectComponent
+public class WarpTargetMechanic extends MechanicComponent
 {
     private static final String TYPE = "type";
+
+    @Override
+    public String getKey() {
+        return "warp target";
+    }
 
     /**
      * Executes the component

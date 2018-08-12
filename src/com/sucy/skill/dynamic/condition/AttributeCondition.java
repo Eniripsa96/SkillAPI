@@ -28,53 +28,30 @@ package com.sucy.skill.dynamic.condition;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * A condition for dynamic skills that requires the target to be a player who is given class
- */
-public class AttributeCondition extends EffectComponent
+public class AttributeCondition extends ConditionComponent
 {
     private static final String ATTR = "attribute";
     private static final String MIN  = "min";
     private static final String MAX  = "max";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        String attr = settings.getString(ATTR, null);
-        int min = (int) attr(caster, MIN, level, 0, true);
-        int max = (int) attr(caster, MAX, level, 999, true);
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        if (!(target instanceof Player)) return false;
 
-        if (attr == null) return false;
+        final String attr = settings.getString(ATTR, null);
+        final int min = (int) parseValues(caster, MIN, level, 0);
+        final int max = (int) parseValues(caster, MAX, level, 999);
 
-        List<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity target : targets)
-        {
-            if (target instanceof Player)
-            {
-                Player player = (Player) target;
-                PlayerData data = SkillAPI.getPlayerData(player);
+        final PlayerData data = SkillAPI.getPlayerData((Player) target);
+        final int value = data.getAttribute(attr);
+        return value >= min && value <= max;
+    }
 
-                int num = data.getAttribute(attr);
-                if (num >= min && num <= max) list.add(player);
-            }
-        }
-        return list.size() > 0
-            && executeChildren(caster, level, list);
+    @Override
+    public String getKey() {
+        return "attribute";
     }
 }

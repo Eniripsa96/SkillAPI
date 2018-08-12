@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -36,12 +35,17 @@ import java.util.List;
 /**
  * Executes child components after a delay
  */
-public class PotionMechanic extends EffectComponent
+public class PotionMechanic extends MechanicComponent
 {
     private static final String POTION  = "potion";
     private static final String AMBIENT = "ambient";
     private static final String TIER    = "tier";
     private static final String SECONDS = "seconds";
+
+    @Override
+    public String getKey() {
+        return "potion";
+    }
 
     /**
      * Executes the component
@@ -64,8 +68,8 @@ public class PotionMechanic extends EffectComponent
         {
             boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
             PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption").toUpperCase().replace(' ', '_'));
-            int tier = (int) attr(caster, TIER, level, 1, isSelf) - 1;
-            double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+            int tier = (int) parseValues(caster, TIER, level, 1) - 1;
+            double seconds = parseValues(caster, SECONDS, level, 3.0);
             boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
             int ticks = (int) (seconds * 20);
             for (LivingEntity target : targets)

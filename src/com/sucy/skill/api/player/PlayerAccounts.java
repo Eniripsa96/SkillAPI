@@ -44,8 +44,7 @@ import java.util.HashMap;
  * SkillAPI.getPlayerData methods. This would be if you want
  * to extend functionality for handling the inactive accounts.
  */
-public class PlayerAccounts
-{
+public class PlayerAccounts {
     private final HashMap<Integer, PlayerData> classData = new HashMap<Integer, PlayerData>();
 
     private int           active;
@@ -58,8 +57,7 @@ public class PlayerAccounts
      *
      * @param player player to store data for
      */
-    public PlayerAccounts(OfflinePlayer player)
-    {
+    public PlayerAccounts(OfflinePlayer player) {
         this.player = player;
 
         PlayerData data = new PlayerData(player, true);
@@ -72,8 +70,7 @@ public class PlayerAccounts
      *
      * @return active account ID
      */
-    public int getActiveId()
-    {
+    public int getActiveId() {
         return active;
     }
 
@@ -82,8 +79,7 @@ public class PlayerAccounts
      *
      * @return active account data
      */
-    public PlayerData getActiveData()
-    {
+    public PlayerData getActiveData() {
         return classData.get(active);
     }
 
@@ -92,8 +88,7 @@ public class PlayerAccounts
      *
      * @return Bukkit player object or null if offline/dead
      */
-    public Player getPlayer()
-    {
+    public Player getPlayer() {
         return player.getPlayer();
     }
 
@@ -102,8 +97,7 @@ public class PlayerAccounts
      *
      * @return Bukkit offline player object
      */
-    public OfflinePlayer getOfflinePlayer()
-    {
+    public OfflinePlayer getOfflinePlayer() {
         return player;
     }
 
@@ -112,8 +106,7 @@ public class PlayerAccounts
      *
      * @return owner's name
      */
-    public String getPlayerName()
-    {
+    public String getPlayerName() {
         return player.getName();
     }
 
@@ -122,8 +115,7 @@ public class PlayerAccounts
      *
      * @return available account number
      */
-    public int getAccountLimit()
-    {
+    public int getAccountLimit() {
         return SkillAPI.getSettings().getMaxAccounts(getPlayer());
     }
 
@@ -136,8 +128,7 @@ public class PlayerAccounts
      *
      * @return true if data exists, false otherwise
      */
-    public boolean hasData(int id)
-    {
+    public boolean hasData(int id) {
         return classData.containsKey(id);
     }
 
@@ -148,8 +139,7 @@ public class PlayerAccounts
      *
      * @return account data or null if not found
      */
-    public PlayerData getData(int id)
-    {
+    public PlayerData getData(int id) {
         return classData.get(id);
     }
 
@@ -165,10 +155,8 @@ public class PlayerAccounts
      *
      * @return account data or null if invalid id or player
      */
-    public PlayerData getData(int id, OfflinePlayer player, boolean init)
-    {
-        if (!hasData(id) && id > 0 && player != null)
-        {
+    public PlayerData getData(int id, OfflinePlayer player, boolean init) {
+        if (!hasData(id) && id > 0 && player != null) {
             classData.put(id, new PlayerData(player, init));
         }
         return classData.get(id);
@@ -180,8 +168,7 @@ public class PlayerAccounts
      *
      * @return all account data for the player
      */
-    public HashMap<Integer, PlayerData> getAllData()
-    {
+    public HashMap<Integer, PlayerData> getAllData() {
         return classData;
     }
 
@@ -192,8 +179,7 @@ public class PlayerAccounts
      *
      * @param id ID of the account to switch to
      */
-    public void setAccount(int id)
-    {
+    public void setAccount(int id) {
         setAccount(id, true);
     }
 
@@ -205,43 +191,37 @@ public class PlayerAccounts
      * @param id    ID of the account to switch to
      * @param apply whether or not to apply the switch
      */
-    public void setAccount(int id, boolean apply)
-    {
+    public void setAccount(int id, boolean apply) {
         Player player = getPlayer();
-        if (player == null || id == active || !apply)
-        {
+        if (player == null || id == active || !apply) {
             active = id;
             return;
         }
-        if (id <= getAccountLimit() && id > 0 && !classData.containsKey(id))
-        {
+        if (id <= getAccountLimit() && id > 0 && !classData.containsKey(id)) {
             classData.put(id, new PlayerData(player, false));
         }
-        if (classData.containsKey(id))
-        {
+        if (classData.containsKey(id)) {
             PlayerAccountChangeEvent event = new PlayerAccountChangeEvent(this, active, id);
             Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled())
-            {
+            if (event.isCancelled()) {
                 return;
             }
 
-            ClassBoardManager.clear(new VersionPlayer(player));
-            getActiveData().stopPassives(player);
-            getActiveData().clearBonuses();
-            AttributeListener.clearBonuses(player);
-            if (getActiveData().hasClass() && SkillAPI.getSettings().isSkillBarEnabled())
-            {
-                getActiveData().getSkillBar().clear(player);
-            }
-            active = event.getNewID();
-            getActiveData().startPassives(player);
-            getActiveData().updateScoreboard();
-            getActiveData().updateHealthAndMana(player);
-            AttributeListener.updatePlayer(getActiveData());
-            if (getActiveData().hasClass() && SkillAPI.getSettings().isSkillBarEnabled())
-            {
-                getActiveData().getSkillBar().setup(player);
+            if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
+                ClassBoardManager.clear(new VersionPlayer(player));
+                getActiveData().stopPassives(player);
+                AttributeListener.clearBonuses(player);
+                getActiveData().clearBonuses();
+                active = event.getNewID();
+                getActiveData().startPassives(player);
+                getActiveData().updateScoreboard();
+                getActiveData().updateHealthAndMana(player);
+                AttributeListener.updatePlayer(getActiveData());
+                if (getActiveData().hasClass() && SkillAPI.getSettings().isSkillBarEnabled()) {
+                    getActiveData().getSkillBar().setup(player);
+                }
+            } else {
+                active = event.getNewID();
             }
         }
     }

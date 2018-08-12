@@ -87,29 +87,33 @@ public class KillListener extends SkillAPIListener
         FlagManager.clearFlags(event.getEntity());
         BuffManager.clearData(event.getEntity());
 
+        giveExp(event.getEntity(), event.getEntity().getKiller(), event.getDroppedExp());
+    }
+
+    public static void giveExp(LivingEntity entity, Player killer, int exp) {
+
         // Disabled world
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
+        if (!SkillAPI.getSettings().isWorldEnabled(entity.getWorld()))
             return;
 
         // Cancel experience when applicable
-        if (event.getEntity().hasMetadata(S_TYPE))
+        if (entity.hasMetadata(S_TYPE))
         {
-            int value = SkillAPI.getMetaInt(event.getEntity(), S_TYPE);
+            int value = SkillAPI.getMetaInt(entity, S_TYPE);
 
             // Block spawner mob experience
             if (value == SPAWNER && SkillAPI.getSettings().isBlockSpawner())
                 return;
 
-            // Block egg mob experience
+                // Block egg mob experience
             else if (value == EGG && SkillAPI.getSettings().isBlockEgg())
                 return;
         }
 
         // Summons don't give experience
-        if (event.getEntity().hasMetadata(MechanicListener.SUMMON_DAMAGE))
+        if (entity.hasMetadata(MechanicListener.SUMMON_DAMAGE))
             return;
 
-        Player killer = event.getEntity().getKiller();
         if (killer != null && killer.hasPermission(Permissions.EXP))
         {
             // Block creative experience
@@ -120,12 +124,12 @@ public class KillListener extends SkillAPIListener
 
             // Give experience based on orbs when enabled
             if (SkillAPI.getSettings().isUseOrbs())
-                player.giveExp(event.getDroppedExp(), ExpSource.MOB);
+                player.giveExp(exp, ExpSource.MOB);
 
                 // Give experience based on config when not using orbs
             else
             {
-                String name = ListenerUtil.getName(event.getEntity());
+                String name = ListenerUtil.getName(entity);
                 double yield = SkillAPI.getSettings().getYield(name);
                 player.giveExp(yield, ExpSource.MOB);
             }
@@ -191,6 +195,6 @@ public class KillListener extends SkillAPIListener
             killer.set(hit, source);
             damageTime.set(hit, 100);
         }
-        catch (Exception ex) { /* Not supported */ }
+        catch (Exception ex) { /* */ }
     }
 }

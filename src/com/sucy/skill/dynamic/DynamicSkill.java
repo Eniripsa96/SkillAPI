@@ -29,53 +29,47 @@ package com.sucy.skill.dynamic;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.enums.ManaCost;
-import com.sucy.skill.api.event.PhysicalDamageEvent;
-import com.sucy.skill.api.event.PlayerLandEvent;
-import com.sucy.skill.api.event.SkillDamageEvent;
-import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
-import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
-import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
+import com.sucy.skill.dynamic.trigger.TriggerComponent;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.sucy.skill.dynamic.ComponentRegistry.getTrigger;
 
 /**
  * A skill implementation for the Dynamic system
  */
-public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener
-{
-    private final HashMap<Trigger, EffectComponent> components = new HashMap<Trigger, EffectComponent>();
-    private final HashMap<String, EffectComponent>  attribKeys = new HashMap<String, EffectComponent>();
-    private final HashMap<Integer, Integer>         active     = new HashMap<Integer, Integer>();
+public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener {
+    private final List<TriggerHandler>         triggers   = new ArrayList<>();
+    private final Map<String, EffectComponent> attribKeys = new HashMap<>();
+    private final Map<Integer, Integer>        active     = new HashMap<>();
 
-    private static final HashMap<Integer, HashMap<String, Object>> castData = new HashMap<Integer, HashMap<String, Object>>();
+    private static final HashMap<Integer, HashMap<String, Object>> castData   = new HashMap<>();
 
-    private boolean cancel  = false;
-    private boolean running = false;
+    private TriggerComponent castTrigger;
+    private TriggerComponent initializeTrigger;
+    private TriggerComponent cleanupTrigger;
+
+    private boolean cancel     = false;
+    private double  multiplier = 1;
+    private double  bonus      = 0;
 
     /**
      * Initializes a new dynamic skill
      *
      * @param name name of the skill
      */
-    public DynamicSkill(String name)
-    {
+    public DynamicSkill(final String name) {
         super(name, "Dynamic", Material.JACK_O_LANTERN, 1);
     }
 
@@ -84,9 +78,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return true if can cast, false otherwise
      */
-    public boolean canCast()
-    {
-        return components.containsKey(Trigger.CAST);
+    public boolean canCast() {
+        return castTrigger != null;
     }
 
     /**
@@ -96,8 +89,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return true if active, false otherwise
      */
-    public boolean isActive(LivingEntity caster)
-    {
+    public boolean isActive(final LivingEntity caster) {
         return active.containsKey(caster.getEntityId());
     }
 
@@ -108,8 +100,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return active level of the skill
      */
-    public int getActiveLevel(LivingEntity caster)
-    {
+    public int getActiveLevel(final LivingEntity caster) {
         return active.get(caster.getEntityId());
     }
 
@@ -120,17 +111,27 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param key       key string
      * @param component component to grab attributes from
      */
-    public void setAttribKey(String key, EffectComponent component)
-    {
+    void setAttribKey(final String key, final EffectComponent component) {
         attribKeys.put(key, component);
     }
 
     /**
      * Cancels the event causing a trigger to go off
      */
-    public void cancelTrigger()
-    {
+    public void cancelTrigger() {
         cancel = true;
+    }
+
+    void applyCancelled(final Cancellable event) {
+        if (checkCancelled()) {
+            event.setCancelled(true);
+        }
+    }
+
+    public boolean checkCancelled() {
+        final boolean result = cancel;
+        cancel = false;
+        return result;
     }
 
     /**
@@ -140,13 +141,11 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return cast data for the caster
      */
-    public static HashMap<String, Object> getCastData(LivingEntity caster)
-    {
-        if (caster == null) return null;
+    public static HashMap<String, Object> getCastData(final LivingEntity caster) {
+        if (caster == null) { return null; }
         HashMap<String, Object> map = castData.get(caster.getEntityId());
-        if (map == null)
-        {
-            map = new HashMap<String, Object>();
+        if (map == null) {
+            map = new HashMap<>();
             map.put("caster", caster);
             castData.put(caster.getEntityId(), map);
         }
@@ -158,9 +157,19 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @param entity entity to clear cast data for
      */
-    public static void clearCastData(LivingEntity entity)
-    {
+    public static void clearCastData(final LivingEntity entity) {
         castData.remove(entity.getEntityId());
+    }
+
+    /**
+     * Registers needed events for the skill, ignoring any unused events for efficiency
+     *
+     * @param plugin plugin reference
+     */
+    public void registerEvents(final SkillAPI plugin) {
+        for (final TriggerHandler triggerHandler : triggers) {
+            triggerHandler.register(plugin);
+        }
     }
 
     /**
@@ -171,9 +180,11 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param newLevel  new skill level
      */
     @Override
-    public void update(LivingEntity user, int prevLevel, int newLevel)
-    {
+    public void update(final LivingEntity user, final int prevLevel, final int newLevel) {
         active.put(user.getEntityId(), newLevel);
+        for (final TriggerHandler triggerHandler : triggers) {
+            triggerHandler.init(user, newLevel);
+        }
     }
 
     /**
@@ -183,10 +194,12 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param level skill level
      */
     @Override
-    public void initialize(LivingEntity user, int level)
-    {
-        trigger(user, user, level, Trigger.INITIALIZE);
+    public void initialize(final LivingEntity user, final int level) {
+        trigger(user, user, level, initializeTrigger);
         active.put(user.getEntityId(), level);
+        for (final TriggerHandler triggerHandler : triggers) {
+            triggerHandler.init(user, level);
+        }
     }
 
     /**
@@ -196,13 +209,19 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param level skill level
      */
     @Override
-    public void stopEffects(LivingEntity user, int level)
-    {
-        RepeatMechanic.stopTasks(user, getName());
-        PassiveMechanic.stopTasks(user, getName());
+    public void stopEffects(final LivingEntity user, final int level) {
         active.remove(user.getEntityId());
+        for (final TriggerHandler triggerHandler : triggers) {
+            triggerHandler.cleanup(user);
+        }
+        cleanup(user, castTrigger);
+        cleanup(user, initializeTrigger);
 
-        trigger(user, user, 1, Trigger.CLEANUP);
+        trigger(user, user, 1, cleanupTrigger);
+    }
+
+    private void cleanup(final LivingEntity user, final TriggerComponent component) {
+        if (component != null) component.cleanUp(user);
     }
 
     /**
@@ -214,9 +233,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @return true if casted successfully, false if conditions weren't met or no effects are using the cast trigger
      */
     @Override
-    public boolean cast(LivingEntity user, int level)
-    {
-        return trigger(user, user, level, Trigger.CAST);
+    public boolean cast(final LivingEntity user, final int level) {
+        return trigger(user, user, level, castTrigger);
     }
 
     /**
@@ -228,16 +246,10 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @return formatted attribute name
      */
     @Override
-    protected String getAttrName(String key)
-    {
-        if (key.contains("."))
-        {
+    protected String getAttrName(String key) {
+        if (key.contains(".")) {
             return TextFormatter.format(key.substring(key.lastIndexOf('.') + 1));
-        }
-        else
-        {
-            return super.getAttrName(key);
-        }
+        } else { return super.getAttrName(key); }
     }
 
     /**
@@ -253,319 +265,26 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @return attribute value or 0 if invalid dynamic path
      */
     @Override
-    protected Object getAttr(LivingEntity caster, String key, int level)
-    {
+    protected Object getAttr(final LivingEntity caster, final String key, final int level) {
         // Dynamic attribute paths use periods
-        if (key.contains("."))
-        {
-            String[] path = key.split("\\.");
-            String attr = path[1].toLowerCase();
-            if (attribKeys.containsKey(path[0]) && attribKeys.get(path[0]).settings.has(attr))
-            {
-                return format(attribKeys.get(path[0]).attr(caster, attr, level, 0, true));
-            }
-            else
-            {
-                return 0;
-            }
+        if (key.contains(".")) {
+            final String[] path = key.split("\\.");
+            final String attr = path[1].toLowerCase();
+            if (attribKeys.containsKey(path[0]) && attribKeys.get(path[0]).settings.has(attr)) {
+                return format(attribKeys.get(path[0]).parseValues(caster, attr, level, 0));
+            } else { return 0; }
         }
 
         // Otherwise get the attribute normally
-        else
-        {
-            return super.getAttr(caster, key, level);
-        }
+        else { return super.getAttr(caster, key, level); }
     }
 
-    /**
-     * Cancels firing projectiles when the launcher is stunned or disarmed.
-     *
-     * @param event event details
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onLaunch(ProjectileLaunchEvent event)
-    {
-        if (running) return;
-
-        EffectComponent component = components.get(Trigger.LAUNCH);
-        if (component != null && event.getEntity().getShooter() instanceof LivingEntity)
-        {
-            LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
-            if (!active.containsKey(shooter.getEntityId()))
-                return;
-
-            String type = component.getSettings().getString("type", "any").toUpperCase().replace(" ", "_");
-            int level = active.get(shooter.getEntityId());
-            if (active.containsKey(shooter.getEntityId())
-                && (type.equals("ANY") || type.equals(event.getEntity().getType().name())))
-            {
-                getCastData(shooter).put("api-velocity", event.getEntity().getVelocity().length());
-                trigger(shooter, shooter, level, Trigger.LAUNCH);
-                if (cancel)
-                {
-                    event.setCancelled(true);
-                    cancel = false;
-                }
-            }
-        }
-    }
-
-    /**
-     * Applies the death/kill trigger effects
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onDeath(EntityDeathEvent event)
-    {
-        if (running) return;
-
-        // Death trigger
-        EffectComponent component = components.get(Trigger.DEATH);
-        if (active.containsKey(event.getEntity().getEntityId()) && component != null)
-        {
-            boolean killer = component.getSettings().getString("killer", "false").equalsIgnoreCase("true");
-            if (!killer || event.getEntity().getKiller() != null)
-            {
-                trigger(event.getEntity(), killer ? event.getEntity().getKiller() : event.getEntity(), active.get(event.getEntity().getEntityId()), Trigger.DEATH);
-                cancel = false;
-            }
-        }
-
-        // Kill trigger
-        Player player = event.getEntity().getKiller();
-        if (player != null && active.containsKey(player.getEntityId()))
-        {
-            trigger(player, player, active.get(player.getEntityId()), Trigger.KILL);
-            cancel = false;
-        }
-    }
-
-    /**
-     * Environmental damage trigger
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onEnvironmental(EntityDamageEvent event)
-    {
-        if (running) return;
-        if (!(event.getEntity() instanceof LivingEntity)) return;
-
-        EffectComponent component = components.get(Trigger.ENVIRONMENT_DAMAGE);
-        LivingEntity target = (LivingEntity) event.getEntity();
-        if (component != null && active.containsKey(target.getEntityId()))
-        {
-            String name = component.getSettings().getString("type", "").toUpperCase().replace(' ', '_');
-            if (event.getCause().name().equals(name))
-            {
-                getCastData(target).put("api-taken", event.getDamage());
-                trigger(target, target, active.get(target.getEntityId()), Trigger.ENVIRONMENT_DAMAGE);
-                if (cancel)
-                {
-                    event.setCancelled(true);
-                    cancel = false;
-                }
-            }
-        }
-
-    }
-
-    /**
-     * Applies physical damage triggers
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onPhysical(PhysicalDamageEvent event)
-    {
-        if (running) return;
-
-        LivingEntity damager = event.getDamager();
-        LivingEntity target = event.getTarget();
-        boolean projectile = event.isProjectile();
-
-        // Can't be null
-        if (damager == null || target == null)
-        {
-            return;
-        }
-
-        EffectComponent component;
-
-        // Physical receieved
-        component = components.get(Trigger.TOOK_PHYSICAL_DAMAGE);
-        if (component != null && active.containsKey(target.getEntityId()))
-        {
-            String type = component.settings.getString("type", "both").toLowerCase();
-            boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
-            double min = component.settings.getDouble("dmg-min");
-            double max = component.settings.getDouble("dmg-max");
-
-            if (event.getDamage() >= min && event.getDamage() <= max
-                && (type.equals("both") || (type.equals("projectile") == projectile)))
-            {
-                getCastData(target).put("api-taken", event.getDamage());
-                trigger(target, caster ? target : damager, active.get(target.getEntityId()), Trigger.TOOK_PHYSICAL_DAMAGE);
-                if (cancel)
-                {
-                    event.setCancelled(true);
-                    cancel = false;
-                }
-            }
-        }
-
-        // Physical dealt
-        component = components.get(Trigger.PHYSICAL_DAMAGE);
-        if (component != null && active.containsKey(damager.getEntityId()))
-        {
-            String type = component.settings.getString("type", "both").toLowerCase();
-            boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
-            double min = component.settings.getDouble("dmg-min");
-            double max = component.settings.getDouble("dmg-max");
-
-            if (event.getDamage() >= min && event.getDamage() <= max
-                && (type.equals("both") || type.equals("projectile") == projectile))
-            {
-                getCastData(damager).put("api-dealt", event.getDamage());
-                trigger(damager, caster ? damager : target, active.get(damager.getEntityId()), Trigger.PHYSICAL_DAMAGE);
-                if (cancel)
-                {
-                    event.setCancelled(true);
-                    cancel = false;
-                }
-            }
-        }
-    }
-
-    /**
-     * Applies skill damage triggers
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onSkillDamage(SkillDamageEvent event)
-    {
-        if (running) return;
-
-        LivingEntity damager = event.getDamager();
-        LivingEntity target = event.getTarget();
-
-        // Skill received
-        EffectComponent component = components.get(Trigger.TOOK_SKILL_DAMAGE);
-        if (component != null && active.containsKey(target.getEntityId()))
-        {
-            boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
-            double min = component.settings.getDouble("dmg-min");
-            double max = component.settings.getDouble("dmg-max");
-
-            if (event.getDamage() >= min && event.getDamage() <= max)
-            {
-                getCastData(target).put("api-taken", event.getDamage());
-                trigger(target, caster ? target : damager, active.get(event.getTarget().getEntityId()), Trigger.TOOK_SKILL_DAMAGE);
-                if (cancel)
-                {
-                    event.setCancelled(true);
-                    cancel = false;
-                }
-            }
-        }
-
-        // Skill dealt
-        component = components.get(Trigger.SKILL_DAMAGE);
-        if (component != null && active.containsKey(damager.getEntityId()))
-        {
-            boolean caster = !component.settings.getString("target", "true").toLowerCase().equals("false");
-            double min = component.settings.getDouble("dmg-min");
-            double max = component.settings.getDouble("dmg-max");
-
-            if (event.getDamage() >= min && event.getDamage() <= max)
-            {
-                getCastData(damager).put("api-dealt", event.getDamage());
-                trigger(damager, caster ? damager : target, active.get(damager.getEntityId()), Trigger.SKILL_DAMAGE);
-                if (cancel)
-                {
-                    event.setCancelled(true);
-                    cancel = false;
-                }
-            }
-        }
-    }
-
-    /**
-     * Applies crouch triggers
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onCrouch(PlayerToggleSneakEvent event)
-    {
-        if (running) return;
-
-        EffectComponent component = components.get(Trigger.CROUCH);
-        if (component != null && active.containsKey(event.getPlayer().getEntityId()))
-        {
-            String type = component.settings.getString("type", "start crouching");
-            if (type.equalsIgnoreCase("both") || event.isSneaking() != type.equalsIgnoreCase("stop crouching"))
-            {
-                trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.CROUCH);
-                cancel = false;
-            }
-        }
-    }
-
-    /**
-     * Land trigger
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onLand(PlayerLandEvent event)
-    {
-        if (running) return;
-
-        EffectComponent component = components.get(Trigger.LAND);
-        if (active.containsKey(event.getPlayer().getEntityId()) && component != null)
-        {
-            double minDistance = component.settings.getDouble("min-distance", 0);
-            if (event.getDistance() >= minDistance)
-            {
-                getCastData(event.getPlayer()).put("api-distance", event.getDistance());
-                trigger(event.getPlayer(), event.getPlayer(), active.get(event.getPlayer().getEntityId()), Trigger.LAND);
-                cancel = false;
-            }
-        }
-    }
-
-    private boolean trigger(LivingEntity user, LivingEntity target, int level, Trigger trigger)
-    {
-        if (user != null && components.containsKey(trigger))
-        {
-            EffectComponent component = components.get(trigger);
-            if (user instanceof Player)
-            {
-                PlayerData data = SkillAPI.getPlayerData((Player) user);
-                PlayerSkill skill = data.getSkill(getName());
-                boolean cd = component.getSettings().getBool("cooldown", false);
-                boolean mana = component.getSettings().getBool("mana", false);
-                if ((cd || mana) && !data.check(skill, cd, mana))
-                    return false;
-
-                if (cd)
-                    skill.startCooldown();
-                if (mana)
-                    data.useMana(skill.getManaCost(), ManaCost.SKILL_CAST);
-            }
-
-            ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
-            targets.add(target);
-
-            running = true;
-            boolean result = component.execute(user, level, targets);
-            running = false;
-            return result;
-        }
-        return false;
+    private boolean trigger(
+            final LivingEntity user,
+            final LivingEntity target,
+            final int level,
+            final TriggerComponent component) {
+        return component != null && component.trigger(user, target, level);
     }
 
     /**
@@ -574,29 +293,37 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param config config data to load from
      */
     @Override
-    public void load(DataSection config)
-    {
-        DataSection triggers = config.getSection("components");
-        if (triggers != null)
-        {
-            for (String key : triggers.keys())
-            {
-                try
-                {
-                    Trigger trigger = Trigger.valueOf(key.toUpperCase().replace(' ', '_').replaceAll("-.+", ""));
-                    EffectComponent component = trigger.getComponent();
-                    component.load(this, triggers.getSection(key));
-                    components.put(trigger, component);
+    public void load(final DataSection config) {
+        super.load(config);
+
+        final DataSection triggers = config.getSection("components");
+        if (triggers == null) { return; }
+
+        for (final String key : triggers.keys()) {
+            final String modified = key.replaceAll("-.+", "");
+            try {
+                final DataSection settings = triggers.getSection(key);
+                if (modified.equalsIgnoreCase("CAST")) {
+                    castTrigger = loadComponent(settings);
+                } else if (modified.equalsIgnoreCase("INITIALIZE")) {
+                    initializeTrigger = loadComponent(settings);
+                } else if (modified.equalsIgnoreCase("CLEANUP")) {
+                    cleanupTrigger = loadComponent(settings);
+                } else {
+                    this.triggers.add(new TriggerHandler(this, key, getTrigger(modified), loadComponent(settings)));
                 }
-                catch (Exception ex)
-                {
-                    // Invalid trigger
-                    Logger.invalid("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
-                }
+            } catch (final Exception ex) {
+                // Invalid trigger
+                ex.printStackTrace();
+                Logger.invalid("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
             }
         }
+    }
 
-        super.load(config);
+    private TriggerComponent loadComponent(final DataSection data) {
+        final TriggerComponent component = new TriggerComponent();
+        component.load(this, data);
+        return component;
     }
 
     /**
@@ -606,13 +333,19 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param config config to save to
      */
     @Override
-    public void save(DataSection config)
-    {
+    public void save(final DataSection config) {
         super.save(config);
-        DataSection triggers = config.createSection("components");
-        for (Trigger trigger : components.keySet())
-        {
-            components.get(trigger).save(triggers.createSection(TextFormatter.format(trigger.name())));
+        final DataSection triggers = config.createSection("components");
+        for (final TriggerHandler triggerHandler : this.triggers) {
+            triggerHandler.getComponent()
+                    .save(triggers.createSection(TextFormatter.format(triggerHandler.getKey())));
         }
+        save(triggers, castTrigger, "Cast");
+        save(triggers, initializeTrigger, "Initialize");
+        save(triggers, cleanupTrigger, "Cleanup");
+    }
+
+    private void save(final DataSection triggers, final TriggerComponent component, final String key) {
+        if (component != null) component.save(triggers.createSection(TextFormatter.format(key)));
     }
 }

@@ -26,11 +26,26 @@
  */
 package com.sucy.skill.dynamic;
 
-import org.bukkit.*;
+import com.google.common.collect.ImmutableList;
+import com.sucy.skill.api.util.Nearby;
+import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -43,13 +58,16 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Temporary dummy entity used for targeting a location in the dynamic system
  */
-public class TempEntity implements LivingEntity
-{
+public class TempEntity implements LivingEntity {
 
     private Location loc;
 
@@ -58,375 +76,331 @@ public class TempEntity implements LivingEntity
      *
      * @param loc location to represent
      */
-    public TempEntity(Location loc)
-    {
+    public TempEntity(Location loc) {
         this.loc = loc;
     }
 
-    @Override
-    public double getEyeHeight()
-    {
+    public double getEyeHeight() {
+        return 0.2;
+    }
+
+    public double getEyeHeight(boolean b) {
+        return 0.2;
+    }
+
+    public Location getEyeLocation() {
+        return getLocation().add(0, 1, 0);
+    }
+
+    public List<Block> getLineOfSight(HashSet<Byte> hashSet, int i) {
+        return null;
+    }
+
+    public List<Block> getLineOfSight(Set<Material> set, int i) {
+        return null;
+    }
+
+    public Block getTargetBlock(HashSet<Byte> hashSet, int i) {
+        return null;
+    }
+
+    public Block getTargetBlock(Set<Material> set, int i) {
+        return null;
+    }
+
+    public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hashSet, int i) {
+        return null;
+    }
+
+    public List<Block> getLastTwoTargetBlocks(Set<Material> set, int i) {
+        return null;
+    }
+
+    public Egg throwEgg() {
+        return null;
+    }
+
+    public Snowball throwSnowball() {
+        return null;
+    }
+
+    public Arrow shootArrow() {
+        return null;
+    }
+
+    public int getRemainingAir() {
         return 0;
     }
 
-    @Override
-    public double getEyeHeight(boolean b)
-    {
+    public void setRemainingAir(int i) {
+
+    }
+
+    public int getMaximumAir() {
         return 0;
     }
 
-    @Override
-    public Location getEyeLocation()
-    {
-        return null;
+    public void setMaximumAir(int i) {
+
     }
 
-    @Override
-    public List<Block> getLineOfSight(HashSet<Byte> hashSet, int i)
-    {
-        return null;
-    }
-
-    @Override
-    public List<Block> getLineOfSight(Set<Material> set, int i)
-    {
-        return null;
-    }
-
-    @Override
-    public Block getTargetBlock(HashSet<Byte> hashSet, int i)
-    {
-        return null;
-    }
-
-    @Override
-    public Block getTargetBlock(Set<Material> set, int i)
-    {
-        return null;
-    }
-
-    @Override
-    public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hashSet, int i)
-    {
-        return null;
-    }
-
-    @Override
-    public List<Block> getLastTwoTargetBlocks(Set<Material> set, int i)
-    {
-        return null;
-    }
-
-    public Egg throwEgg()
-    {
-        return null;
-    }
-
-    public Snowball throwSnowball()
-    {
-        return null;
-    }
-
-    public Arrow shootArrow()
-    {
-        return null;
-    }
-
-    @Override
-    public int getRemainingAir()
-    {
+    public int getMaximumNoDamageTicks() {
         return 0;
     }
 
-    @Override
-    public void setRemainingAir(int i)
-    {
+    public void setMaximumNoDamageTicks(int i) {
 
     }
 
-    @Override
-    public int getMaximumAir()
-    {
+    public double getLastDamage() {
         return 0;
     }
 
-    @Override
-    public void setMaximumAir(int i)
-    {
-
-    }
-
-    @Override
-    public int getMaximumNoDamageTicks()
-    {
+    public int _INVALID_getLastDamage() {
         return 0;
     }
 
-    @Override
-    public void setMaximumNoDamageTicks(int i)
-    {
+    public void setLastDamage(double v) {
 
     }
 
-    @Override
-    public double getLastDamage()
-    {
+    public void _INVALID_setLastDamage(int i) {
+
+    }
+
+    public int getNoDamageTicks() {
         return 0;
     }
 
-    @Override
-    public int _INVALID_getLastDamage()
-    {
+    public void setNoDamageTicks(int i) {
+
+    }
+
+    public Player getKiller() {
+        return null;
+    }
+
+    public boolean addPotionEffect(PotionEffect potionEffect) {
+        return false;
+    }
+
+    public boolean addPotionEffect(PotionEffect potionEffect, boolean b) {
+        return false;
+    }
+
+    public boolean addPotionEffects(Collection<PotionEffect> collection) {
+        return false;
+    }
+
+    public boolean hasPotionEffect(PotionEffectType potionEffectType) {
+        return false;
+    }
+
+    public PotionEffect getPotionEffect(PotionEffectType potionEffectType) {
+        return null;
+    }
+
+    public void removePotionEffect(PotionEffectType potionEffectType) {
+
+    }
+
+    public Collection<PotionEffect> getActivePotionEffects() {
+        return ImmutableList.of();
+    }
+
+    public boolean hasLineOfSight(Entity entity) {
+        return false;
+    }
+
+    public boolean getRemoveWhenFarAway() {
+        return false;
+    }
+
+    public void setRemoveWhenFarAway(boolean b) {
+
+    }
+
+    public EntityEquipment getEquipment() {
+        return null;
+    }
+
+    public void setCanPickupItems(boolean b) {
+
+    }
+
+    public boolean getCanPickupItems() {
+        return false;
+    }
+
+    public void setCustomName(String s) {
+
+    }
+
+    public String getCustomName() {
+        return null;
+    }
+
+    public void setCustomNameVisible(boolean b) {
+
+    }
+
+    public boolean isCustomNameVisible() {
+        return false;
+    }
+
+    public void setGlowing(boolean b) {
+
+    }
+
+    public boolean isGlowing() {
+        return false;
+    }
+
+    public void setInvulnerable(boolean b) {
+
+    }
+
+    public boolean isInvulnerable() {
+        return false;
+    }
+
+    public boolean isSilent() {
+        return false;
+    }
+
+    public void setSilent(boolean b) {
+
+    }
+
+    public boolean hasGravity() {
+        return false;
+    }
+
+    public void setGravity(boolean b) {
+
+    }
+
+    public int getPortalCooldown() {
         return 0;
     }
 
-    @Override
-    public void setLastDamage(double v)
-    {
+    public void setPortalCooldown(int i) {
 
     }
 
-    @Override
-    public void _INVALID_setLastDamage(int i)
-    {
-
-    }
-
-    @Override
-    public int getNoDamageTicks()
-    {
-        return 0;
-    }
-
-    @Override
-    public void setNoDamageTicks(int i)
-    {
-
-    }
-
-    @Override
-    public Player getKiller()
-    {
+    public Set<String> getScoreboardTags() {
         return null;
     }
 
-    @Override
-    public boolean addPotionEffect(PotionEffect potionEffect)
-    {
+    public boolean addScoreboardTag(String s) {
         return false;
     }
 
-    @Override
-    public boolean addPotionEffect(PotionEffect potionEffect, boolean b)
-    {
+    public boolean removeScoreboardTag(String s) {
         return false;
     }
 
-    @Override
-    public boolean addPotionEffects(Collection<PotionEffect> collection)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean hasPotionEffect(PotionEffectType potionEffectType)
-    {
-        return false;
-    }
-
-    @Override
-    public void removePotionEffect(PotionEffectType potionEffectType)
-    {
-
-    }
-
-    @Override
-    public Collection<PotionEffect> getActivePotionEffects()
-    {
+    public PistonMoveReaction getPistonMoveReaction() {
         return null;
     }
 
-    @Override
-    public boolean hasLineOfSight(Entity entity)
-    {
+    public boolean isLeashed() {
         return false;
     }
 
-    @Override
-    public boolean getRemoveWhenFarAway()
-    {
-        return false;
-    }
-
-    @Override
-    public void setRemoveWhenFarAway(boolean b)
-    {
-
-    }
-
-    @Override
-    public EntityEquipment getEquipment()
-    {
+    public Entity getLeashHolder() throws IllegalStateException {
         return null;
     }
 
-    @Override
-    public void setCanPickupItems(boolean b)
-    {
-
-    }
-
-    @Override
-    public boolean getCanPickupItems()
-    {
+    public boolean setLeashHolder(Entity entity) {
         return false;
     }
 
-    @Override
-    public void setCustomName(String s)
-    {
-
-    }
-
-    @Override
-    public String getCustomName()
-    {
-        return null;
-    }
-
-    @Override
-    public void setCustomNameVisible(boolean b)
-    {
-
-    }
-
-    @Override
-    public boolean isCustomNameVisible()
-    {
+    public boolean isGliding() {
         return false;
     }
 
-    public void setGlowing(boolean b)
-    {
+    public void setGliding(boolean b) {
 
     }
 
-    public boolean isGlowing()
-    {
+    public boolean isSwimming() { return false; }
+
+    public void setSwimming(final boolean b) { }
+
+    public void setAI(boolean b) { }
+
+    public boolean hasAI() {
         return false;
     }
 
-    @Override
-    public Spigot spigot()
-    {
-        return null;
+    public void setCollidable(boolean b) {
+
     }
 
-    @Override
-    public boolean isLeashed()
-    {
+    public boolean isCollidable() {
         return false;
     }
 
-    @Override
-    public Entity getLeashHolder() throws IllegalStateException
-    {
-        return null;
-    }
-
-    @Override
-    public boolean setLeashHolder(Entity entity)
-    {
-        return false;
-    }
-
-    @Override
-    public void damage(double v)
-    {
+    public void damage(double v) {
 
     }
 
-    @Override
-    public void _INVALID_damage(int i)
-    {
+    public void _INVALID_damage(int i) {
 
     }
 
-    @Override
-    public void damage(double v, Entity entity)
-    {
+    public void damage(double v, Entity entity) {
 
     }
 
-    @Override
-    public void _INVALID_damage(int i, Entity entity)
-    {
+    public void _INVALID_damage(int i, Entity entity) {
 
     }
 
-    @Override
-    public double getHealth()
-    {
+    public double getHealth() {
         return 1;
     }
 
-    @Override
-    public int _INVALID_getHealth()
-    {
+    public int _INVALID_getHealth() {
         return 0;
     }
 
-    @Override
-    public void setHealth(double v)
-    {
+    public void setHealth(double v) {
 
     }
 
-    @Override
-    public void _INVALID_setHealth(int i)
-    {
+    public void _INVALID_setHealth(int i) {
 
     }
 
-    @Override
-    public double getMaxHealth()
-    {
+    public double getMaxHealth() {
         return 1;
     }
 
-    @Override
-    public int _INVALID_getMaxHealth()
-    {
+    public int _INVALID_getMaxHealth() {
         return 0;
     }
 
-    @Override
-    public void setMaxHealth(double v)
-    {
+    public void setMaxHealth(double v) {
+
+    }
+
+    public void _INVALID_setMaxHealth(int i) {
+
+    }
+
+    public void resetMaxHealth() {
 
     }
 
     @Override
-    public void _INVALID_setMaxHealth(int i)
-    {
-
-    }
-
-    @Override
-    public void resetMaxHealth()
-    {
-
-    }
-
-    @Override
-    public Location getLocation()
-    {
+    public Location getLocation() {
         return loc.clone();
     }
 
     @Override
-    public Location getLocation(Location location)
-    {
+    public Location getLocation(Location location) {
         location.setX(loc.getX());
         location.setY(loc.getY());
         location.setZ(loc.getZ());
@@ -436,350 +410,255 @@ public class TempEntity implements LivingEntity
         return location;
     }
 
-    @Override
-    public void setVelocity(Vector vector)
-    {
+    public void setVelocity(Vector vector) {
 
     }
 
-    @Override
-    public Vector getVelocity()
-    {
+    public Vector getVelocity() {
         return new Vector(0, 0, 0);
     }
 
-    @Override
-    public boolean isOnGround()
-    {
+    public double getHeight() {
+        return 0;
+    }
+
+    public double getWidth() {
+        return 0;
+    }
+
+    public boolean isOnGround() {
         return true;
     }
 
     @Override
-    public World getWorld()
-    {
+    public World getWorld() {
         return loc.getWorld();
     }
 
     @Override
-    public boolean teleport(Location location)
-    {
+    public boolean teleport(Location location) {
         loc = location;
         return true;
     }
 
     @Override
-    public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause teleportCause)
-    {
+    public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause teleportCause) {
         loc = location;
         return true;
     }
 
     @Override
-    public boolean teleport(Entity entity)
-    {
+    public boolean teleport(Entity entity) {
         loc = entity.getLocation();
         return true;
     }
 
     @Override
-    public boolean teleport(Entity entity, PlayerTeleportEvent.TeleportCause teleportCause)
-    {
+    public boolean teleport(Entity entity, PlayerTeleportEvent.TeleportCause teleportCause) {
         loc = entity.getLocation();
         return true;
     }
 
-    @Override
-    public List<Entity> getNearbyEntities(double x, double y, double z)
-    {
-        ArrayList<Entity> list = new ArrayList<Entity>();
-        for (Entity entity : loc.getWorld().getEntities())
-        {
-            if (entity.getLocation().distanceSquared(loc) < x * x)
-            {
-                list.add(entity);
-            }
-        }
-        return list;
+    public List<Entity> getNearbyEntities(double x, double y, double z) {
+        return Nearby.getNearby(loc, x);
     }
 
-    @Override
-    public int getEntityId()
-    {
+    public int getEntityId() {
         return 0;
     }
 
-    @Override
-    public int getFireTicks()
-    {
+    public int getFireTicks() {
         return 0;
     }
 
-    @Override
-    public int getMaxFireTicks()
-    {
+    public int getMaxFireTicks() {
         return 0;
     }
 
-    @Override
-    public void setFireTicks(int i)
-    {
+    public void setFireTicks(int i) {
 
     }
 
-    @Override
-    public void remove()
-    {
+    public void remove() {
 
     }
 
-    @Override
-    public boolean isDead()
-    {
+    public boolean isDead() {
         return false;
     }
 
-    @Override
-    public boolean isValid()
-    {
+    public boolean isValid() {
         return true;
     }
 
-    @Override
-    public void sendMessage(String s)
-    {
+    public void sendMessage(String s) {
 
     }
 
-    @Override
-    public void sendMessage(String[] strings)
-    {
+    public void sendMessage(String[] strings) {
 
     }
 
-    @Override
-    public Server getServer()
-    {
+    public Server getServer() {
         return Bukkit.getServer();
     }
 
-    @Override
-    public String getName()
-    {
+    public String getName() {
         return "Location";
     }
 
-    @Override
-    public Entity getPassenger()
-    {
+    public Entity getPassenger() {
         return null;
     }
 
-    @Override
-    public boolean setPassenger(Entity entity)
-    {
+    public boolean setPassenger(Entity entity) {
         return false;
     }
 
-    @Override
-    public boolean isEmpty()
-    {
+    public List<Entity> getPassengers() {
+        return null;
+    }
+
+    public boolean addPassenger(final Entity entity) {
         return false;
     }
 
-    @Override
-    public boolean eject()
-    {
+    public boolean removePassenger(final Entity entity) {
         return false;
     }
 
-    @Override
-    public float getFallDistance()
-    {
+    public boolean isEmpty() {
+        return false;
+    }
+
+    public boolean eject() {
+        return false;
+    }
+
+    public float getFallDistance() {
         return 0;
     }
 
-    @Override
-    public void setFallDistance(float v)
-    {
+    public void setFallDistance(float v) {
 
     }
 
-    @Override
-    public void setLastDamageCause(EntityDamageEvent entityDamageEvent)
-    {
+    public void setLastDamageCause(EntityDamageEvent entityDamageEvent) {
 
     }
 
-    @Override
-    public EntityDamageEvent getLastDamageCause()
-    {
+    public EntityDamageEvent getLastDamageCause() {
         return null;
     }
 
-    @Override
-    public UUID getUniqueId()
-    {
+    public UUID getUniqueId() {
         return null;
     }
 
-    @Override
-    public int getTicksLived()
-    {
+    public int getTicksLived() {
         return 0;
     }
 
-    @Override
-    public void setTicksLived(int i)
-    {
+    public void setTicksLived(int i) {
 
     }
 
-    @Override
-    public void playEffect(EntityEffect entityEffect)
-    {
+    public void playEffect(EntityEffect entityEffect) {
     }
 
-    @Override
-    public EntityType getType()
-    {
+    public EntityType getType() {
         return EntityType.CHICKEN;
     }
 
-    @Override
-    public boolean isInsideVehicle()
-    {
+    public boolean isInsideVehicle() {
         return false;
     }
 
-    @Override
-    public boolean leaveVehicle()
-    {
+    public boolean leaveVehicle() {
         return false;
     }
 
-    @Override
-    public Entity getVehicle()
-    {
+    public Entity getVehicle() {
         return null;
     }
 
-    @Override
-    public void setMetadata(String s, MetadataValue metadataValue)
-    {
+    public void setMetadata(String s, MetadataValue metadataValue) {
 
     }
 
-    @Override
-    public List<MetadataValue> getMetadata(String s)
-    {
+    public List<MetadataValue> getMetadata(String s) {
         return null;
     }
 
-    @Override
-    public boolean hasMetadata(String s)
-    {
+    public boolean hasMetadata(String s) {
         return false;
     }
 
-    @Override
-    public void removeMetadata(String s, Plugin plugin)
-    {
+    public void removeMetadata(String s, Plugin plugin) {
 
     }
 
-    @Override
-    public <T extends Projectile> T launchProjectile(Class<? extends T> aClass)
-    {
+    public <T extends Projectile> T launchProjectile(Class<? extends T> aClass) {
         return null;
     }
 
-    @Override
-    public <T extends Projectile> T launchProjectile(Class<? extends T> aClass, Vector vector)
-    {
+    public <T extends Projectile> T launchProjectile(Class<? extends T> aClass, Vector vector) {
         return null;
     }
 
-    @Override
-    public boolean isPermissionSet(String s)
-    {
+    public boolean isPermissionSet(String s) {
         return false;
     }
 
-    @Override
-    public boolean isPermissionSet(Permission permission)
-    {
+    public boolean isPermissionSet(Permission permission) {
         return false;
     }
 
-    @Override
-    public boolean hasPermission(String s)
-    {
+    public boolean hasPermission(String s) {
         return false;
     }
 
-    @Override
-    public boolean hasPermission(Permission permission)
-    {
+    public boolean hasPermission(Permission permission) {
         return false;
     }
 
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b)
-    {
+    public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b) {
         return null;
     }
 
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin)
-    {
+    public PermissionAttachment addAttachment(Plugin plugin) {
         return null;
     }
 
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b, int i)
-    {
+    public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b, int i) {
         return null;
     }
 
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, int i)
-    {
+    public PermissionAttachment addAttachment(Plugin plugin, int i) {
         return null;
     }
 
-    @Override
-    public void removeAttachment(PermissionAttachment permissionAttachment)
-    {
+    public void removeAttachment(PermissionAttachment permissionAttachment) {
 
     }
 
-    @Override
-    public void recalculatePermissions()
-    {
+    public void recalculatePermissions() {
 
     }
 
-    @Override
-    public Set<PermissionAttachmentInfo> getEffectivePermissions()
-    {
+    public Set<PermissionAttachmentInfo> getEffectivePermissions() {
         return null;
     }
 
-    @Override
-    public boolean isOp()
-    {
+    public boolean isOp() {
         return false;
     }
 
-    @Override
-    public void setOp(boolean b)
-    {
+    public void setOp(boolean b) {
 
     }
 
-    @Override
-    public AttributeInstance getAttribute(Attribute attribute)
-    {
+    public AttributeInstance getAttribute(Attribute attribute) {
         return null;
     }
 }

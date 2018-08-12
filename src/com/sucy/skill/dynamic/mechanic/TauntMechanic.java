@@ -26,7 +26,8 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.hook.MythicMobsHook;
+import com.sucy.skill.hook.PluginChecker;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 
@@ -35,8 +36,15 @@ import java.util.List;
 /**
  * Mechanic for taunting mobs
  */
-public class TauntMechanic extends EffectComponent
+public class TauntMechanic extends MechanicComponent
 {
+    private static final String AMOUNT = "amount";
+
+    @Override
+    public String getKey() {
+        return "taunt";
+    }
+
     /**
      * Executes the component
      *
@@ -49,12 +57,18 @@ public class TauntMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
+        double amount = parseValues(caster, AMOUNT, level, 1);
         boolean taunted = false;
         for (LivingEntity entity : targets)
         {
             if (entity instanceof Creature && entity != caster)
             {
-                ((Creature) entity).setTarget(caster);
+                if (PluginChecker.isMythicMobsActive() && MythicMobsHook.isMonster(entity)) {
+                    MythicMobsHook.taunt(entity, caster, amount);
+                }
+                else {
+                    ((Creature) entity).setTarget(caster);
+                }
                 taunted = true;
             }
         }

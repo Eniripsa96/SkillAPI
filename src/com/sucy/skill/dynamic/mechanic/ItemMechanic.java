@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -39,7 +38,7 @@ import java.util.List;
 /**
  * Gives an item to each player target
  */
-public class ItemMechanic extends EffectComponent
+public class ItemMechanic extends MechanicComponent
 {
     private static final String MATERIAL = "material";
     private static final String AMOUNT   = "amount";
@@ -48,6 +47,11 @@ public class ItemMechanic extends EffectComponent
     private static final String CUSTOM   = "custom";
     private static final String NAME     = "name";
     private static final String LORE     = "lore";
+
+    @Override
+    public String getKey() {
+        return "item";
+    }
 
     /**
      * Executes the component
@@ -90,11 +94,12 @@ public class ItemMechanic extends EffectComponent
             item.setItemMeta(meta);
         }
 
+        boolean worked = false;
         for (LivingEntity target : targets)
         {
             if (target instanceof Player)
             {
-                ((Player) target).getInventory().addItem(item);
+                worked = ((Player) target).getInventory().addItem(item).isEmpty() || worked;
             }
         }
         return targets.size() > 0;

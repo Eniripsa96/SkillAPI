@@ -26,9 +26,8 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.rit.sucy.config.parse.NumberParser;
 import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.api.util.NumberParser;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -40,12 +39,17 @@ import java.util.regex.Pattern;
 /**
  * Deals damage based on a held item's lore to each target
  */
-public class DamageLoreMechanic extends EffectComponent
+public class DamageLoreMechanic extends MechanicComponent
 {
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
     private static final String HAND       = "hand";
     private static final String TRUE       = "true";
+
+    @Override
+    public String getKey() {
+        return "damage lore";
+    }
 
     /**
      * Executes the component
@@ -59,11 +63,10 @@ public class DamageLoreMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String regex = settings.getString(REGEX, "Damage: {value}");
         regex = regex.replace("{value}", "([0-9]+)");
         Pattern pattern = Pattern.compile(regex);
-        double m = attr(caster, MULTIPLIER, level, 1.0, isSelf);
+        double m = parseValues(caster, MULTIPLIER, level, 1.0);
         boolean worked = false;
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
             && settings.getString(HAND).equalsIgnoreCase("offhand");
@@ -95,6 +98,9 @@ public class DamageLoreMechanic extends EffectComponent
                     {
                         for (LivingEntity target : targets)
                         {
+                            if (target.isDead())
+                                continue;
+
                             if (trueDmg)
                                 skill.trueDamage(target, base * m, caster);
                             else

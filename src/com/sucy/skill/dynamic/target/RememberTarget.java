@@ -26,55 +26,42 @@
  */
 package com.sucy.skill.dynamic.target;
 
+import com.google.common.collect.ImmutableList;
+import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
 /**
  * Applies a flag to each target
  */
-public class RememberTarget extends EffectComponent
-{
+public class RememberTarget extends TargetComponent {
     private static final String KEY = "key";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
-    {
-        if (!settings.has(KEY))
-        {
-            return false;
-        }
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
+        final List<LivingEntity> targets = getTargets(caster, level, null);
+        if (!targets.isEmpty()) { makeCircleIndicator(list, targets.get(0), 0.5); }
+    }
 
-        String key = settings.getString(KEY);
-        Object data = DynamicSkill.getCastData(caster).get(key);
-        try
-        {
-            List<LivingEntity> remembered = (List<LivingEntity>) data;
-            for (int i = 0; i < remembered.size(); i++)
-            {
-                if (remembered.get(i).isDead() || !remembered.get(i).isValid())
-                {
-                    remembered.remove(i);
-                    i--;
-                }
-            }
-            return targets.size() > 0 && executeChildren(caster, level, remembered);
-        }
-        catch (Exception ex)
-        {
-            return false;
-        }
+    /** {@inheritDoc} */
+    @Override
+    List<LivingEntity> getTargets(
+            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        return remember(caster, settings.getString(KEY));
+    }
+
+    public static List<LivingEntity> remember(final LivingEntity caster, final String key) {
+        final Object data = DynamicSkill.getCastData(caster).get(key);
+        //noinspection unchecked - proper skill setup should cause this to work
+        return data == null ? ImmutableList.of() : (List<LivingEntity>) data;
+    }
+
+    @Override
+    public String getKey() {
+        return "remember";
     }
 }

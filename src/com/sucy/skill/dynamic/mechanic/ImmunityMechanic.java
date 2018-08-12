@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.util.FlagManager;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -36,13 +35,18 @@ import java.util.List;
 /**
  * Applies a damage immunity flag to each target
  */
-public class ImmunityMechanic extends EffectComponent
+public class ImmunityMechanic extends MechanicComponent
 {
     public static final String META_KEY = "sapi_immunity";
 
     private static final String TYPE    = "type";
     private static final String SECONDS = "seconds";
     private static final String MULTIPLIER = "multiplier";
+
+    @Override
+    public String getKey() {
+        return "immunity";
+    }
 
     /**
      * Executes the component
@@ -63,8 +67,8 @@ public class ImmunityMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(TYPE);
-        double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
-        double multiplier = attr(caster, MULTIPLIER, level, 0, isSelf);
+        double seconds = parseValues(caster, SECONDS, level, 3.0);
+        double multiplier = parseValues(caster, MULTIPLIER, level, 0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {

@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,15 +35,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Executes child components continuously
  */
-public class PassiveMechanic extends EffectComponent
-{
+public class PassiveMechanic extends MechanicComponent {
     private static final String PERIOD = "seconds";
 
-    private static final HashMap<String, ArrayList<PassiveTask>> TASKS = new HashMap<String, ArrayList<PassiveTask>>();
+    private final Map<Integer, PassiveTask> tasks = new HashMap<>();
 
     /**
      * Executes the component
@@ -56,63 +55,39 @@ public class PassiveMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() > 0)
-        {
-            boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-            int period = (int) (attr(caster, PERIOD, level, 1.0, isSelf) * 20);
-            PassiveTask task = new PassiveTask(caster, level, targets, period);
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (tasks.containsKey(caster.getEntityId())) { return false; }
 
-            if (!TASKS.containsKey(skill.getName())) TASKS.put(skill.getName(), new ArrayList<PassiveTask>());
-            TASKS.get(skill.getName()).add(task);
+        if (targets.size() > 0) {
+            final int period = (int) (parseValues(caster, PERIOD, level, 1.0) * 20);
+            final PassiveTask task = new PassiveTask(caster, level, targets, period);
+            tasks.put(caster.getEntityId(), task);
 
             return true;
         }
         return false;
     }
 
-    /**
-     * Stops all passive tasks for the player
-     *
-     * @param player player to cancel tasks for
-     * @param skill  skill to cancel
-     */
-    public static void stopTasks(LivingEntity player, String skill)
-    {
-        ArrayList<PassiveTask> tasks = TASKS.get(skill);
-        if (tasks == null) return;
-        for (int i = 0; i < tasks.size(); i++)
-        {
-            if (tasks.get(i).caster == player)
-            {
-                tasks.get(i).cancel();
-                tasks.remove(i);
-                i--;
-            }
+    @Override
+    public String getKey() {
+        return "passive";
+    }
+
+    @Override
+    protected void doCleanUp(final LivingEntity caster) {
+        final PassiveTask task = tasks.remove(caster.getEntityId());
+        if (task != null) {
+            task.cancel();
         }
     }
 
-    /**
-     * Stops all passive tasks
-     */
-    public static void stopAll()
-    {
-        for (ArrayList<PassiveTask> list : TASKS.values())
-            for (PassiveTask task : list)
-                task.cancel();
-        TASKS.clear();
-    }
-
-    private class PassiveTask extends BukkitRunnable
-    {
+    private class PassiveTask extends BukkitRunnable {
         private List<LivingEntity> targets;
         private LivingEntity       caster;
         private int                level;
 
-        public PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period)
-        {
-            this.targets = targets;
+        PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period) {
+            this.targets = new ArrayList<>(targets);
             this.caster = caster;
             this.level = level;
 
@@ -120,33 +95,34 @@ public class PassiveMechanic extends EffectComponent
         }
 
         @Override
-        public void run()
-        {
-            for (int i = 0; i < targets.size(); i++)
-            {
-                if (targets.get(i).isDead() || !targets.get(i).isValid())
-                {
+        public void cancel() {
+            super.cancel();
+            tasks.remove(caster.getEntityId());
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < targets.size(); i++) {
+                if (targets.get(i).isDead() || !targets.get(i).isValid()) {
                     targets.remove(i);
                 }
             }
-            if (!skill.isActive(caster) || targets.size() == 0)
-            {
+            if (!skill.isActive(caster) || targets.size() == 0) {
                 cancel();
-                TASKS.get(skill.getName()).remove(this);
                 return;
-            }
-            else if (caster instanceof Player)
-            {
+            } else if (caster instanceof Player) {
                 PlayerSkill data = getSkillData(caster);
-                if (data == null || !data.isUnlocked() || !((Player) caster).isOnline())
-                {
+                if (data == null || !data.isUnlocked() || !((Player) caster).isOnline()) {
                     cancel();
-                    TASKS.get(skill.getName()).remove(this);
                     return;
                 }
             }
             level = skill.getActiveLevel(caster);
             executeChildren(caster, level, targets);
+
+            if (skill.checkCancelled()) {
+                cancel();
+            }
         }
     }
 }

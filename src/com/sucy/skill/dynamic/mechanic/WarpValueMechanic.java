@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
@@ -37,9 +36,14 @@ import java.util.List;
 /**
  * Applies a flag to each target
  */
-public class WarpValueMechanic extends EffectComponent
+public class WarpValueMechanic extends MechanicComponent
 {
     private static final String KEY = "key";
+
+    @Override
+    public String getKey() {
+        return "warp value";
+    }
 
     /**
      * Executes the component

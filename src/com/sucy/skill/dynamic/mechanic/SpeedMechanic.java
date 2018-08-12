@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.util.FlagManager;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.MechanicListener;
 import org.bukkit.entity.LivingEntity;
@@ -38,10 +37,14 @@ import java.util.List;
 /**
  * Applies a flag to each target
  */
-public class SpeedMechanic extends EffectComponent
-{
+public class SpeedMechanic extends MechanicComponent {
     private static final String MULTIPLIER = "multiplier";
     private static final String DURATION   = "duration";
+
+    @Override
+    public String getKey() {
+        return "speed";
+    }
 
     /**
      * Executes the component
@@ -53,16 +56,13 @@ public class SpeedMechanic extends EffectComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        float multiplier = (float) attr(caster, MULTIPLIER, level, 1.2, isSelf);
-        double seconds = attr(caster, DURATION, level, 3.0, isSelf);
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        float multiplier = (float) parseValues(caster, MULTIPLIER, level, 1.2);
+        double seconds = parseValues(caster, DURATION, level, 3.0);
         int ticks = (int) (seconds * 20);
         boolean worked = false;
-        for (LivingEntity target : targets)
-        {
-            if (!(target instanceof Player)) continue;
+        for (LivingEntity target : targets) {
+            if (!(target instanceof Player)) { continue; }
 
             AttributeListener.refreshSpeed((Player) target);
             FlagManager.addFlag(target, MechanicListener.SPEED_KEY, ticks);

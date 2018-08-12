@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,10 +35,15 @@ import java.util.List;
 /**
  * Executes a command for each target
  */
-public class CommandMechanic extends EffectComponent
+public class CommandMechanic extends MechanicComponent
 {
     private static final String COMMAND = "command";
     private static final String TYPE    = "type";
+
+    @Override
+    public String getKey() {
+        return "command";
+    }
 
     /**
      * Executes the component
@@ -67,18 +71,17 @@ public class CommandMechanic extends EffectComponent
             {
                 Player p = (Player) t;
                 worked = true;
-                String filtered = command.replace("{player}", p.getName());
+
+                command = filter(caster, p, command);
                 if (type.equals("op"))
                 {
                     boolean op = p.isOp();
                     p.setOp(true);
-                    Bukkit.getServer().dispatchCommand(p, filtered);
+                    Bukkit.getServer().dispatchCommand(p, command);
                     p.setOp(op);
                 }
                 else
-                {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), filtered);
-                }
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
             }
         }
 

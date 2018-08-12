@@ -28,6 +28,7 @@ package com.sucy.skill.api.projectile;
 
 import com.rit.sucy.reflect.Reflection;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.log.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -70,7 +71,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
+            Logger.log("Unable to use reflection for accurate collision - will resort to simple radius check");
         }
     }
 
@@ -83,13 +84,14 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
 
     private boolean enemy = true;
     private boolean ally  = false;
+    private boolean valid = true;
 
     /**
      * Constructs a new custom projectile and starts its timer task
      *
      * @param thrower entity firing the projectile
      */
-    CustomProjectile(LivingEntity thrower)
+    public CustomProjectile(LivingEntity thrower)
     {
         this.thrower = thrower;
         runTaskTimer(Bukkit.getPluginManager().getPlugin("SkillAPI"), 1, 1);
@@ -146,14 +148,20 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         // Hitting a solid block
         if (landed())
         {
-            cancel();
-            Bukkit.getPluginManager().callEvent(land());
-            if (callback != null)
-                callback.callback(this, null);
+            this.applyLanded();
             return false;
         }
 
         return true;
+    }
+
+    public void applyLanded() {
+        if (valid) {
+            cancel();
+            Bukkit.getPluginManager().callEvent(land());
+            if (callback != null)
+                callback.callback(this, null);
+        }
     }
 
     /**
@@ -196,8 +204,9 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
             for (Object item : (List) list)
             {
                 Object bukkit = getBukkitEntity.invoke(item);
-                if (bukkit instanceof LivingEntity)
+                if (bukkit instanceof LivingEntity) {
                     result.add((LivingEntity) bukkit);
+                }
             }
         }
         // Fallback when reflection fails
@@ -225,8 +234,8 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         Location loc = getLocation();
         double rad = getCollisionRadius();
         return aabbConstructor.newInstance(
-            loc.getX() - rad, loc.getY() - rad, loc.getZ() - rad,
-            loc.getX() + rad, loc.getY() + rad, loc.getZ() + rad
+                loc.getX() - rad, loc.getY() - rad, loc.getZ() - rad,
+                loc.getX() + rad, loc.getY() + rad, loc.getZ() + rad
         );
     }
 
@@ -279,6 +288,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     public void cancel()
     {
         super.cancel();
+        valid = false;
     }
 
     /**

@@ -60,8 +60,8 @@ public class InventoryTask extends BukkitRunnable
     private        int      playersPerCheck;
     private int index = -1;
 
-    private static HashMap<UUID, AttribBuffs> attribs     = new HashMap<UUID, AttribBuffs>();
-    private static HashMap<String, Integer>   tempAttribs = new HashMap<String, Integer>();
+    private static HashMap<UUID, AttribBuffs> attribs     = new HashMap<>();
+    private static HashMap<String, Integer>   tempAttribs = new HashMap<>();
 
     /**
      * Task constructor
@@ -199,7 +199,7 @@ public class InventoryTask extends BukkitRunnable
         if (item.hasItemMeta() && item.getItemMeta().hasLore())
         {
             List<String> lore = item.getItemMeta().getLore();
-            HashMap<String, Integer> itemAttribs = new HashMap<String, Integer>();
+            HashMap<String, Integer> itemAttribs = new HashMap<>();
 
             // Check each line of the lore
             for (String line : lore)
@@ -373,7 +373,7 @@ public class InventoryTask extends BukkitRunnable
 
     private class AttribBuffs
     {
-        private HashMap<String, Integer> attribs = new HashMap<String, Integer>();
+        private HashMap<String, Integer> attribs = new HashMap<>();
 
         public void apply(PlayerData data)
         {
@@ -404,7 +404,7 @@ public class InventoryTask extends BukkitRunnable
                 }
             }
             if (dirty)
-                attribs = new HashMap<String, Integer>(tempAttribs);
+                attribs = new HashMap<>(tempAttribs);
         }
     }
 }

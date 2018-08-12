@@ -26,7 +26,12 @@
  */
 package com.sucy.skill.api;
 
+import com.google.common.collect.ImmutableList;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.dynamic.custom.CustomEffectComponent;
+import com.sucy.skill.dynamic.trigger.Trigger;
+
+import java.util.List;
 
 /**
  * <p>Interface for plugins that define new classes and skills</p>
@@ -53,4 +58,12 @@ public interface SkillPlugin
      * <p>This is called after registerSkills</p>
      */
     void registerClasses(SkillAPI api);
+
+    default List<Trigger> getTriggers() {
+        return ImmutableList.of();
+    }
+
+    default List<CustomEffectComponent> getComponents() {
+        return ImmutableList.of();
+    }
 }

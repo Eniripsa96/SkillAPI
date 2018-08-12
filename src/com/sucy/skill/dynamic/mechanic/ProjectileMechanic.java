@@ -28,13 +28,19 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.projectile.CustomProjectile;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LargeFireball;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -45,7 +51,7 @@ import java.util.List;
 /**
  * Heals each target
  */
-public class ProjectileMechanic extends EffectComponent
+public class ProjectileMechanic extends MechanicComponent
 {
     private static final Vector UP = new Vector(0, 1, 0);
 
@@ -64,6 +70,11 @@ public class ProjectileMechanic extends EffectComponent
     private static final String UPWARD     = "upward";
     private static final String FORWARD    = "forward";
 
+    @Override
+    public String getKey() {
+        return "projectile";
+    }
+
     /**
      * Executes the component
      *
@@ -77,9 +88,9 @@ public class ProjectileMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         // Get common values
-        int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
-        double speed = attr(caster, SPEED, level, 2.0, true);
-        double range = attr(caster, RANGE, level, 999, true);
+        int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
+        double speed = parseValues(caster, SPEED, level, 2.0);
+        double range = parseValues(caster, RANGE, level, 999);
         boolean flaming = settings.getString(FLAMING, "false").equalsIgnoreCase("true");
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
@@ -118,8 +129,8 @@ public class ProjectileMechanic extends EffectComponent
             // Apply the spread type
             if (spread.equals("rain"))
             {
-                double radius = attr(caster, RADIUS, level, 2.0, true);
-                double height = attr(caster, HEIGHT, level, 8.0, true);
+                double radius = parseValues(caster, RADIUS, level, 2.0);
+                double height = parseValues(caster, HEIGHT, level, 8.0);
 
                 ArrayList<Location> locs = CustomProjectile.calcRain(target.getLocation(), radius, height, amount);
                 for (Location loc : locs)
@@ -140,10 +151,10 @@ public class ProjectileMechanic extends EffectComponent
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = attr(caster, ANGLE, level, 30.0, true);
-                double right = attr(caster, RIGHT, level, 0, true);
-                double upward = attr(caster, UPWARD, level, 0, true);
-                double forward = attr(caster, FORWARD, level, 0, true);
+                double angle = parseValues(caster, ANGLE, level, 30.0);
+                double right = parseValues(caster, RIGHT, level, 0);
+                double upward = parseValues(caster, UPWARD, level, 0);
+                double forward = parseValues(caster, FORWARD, level, 0);
 
                 Vector looking = target.getLocation().getDirection().setY(0).normalize();
                 Vector normal = looking.clone().crossProduct(UP);
@@ -200,6 +211,15 @@ public class ProjectileMechanic extends EffectComponent
     {{
         put("arrow", Material.ARROW);
         put("egg", Material.EGG);
-        put("snowball", Material.SNOW_BALL);
+        put("snowball", snowBall());
     }};
+
+    private static Material snowBall() {
+        for (Material material : Material.values()) {
+            if (material.name().startsWith("SNOW") && material.name().endsWith("BALL")) {
+                return material;
+            }
+        }
+        return Material.SNOW;
+    }
 }

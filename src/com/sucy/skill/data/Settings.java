@@ -379,6 +379,7 @@ public class Settings
     private boolean auto;
     private boolean useSql;
     private int     minutes;
+    private int     sqlDelay;
 
     private String sqlHost;
     private String sqlPort;
@@ -391,8 +392,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isAutoSave()
-    {
+    public boolean isAutoSave() {
         return auto;
     }
 
@@ -401,8 +401,7 @@ public class Settings
      *
      * @return frequency of saves
      */
-    public int getSaveFreq()
-    {
+    public int getSaveFreq() {
         return minutes * 60 * 20;
     }
 
@@ -411,8 +410,7 @@ public class Settings
      *
      * @return true if enabled, false otherwise
      */
-    public boolean isUseSql()
-    {
+    public boolean isUseSql() {
         return useSql;
     }
 
@@ -421,8 +419,7 @@ public class Settings
      *
      * @return host IP for SQL database
      */
-    public String getSQLHost()
-    {
+    public String getSQLHost() {
         return sqlHost;
     }
 
@@ -431,8 +428,7 @@ public class Settings
      *
      * @return host port for SQL database
      */
-    public String getSQLPort()
-    {
+    public String getSQLPort() {
         return sqlPort;
     }
 
@@ -441,8 +437,7 @@ public class Settings
      *
      * @return SQL database name
      */
-    public String getSQLDatabase()
-    {
+    public String getSQLDatabase() {
         return sqlDatabase;
     }
 
@@ -451,8 +446,7 @@ public class Settings
      *
      * @return SQL database username
      */
-    public String getSQLUser()
-    {
+    public String getSQLUser() {
         return sqlUser;
     }
 
@@ -461,25 +455,30 @@ public class Settings
      *
      * @return SQL database password
      */
-    public String getSQLPass()
-    {
+    public String getSQLPass() {
         return sqlPass;
     }
 
-    private void loadSaveSettings()
-    {
+    /**
+     * @return time in milliseconds to wait before loading SQL data
+     */
+    public int getSqlDelay() {
+        return sqlDelay;
+    }
+
+    private void loadSaveSettings() {
         auto = config.getBoolean(SAVE_AUTO);
         minutes = config.getInt(SAVE_MINS);
         useSql = config.getBoolean(SAVE_SQL);
 
-        if (useSql)
-        {
+        if (useSql) {
             DataSection details = config.getSection(SAVE_SQLD);
             sqlHost = details.getString("host");
             sqlPort = details.getString("port");
             sqlDatabase = details.getString("database");
             sqlUser = details.getString("username");
             sqlPass = details.getString("password");
+            sqlDelay = details.getInt("delay");
         }
     }
 

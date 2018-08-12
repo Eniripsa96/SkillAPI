@@ -75,6 +75,7 @@ Saving:
     database: plugins
     username: username
     password: password
+    delay: 0
 #
 Classes:
   #

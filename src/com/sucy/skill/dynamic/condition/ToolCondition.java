@@ -26,47 +26,30 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.bukkit.inventory.EntityEquipment;
 
 /**
  * A condition for dynamic skills that requires the target to have a specified potion effect
  */
-public class ToolCondition extends EffectComponent
-{
+public class ToolCondition extends ConditionComponent {
     private static final String MATERIAL = "material";
     private static final String TOOL     = "tool";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        String material = settings.getString(MATERIAL, "").toUpperCase();
-        String tool = "_" + settings.getString(TOOL, "").toUpperCase().replace("SHOVEL", "SPADE");
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity target : targets)
-        {
-            if (target.getEquipment() == null || target.getEquipment().getItemInHand() == null)
-            {
-                continue;
-            }
-            String hand = target.getEquipment().getItemInHand().getType().name();
-            if ((material.equals("ANY") || hand.contains(material)) && (tool.equals("_ANY") || hand.contains(tool)))
-            {
-                list.add(target);
-            }
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        final String material = settings.getString(MATERIAL, "").toUpperCase();
+        final String tool = "_" + settings.getString(TOOL, "").toUpperCase().replace("SHOVEL", "SPADE");
+
+        final EntityEquipment equipment = target.getEquipment();
+        if (equipment == null || equipment.getItemInHand() == null) return false;
+
+        final String hand = equipment.getItemInHand().getType().name();
+        return (material.equals("ANY") || hand.contains(material)) && (tool.equals("_ANY") || hand.contains(tool));
+    }
+
+    @Override
+    public String getKey() {
+        return "tool";
     }
 }

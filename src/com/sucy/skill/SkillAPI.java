@@ -40,18 +40,15 @@ import com.sucy.skill.data.io.IOManager;
 import com.sucy.skill.data.io.SQLIO;
 import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.mechanic.BlockMechanic;
-import com.sucy.skill.dynamic.mechanic.PassiveMechanic;
-import com.sucy.skill.dynamic.mechanic.RepeatMechanic;
-import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import com.sucy.skill.gui.Menu;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.AddonListener;
 import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.listener.BarListener;
-import com.sucy.skill.listener.CastListener;
+import com.sucy.skill.listener.BindListener;
 import com.sucy.skill.listener.ClickListener;
 import com.sucy.skill.listener.DeathListener;
+import com.sucy.skill.listener.FallbackClickListener;
 import com.sucy.skill.listener.ItemListener;
 import com.sucy.skill.listener.KillListener;
 import com.sucy.skill.listener.MainListener;
@@ -65,13 +62,13 @@ import com.sucy.skill.manager.CmdManager;
 import com.sucy.skill.manager.ComboManager;
 import com.sucy.skill.manager.RegistrationManager;
 import com.sucy.skill.manager.ResourceManager;
+import com.sucy.skill.packet.PacketInjector;
 import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.GUITask;
 import com.sucy.skill.task.InventoryTask;
 import com.sucy.skill.task.ManaTask;
 import com.sucy.skill.task.SaveTask;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -115,6 +112,7 @@ public class SkillAPI extends JavaPlugin
     private SaveTask      saveTask;
     private GUITask       guiTask;
 
+    private boolean disabling = false;
     private boolean loaded = false;
 
     /**
@@ -157,7 +155,7 @@ public class SkillAPI extends JavaPlugin
         settings.loadGroupSettings();
 
         // Set up listeners
-        listen(new CastListener(), true);
+        listen(new BindListener(), true);
         listen(new MainListener(), true);
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);
@@ -166,7 +164,12 @@ public class SkillAPI extends JavaPlugin
         listen(new TreeListener(), !settings.isMapTreeEnabled());
         listen(new ItemListener(), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());
-        listen(new ClickListener(), settings.isCombosEnabled());
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
+            final PacketInjector injector = new PacketInjector(this);
+            listen(new ClickListener(injector), settings.isCombosEnabled());
+        } else {
+            listen(new FallbackClickListener(), settings.isCombosEnabled());
+        }
         listen(new AttributeListener(), settings.isAttributesEnabled());
         listen(new DeathListener(), !VersionManager.isVersionAtLeast(11000));
 
@@ -215,11 +218,9 @@ public class SkillAPI extends JavaPlugin
         if (singleton != this)
             throw new IllegalStateException("This is not a valid, enabled SkillAPI copy!");
 
+        disabling = true;
+
         // Clear tasks
-        WolfMechanic.removeWolves();
-        BlockMechanic.revertAll();
-        PassiveMechanic.stopAll();
-        RepeatMechanic.stopAll();
         if (manaTask != null)
         {
             manaTask.cancel();
@@ -253,15 +254,8 @@ public class SkillAPI extends JavaPlugin
         ClassBoardManager.clearAll();
 
         // Clear skill bars and stop passives before disabling
-        for (Player player : VersionManager.getOnlinePlayers())
-        {
-            getPlayerData(player).stopPassives(player);
-            if (player.getGameMode() != GameMode.CREATIVE && !player.isDead())
-            {
-                getPlayerData(player).getSkillBar().clear(player);
-            }
-            player.setMaxHealth(20);
-            player.setWalkSpeed(0.2f);
+        for (Player player : VersionManager.getOnlinePlayers()) {
+            MainListener.unload(player);
         }
 
         io.saveAll();
@@ -274,6 +268,7 @@ public class SkillAPI extends JavaPlugin
         cmd.clear();
 
         loaded = false;
+        disabling = false;
         singleton = null;
     }
 
@@ -568,19 +563,14 @@ public class SkillAPI extends JavaPlugin
      */
     public static void unloadPlayerData(final OfflinePlayer player)
     {
-        if (singleton == null || player == null || !singleton.players.containsKey(new VersionPlayer(player).getIdString()))
+        if (singleton == null || player == null || singleton.disabling || !singleton.players.containsKey(new VersionPlayer(player).getIdString()))
             return;
 
         singleton.getServer().getScheduler().runTaskAsynchronously(
-            singleton, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    PlayerAccounts accounts = getPlayerAccountData(player);
-                    singleton.io.saveData(accounts);
-                    singleton.players.remove(new VersionPlayer(player).getIdString());
-                }
+            singleton, () -> {
+                PlayerAccounts accounts = getPlayerAccountData(player);
+                singleton.io.saveData(accounts);
+                singleton.players.remove(new VersionPlayer(player).getIdString());
             }
         );
     }

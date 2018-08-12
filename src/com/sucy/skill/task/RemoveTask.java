@@ -29,37 +29,21 @@ package com.sucy.skill.task;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.api.util.BuffManager;
+import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.mechanic.WolfMechanic;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A simple task for removing an entity after a duration
  */
-public class RemoveTask extends BukkitRunnable
-{
-    private List<Entity> entities;
-
-    /**
-     * Initializes a new task to remove the entity after the
-     * given number of ticks.
-     *
-     * @param entity entity to remove
-     * @param ticks  ticks to wait before removing the entity
-     */
-    public RemoveTask(Entity entity, int ticks)
-    {
-        this.entities = new ArrayList<Entity>();
-        this.entities.add(entity);
-        SkillAPI.schedule(this, ticks);
-    }
+public class RemoveTask extends BukkitRunnable {
+    private List<? extends Entity> entities;
 
     /**
      * Initializes a new task to remove the entity after the
@@ -68,22 +52,9 @@ public class RemoveTask extends BukkitRunnable
      * @param entities entities to remove
      * @param ticks    ticks to wait before removing the entity
      */
-    public RemoveTask(List<Entity> entities, int ticks)
-    {
+    public RemoveTask(List<? extends Entity> entities, int ticks) {
         this.entities = entities;
         SkillAPI.schedule(this, ticks);
-    }
-
-    /**
-     * Checks if the owner of the tameable entity is the given player
-     *
-     * @param player player to compare against
-     *
-     * @return true if owned by the player, false otherwise
-     */
-    public boolean isOwnedBy(Player player)
-    {
-        return entities.size() == 1 && ((Tameable) entities.get(0)).getOwner() == player;
     }
 
     /**
@@ -91,30 +62,26 @@ public class RemoveTask extends BukkitRunnable
      */
     @Override
     @SuppressWarnings("unchecked")
-    public void run()
-    {
+    public void run() {
         // Clear skill setup
-        for (Entity entity : entities)
-        {
-            if (entity.hasMetadata(WolfMechanic.SKILL_META))
-            {
-                List<String> skills = (List<String>) SkillAPI.getMeta(entity, WolfMechanic.SKILL_META);
-                int level = SkillAPI.getMetaInt(entity, WolfMechanic.LEVEL);
-                for (String skillName : skills)
-                {
-                    Skill skill = SkillAPI.getSkill(skillName);
-                    if (skill instanceof PassiveSkill)
-                    {
+        for (Entity entity : entities) {
+            if (entity.hasMetadata(WolfMechanic.SKILL_META)) {
+                final List<String> skills = (List<String>) SkillAPI.getMeta(entity, WolfMechanic.SKILL_META);
+                final int level = SkillAPI.getMetaInt(entity, WolfMechanic.LEVEL);
+                for (final String skillName : skills) {
+                    final Skill skill = SkillAPI.getSkill(skillName);
+                    if (skill instanceof PassiveSkill) {
                         ((PassiveSkill) skill).stopEffects((LivingEntity) entity, level);
                     }
                 }
 
                 DynamicSkill.clearCastData((LivingEntity) entity);
+                FlagManager.clearFlags((LivingEntity) entity);
+                BuffManager.clearData((LivingEntity) entity);
             }
 
             // Remove entity
-            if (entity.isValid())
-            {
+            if (entity.isValid()) {
                 entity.remove();
             }
         }

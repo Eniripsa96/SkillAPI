@@ -26,40 +26,22 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.bukkit.inventory.EntityEquipment;
 
 /**
  * Item condition for a player's off hand
  */
-public class OffhandCondition extends EffectComponent
-{
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+public class OffhandCondition extends ConditionComponent {
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (!VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
-            return false;
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        final EntityEquipment equipment = target.getEquipment();
+        return equipment != null && ItemChecker.check(target.getEquipment().getItemInOffHand(), level, settings);
+    }
 
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-
-        for (LivingEntity target : targets)
-            if (target.getEquipment() != null && ItemChecker.check(target.getEquipment().getItemInOffHand(), level, settings))
-                list.add(target);
-
-        return list.size() > 0 && executeChildren(caster, level, list);
+    @Override
+    public String getKey() {
+        return "offhand";
     }
 }

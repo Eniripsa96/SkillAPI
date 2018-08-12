@@ -26,45 +26,37 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
+import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-/**
- * A condition for dynamic skills that requires the target to have a specified held item
- */
-public class BlockCondition extends EffectComponent
-{
+public class BlockCondition extends ConditionComponent {
     private static final String MATERIAL = "material";
     private static final String STANDING = "standing";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    private Set<String> types;
+    private boolean requiresMatch;
+
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        String block = settings.getString(MATERIAL, "").toUpperCase().replace(" ", "_");
-        boolean standing = !settings.getString(STANDING, "on block").equalsIgnoreCase("not on block");
+    public String getKey() {
+        return "block";
+    }
 
-        for (LivingEntity target : targets)
-        {
-            if (target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().name().equals(block) == standing)
-            {
-                list.add(target);
-            }
-        }
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        requiresMatch = !settings.getString(STANDING, "on block").equalsIgnoreCase("not on block");
+        types = settings.getStringList(MATERIAL).stream()
+                .map(s -> s.toUpperCase().replace(' ', '_'))
+                .collect(Collectors.toSet());
+    }
 
-        return list.size() > 0 && executeChildren(caster, level, list);
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return requiresMatch == types.contains(target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().name());
     }
 }

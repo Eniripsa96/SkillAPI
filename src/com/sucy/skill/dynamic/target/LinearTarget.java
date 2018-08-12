@@ -27,76 +27,38 @@
 package com.sucy.skill.dynamic.target;
 
 import com.rit.sucy.player.TargetHelper;
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Location;
+import com.sucy.skill.cast.IIndicator;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Applies child components to the entities in a line in front of each of the
  * provided targets.
  */
-public class LinearTarget extends EffectComponent
-{
+public class LinearTarget extends TargetComponent {
     private static final String RANGE     = "range";
     private static final String TOLERANCE = "tolerance";
-    private static final String ALLY      = "group";
-    private static final String MAX       = "max";
-    private static final String WALL      = "wall";
-    private static final String CASTER    = "caster";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean worked = false;
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double tolerance = attr(caster, TOLERANCE, level, 4.0, isSelf);
-        double range = attr(caster, RANGE, level, 5.0, isSelf);
-        boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
-        boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
-        boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
-        boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
+    List<LivingEntity> getTargets(
+            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        final double tolerance = parseValues(caster, TOLERANCE, level, 4.0);
+        final double range = parseValues(caster, RANGE, level, 5.0);
+        return determineTargets(caster, level, targets, t -> TargetHelper.getLivingTargets(t, range, tolerance));
+    }
 
-        int max = (int) attr(caster, MAX, level, 99, isSelf);
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity t : targets)
-        {
-            if (self)
-            {
-                list.add(caster);
-            }
-            Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
+    /** {@inheritDoc} */
+    @Override
+    void makeIndicators(
+            final List<IIndicator> list, final Player caster, final LivingEntity target, final int level) {
+        // TODO - add indicators for linear targeting
+    }
 
-            List<LivingEntity> result = TargetHelper.getLivingTargets(t, range, tolerance);
-            for (LivingEntity target : result)
-            {
-                if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-                {
-                    continue;
-                }
-                if (both || ally != SkillAPI.getSettings().canAttack(caster, target))
-                {
-                    list.add(target);
-                    if (list.size() >= max)
-                    {
-                        break;
-                    }
-                }
-            }
-
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    @Override
+    public String getKey() {
+        return "linear";
     }
 }

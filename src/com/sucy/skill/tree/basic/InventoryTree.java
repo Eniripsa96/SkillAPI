@@ -33,6 +33,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.exception.SkillTreeException;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.data.Permissions;
 import com.sucy.skill.language.GUINodes;
@@ -50,8 +51,7 @@ import java.util.Map;
 /**
  * A skill tree manager for classes
  */
-public abstract class InventoryTree extends SkillTree
-{
+public abstract class InventoryTree extends SkillTree {
     public static final String INVENTORY_KEY = "SAPI_ST";
 
     protected final HashMap<Integer, Skill> skillSlots = new HashMap<Integer, Skill>();
@@ -63,8 +63,7 @@ public abstract class InventoryTree extends SkillTree
      *
      * @param api api reference
      */
-    public InventoryTree(SkillAPI api, RPGClass tree)
-    {
+    public InventoryTree(SkillAPI api, RPGClass tree) {
         super(api, tree);
     }
 
@@ -74,8 +73,7 @@ public abstract class InventoryTree extends SkillTree
      *
      * @param player player to show
      */
-    public void show(Player player)
-    {
+    public void show(Player player) {
         player.openInventory(getInventory(SkillAPI.getPlayerData(player)));
     }
 
@@ -86,26 +84,24 @@ public abstract class InventoryTree extends SkillTree
      *
      * @return skill tree inventory
      */
-    public Inventory getInventory(PlayerData player)
-    {
+    public Inventory getInventory(PlayerData player) {
         Inventory inv = InventoryManager.createInventory(
-            INVENTORY_KEY,
-            height,
-            SkillAPI.getLanguage().getMessage(
-                GUINodes.SKILL_TREE,
-                true,
-                FilterType.COLOR,
-                RPGFilter.CLASS.setReplacement(tree.getName()),
-                Filter.PLAYER.setReplacement(player.getPlayerName())
-            ).get(0)
+                INVENTORY_KEY,
+                height,
+                SkillAPI.getLanguage().getMessage(
+                        GUINodes.SKILL_TREE,
+                        true,
+                        FilterType.COLOR,
+                        RPGFilter.CLASS.setReplacement(tree.getName()),
+                        Filter.PLAYER.setReplacement(player.getPlayerName())
+                ).get(0)
         );
         Player p = player.getPlayer();
 
-        for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet())
-        {
-            if (canShow(p, entry.getValue()))
-            {
-                inv.setItem(entry.getKey(), entry.getValue().getIndicator(player.getSkill(entry.getValue().getName())));
+        for (Map.Entry<Integer, Skill> entry : skillSlots.entrySet()) {
+            final PlayerSkill skill = player.getSkill(entry.getValue().getName());
+            if (canShow(p, entry.getValue()) && skill != null) {
+                inv.setItem(entry.getKey(), entry.getValue().getIndicator(skill));
             }
         }
 
@@ -119,8 +115,7 @@ public abstract class InventoryTree extends SkillTree
      *
      * @return whether or not the click should be cancelled (when it was a skill or link)
      */
-    public boolean checkClick(int slot)
-    {
+    public boolean checkClick(int slot) {
         return skillSlots.containsKey(slot);
     }
 
@@ -131,13 +126,15 @@ public abstract class InventoryTree extends SkillTree
      *
      * @return true if a skill, false otherwise
      */
-    public boolean isSkill(HumanEntity player, int slot)
-    {
+    public boolean isSkill(HumanEntity player, int slot) {
         return skillSlots.get(slot) != null &&
-            player != null &&
-            (!skillSlots.get(slot).needsPermission() ||
-                player.hasPermission(Permissions.SKILL) ||
-                player.hasPermission(Permissions.SKILL + "." + skillSlots.get(slot).getName().toLowerCase().replace(" ", "-")));
+                player != null &&
+                (!skillSlots.get(slot).needsPermission() ||
+                        player.hasPermission(Permissions.SKILL) ||
+                        player.hasPermission(Permissions.SKILL + "." + skillSlots.get(slot)
+                                .getName()
+                                .toLowerCase()
+                                .replace(" ", "-")));
     }
 
     /**
@@ -147,8 +144,7 @@ public abstract class InventoryTree extends SkillTree
      *
      * @return skill for the slot
      */
-    public Skill getSkill(int slot)
-    {
+    public Skill getSkill(int slot) {
         return skillSlots.get(slot);
     }
 
@@ -157,8 +153,7 @@ public abstract class InventoryTree extends SkillTree
      *
      * @return map of occupied skill slots
      */
-    public HashMap<Integer, Skill> getSkillSlots()
-    {
+    public HashMap<Integer, Skill> getSkillSlots() {
         return skillSlots;
     }
 
@@ -168,13 +163,11 @@ public abstract class InventoryTree extends SkillTree
      * @throws SkillTreeException
      */
     @Override
-    public void arrange() throws SkillTreeException
-    {
+    public void arrange() throws SkillTreeException {
         super.arrange();
 
         // Cannot be higher than 6
-        if (height > 6)
-        {
+        if (height > 6) {
             throw new SkillTreeException("Error generating the skill tree: " + tree.getName() + " - too large of a tree!");
         }
     }
@@ -184,11 +177,9 @@ public abstract class InventoryTree extends SkillTree
      *
      * @param player player
      */
-    public void update(PlayerData player)
-    {
+    public void update(PlayerData player) {
         InventoryView view = player.getPlayer().getOpenInventory();
-        for (Map.Entry<Integer, Skill> skills : skillSlots.entrySet())
-        {
+        for (Map.Entry<Integer, Skill> skills : skillSlots.entrySet()) {
             view.setItem(skills.getKey(), skills.getValue().getIndicator(player.getSkill(skills.getValue().getName())));
         }
     }
@@ -201,16 +192,14 @@ public abstract class InventoryTree extends SkillTree
      * @return true if registered, false otherwise
      */
     @Override
-    public boolean hasSkill(Skill skill)
-    {
+    public boolean hasSkill(Skill skill) {
         return skillSlots.containsValue(skill);
     }
 
     /**
      * Comparator for skills for most trees
      */
-    protected static final Comparator<Skill> comparator = new Comparator<Skill>()
-    {
+    protected static final Comparator<Skill> comparator = new Comparator<Skill>() {
 
         /**
          * Compares skills based on their stats for skill tree arrangement
@@ -224,15 +213,14 @@ public abstract class InventoryTree extends SkillTree
          * @return      -1, 0, or 1
          */
         @Override
-        public int compare(Skill skill1, Skill skill2)
-        {
+        public int compare(Skill skill1, Skill skill2) {
             return skill1.getSkillReq() != null && skill2.getSkillReq() == null ? 1
-                : skill1.getSkillReq() == null && skill2.getSkillReq() != null ? -1
-                : skill1.getLevelReq(0) > skill2.getLevelReq(0) ? 1
-                : skill1.getLevelReq(0) < skill2.getLevelReq(0) ? -1
-                : skill1.getCost(0) > skill2.getCost(0) ? 1
-                : skill1.getCost(0) < skill2.getCost(0) ? -1
-                : skill1.getName().compareTo(skill2.getName());
+                    : skill1.getSkillReq() == null && skill2.getSkillReq() != null ? -1
+                    : skill1.getLevelReq(0) > skill2.getLevelReq(0) ? 1
+                    : skill1.getLevelReq(0) < skill2.getLevelReq(0) ? -1
+                    : skill1.getCost(0) > skill2.getCost(0) ? 1
+                    : skill1.getCost(0) < skill2.getCost(0) ? -1
+                    : skill1.getName().compareTo(skill2.getName());
         }
     };
 }

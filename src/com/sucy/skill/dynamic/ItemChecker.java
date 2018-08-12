@@ -26,13 +26,16 @@
  */
 package com.sucy.skill.dynamic;
 
+import com.rit.sucy.config.parse.NumberParser;
 import com.sucy.skill.api.Settings;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -54,16 +57,18 @@ public class ItemChecker
     /**
      * Checks the player inventory for items matching the settings
      *
-     * @param player   player to check
-     * @param level    level of the effect
-     * @param settings settings to apply
-     * @param remove   whether or not to remove matching items
+     * @param player    player to check
+     * @param level     level of the effect
+     * @param component effect component checking for
+     * @param remove    whether or not to remove matching items
      *
      * @return true if all conditions met, false otherwise
      */
-    public static boolean check(Player player, int level, Settings settings, boolean remove)
+    public static boolean check(Player player, int level, EffectComponent component, boolean remove)
     {
-        int count = (int) settings.getAttr(AMOUNT, level, 1);
+        final Settings settings = component.getSettings();
+
+        int count = (int) component.parseValues(player, AMOUNT, level, 1);
 
         // Checks to do
         boolean mat = settings.getBool(CHECK_MAT, true);
@@ -206,5 +211,37 @@ public class ItemChecker
         }
 
         return false;
+    }
+
+    public static boolean findLore(LivingEntity caster, ItemStack item, String regex, String key, double multiplier)
+    {
+        regex = regex.replace("{value}", "([0-9]+)");
+        Pattern pattern = Pattern.compile(regex);
+
+        if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore())
+            return false;
+
+        List<String> lore = item.getItemMeta().getLore();
+        for (String line : lore)
+        {
+            line = ChatColor.stripColor(line);
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find())
+            {
+                String value = matcher.group(1);
+                try
+                {
+                    double base = NumberParser.parseDouble(value);
+                    DynamicSkill.getCastData(caster).put(key, base * multiplier);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    // Not a valid value
+                }
+            }
+        }
+
+        return true;
     }
 }

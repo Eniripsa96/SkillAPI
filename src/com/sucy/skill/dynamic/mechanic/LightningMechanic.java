@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
@@ -36,13 +35,18 @@ import java.util.List;
 /**
  * Strikes lightning about each target with an offset
  */
-public class LightningMechanic extends EffectComponent
+public class LightningMechanic extends MechanicComponent
 {
     private static final Vector up = new Vector(0, 1, 0);
 
     private static final String FORWARD = "forward";
     private static final String RIGHT   = "right";
     private static final String DAMAGE  = "damage";
+
+    @Override
+    public String getKey() {
+        return "lightning";
+    }
 
     /**
      * Executes the component
@@ -62,8 +66,8 @@ public class LightningMechanic extends EffectComponent
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean damage = settings.getBool(DAMAGE, true);
-        double forward = attr(caster, FORWARD, level, 0, isSelf);
-        double right = attr(caster, RIGHT, level, 0, isSelf);
+        double forward = parseValues(caster, FORWARD, level, 0);
+        double right = parseValues(caster, RIGHT, level, 0);
         for (LivingEntity target : targets)
         {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();

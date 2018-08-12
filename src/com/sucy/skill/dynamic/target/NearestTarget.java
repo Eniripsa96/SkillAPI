@@ -26,97 +26,45 @@
  */
 package com.sucy.skill.dynamic.target;
 
-import com.rit.sucy.player.TargetHelper;
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.api.util.Nearby;
+import com.sucy.skill.cast.IIndicator;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
- * Applies child components to the closest entities to the caster within a given range
+ * Applies child components to the closest all nearby entities around
+ * each of the current targets.
  */
-public class NearestTarget extends EffectComponent
-{
+public class NearestTarget extends TargetComponent {
     private static final String RADIUS = "radius";
-    private static final String ALLY   = "group";
-    private static final String MAX    = "max";
-    private static final String WALL   = "wall";
-    private static final String CASTER = "caster";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double radius = attr(caster, RADIUS, level, 3.0, isSelf);
-        boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
-        boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
-        boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
-        boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
-        double max = attr(caster, MAX, level, 99, isSelf);
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity t : targets)
-        {
-            int prevSize = list.size();
+    List<LivingEntity> getTargets(
+            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
 
-            List<Entity> entities = t.getNearbyEntities(radius, radius, radius);
-            if (self)
-            {
-                list.add(caster);
-            }
+        final double radius = parseValues(caster, RADIUS, level, 3.0);
+        return determineTargets(caster, level, targets,
+                t -> sort(Nearby.getLivingNearby(t.getLocation(), radius), t.getLocation()));
+    }
 
-            Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
+    /** {@inheritDoc} */
+    @Override
+    void makeIndicators(final List<IIndicator> list, final Player caster, final LivingEntity target, final int level) {
+        makeCircleIndicator(list, target, parseValues(caster, RADIUS, level, 3.0));
+    }
 
-            // Grab nearby targets
-            for (Entity entity : entities)
-            {
-                if (entity instanceof LivingEntity)
-                {
-                    LivingEntity target = (LivingEntity) entity;
-                    if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-                    {
-                        continue;
-                    }
-                    if (both || ally == SkillAPI.getSettings().isAlly(caster, target))
-                    {
-                        list.add(target);
-                    }
-                }
-            }
+    @Override
+    public String getKey() {
+        return "nearest";
+    }
 
-            // Take only the closest
-            // TODO optimize getting the nearest ones
-            Location casterLoc = caster.getLocation();
-            while (list.size() > max && list.size() > 0)
-            {
-                double dSq = -1;
-                int index = 0;
-                for (int i = 0; i < list.size(); i++)
-                {
-                    double d = list.get(i).getLocation().distanceSquared(casterLoc);
-                    if (d > dSq)
-                    {
-                        dSq = d;
-                        index = i;
-                    }
-                }
-                list.remove(index);
-            }
-
-            max += list.size() - prevSize;
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    private List<LivingEntity> sort(final List<LivingEntity> list, final Location loc) {
+        list.sort(Comparator.comparing(e -> e.getLocation().distanceSquared(loc)));
+        return list;
     }
 }

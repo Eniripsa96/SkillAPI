@@ -26,43 +26,21 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A condition for dynamic skills that requires the target to have a specified item
  */
-public class InventoryCondition extends EffectComponent
-{
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+public class InventoryCondition extends ConditionComponent {
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return target instanceof Player && ItemChecker.check((Player) target, level, this, false);
+    }
 
-        for (LivingEntity target : targets)
-        {
-            if (!(target instanceof Player)) continue;
-
-            if (ItemChecker.check((Player) target, level, settings, false))
-            {
-                list.add(target);
-            }
-        }
-
-        return list.size() > 0 && executeChildren(caster, level, list);
+    @Override
+    public String getKey() {
+        return "inventory";
     }
 }

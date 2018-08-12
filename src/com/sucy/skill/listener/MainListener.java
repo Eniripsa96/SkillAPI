@@ -31,6 +31,7 @@ import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.BuffManager;
@@ -40,16 +41,37 @@ import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.mechanic.ImmunityMechanic;
 import com.sucy.skill.manager.ClassBoardManager;
+import com.sucy.skill.task.InventoryTask;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.ExpBottleEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The main listener for SkillAPI  that handles general mechanics
@@ -58,33 +80,67 @@ import org.bukkit.event.player.*;
  */
 public class MainListener extends SkillAPIListener
 {
+    private static final List<Consumer<Player>> JOIN_HANDLERS = new ArrayList<>();
+    private static final List<Consumer<Player>> CLEAR_HANDLERS = new ArrayList<>();
+
+    public static void registerJoin(final Consumer<Player> joinHandler) {
+        JOIN_HANDLERS.add(joinHandler);
+    }
+
+    public static void registerClear(final Consumer<Player> joinHandler) {
+        CLEAR_HANDLERS.add(joinHandler);
+    }
+
+    @Override
+    public void cleanup() {
+        JOIN_HANDLERS.clear();
+    }
+
     /**
      * Loads player data asynchronously when a player tries to log in
      *
      * @param event event details
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onLogin(AsyncPlayerPreLoginEvent event)
-    {
+    public void onLogin(AsyncPlayerPreLoginEvent event) {
+        final OfflinePlayer player;
         if (VersionManager.isVersionAtLeast(VersionManager.V1_7_5))
-            SkillAPI.loadPlayerData(Bukkit.getOfflinePlayer(event.getUniqueId()));
+            player = Bukkit.getOfflinePlayer(event.getUniqueId());
         else
-            SkillAPI.loadPlayerData(VersionManager.getOfflinePlayer(event.getName()));
+            player = VersionManager.getOfflinePlayer(event.getName());
+
+        if (SkillAPI.getSettings().isUseSql() && SkillAPI.getSettings().getSqlDelay() > 0)
+            SkillAPI.initFakeData(player);
+        else
+            SkillAPI.loadPlayerData(player);
     }
 
     /**
      * Starts passives and applies class data when a player logs in.
-     *
-     * @param event event details
      */
     @EventHandler
-    public void onJoin(PlayerJoinEvent event)
-    {
-        if (event.getPlayer().hasMetadata("NPC"))
+    public void onJoin(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        if (player.hasMetadata("NPC") || !SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
             return;
 
-        PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-        data.init(event.getPlayer());
+        final int delay = Math.min(100, SkillAPI.getSettings().getSqlDelay());
+        if (SkillAPI.getSettings().isUseSql() && delay > 0) {
+            SkillAPI.schedule(() -> {
+                SkillAPI.reloadPlayerData(player);
+                init(player);
+            }, delay);
+        } else {
+            init(player);
+        }
+    }
+
+    private void init(final Player player) {
+        final PlayerData data = SkillAPI.getPlayerData(player);
+        data.init(player);
+        data.autoLevel();
+        data.updateScoreboard();
+        JOIN_HANDLERS.forEach(handler -> handler.accept(player));
     }
 
     /**
@@ -111,17 +167,23 @@ public class MainListener extends SkillAPIListener
         PlayerData data = SkillAPI.getPlayerData(player);
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
-            data.stopPassives(player);
             data.record(player);
+            data.stopPassives(player);
         }
 
         FlagManager.clearFlags(player);
         BuffManager.clearData(player);
         Combat.clearData(player);
         DynamicSkill.clearCastData(player);
+        InventoryTask.clear(player.getUniqueId());
 
         player.setDisplayName(player.getName());
-        player.setMaxHealth(20);
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+        } else {
+            player.setMaxHealth(20);
+        }
+        player.setWalkSpeed(0.2f);
         SkillAPI.unloadPlayerData(player);
     }
 
@@ -145,6 +207,25 @@ public class MainListener extends SkillAPIListener
         {
             data.stopPassives(event.getEntity());
             data.loseExp();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDeath(final EntityDeathEvent event) {
+        DynamicSkill.clearCastData(event.getEntity());
+        FlagManager.clearFlags(event.getEntity());
+        BuffManager.clearData(event.getEntity());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onUnload(final ChunkUnloadEvent event) {
+        for (final Entity entity : event.getChunk().getEntities()) {
+            if (entity instanceof LivingEntity) {
+                final LivingEntity livingEntity = (LivingEntity) entity;
+                DynamicSkill.clearCastData(livingEntity);
+                FlagManager.clearFlags(livingEntity);
+                BuffManager.clearData(livingEntity);
+            }
         }
     }
 
@@ -211,6 +292,18 @@ public class MainListener extends SkillAPIListener
                 && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
         {
             event.setAmount(0);
+        }
+    }
+
+    /**
+     * Handles updating level displays for players
+     *
+     * @param event event details
+     */
+    @EventHandler
+    public void onLevelUp(final PlayerLevelUpEvent event) {
+        if (SkillAPI.getSettings().isShowClassLevel()) {
+            ClassBoardManager.updateLevel(event.getPlayerData());
         }
     }
 
@@ -283,73 +376,6 @@ public class MainListener extends SkillAPIListener
     }
 
     /**
-     * Applies damage and defense buffs when something takes or deals
-     * damage to something else.
-     *
-     * @param event event details
-     */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onDamage(EntityDamageByEntityEvent event)
-    {
-        if (event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
-                || !(event.getEntity() instanceof LivingEntity)) return;
-
-        // Ignore no-damage events (for CrackShot)
-        if (event.getDamage() == 0)
-            return;
-
-        LivingEntity damager = ListenerUtil.getDamager(event);
-
-        if (Skill.isSkillDamage())
-        {
-            event.setDamage(BuffManager.modifySkillDealtDamage(damager, event.getDamage()));
-
-            // Cancel event if no damage
-            if (event.getDamage() <= 0)
-            {
-                if (!SkillAPI.getSettings().isKnockback())
-                    event.setCancelled(true);
-                return;
-            }
-
-            if (!(event.getEntity() instanceof LivingEntity))
-                return;
-
-            // Defense buff application
-            LivingEntity damaged = (LivingEntity) event.getEntity();
-            event.setDamage(BuffManager.modifySkillTakenDefense(damaged, event.getDamage()));
-
-            // Cancel event if no damage
-            if (event.getDamage() <= 0 && !SkillAPI.getSettings().isKnockback())
-                event.setCancelled(true);
-
-            return;
-        }
-
-        // Damage buff application
-        event.setDamage(BuffManager.modifyDealtDamage(damager, event.getDamage()));
-
-        // Cancel event if no damage
-        if (event.getDamage() <= 0)
-        {
-            if (!SkillAPI.getSettings().isKnockback())
-                event.setCancelled(true);
-            return;
-        }
-
-        if (!(event.getEntity() instanceof LivingEntity))
-            return;
-
-        // Defense buff application
-        LivingEntity damaged = (LivingEntity) event.getEntity();
-        event.setDamage(BuffManager.modifyTakenDefense(damaged, event.getDamage()));
-
-        // Cancel event if no damage
-        if (event.getDamage() <= 0 && !SkillAPI.getSettings().isKnockback())
-            event.setCancelled(true);
-    }
-
-    /**
      * Launches physical damage events to differentiate skill damage from physical damage
      *
      * @param event event details
@@ -359,7 +385,8 @@ public class MainListener extends SkillAPIListener
     {
         if (Skill.isSkillDamage()
                 || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
-                || !(event.getEntity() instanceof LivingEntity))
+                || !(event.getEntity() instanceof LivingEntity)
+                || event.getDamage() <= 0)
         {
             return;
         }
@@ -424,12 +451,34 @@ public class MainListener extends SkillAPIListener
                 event.getPlayer().setFoodLevel(20);
             }
         }
-        else if (!oldEnabled && newEnabled)
-        {
-            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
-            data.startPassives(event.getPlayer());
-            data.updateHealthAndMana(event.getPlayer());
-            data.updateScoreboard();
+        else if (!oldEnabled && newEnabled) {
+            init(event.getPlayer());
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onCommand(final PlayerCommandPreprocessEvent event) {
+        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            return;
+
+        if (event.getMessage().equals("/clear")) {
+            handleClear(event.getPlayer());
+        }
+        else if (event.getMessage().startsWith("/clear ")) {
+            handleClear(VersionManager.getPlayer(event.getMessage().substring(7)));
+        }
+    }
+
+    @EventHandler
+    public void onCommand(final ServerCommandEvent event) {
+        if (event.getCommand().startsWith("clear ")) {
+            handleClear(VersionManager.getPlayer(event.getCommand().substring(6)));
+        }
+    }
+
+    private void handleClear(final Player player) {
+        if (player != null) {
+            SkillAPI.schedule(() -> CLEAR_HANDLERS.forEach(handler -> handler.accept(player)), 1);
         }
     }
 }

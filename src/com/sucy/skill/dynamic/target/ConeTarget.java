@@ -27,10 +27,9 @@
 package com.sucy.skill.dynamic.target;
 
 import com.rit.sucy.player.TargetHelper;
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Location;
+import com.sucy.skill.cast.IIndicator;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -38,57 +37,28 @@ import java.util.List;
  * Applies child components to the closest all nearby entities around
  * each of the current targets.
  */
-public class ConeTarget extends EffectComponent
-{
+public class ConeTarget extends TargetComponent {
     private static final String ANGLE  = "angle";
     private static final String RANGE  = "range";
-    private static final String ALLY   = "group";
-    private static final String MAX    = "max";
-    private static final String WALL   = "wall";
-    private static final String CASTER = "caster";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean worked = false;
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double range = attr(caster, RANGE, level, 3.0, isSelf);
-        double angle = attr(caster, ANGLE, level, 90.0, isSelf);
-        boolean both = settings.getString(ALLY, "enemy").toLowerCase().equals("both");
-        boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
-        boolean throughWall = settings.getString(WALL, "false").toLowerCase().equals("true");
-        boolean self = settings.getString(CASTER, "false").toLowerCase().equals("true");
-        int max = settings.getInt(MAX, 99);
-        for (LivingEntity t : targets)
-        {
-            List<LivingEntity> list = TargetHelper.getConeTargets(caster, angle, range);
-            if (self)
-            {
-                list.add(caster);
-            }
-            Location wallCheckLoc = t.getLocation().add(0, 0.5, 0);
-            for (int i = 0; i < list.size(); i++)
-            {
-                LivingEntity target = list.get(i);
-                if (i >= max
-                    || (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-                    || (!both && ally != SkillAPI.getSettings().isAlly(caster, target)))
-                {
-                    list.remove(i);
-                    i--;
-                }
-            }
-            worked = executeChildren(caster, level, list) || worked;
-        }
-        return worked;
+    void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
+        double range = parseValues(caster, RANGE, level, 3.0);
+        double angle = parseValues(caster, ANGLE, level, 90.0);
+        makeConeIndicator(list, target, range, angle);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    List<LivingEntity> getTargets(LivingEntity caster, int level, List<LivingEntity> targets) {
+        double range = parseValues(caster, RANGE, level, 3.0);
+        double angle = parseValues(caster, ANGLE, level, 90.0);
+        return determineTargets(caster, level, targets, t -> TargetHelper.getConeTargets(t, angle, range));
+    }
+
+    @Override
+    public String getKey() {
+        return "cone";
     }
 }

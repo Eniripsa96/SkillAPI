@@ -64,6 +64,10 @@ public class PluginChecker
         return Bukkit.getPluginManager().getPlugin("NoCheatPlus") != null;
     }
 
+    public static boolean isMythicMobsActive() {
+        return Bukkit.getPluginManager().isPluginEnabled("MythicMobs");
+    }
+
     public static boolean isWorldGuardActive() {
         return Bukkit.getPluginManager().isPluginEnabled("WorldGuard");
     }

@@ -27,27 +27,26 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.api.util.NumberParser;
-import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.ChatColor;
+import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Adds to a cast data value
  */
-public class ValueLoreMechanic extends EffectComponent
+public class ValueLoreMechanic extends MechanicComponent
 {
     private static final String KEY        = "key";
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
     private static final String HAND       = "hand";
+
+    @Override
+    public String getKey() {
+        return "value lore";
+    }
 
     /**
      * Executes the component
@@ -62,52 +61,21 @@ public class ValueLoreMechanic extends EffectComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
         if (targets.size() == 0 || !settings.has(KEY))
-        {
             return false;
-        }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
-        boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
-            && settings.getString(HAND).equalsIgnoreCase("offhand");
-
+        double multiplier = parseValues(caster, MULTIPLIER, level, 1);
+        boolean offhand = settings.getString(HAND, "").equalsIgnoreCase("offhand");
         String regex = settings.getString(REGEX, "Damage: {value}");
-        regex = regex.replace("{value}", "([0-9]+)");
-        Pattern pattern = Pattern.compile(regex);
 
         if (caster.getEquipment() == null)
             return false;
 
         ItemStack hand;
-        if (offhand)
+        if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
             hand = caster.getEquipment().getItemInOffHand();
         else hand = caster.getEquipment().getItemInHand();
 
-        if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore())
-            return false;
-
-        List<String> lore = hand.getItemMeta().getLore();
-        for (String line : lore)
-        {
-            line = ChatColor.stripColor(line);
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.find())
-            {
-                String value = matcher.group(1);
-                try
-                {
-                    double base = NumberParser.parseDouble(value);
-                    data.put(key, base * multiplier);
-                }
-                catch (Exception ex)
-                {
-                    // Not a valid value
-                }
-            }
-        }
-
-        return true;
+        return ItemChecker.findLore(caster, hand, regex, key, multiplier);
     }
 }

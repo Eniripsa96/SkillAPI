@@ -54,10 +54,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -70,11 +68,13 @@ import java.util.UUID;
  */
 public class BarListener extends SkillAPIListener
 {
-    private final HashSet<UUID> ignored = new HashSet<UUID>();
+    private final HashSet<UUID> ignored = new HashSet<>();
 
     @Override
     public void init()
     {
+        MainListener.registerJoin(this::onJoin);
+        MainListener.registerClear(this::handleClear);
         for (Player player : VersionManager.getOnlinePlayers())
         {
             if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
@@ -88,7 +88,9 @@ public class BarListener extends SkillAPIListener
     @Override
     public void cleanup() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            cleanup(player);
+            if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
+                cleanup(player);
+            }
         }
     }
 
@@ -103,16 +105,13 @@ public class BarListener extends SkillAPIListener
 
     /**
      * Sets up skill bars on joining
-     *
-     * @param event event details
      */
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event)
+    public void onJoin(final Player player)
     {
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())) {
-            PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
+        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
+            final PlayerData data = SkillAPI.getPlayerData(player);
             if (data.hasClass()) {
-                data.getSkillBar().setup(event.getPlayer());
+                data.getSkillBar().setup(player);
             }
         }
     }
@@ -185,14 +184,7 @@ public class BarListener extends SkillAPIListener
         final Player player = event.getPlayerData().getPlayer();
         if (player != null && event.getPlayerData().getSkillBar().isSetup())
         {
-            SkillAPI.schedule(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    event.getPlayerData().getSkillBar().update(player);
-                }
-            }, 0);
+            SkillAPI.schedule(() -> event.getPlayerData().getSkillBar().update(player), 0);
         }
     }
 
@@ -205,14 +197,9 @@ public class BarListener extends SkillAPIListener
     public void onDowngrade(final PlayerSkillDowngradeEvent event)
     {
         if (event.getPlayerData().getSkillBar().isSetup()) {
-            SkillAPI.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    SkillAPI.getPlayerData(event.getPlayerData().getPlayer())
-                            .getSkillBar()
-                            .update(event.getPlayerData().getPlayer());
-                }
-            }, 1);
+            SkillAPI.schedule(() -> SkillAPI.getPlayerData(event.getPlayerData().getPlayer())
+                    .getSkillBar()
+                    .update(event.getPlayerData().getPlayer()), 1);
         }
     }
 
@@ -265,7 +252,7 @@ public class BarListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler
     public void onAssign(final InventoryClickEvent event) {
         if (event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD && InventoryManager.isMatching(event.getInventory(), InventoryTree.INVENTORY_KEY)) {
             final PlayerData data = SkillAPI.getPlayerData((Player) event.getWhoClicked());
@@ -295,8 +282,8 @@ public class BarListener extends SkillAPIListener
         if (!skillBar.isSetup())
             return;
 
-        if (event.getAction() == InventoryAction.HOTBAR_SWAP
-                && !skillBar.isWeaponSlot(event.getHotbarButton()))
+        if ((event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD)
+                && (!skillBar.isWeaponSlot(event.getHotbarButton()) || !skillBar.isWeaponSlot(event.getSlot())))
         {
             event.setCancelled(true);
             return;
@@ -396,34 +383,13 @@ public class BarListener extends SkillAPIListener
         else if (event.getPlayer().getGameMode() == GameMode.CREATIVE && data.hasClass())
         {
             final Player player = event.getPlayer();
-            SkillAPI.schedule(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    SkillAPI.getPlayerData(player).getSkillBar().setup(player);
-                }
-            }, 0);
+            SkillAPI.schedule(() -> SkillAPI.getPlayerData(player).getSkillBar().setup(player), 0);
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onCommand(final PlayerCommandPreprocessEvent event) {
-        if (!SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            return;
-
-        final PlayerSkillBar skillBar = SkillAPI.getPlayerData(event.getPlayer()).getSkillBar();
-        if (!skillBar.isSetup())
-            return;
-
-        if (event.getMessage().equals("/clear")) {
-            SkillAPI.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (skillBar.isSetup())
-                        skillBar.update(event.getPlayer());
-                }
-            }, 1);
-        }
+    private void handleClear(final Player player) {
+        final PlayerSkillBar skillBar = SkillAPI.getPlayerData(player).getSkillBar();
+        if (skillBar.isSetup())
+            skillBar.update(player);
     }
 }

@@ -26,8 +26,8 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.util.ParticleHelper;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
@@ -37,13 +37,18 @@ import java.util.List;
 /**
  * Plays a particle effect
  */
-public class ParticleMechanic extends EffectComponent
+public class ParticleMechanic extends MechanicComponent
 {
     private static final Vector UP = new Vector(0, 1, 0);
 
     private static final String FORWARD = "forward";
     private static final String UPWARD  = "upward";
     private static final String RIGHT   = "right";
+
+    @Override
+    public String getKey() {
+        return "particle";
+    }
 
     /**
      * Executes the component
@@ -65,7 +70,11 @@ public class ParticleMechanic extends EffectComponent
         double forward = settings.getDouble(FORWARD, 0);
         double upward = settings.getDouble(UPWARD, 0);
         double right = settings.getDouble(RIGHT, 0);
-        settings.set("level", level);
+
+        final Settings copy = new Settings(settings);
+        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0), 0);
+        copy.set("level", level);
 
         for (LivingEntity target : targets)
         {
@@ -74,7 +83,7 @@ public class ParticleMechanic extends EffectComponent
             Vector side = dir.clone().crossProduct(UP);
             loc.add(dir.multiply(forward)).add(0, upward, 0).add(side.multiply(right));
 
-            ParticleHelper.play(loc, settings);
+            ParticleHelper.play(loc, copy);
         }
 
         return targets.size() > 0;

@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -36,8 +35,13 @@ import java.util.List;
 /**
  * Interrupts any channels that may be being performed by the targets
  */
-public class InterruptMechanic extends EffectComponent
+public class InterruptMechanic extends MechanicComponent
 {
+    @Override
+    public String getKey() {
+        return "interrupt";
+    }
+
     /**
      * Executes the component
      *

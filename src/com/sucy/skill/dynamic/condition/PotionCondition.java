@@ -26,67 +26,51 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * A condition for dynamic skills that requires the target to have a specified potion effect
  */
-public class PotionCondition extends EffectComponent
-{
-    private static final String TYPE   = "type";
-    private static final String POTION = "potion";
+public class PotionCondition extends ConditionComponent {
+    private static final String TYPE     = "type";
+    private static final String POTION   = "potion";
+    private static final String MIN_RANK = "min-rank";
+    private static final String MAX_RANK = "max-rank";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean active = !settings.getString(TYPE, "active").toLowerCase().equals("not active");
-        String potion = settings.getString(POTION, "").toUpperCase().replace(' ', '_');
-        PotionEffectType type;
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        try
-        {
-            type = PotionEffectType.getByName(potion);
-            for (LivingEntity target : targets)
-            {
-                if (target.hasPotionEffect(type) == active)
-                {
-                    list.add(target);
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        final boolean active = !settings.getString(TYPE, "active").toLowerCase().equals("not active");
+        final Collection<PotionEffect> effects = target.getActivePotionEffects();
+        if (effects.isEmpty()) return !active;
+
+        final String potion = settings.getString(POTION, "").toUpperCase().replace(' ', '_');
+        final int minRank = (int) parseValues(caster, MIN_RANK, level, 0);
+        final int maxRank = (int) parseValues(caster, MAX_RANK, level, 999);
+        try {
+            final PotionEffectType type = PotionEffectType.getByName(potion);
+            return has(target, type, minRank, maxRank) == active;
+        } catch (Exception ex) {
+            for (final PotionEffect check : effects) {
+                if (check.getAmplifier() >= minRank && check.getAmplifier() <= maxRank) {
+                    return true;
                 }
             }
         }
-        catch (Exception ex)
-        {
-            for (LivingEntity target : targets)
-            {
-                boolean has = false;
-                for (PotionEffectType check : PotionEffectType.values())
-                {
-                    if (check != null && target.hasPotionEffect(check))
-                    {
-                        has = true;
-                        break;
-                    }
-                }
-                if (has == active)
-                {
-                    list.add(target);
-                }
-            }
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+        return false;
+    }
+
+    private boolean has(LivingEntity target, PotionEffectType type, int min, int max) {
+        if (!target.hasPotionEffect(type)) { return false; }
+        int rank = target.getPotionEffect(type).getAmplifier();
+        return rank >= min && rank <= max;
+    }
+
+    @Override
+    public String getKey() {
+        return "potion";
     }
 }

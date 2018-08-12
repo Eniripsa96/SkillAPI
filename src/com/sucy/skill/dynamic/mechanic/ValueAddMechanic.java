@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
@@ -36,10 +35,15 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueAddMechanic extends EffectComponent
+public class ValueAddMechanic extends MechanicComponent
 {
     private static final String KEY    = "key";
     private static final String AMOUNT = "amount";
+
+    @Override
+    public String getKey() {
+        return "value add";
+    }
 
     /**
      * Executes the component
@@ -60,7 +64,7 @@ public class ValueAddMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        double amount = attr(caster, AMOUNT, level, 1, isSelf);
+        double amount = parseValues(caster, AMOUNT, level, 1) * targets.size();
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         if (!data.containsKey(key)) data.put(key, amount);
         else data.put(key, amount + (Double) data.get(key));

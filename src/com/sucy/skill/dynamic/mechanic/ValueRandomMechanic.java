@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
@@ -36,12 +35,17 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueRandomMechanic extends EffectComponent
+public class ValueRandomMechanic extends MechanicComponent
 {
     private static final String KEY  = "key";
     private static final String TYPE = "type";
     private static final String MIN  = "min";
     private static final String MAX  = "max";
+
+    @Override
+    public String getKey() {
+        return "value random";
+    }
 
     /**
      * Executes the component
@@ -63,8 +67,8 @@ public class ValueRandomMechanic extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
         boolean triangular = settings.getString(TYPE).toUpperCase().equals("triangular");
-        double min = attr(caster, MIN, level, 1, isSelf);
-        double max = attr(caster, MAX, level, 1, isSelf);
+        double min = parseValues(caster, MIN, level, 1);
+        double max = parseValues(caster, MAX, level, 1);
 
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         double rand = triangular ? 0.5 * (Math.random() + Math.random()) : Math.random();

@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -35,9 +34,14 @@ import java.util.List;
 /**
  * Applies a flag to each target
  */
-public class RememberTargetsMechanic extends EffectComponent
+public class RememberTargetsMechanic extends MechanicComponent
 {
     private static final String KEY = "key";
+
+    @Override
+    public String getKey() {
+        return "remember targets";
+    }
 
     /**
      * Executes the component

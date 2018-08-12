@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.projectile;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.ItemProjectileHitEvent;
 import com.sucy.skill.api.event.ItemProjectileLandEvent;
 import com.sucy.skill.api.event.ItemProjectileLaunchEvent;
@@ -40,6 +41,8 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
+import static com.sucy.skill.listener.MechanicListener.ITEM_PROJECTILE;
+
 /**
  * <p>Represents a projectile that uses an item as the actual projectile.</p>
  */
@@ -48,7 +51,7 @@ public class ItemProjectile extends CustomProjectile
     private static final String NAME = "SkillAPI#";
     private static       int    NEXT = 0;
 
-    private Item item;
+    private final Item item;
 
     /**
      * <p>Constructs a new item projectile.</p>
@@ -69,6 +72,7 @@ public class ItemProjectile extends CustomProjectile
         this.item = thrower.getWorld().dropItem(loc.add(0, 1, 0), item);
         this.item.setVelocity(vel);
         this.item.setPickupDelay(999999);
+        SkillAPI.setMeta(this.item, ITEM_PROJECTILE, this);
 
         Bukkit.getPluginManager().callEvent(new ItemProjectileLaunchEvent(this));
     }

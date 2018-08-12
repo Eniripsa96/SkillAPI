@@ -29,7 +29,6 @@ package com.sucy.skill.dynamic.mechanic;
 import com.google.common.collect.ImmutableSet;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -40,7 +39,7 @@ import java.util.Set;
 /**
  * Cleanses a target of negative potion or status effects
  */
-public class CleanseMechanic extends EffectComponent
+public class CleanseMechanic extends MechanicComponent
 {
     private static final Set<String> POTIONS = ImmutableSet.of(
             "BLINDNESS", "CONFUSION", "HUNGER", "LEVITATION", "POISON",
@@ -49,6 +48,11 @@ public class CleanseMechanic extends EffectComponent
 
     private static final String STATUS = "status";
     private static final String POTION = "potion";
+
+    @Override
+    public String getKey() {
+        return "cleanse";
+    }
 
     /**
      * Executes the component

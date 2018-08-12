@@ -32,6 +32,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,6 @@ public class PassiveMechanic extends MechanicComponent {
         if (tasks.containsKey(caster.getEntityId())) { return false; }
 
         if (targets.size() > 0) {
-            final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
             final int period = (int) (parseValues(caster, PERIOD, level, 1.0) * 20);
             final PassiveTask task = new PassiveTask(caster, level, targets, period);
             tasks.put(caster.getEntityId(), task);
@@ -87,7 +87,7 @@ public class PassiveMechanic extends MechanicComponent {
         private int                level;
 
         PassiveTask(LivingEntity caster, int level, List<LivingEntity> targets, int period) {
-            this.targets = targets;
+            this.targets = new ArrayList<>(targets);
             this.caster = caster;
             this.level = level;
 

@@ -48,12 +48,8 @@ public class NearestTarget extends TargetComponent {
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
 
         final double radius = parseValues(caster, RADIUS, level, 3.0);
-        return determineTargets(caster, level, targets, t -> {
-            final Location loc = t.getLocation();
-            final List<LivingEntity> result = Nearby.getLivingNearby(t.getLocation(), radius);
-            result.sort(Comparator.comparing(e -> e.getLocation().distanceSquared(loc)));
-            return result;
-        });
+        return determineTargets(caster, level, targets,
+                t -> sort(Nearby.getLivingNearby(t.getLocation(), radius), t.getLocation()));
     }
 
     /** {@inheritDoc} */
@@ -65,5 +61,10 @@ public class NearestTarget extends TargetComponent {
     @Override
     public String getKey() {
         return "nearest";
+    }
+
+    private List<LivingEntity> sort(final List<LivingEntity> list, final Location loc) {
+        list.sort(Comparator.comparing(e -> e.getLocation().distanceSquared(loc)));
+        return list;
     }
 }

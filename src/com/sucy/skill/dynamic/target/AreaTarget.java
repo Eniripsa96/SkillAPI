@@ -31,7 +31,9 @@ import com.sucy.skill.cast.IIndicator;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Applies child components to the closest all nearby entities around
@@ -39,6 +41,9 @@ import java.util.List;
  */
 public class AreaTarget extends TargetComponent {
     private static final String RADIUS = "radius";
+    private static final String RANDOM = "random";
+
+    private final Random random = new Random();
 
     /** {@inheritDoc} */
     @Override
@@ -46,7 +51,8 @@ public class AreaTarget extends TargetComponent {
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
 
         final double radius = parseValues(caster, RADIUS, level, 3.0);
-        return determineTargets(caster, level, targets, t -> Nearby.getLivingNearby(t.getLocation(), radius));
+        final boolean random = settings.getBool(RANDOM, false);
+        return determineTargets(caster, level, targets, t -> shuffle(Nearby.getLivingNearby(t.getLocation(), radius), random));
     }
 
     /** {@inheritDoc} */
@@ -58,5 +64,15 @@ public class AreaTarget extends TargetComponent {
     @Override
     public String getKey() {
         return "area";
+    }
+
+    private List<LivingEntity> shuffle(final List<LivingEntity> targets, final boolean random) {
+        if (!random) return targets;
+
+        final List<LivingEntity> list = new ArrayList<>();
+        while (!targets.isEmpty()) {
+            list.add(targets.remove(this.random.nextInt(list.size())));
+        }
+        return list;
     }
 }

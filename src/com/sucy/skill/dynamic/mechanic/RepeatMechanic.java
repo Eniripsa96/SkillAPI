@@ -58,7 +58,6 @@ public class RepeatMechanic extends MechanicComponent {
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         if (targets.size() > 0) {
-            final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
             final int count = (int) parseValues(caster, REPETITIONS, level, 3.0);
             if (count <= 0) { return false; }
 
@@ -100,7 +99,7 @@ public class RepeatMechanic extends MechanicComponent {
                 int delay,
                 int period,
                 boolean stopOnFail) {
-            this.targets = targets;
+            this.targets = new ArrayList<>(targets);
             this.caster = caster;
             this.count = count;
             this.stopOnFail = stopOnFail;

@@ -39,7 +39,6 @@ import com.sucy.skill.cast.CylinderIndicator;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorType;
 import com.sucy.skill.cast.ProjectileIndicator;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -52,7 +51,7 @@ import java.util.List;
 /**
  * Heals each target
  */
-public class ParticleProjectileMechanic extends EffectComponent implements ProjectileCallback {
+public class ParticleProjectileMechanic extends MechanicComponent implements ProjectileCallback {
     private static final Vector UP = new Vector(0, 1, 0);
 
     private static final String POSITION = "position";
@@ -75,46 +74,53 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
      *
      * @param list   list to store indicators in
      * @param caster caster reference
-     * @param target location to base location on
+     * @param targets location to base location on
      * @param level  the level of the skill to create for
      */
     @Override
-    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
-        // Get common values
-        int amount = (int) attr(caster, AMOUNT, level, 1.0, true);
-        double speed = attr(caster, "velocity", level, 1, true);
-        String spread = settings.getString(SPREAD, "cone").toLowerCase();
+    public void makeIndicators(List<IIndicator> list, Player caster, List<LivingEntity> targets, int level) {
+        targets.forEach(target -> {
+            // Get common values
+            int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
+            double speed = parseValues(caster, "velocity", level, 1);
+            String spread = settings.getString(SPREAD, "cone").toLowerCase();
 
-        // Apply the spread type
-        if (spread.equals("rain")) {
-            double radius = attr(caster, RADIUS, level, 2.0, true);
+            // Apply the spread type
+            if (spread.equals("rain")) {
+                double radius = parseValues(caster, RADIUS, level, 2.0);
 
-            if (indicatorType == IndicatorType.DIM_2) {
-                IIndicator indicator = new CircleIndicator(radius);
-                indicator.moveTo(target.getLocation().add(0, 0.1, 0));
-                list.add(indicator);
+                if (indicatorType == IndicatorType.DIM_2) {
+                    IIndicator indicator = new CircleIndicator(radius);
+                    indicator.moveTo(target.getLocation().add(0, 0.1, 0));
+                    list.add(indicator);
+                } else {
+                    double height = parseValues(caster, HEIGHT, level, 8.0);
+                    IIndicator indicator = new CylinderIndicator(radius, height);
+                    indicator.moveTo(target.getLocation());
+                    list.add(indicator);
+                }
             } else {
-                double height = attr(caster, HEIGHT, level, 8.0, true);
-                IIndicator indicator = new CylinderIndicator(radius, height);
-                indicator.moveTo(target.getLocation());
-                list.add(indicator);
+                Vector dir = target.getLocation().getDirection();
+                if (spread.equals("horizontal cone")) {
+                    dir.setY(0);
+                    dir.normalize();
+                }
+                double angle = parseValues(caster, ANGLE, level, 30.0);
+                ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
+                Location loc = caster.getLocation().add(0, caster.getEyeHeight(), 0);
+                for (Vector d : dirs) {
+                    ProjectileIndicator indicator = new ProjectileIndicator(speed, 0);
+                    indicator.setDirection(d);
+                    indicator.moveTo(loc);
+                    list.add(indicator);
+                }
             }
-        } else {
-            Vector dir = target.getLocation().getDirection();
-            if (spread.equals("horizontal cone")) {
-                dir.setY(0);
-                dir.normalize();
-            }
-            double angle = attr(caster, ANGLE, level, 30.0, true);
-            ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
-            Location loc = caster.getLocation().add(0, caster.getEyeHeight(), 0);
-            for (Vector d : dirs) {
-                ProjectileIndicator indicator = new ProjectileIndicator(speed, 0);
-                indicator.setDirection(d);
-                indicator.moveTo(loc);
-                list.add(indicator);
-            }
-        }
+        });
+    }
+
+    @Override
+    public String getKey() {
+        return "particle projectile";
     }
 
     /**
@@ -130,15 +136,15 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         // Get common values
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        int amount = (int) attr(caster, AMOUNT, level, 1.0, isSelf);
+        int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         settings.set("level", level);
 
         final Settings copy = new Settings(settings);
-        copy.set(ParticleProjectile.SPEED, attr(caster, ParticleProjectile.SPEED, level, 1, true), 0);
-        copy.set(ParticleHelper.PARTICLES_KEY, attr(caster, ParticleHelper.PARTICLES_KEY, level, 1, true), 0);
-        copy.set(ParticleHelper.RADIUS_KEY, attr(caster, ParticleHelper.RADIUS_KEY, level, 0, true), 0);
+        copy.set(ParticleProjectile.SPEED, parseValues(caster, ParticleProjectile.SPEED, level, 1), 0);
+        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0), 0);
 
         // Fire from each target
         for (LivingEntity target : targets) {
@@ -147,15 +153,15 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
             // Apply the spread type
             ArrayList<ParticleProjectile> list;
             if (spread.equals("rain")) {
-                double radius = attr(caster, RADIUS, level, 2.0, isSelf);
-                double height = attr(caster, HEIGHT, level, 8.0, isSelf);
+                double radius = parseValues(caster, RADIUS, level, 2.0);
+                double height = parseValues(caster, HEIGHT, level, 8.0);
                 list = ParticleProjectile.rain(caster, level, loc, copy, radius, height, amount, this);
             } else {
                 Vector dir = target.getLocation().getDirection();
 
-                double right = attr(caster, RIGHT, level, 0, true);
-                double upward = attr(caster, UPWARD, level, 0, true);
-                double forward = attr(caster, FORWARD, level, 0, true);
+                double right = parseValues(caster, RIGHT, level, 0);
+                double upward = parseValues(caster, UPWARD, level, 0);
+                double forward = parseValues(caster, FORWARD, level, 0);
 
                 Vector looking = dir.clone().setY(0).normalize();
                 Vector normal = looking.clone().crossProduct(UP);
@@ -165,7 +171,7 @@ public class ParticleProjectileMechanic extends EffectComponent implements Proje
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = attr(caster, ANGLE, level, 30.0, isSelf);
+                double angle = parseValues(caster, ANGLE, level, 30.0);
                 list = ParticleProjectile.spread(
                         caster,
                         level,

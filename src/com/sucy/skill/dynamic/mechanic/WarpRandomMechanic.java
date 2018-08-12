@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.player.TargetHelper;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
@@ -38,13 +37,18 @@ import java.util.Random;
 /**
  * Strikes lightning about each target with an offset
  */
-public class WarpRandomMechanic extends EffectComponent
+public class WarpRandomMechanic extends MechanicComponent
 {
     private static final Random random = new Random();
 
     private static final String WALL       = "walls";
     private static final String HORIZONTAL = "horizontal";
     private static final String DISTANCE   = "distance";
+
+    @Override
+    public String getKey() {
+        return "warp random";
+    }
 
     /**
      * Executes the component
@@ -67,7 +71,7 @@ public class WarpRandomMechanic extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean horizontal = !settings.getString(HORIZONTAL, "true").toLowerCase().equals("false");
-        double distance = attr(caster, DISTANCE, level, 3.0, isSelf);
+        double distance = parseValues(caster, DISTANCE, level, 3.0);
 
         for (LivingEntity target : targets)
         {

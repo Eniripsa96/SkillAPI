@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -39,7 +38,7 @@ import java.util.Map;
 /**
  * Executes child components multiple times
  */
-public class RepeatMechanic extends EffectComponent {
+public class RepeatMechanic extends MechanicComponent {
     private static final String REPETITIONS  = "repetitions";
     private static final String DELAY        = "delay";
     private static final String PERIOD       = "period";
@@ -60,7 +59,7 @@ public class RepeatMechanic extends EffectComponent {
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         if (targets.size() > 0) {
             final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-            final int count = (int) attr(caster, REPETITIONS, level, 3.0, isSelf);
+            final int count = (int) parseValues(caster, REPETITIONS, level, 3.0);
             if (count <= 0) { return false; }
 
             final int delay = (int) (settings.getDouble(DELAY, 0.0) * 20);
@@ -72,6 +71,11 @@ public class RepeatMechanic extends EffectComponent {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String getKey() {
+        return "repeat";
     }
 
     @Override

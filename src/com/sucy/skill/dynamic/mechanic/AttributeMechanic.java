@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -42,7 +41,7 @@ import java.util.Map;
 /**
  * Applies a flag to each target
  */
-public class AttributeMechanic extends EffectComponent {
+public class AttributeMechanic extends MechanicComponent {
     private static final String KEY       = "key";
     private static final String AMOUNT    = "amount";
     private static final String SECONDS   = "seconds";
@@ -68,8 +67,8 @@ public class AttributeMechanic extends EffectComponent {
 
         final Map<String, AttribTask> casterTasks = tasks.computeIfAbsent(caster.getEntityId(), HashMap::new);
         final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        final int amount = (int) attr(caster, AMOUNT, level, 5, isSelf);
-        final double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+        final int amount = (int) parseValues(caster, AMOUNT, level, 5);
+        final double seconds = parseValues(caster, SECONDS, level, 3.0);
         final boolean stackable = settings.getString(STACKABLE, "false").equalsIgnoreCase("true");
         final int ticks = (int) (seconds * 20);
 
@@ -93,6 +92,11 @@ public class AttributeMechanic extends EffectComponent {
             }
         }
         return worked;
+    }
+
+    @Override
+    public String getKey() {
+        return "attribute";
     }
 
     @Override

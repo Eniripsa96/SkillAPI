@@ -34,6 +34,7 @@ import com.sucy.skill.api.util.DamageLoreRemover;
 import com.sucy.skill.api.util.Data;
 import com.sucy.skill.data.formula.Formula;
 import com.sucy.skill.data.formula.value.CustomValue;
+import com.sucy.skill.dynamic.ComponentType;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.gui.tool.GUIData;
 import com.sucy.skill.gui.tool.GUIPage;
@@ -46,17 +47,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Handles loading and accessing individual
  * attributes from the configuration.
  */
-public class AttributeManager
-{
+public class AttributeManager {
     // Keys for supported stat modifiers
     public static final String HEALTH           = "health";
     public static final String MANA             = "mana";
@@ -76,9 +78,9 @@ public class AttributeManager
     public static final String COOLDOWN         = "cooldown";
     public static final String KNOCKBACK_RESIST = "knockback-resist";
 
-    private final HashMap<String, Attribute> attributes = new LinkedHashMap<>();
-    private final HashMap<String, Attribute> lookup     = new HashMap<>();
-    private final HashMap<String, List<Attribute>> byStat = new HashMap<>();
+    private final HashMap<String, Attribute>       attributes  = new LinkedHashMap<>();
+    private final HashMap<String, Attribute>       lookup      = new HashMap<>();
+    private final HashMap<String, List<Attribute>> byStat      = new HashMap<>();
     private final HashMap<String, List<Attribute>> byComponent = new HashMap<>();
 
     /**
@@ -89,8 +91,7 @@ public class AttributeManager
      *
      * @param api SkillAPI reference
      */
-    public AttributeManager(SkillAPI api)
-    {
+    public AttributeManager(SkillAPI api) {
         load(api);
     }
 
@@ -101,8 +102,7 @@ public class AttributeManager
      *
      * @return template for the attribute
      */
-    public Attribute getAttribute(String key)
-    {
+    public Attribute getAttribute(String key) {
         return lookup.get(key.toLowerCase());
     }
 
@@ -114,8 +114,7 @@ public class AttributeManager
      *
      * @return attributes map
      */
-    public HashMap<String, Attribute> getAttributes()
-    {
+    public HashMap<String, Attribute> getAttributes() {
         return attributes;
     }
 
@@ -124,7 +123,7 @@ public class AttributeManager
     }
 
     public List<Attribute> forComponent(final EffectComponent component, final String key) {
-        return byComponent.get(component.getName() + "-" + key.toLowerCase());
+        return byComponent.get(component.getKey() + "-" + key.toLowerCase());
     }
 
     /**
@@ -133,8 +132,7 @@ public class AttributeManager
      *
      * @return set of available attribute keys
      */
-    public Set<String> getKeys()
-    {
+    public Set<String> getKeys() {
         return attributes.keySet();
     }
 
@@ -144,8 +142,7 @@ public class AttributeManager
      *
      * @return display name and config keys for attributes
      */
-    public Set<String> getLookupKeys()
-    {
+    public Set<String> getLookupKeys() {
         return lookup.keySet();
     }
 
@@ -158,7 +155,7 @@ public class AttributeManager
      */
     public String normalize(String key) {
         final Attribute attribute = lookup.get(key.toLowerCase());
-        if (attribute == null) throw new IllegalArgumentException("Invalid attribute - " + key);
+        if (attribute == null) { throw new IllegalArgumentException("Invalid attribute - " + key); }
         return attribute.getKey();
     }
 
@@ -167,15 +164,13 @@ public class AttributeManager
      *
      * @param api SkillAPI reference
      */
-    private void load(SkillAPI api)
-    {
+    private void load(SkillAPI api) {
         CommentedConfig config = new CommentedConfig(api, "attributes");
         config.saveDefaultConfig();
 
         DataSection data = config.getConfig();
         Logger.log(LogType.ATTRIBUTE_LOAD, 1, "Loading attributes...");
-        for (String key : data.keys())
-        {
+        for (String key : data.keys()) {
             Logger.log(LogType.ATTRIBUTE_LOAD, 2, "  - " + key);
             Attribute attribute = new Attribute(data.getSection(key), key);
             attributes.put(attribute.getKey(), attribute);
@@ -184,13 +179,10 @@ public class AttributeManager
         }
 
         GUIData attribs = GUITool.getAttributesMenu();
-        if (!attribs.isValid())
-        {
+        if (!attribs.isValid()) {
             int i = 0;
             GUIPage page = attribs.getPage(0);
-            for (String key : attributes.keySet())
-                if (i < 54)
-                    page.set(i++, key);
+            for (String key : attributes.keySet()) { if (i < 54) { page.set(i++, key); } }
             attribs.resize((attributes.size() + 8) / 9);
         }
     }
@@ -198,8 +190,7 @@ public class AttributeManager
     /**
      * A single attribute template
      */
-    public class Attribute implements IconHolder
-    {
+    public class Attribute implements IconHolder {
         private static final String DISPLAY   = "display";
         private static final String GLOBAL    = "global";
         private static final String CONDITION = "condition";
@@ -215,9 +206,7 @@ public class AttributeManager
         private int       max;
 
         // Dynamic global modifiers
-        private HashMap<String, AttributeValue[]> conditions = new HashMap<>();
-        private HashMap<String, AttributeValue[]> mechanics  = new HashMap<>();
-        private HashMap<String, AttributeValue[]> targets    = new HashMap<>();
+        private Map<ComponentType, Map<String, AttributeValue[]>> dynamicModifiers = new EnumMap<>(ComponentType.class);
 
         // General stat modifiers
         private HashMap<String, Formula> statModifiers = new HashMap<>();
@@ -229,8 +218,7 @@ public class AttributeManager
          * @param data config data to load from
          * @param key  the key the attribute was labeled under
          */
-        public Attribute(DataSection data, String key)
-        {
+        public Attribute(DataSection data, String key) {
             this.key = key.toLowerCase();
             this.display = data.getString(DISPLAY, key).toLowerCase();
             this.icon = Data.parseIcon(data);
@@ -238,11 +226,10 @@ public class AttributeManager
 
             // Load dynamic global settings
             DataSection globals = data.getSection(GLOBAL);
-            if (globals != null)
-            {
-                loadGroup(globals.getSection(CONDITION), conditions);
-                loadGroup(globals.getSection(MECHANIC), mechanics);
-                loadGroup(globals.getSection(TARGET), targets);
+            if (globals != null) {
+                loadGroup(globals.getSection(CONDITION), ComponentType.CONDITION);
+                loadGroup(globals.getSection(MECHANIC), ComponentType.MECHANIC);
+                loadGroup(globals.getSection(TARGET), ComponentType.TARGET);
             }
 
             // Load stat settings
@@ -259,8 +246,7 @@ public class AttributeManager
          *
          * @return config key of the attribute
          */
-        public String getKey()
-        {
+        public String getKey() {
             return key;
         }
 
@@ -269,8 +255,7 @@ public class AttributeManager
          *
          * @return name of the attribute
          */
-        public String getName()
-        {
+        public String getName() {
             return display;
         }
 
@@ -280,15 +265,13 @@ public class AttributeManager
          * @return icon of the attribute
          */
         @Override
-        public ItemStack getIcon(PlayerData data)
-        {
+        public ItemStack getIcon(PlayerData data) {
             ItemStack item = icon.clone();
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(filter(data, meta.getDisplayName()));
             List<String> lore = meta.getLore();
             if (lore != null) {
-                for (int j = 0; j < lore.size(); j++)
-                    lore.set(j, filter(data, lore.get(j)));
+                for (int j = 0; j < lore.size(); j++) { lore.set(j, filter(data, lore.get(j))); }
                 meta.setLore(lore);
             }
 
@@ -309,18 +292,16 @@ public class AttributeManager
          *
          * @return filtered line
          */
-        private String filter(PlayerData data, String text)
-        {
+        private String filter(PlayerData data, String text) {
             return text
-                .replace("{amount}", "" + data.getInvestedAttribute(key))
-                .replace("{total}", "" + data.getAttribute(key));
+                    .replace("{amount}", "" + data.getInvestedAttribute(key))
+                    .replace("{total}", "" + data.getAttribute(key));
         }
 
         /**
          * @return icon for the attribute for use in the GUI editor
          */
-        public ItemStack getToolIcon()
-        {
+        public ItemStack getToolIcon() {
             ItemStack icon = this.icon.clone();
             ItemMeta meta = icon.getItemMeta();
             meta.setDisplayName(key);
@@ -333,8 +314,7 @@ public class AttributeManager
          *
          * @return max attribute amount
          */
-        public int getMax()
-        {
+        public int getMax() {
             return max;
         }
 
@@ -343,26 +323,19 @@ public class AttributeManager
          *
          * @param component component to modify for
          * @param key       key of the value to modify
-         * @param self      whether or not the component is targeting the caster
          * @param value     base value
          * @param amount    amount of attribute points
          *
          * @return modified value
          */
-        public double modify(EffectComponent component, String key, boolean self, double value, int amount)
-        {
-            HashMap<String, AttributeValue[]> map;
-            if (component.getType().equals("condition")) map = conditions;
-            else if (component.getType().equals("mechanic")) map = mechanics;
-            else map = targets;
-
-            key = component.getName() + "-" + key.toLowerCase();
-            if (map.containsKey(key))
-            {
+        public double modify(EffectComponent component, String key, double value, int amount) {
+            key = component.getKey() + "-" + key.toLowerCase();
+            final Map<String, AttributeValue[]> map = dynamicModifiers.get(component.getType());
+            if (map.containsKey(key)) {
                 AttributeValue[] list = map.get(key);
-                for (AttributeValue attribValue : list)
-                    if (attribValue.passes(component, self))
-                        return attribValue.apply(value, amount);
+                for (AttributeValue attribValue : list) {
+                    if (attribValue.passes(component)) { return attribValue.apply(value, amount); }
+                }
             }
             return value;
         }
@@ -376,10 +349,8 @@ public class AttributeManager
          *
          * @return modified stat value
          */
-        public double modifyStat(String key, double base, int amount)
-        {
-            if (statModifiers.containsKey(key))
-            {
+        public double modifyStat(String key, double base, int amount) {
+            if (statModifiers.containsKey(key)) {
                 return statModifiers.get(key).compute(base, amount);
             }
             return base;
@@ -389,25 +360,23 @@ public class AttributeManager
          * Loads a dynamic group globals settings into the given map
          *
          * @param data   config data to load from
-         * @param target target map to store the data in
+         * @param type the component type to load for
          */
-        private void loadGroup(DataSection data, HashMap<String, AttributeValue[]> target)
-        {
-            if (data == null) return;
-            for (String key : data.keys())
-            {
+        private void loadGroup(DataSection data, ComponentType type) {
+            if (data == null) { return; }
+
+            final Map<String, AttributeValue[]> target = dynamicModifiers.computeIfAbsent(type, t -> new HashMap<>());
+            for (String key : data.keys()) {
                 final String lower = key.toLowerCase();
                 Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    SkillMod: " + key);
                 final String value = data.getString(key);
                 final String[] formulas = value.split("\\|");
                 final AttributeValue[] values = new AttributeValue[formulas.length];
                 int i = 0;
-                for (final String formula : formulas)
-                    values[i++] = new AttributeValue(formula);
+                for (final String formula : formulas) { values[i++] = new AttributeValue(formula); }
                 target.put(lower, values);
 
-                if (!byComponent.containsKey(lower))
-                    byComponent.put(lower, new ArrayList<>());
+                if (!byComponent.containsKey(lower)) { byComponent.put(lower, new ArrayList<>()); }
                 byComponent.get(lower).add(this);
             }
         }
@@ -418,15 +387,14 @@ public class AttributeManager
          * @param data config data to load from
          * @param key  key of the stat modifier
          */
-        private void loadStatModifier(DataSection data, String key)
-        {
-            if (data.has(key))
-            {
+        private void loadStatModifier(DataSection data, String key) {
+            if (data.has(key)) {
                 Logger.log(LogType.ATTRIBUTE_LOAD, 2, "    StatMod: " + key);
-                statModifiers.put(key, new Formula(data.getString(key, "v"), new CustomValue("v"), new CustomValue("a")));
+                statModifiers.put(
+                        key,
+                        new Formula(data.getString(key, "v"), new CustomValue("v"), new CustomValue("a")));
 
-                if (!byStat.containsKey(key))
-                    byStat.put(key, new ArrayList<>());
+                if (!byStat.containsKey(key)) { byStat.put(key, new ArrayList<>()); }
                 byStat.get(key).add(this);
             }
         }
@@ -436,8 +404,7 @@ public class AttributeManager
      * Represents one formula modifier for an attribute
      * that can have conditions
      */
-    public class AttributeValue
-    {
+    public class AttributeValue {
         private Formula formula;
         private HashMap<String, String> conditions = new HashMap<>();
 
@@ -447,12 +414,10 @@ public class AttributeManager
          *
          * @param data data string for the value
          */
-        public AttributeValue(String data)
-        {
+        public AttributeValue(String data) {
             String[] pieces = data.split(":");
             formula = new Formula(pieces[0], new CustomValue("v"), new CustomValue("a"));
-            for (int i = 1; i < pieces.length; i++)
-            {
+            for (int i = 1; i < pieces.length; i++) {
                 String[] sides = pieces[i].split("=");
                 conditions.put(sides[0], sides[1]);
                 Logger.log(LogType.ATTRIBUTE_LOAD, 3, "      Condition: " + sides[0] + " / " + sides[1]);
@@ -463,21 +428,12 @@ public class AttributeManager
          * Checks whether or not the formula should be applied to the component
          *
          * @param component component to check for conditions against
-         * @param self      whether or not the component is targeting the caster
          *
          * @return true if passes the conditions
          */
-        public boolean passes(EffectComponent component, boolean self)
-        {
-            for (String key : conditions.keySet())
-            {
-                if (key.equals("self"))
-                {
-                    if (conditions.get(key).equalsIgnoreCase("false") != self)
-                        return false;
-                }
-                else if (!component.getSettings().getString(key).equalsIgnoreCase(conditions.get(key)))
-                    return false;
+        public boolean passes(EffectComponent component) {
+            for (String key : conditions.keySet()) {
+                if (!component.getSettings().getString(key).equalsIgnoreCase(conditions.get(key))) { return false; }
             }
             return true;
         }
@@ -490,8 +446,7 @@ public class AttributeManager
          *
          * @return the modified value if the conditions passed or the base value if they failed
          */
-        public double apply(double value, int amount)
-        {
+        public double apply(double value, int amount) {
             return formula.compute(value, amount);
         }
     }

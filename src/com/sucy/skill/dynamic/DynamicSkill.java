@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic;
 
+import com.google.common.collect.ImmutableList;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
@@ -33,6 +34,7 @@ import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.cast.IIndicator;
+import com.sucy.skill.dynamic.trigger.TriggerComponent;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -40,32 +42,37 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.sucy.skill.dynamic.ComponentRegistry.getTrigger;
 
 /**
  * A skill implementation for the Dynamic system
  */
-public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener
-{
-    private final HashMap<Trigger, TriggerHandler> triggers = new HashMap<>();
-    private final HashMap<String, EffectComponent> attribKeys = new HashMap<>();
-    private final HashMap<Integer, Integer>        active     = new HashMap<>();
+public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, Listener {
+    private final List<TriggerHandler>         triggers   = new ArrayList<>();
+    private final Map<String, EffectComponent> attribKeys = new HashMap<>();
+    private final Map<Integer, Integer>        active     = new HashMap<>();
 
-    private static final HashMap<Integer, HashMap<String, Object>> castData = new HashMap<>();
-    private static final HashMap<Integer, HashMap<String, Object>> targetData = new HashMap<>();
+    private static final HashMap<Integer, HashMap<String, Object>> castData   = new HashMap<>();
 
-    private boolean cancel  = false;
-    private double multiplier = 1;
-    private double bonus = 0;
+    private TriggerComponent castTrigger;
+    private TriggerComponent initializeTrigger;
+    private TriggerComponent cleanupTrigger;
+
+    private boolean cancel     = false;
+    private double  multiplier = 1;
+    private double  bonus      = 0;
 
     /**
      * Initializes a new dynamic skill
      *
      * @param name name of the skill
      */
-    public DynamicSkill(final String name)
-    {
+    public DynamicSkill(final String name) {
         super(name, "Dynamic", Material.JACK_O_LANTERN, 1);
     }
 
@@ -74,9 +81,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return true if can cast, false otherwise
      */
-    public boolean canCast()
-    {
-        return triggers.containsKey(Trigger.CAST);
+    public boolean canCast() {
+        return castTrigger != null;
     }
 
     /**
@@ -86,8 +92,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return true if active, false otherwise
      */
-    public boolean isActive(final LivingEntity caster)
-    {
+    public boolean isActive(final LivingEntity caster) {
         return active.containsKey(caster.getEntityId());
     }
 
@@ -98,8 +103,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return active level of the skill
      */
-    public int getActiveLevel(final LivingEntity caster)
-    {
+    public int getActiveLevel(final LivingEntity caster) {
         return active.get(caster.getEntityId());
     }
 
@@ -110,16 +114,14 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param key       key string
      * @param component component to grab attributes from
      */
-    void setAttribKey(final String key, final EffectComponent component)
-    {
+    void setAttribKey(final String key, final EffectComponent component) {
         attribKeys.put(key, component);
     }
 
     /**
      * Cancels the event causing a trigger to go off
      */
-    public void cancelTrigger()
-    {
+    public void cancelTrigger() {
         cancel = true;
     }
 
@@ -157,22 +159,15 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      *
      * @return cast data for the caster
      */
-    public static HashMap<String, Object> getCastData(final LivingEntity caster)
-    {
-        if (caster == null) return null;
+    public static HashMap<String, Object> getCastData(final LivingEntity caster) {
+        if (caster == null) { return null; }
         HashMap<String, Object> map = castData.get(caster.getEntityId());
-        if (map == null)
-        {
+        if (map == null) {
             map = new HashMap<>();
             map.put("caster", caster);
             castData.put(caster.getEntityId(), map);
         }
         return map;
-    }
-
-    public static HashMap<String, Object> getTargetData(final LivingEntity target) {
-        if (target == null) return null;
-        return targetData.computeIfAbsent(target.getEntityId(), HashMap::new);
     }
 
     /**
@@ -182,7 +177,6 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      */
     public static void clearCastData(final LivingEntity entity) {
         castData.remove(entity.getEntityId());
-        targetData.remove(entity.getEntityId());
     }
 
     /**
@@ -191,7 +185,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param plugin plugin reference
      */
     public void registerEvents(final SkillAPI plugin) {
-        for (final TriggerHandler triggerHandler : triggers.values()) {
+        for (final TriggerHandler triggerHandler : triggers) {
             triggerHandler.register(plugin);
         }
     }
@@ -206,7 +200,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public void update(final LivingEntity user, final int prevLevel, final int newLevel) {
         active.put(user.getEntityId(), newLevel);
-        for (final TriggerHandler triggerHandler : triggers.values()) {
+        for (final TriggerHandler triggerHandler : triggers) {
             triggerHandler.init(user, newLevel);
         }
     }
@@ -219,9 +213,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      */
     @Override
     public void initialize(final LivingEntity user, final int level) {
-        trigger(user, user, level, Trigger.INITIALIZE);
+        trigger(user, user, level, initializeTrigger);
         active.put(user.getEntityId(), level);
-        for (final TriggerHandler triggerHandler : triggers.values()) {
+        for (final TriggerHandler triggerHandler : triggers) {
             triggerHandler.init(user, level);
         }
     }
@@ -235,11 +229,17 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public void stopEffects(final LivingEntity user, final int level) {
         active.remove(user.getEntityId());
-        for (final TriggerHandler triggerHandler : triggers.values()) {
+        for (final TriggerHandler triggerHandler : triggers) {
             triggerHandler.cleanup(user);
         }
+        cleanup(user, castTrigger);
+        cleanup(user, initializeTrigger);
 
-        trigger(user, user, 1, Trigger.CLEANUP);
+        trigger(user, user, 1, cleanupTrigger);
+    }
+
+    private void cleanup(final LivingEntity user, final TriggerComponent component) {
+        if (component != null) component.cleanUp(user);
     }
 
     /**
@@ -251,9 +251,8 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @return true if casted successfully, false if conditions weren't met or no effects are using the cast trigger
      */
     @Override
-    public boolean cast(final LivingEntity user, final int level)
-    {
-        return trigger(user, user, level, Trigger.CAST);
+    public boolean cast(final LivingEntity user, final int level) {
+        return trigger(user, user, level, castTrigger);
     }
 
     /**
@@ -266,8 +265,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     @Override
     public void createPreview(final List<IIndicator> list, final Player player, final int level) {
         list.clear();
-        for (final TriggerHandler triggerHandler : triggers.values())
-            triggerHandler.getComponent().makeIndicators(list, player, player, level);
+        if (castTrigger != null) {
+            castTrigger.makeIndicators(list, player, ImmutableList.of(player), level);
+        }
     }
 
     /**
@@ -294,8 +294,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     protected String getAttrName(String key) {
         if (key.contains(".")) {
             return TextFormatter.format(key.substring(key.lastIndexOf('.') + 1));
-        }
-        else return super.getAttrName(key);
+        } else { return super.getAttrName(key); }
     }
 
     /**
@@ -311,25 +310,26 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @return attribute value or 0 if invalid dynamic path
      */
     @Override
-    protected Object getAttr(final LivingEntity caster, final String key, final int level)
-    {
+    protected Object getAttr(final LivingEntity caster, final String key, final int level) {
         // Dynamic attribute paths use periods
-        if (key.contains("."))
-        {
+        if (key.contains(".")) {
             final String[] path = key.split("\\.");
             final String attr = path[1].toLowerCase();
             if (attribKeys.containsKey(path[0]) && attribKeys.get(path[0]).settings.has(attr)) {
-                return format(attribKeys.get(path[0]).attr(caster, attr, level, 0, true));
-            }
-            else return 0;
+                return format(attribKeys.get(path[0]).parseValues(caster, attr, level, 0));
+            } else { return 0; }
         }
 
         // Otherwise get the attribute normally
-        else return super.getAttr(caster, key, level);
+        else { return super.getAttr(caster, key, level); }
     }
 
-    private boolean trigger(final LivingEntity user, final LivingEntity target, final int level, final Trigger trigger) {
-        return triggers.containsKey(trigger) && triggers.get(trigger).trigger(user, target, level);
+    private boolean trigger(
+            final LivingEntity user,
+            final LivingEntity target,
+            final int level,
+            final TriggerComponent component) {
+        return component != null && component.trigger(user, target, level);
     }
 
     /**
@@ -338,30 +338,37 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      * @param config config data to load from
      */
     @Override
-    public void load(final DataSection config)
-    {
+    public void load(final DataSection config) {
         super.load(config);
 
         final DataSection triggers = config.getSection("components");
-        if (triggers == null)
-            return;
+        if (triggers == null) { return; }
 
-        for (final String key : triggers.keys())
-        {
-            try
-            {
-                final Trigger trigger = Trigger.valueOf(key.toUpperCase().replace(' ', '_').replaceAll("-.+", ""));
-                final EffectComponent component = trigger.getComponent();
-                component.load(this, triggers.getSection(key));
-                this.triggers.put(trigger, new TriggerHandler(this, trigger, component));
-            }
-            catch (final Exception ex)
-            {
+        for (final String key : triggers.keys()) {
+            final String modified = key.replaceAll("-.+", "");
+            try {
+                final DataSection settings = triggers.getSection(key);
+                if (modified.equalsIgnoreCase("CAST")) {
+                    castTrigger = loadComponent(settings);
+                } else if (modified.equalsIgnoreCase("INITIALIZE")) {
+                    initializeTrigger = loadComponent(settings);
+                } else if (modified.equalsIgnoreCase("CLEANUP")) {
+                    cleanupTrigger = loadComponent(settings);
+                } else {
+                    this.triggers.add(new TriggerHandler(this, key, getTrigger(modified), loadComponent(settings)));
+                }
+            } catch (final Exception ex) {
                 // Invalid trigger
                 ex.printStackTrace();
                 Logger.invalid("Invalid trigger for the skill \"" + getName() + "\" - \"" + key + "\"");
             }
         }
+    }
+
+    private TriggerComponent loadComponent(final DataSection data) {
+        final TriggerComponent component = new TriggerComponent();
+        component.load(this, data);
+        return component;
     }
 
     /**
@@ -374,8 +381,16 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     public void save(final DataSection config) {
         super.save(config);
         final DataSection triggers = config.createSection("components");
-        for (final TriggerHandler triggerHandler : this.triggers.values()) {
-            triggerHandler.getComponent().save(triggers.createSection(TextFormatter.format(triggerHandler.getTrigger().name())));
+        for (final TriggerHandler triggerHandler : this.triggers) {
+            triggerHandler.getComponent()
+                    .save(triggers.createSection(TextFormatter.format(triggerHandler.getKey())));
         }
+        save(triggers, castTrigger, "Cast");
+        save(triggers, initializeTrigger, "Initialize");
+        save(triggers, cleanupTrigger, "Cleanup");
+    }
+
+    private void save(final DataSection triggers, final TriggerComponent component, final String key) {
+        if (component != null) component.save(triggers.createSection(TextFormatter.format(key)));
     }
 }

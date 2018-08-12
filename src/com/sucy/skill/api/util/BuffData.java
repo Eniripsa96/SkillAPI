@@ -44,7 +44,6 @@ public class BuffData
     private final Map<String, Map<String, Buff>> buffs = new HashMap<String, Map<String, Buff>>();
 
     private LivingEntity entity;
-    private SkillAPI     plugin;
 
     /**
      * Initializes new buff data for the entity
@@ -53,7 +52,6 @@ public class BuffData
      */
     public BuffData(LivingEntity entity)
     {
-        this.plugin = SkillAPI.getPlugin(SkillAPI.class);
         this.entity = entity;
     }
 
@@ -101,7 +99,7 @@ public class BuffData
             conflict.task.cancel();
 
         typeBuffs.put(buff.getKey(), buff);
-        buff.task = new BuffTask(type, buff.getKey()).runTaskLater(plugin, ticks);
+        buff.task = SkillAPI.schedule(new BuffTask(type, buff.getKey()), ticks);
     }
 
     /** @deprecated use {@link BuffData#addBuff(BuffType, Buff, int)} instead */

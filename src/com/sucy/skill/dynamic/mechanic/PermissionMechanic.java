@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.util.FlagManager;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.hook.PluginChecker;
 import org.bukkit.entity.LivingEntity;
 
@@ -36,10 +35,15 @@ import java.util.List;
 /**
  * Applies a flag to each target
  */
-public class PermissionMechanic extends EffectComponent
+public class PermissionMechanic extends MechanicComponent
 {
     private static final String PERM    = "perm";
     private static final String SECONDS = "seconds";
+
+    @Override
+    public String getKey() {
+        return "permission";
+    }
 
     /**
      * Executes the component
@@ -60,7 +64,7 @@ public class PermissionMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(PERM);
-        double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+        double seconds = parseValues(caster, SECONDS, level, 3.0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {

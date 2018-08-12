@@ -26,39 +26,26 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.rit.sucy.config.parse.NumberParser;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 
-import java.util.List;
-
-public class SlotCondition extends EffectComponent
+public class SlotCondition extends ConditionComponent
 {
     private static final String SLOT = "slot";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (!(caster instanceof Player))
-            return false;
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        if (!(target instanceof Player)) return false;
 
-        Player player = (Player) caster;
-        List<String> slots = settings.getStringList(SLOT);
-        for (String slot : slots)
-            if (ItemChecker.check(player.getInventory().getItem(NumberParser.parseInt(slot)), level, settings))
-                return executeChildren(caster, level, targets);
+        final PlayerInventory inventory = ((Player) target).getInventory();
+        return settings.getStringList(SLOT).stream().anyMatch(
+                slot -> ItemChecker.check(inventory.getItem(Integer.parseInt(slot)), level, settings));
+    }
 
-        return false;
+    @Override
+    public String getKey() {
+        return "slot";
     }
 }

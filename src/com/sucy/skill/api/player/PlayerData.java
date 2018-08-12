@@ -519,11 +519,10 @@ public class PlayerData {
      * @param component component holding the value
      * @param key       key of the value
      * @param value     unmodified value
-     * @param self      whether or not the player is the target
      *
      * @return the modified value
      */
-    public double scaleDynamic(EffectComponent component, String key, double value, boolean self) {
+    public double scaleDynamic(EffectComponent component, String key, double value) {
         final AttributeManager manager = SkillAPI.getAttributeManager();
         if (manager == null) { return value; }
 
@@ -533,7 +532,7 @@ public class PlayerData {
         for (final AttributeManager.Attribute attribute : matches) {
             int amount = getAttribute(attribute.getKey());
             if (amount > 0) {
-                value = attribute.modify(component, key, self, value, amount);
+                value = attribute.modify(component, key, value, amount);
             }
         }
         return value;
@@ -718,13 +717,7 @@ public class PlayerData {
         }
 
         // Must meet any skill requirements
-        if (skill.getSkillReq() != null) {
-            PlayerSkill req = skills.get(skill.getSkillReq().toLowerCase());
-            if (req != null && req.getLevel() < skill.getSkillReqLevel()) {
-                return false;
-            }
-        }
-        if (!skill.isCompatible(this) || !skill.hasInvestedEnough(this)) {
+        if (!skill.isCompatible(this) || !skill.hasInvestedEnough(this) || !skill.hasDependency(this)) {
             return false;
         }
 

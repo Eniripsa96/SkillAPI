@@ -3,10 +3,11 @@ package com.sucy.skill.dynamic.mechanic;
 import com.google.common.base.Objects;
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.dynamic.ComponentRegistry;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
-import com.sucy.skill.dynamic.Trigger;
 import com.sucy.skill.dynamic.TriggerHandler;
+import com.sucy.skill.dynamic.trigger.Trigger;
+import com.sucy.skill.dynamic.trigger.TriggerComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,7 +20,7 @@ import java.util.Map;
  * SkillAPI © 2017
  * com.sucy.skill.dynamic.mechanic.TriggerMechanic
  */
-public class TriggerMechanic extends EffectComponent {
+public class TriggerMechanic extends MechanicComponent {
 
     private static final String TRIGGER = "trigger";
     private static final String DURATION = "duration";
@@ -29,7 +30,6 @@ public class TriggerMechanic extends EffectComponent {
     private final Map<Integer, List<Context>> CASTER_MAP = new HashMap<Integer, List<Context>>();
 
     private TriggerHandler triggerHandler;
-    private Receiver receiver;
     private boolean once;
     private boolean stackable;
 
@@ -37,21 +37,29 @@ public class TriggerMechanic extends EffectComponent {
     public void load(final DynamicSkill skill, final DataSection dataSection) {
         super.load(skill, dataSection);
 
-        final String name = settings.getString(TRIGGER, Trigger.DEATH.name()).toUpperCase().replace(' ', '_');
-        final Trigger trigger = Trigger.valueOf(name);
+        final String name = settings.getString(TRIGGER, "DEATH");
+        final Trigger trigger = ComponentRegistry.getTrigger(name);
+        if (trigger == null) {
+            throw new IllegalArgumentException("Skill is using invalid trigger for mechanic: " + name);
+        }
 
-        receiver = new Receiver();
-        triggerHandler = new TriggerHandler(skill, trigger, receiver);
+        final Receiver receiver = new Receiver();
+        triggerHandler = new TriggerHandler(skill, "fake", trigger, receiver);
         triggerHandler.register(JavaPlugin.getPlugin(SkillAPI.class));
         once = settings.getBool(ONCE, true);
         stackable = settings.getBool(STACKABLE, true);
     }
 
     @Override
+    public String getKey() {
+        return "trigger";
+    }
+
+    @Override
     public boolean execute(
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
 
-        final int ticks = (int)(20 * attr(caster, DURATION, level, 5, false));
+        final int ticks = (int)(20 * parseValues(caster, DURATION, level, 5));
 
         boolean worked = false;
         for (final LivingEntity target : targets) {
@@ -59,7 +67,7 @@ public class TriggerMechanic extends EffectComponent {
                 return false;
 
             if (!CASTER_MAP.containsKey(target.getEntityId())) {
-                CASTER_MAP.put(target.getEntityId(), new ArrayList<Context>());
+                CASTER_MAP.put(target.getEntityId(), new ArrayList<>());
             }
             triggerHandler.init(target, level);
 
@@ -98,7 +106,7 @@ public class TriggerMechanic extends EffectComponent {
         }
     }
 
-    private class Receiver extends EffectComponent {
+    private class Receiver extends TriggerComponent {
 
         private Receiver() {
             final DataSection data = new DataSection();

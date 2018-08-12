@@ -26,6 +26,10 @@
  */
 package com.sucy.skill.dynamic;
 
+import com.google.common.collect.ImmutableList;
+import com.sucy.skill.api.particle.target.EffectTarget;
+import com.sucy.skill.api.particle.target.EntityTarget;
+import com.sucy.skill.api.particle.target.FixedTarget;
 import com.sucy.skill.api.util.Nearby;
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
@@ -68,7 +72,7 @@ import java.util.UUID;
  */
 public class TempEntity implements LivingEntity {
 
-    private Location loc;
+    private EffectTarget target;
 
     /**
      * Sets up a new dummy entity
@@ -76,7 +80,11 @@ public class TempEntity implements LivingEntity {
      * @param loc location to represent
      */
     public TempEntity(Location loc) {
-        this.loc = loc;
+        this(new FixedTarget(loc));
+    }
+
+    public TempEntity(final EffectTarget target) {
+        this.target = target;
     }
 
     public double getEyeHeight() {
@@ -88,7 +96,7 @@ public class TempEntity implements LivingEntity {
     }
 
     public Location getEyeLocation() {
-        return loc.clone().add(0, 1, 0);
+        return getLocation().add(0, 1, 0);
     }
 
     public List<Block> getLineOfSight(HashSet<Byte> hashSet, int i) {
@@ -204,7 +212,7 @@ public class TempEntity implements LivingEntity {
     }
 
     public Collection<PotionEffect> getActivePotionEffects() {
-        return null;
+        return ImmutableList.of();
     }
 
     public boolean hasLineOfSight(Entity entity) {
@@ -394,10 +402,11 @@ public class TempEntity implements LivingEntity {
     }
 
     public Location getLocation() {
-        return loc.clone();
+        return target.getLocation().clone();
     }
 
-    public Location getLocation(Location location) {
+    public Location getLocation(final Location location) {
+        final Location loc = target.getLocation();
         location.setX(loc.getX());
         location.setY(loc.getY());
         location.setZ(loc.getZ());
@@ -428,31 +437,31 @@ public class TempEntity implements LivingEntity {
     }
 
     public World getWorld() {
-        return loc.getWorld();
+        return target.getLocation().getWorld();
     }
 
     public boolean teleport(Location location) {
-        loc = location;
+        target = new FixedTarget(location);
         return true;
     }
 
     public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause teleportCause) {
-        loc = location;
+        target = new FixedTarget(location);
         return true;
     }
 
     public boolean teleport(Entity entity) {
-        loc = entity.getLocation();
+        target = new EntityTarget(entity);
         return true;
     }
 
     public boolean teleport(Entity entity, PlayerTeleportEvent.TeleportCause teleportCause) {
-        loc = entity.getLocation();
+        target = new EntityTarget(entity);
         return true;
     }
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        return Nearby.getNearby(loc, x);
+        return Nearby.getNearby(target.getLocation(), x);
     }
 
     public int getEntityId() {

@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -38,10 +37,15 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueAttributeMechanic extends EffectComponent
+public class ValueAttributeMechanic extends MechanicComponent
 {
     private static final String KEY  = "key";
     private static final String ATTR = "attribute";
+
+    @Override
+    public String getKey() {
+        return "value attribute";
+    }
 
     /**
      * Executes the component

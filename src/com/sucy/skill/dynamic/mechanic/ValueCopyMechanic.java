@@ -1,7 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -10,10 +9,15 @@ import java.util.List;
  * SkillAPI © 2018
  * com.sucy.skill.dynamic.mechanic.ValueCopyMechanic
  */
-public class ValueCopyMechanic extends EffectComponent {
+public class ValueCopyMechanic extends MechanicComponent {
     private static final String KEY       = "key";
     private static final String TARGET    = "destination";
     private static final String TO_TARGET = "to-target";
+
+    @Override
+    public String getKey() {
+        return "value copy";
+    }
 
     @Override
     public boolean execute(

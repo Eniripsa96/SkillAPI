@@ -204,7 +204,9 @@ public class MainListener extends SkillAPIListener
         if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
         {
             data.stopPassives(event.getEntity());
-            data.loseExp();
+            if (!SkillAPI.getSettings().shouldIgnoreExpLoss(event.getEntity().getWorld())) {
+                data.loseExp();
+            }
         }
     }
 

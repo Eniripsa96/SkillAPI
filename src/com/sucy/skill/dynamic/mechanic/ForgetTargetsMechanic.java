@@ -27,14 +27,18 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
 
-public class ForgetTargetsMechanic extends EffectComponent
+public class ForgetTargetsMechanic extends MechanicComponent
 {
     private static final String KEY = "key";
+
+    @Override
+    public String getKey() {
+        return "forget targets";
+    }
 
     /**
      * Executes the component

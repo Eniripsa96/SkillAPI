@@ -31,7 +31,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
 import org.bukkit.DyeColor;
@@ -47,7 +46,7 @@ import java.util.Map;
 /**
  * Applies a flag to each target
  */
-public class WolfMechanic extends EffectComponent {
+public class WolfMechanic extends MechanicComponent {
     public static final  String SKILL_META = "sapi_wolf_skills";
     public static final  String LEVEL      = "sapi_wolf_level";
     private static final String COLOR      = "color";
@@ -82,10 +81,10 @@ public class WolfMechanic extends EffectComponent {
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == player;
         String color = settings.getString(COLOR);
-        double health = attr(player, HEALTH, level, 10.0, isSelf);
+        double health = parseValues(player, HEALTH, level, 10.0);
         String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", player.getName()));
-        double damage = attr(player, DAMAGE, level, 3.0, isSelf);
-        double amount = attr(player, AMOUNT, level, 1.0, isSelf);
+        double damage = parseValues(player, DAMAGE, level, 3.0);
+        double amount = parseValues(player, AMOUNT, level, 1.0);
         boolean sitting = settings.getString(SITTING, "false").equalsIgnoreCase("true");
         List<String> skills = settings.getStringList(SKILLS);
 
@@ -96,7 +95,7 @@ public class WolfMechanic extends EffectComponent {
             } catch (Exception ex) { /* Invalid color */ }
         }
 
-        double seconds = attr(player, SECONDS, level, 10.0, isSelf);
+        double seconds = parseValues(player, SECONDS, level, 10.0);
         int ticks = (int) (seconds * 20);
         List<LivingEntity> wolves = new ArrayList<>();
         for (LivingEntity target : targets) {
@@ -143,6 +142,11 @@ public class WolfMechanic extends EffectComponent {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String getKey() {
+        return "wolf";
     }
 
     @Override

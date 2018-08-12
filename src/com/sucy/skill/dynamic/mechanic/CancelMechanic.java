@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -34,8 +33,13 @@ import java.util.List;
 /**
  * Cancels the event that caused the trigger to go off
  */
-public class CancelMechanic extends EffectComponent
+public class CancelMechanic extends MechanicComponent
 {
+    @Override
+    public String getKey() {
+        return "cancel";
+    }
+
     /**
      * Executes the component
      *

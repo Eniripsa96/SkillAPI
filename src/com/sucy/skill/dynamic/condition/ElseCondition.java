@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -34,20 +33,20 @@ import java.util.List;
 /**
  * A simple "else" condition, applying if the previous component failed
  */
-public class ElseCondition extends EffectComponent
-{
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+public class ElseCondition extends ConditionComponent {
+
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        return !lastPassed() && executeChildren(caster, level, targets);
+    public String getKey() {
+        return "else";
+    }
+
+    @Override
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        return test(caster, level, null) && executeChildren(caster, level, targets);
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return !lastPassed();
     }
 }

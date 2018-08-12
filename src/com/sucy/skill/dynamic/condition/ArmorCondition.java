@@ -26,58 +26,57 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
+import com.google.common.collect.ImmutableList;
+import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
-/**
- * Checks the player's armor for matching items
- */
-public class ArmorCondition extends EffectComponent
-{
+public class ArmorCondition extends ConditionComponent {
     private static final String ARMOR = "armor";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    private List<Function<EntityEquipment, ItemStack>> getters;
+
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        String armor = settings.getString(ARMOR).toLowerCase();
-        boolean helmet = armor.equals("helmet");
-        boolean chestplate = armor.equals("chestplate");
-        boolean leggings = armor.equals("leggings");
-        boolean boots = armor.equals("boots");
-        if (!helmet && !chestplate && !leggings && !boots)
-            helmet = chestplate = leggings = boots = true;
+    public String getKey() {
+        return "armor";
+    }
 
-        for (LivingEntity target : targets)
-        {
-            if (!(target instanceof Player))
-                continue;
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        getters = determineGetters();
+    }
 
-            PlayerInventory inv = ((Player) target).getInventory();
-            if ((helmet && ItemChecker.check(inv.getHelmet(), level, settings))
-                || (chestplate && ItemChecker.check(inv.getChestplate(), level, settings))
-                || (leggings && ItemChecker.check(inv.getLeggings(), level, settings))
-                || (boots && ItemChecker.check(inv.getBoots(), level, settings)))
-            {
-                list.add(target);
-            }
+    private List<Function<EntityEquipment, ItemStack>> determineGetters() {
+        final String type = settings.getString(ARMOR).toLowerCase();
+        switch (type) {
+            case "helmet":
+                return ImmutableList.of(EntityEquipment::getHelmet);
+            case "chestplate":
+                return ImmutableList.of(EntityEquipment::getChestplate);
+            case "leggings":
+                return ImmutableList.of(EntityEquipment::getLeggings);
+            case "boots":
+                return ImmutableList.of(EntityEquipment::getBoots);
+            default: // All
+                return ImmutableList.of(
+                        EntityEquipment::getHelmet,
+                        EntityEquipment::getChestplate,
+                        EntityEquipment::getLeggings,
+                        EntityEquipment::getBoots);
         }
+    }
 
-        return list.size() > 0 && executeChildren(caster, level, list);
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        final EntityEquipment equipment = target.getEquipment();
+        return equipment != null && getters.stream().anyMatch(
+                getter -> ItemChecker.check(getter.apply(equipment), level, settings));
     }
 }

@@ -26,96 +26,57 @@
  */
 package com.sucy.skill.dynamic.target;
 
-import com.sucy.skill.cast.CircleIndicator;
+import com.google.common.collect.ImmutableList;
 import com.sucy.skill.cast.IIndicator;
-import com.sucy.skill.cast.IndicatorType;
-import com.sucy.skill.cast.SphereIndicator;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
-import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Applies child effects to a location offset from the current targets
  */
-public class OffsetTarget extends EffectComponent
-{
-    private static Vector up = new Vector(0, 1, 0);
+public class OffsetTarget extends TargetComponent {
+    private static final Vector UP = new Vector(0, 1, 0);
 
     private static final String FORWARD    = "forward";
     private static final String UPWARD     = "upward";
     private static final String RIGHT      = "right";
     private static final String HORIZONTAL = "horizontal";
 
-    /**
-     * Creates the list of indicators for the skill
-     *
-     * @param list   list to store indicators in
-     * @param caster caster reference
-     * @param target location to base location on
-     * @param level  the level of the skill to create for
-     */
+    /** {@inheritDoc} */
     @Override
-    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
-    {
-        target = getTargetLoc(caster, level, target);
-        if (indicatorType == IndicatorType.DIM_3)
-        {
-            Location loc = target.getLocation();
-            IIndicator indicator = new SphereIndicator(0.5);
-            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
-            list.add(indicator);
-        }
-        else if (indicatorType == IndicatorType.DIM_2)
-        {
-            Location loc = target.getLocation();
-            IIndicator indicator = new CircleIndicator(0.5);
-            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
-            list.add(indicator);
-        }
-
-        for (EffectComponent component : children)
-            component.makeIndicators(list, caster, target, level);
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
+        makeCircleIndicator(list, getTargetLoc(caster, level, target), 0.5);
     }
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity t : targets)
-            list.add(getTargetLoc(caster, level, t));
-        return executeChildren(caster, level, list);
+    List<LivingEntity> getTargets(
+            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        return determineTargets(caster, level, targets, t -> ImmutableList.of(getTargetLoc(caster, level, t)));
     }
 
-    private TempEntity getTargetLoc(LivingEntity caster, int level, LivingEntity t)
-    {
-        boolean isSelf = t == caster;
-        boolean horizontal = settings.getBool(HORIZONTAL, false);
-        double forward = attr(caster, FORWARD, level, 0, isSelf);
-        double upward = attr(caster, UPWARD, level, 0, isSelf);
-        double right = attr(caster, RIGHT, level, 0, isSelf);
+    private TempEntity getTargetLoc(LivingEntity caster, int level, LivingEntity t) {
+        final boolean horizontal = settings.getBool(HORIZONTAL, false);
+        final double forward = parseValues(caster, FORWARD, level, 0);
+        final double upward = parseValues(caster, UPWARD, level, 0);
+        final double right = parseValues(caster, RIGHT, level, 0);
 
-        Vector dir = t.getLocation().getDirection().setY(0).normalize();
-        if (horizontal)
-            dir = dir.setY(0).normalize();
-        Vector nor = dir.clone().crossProduct(up);
+        final Vector dir = t.getLocation().getDirection().setY(0).normalize();
+        if (horizontal) { dir.setY(0).normalize(); }
+
+        final Vector nor = dir.clone().crossProduct(UP);
         dir.multiply(forward);
         dir.add(nor.multiply(right)).setY(upward);
 
         return new TempEntity(t.getLocation().add(dir));
+    }
+
+    @Override
+    public String getKey() {
+        return "offset";
     }
 }

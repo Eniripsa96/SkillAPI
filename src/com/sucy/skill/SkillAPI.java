@@ -88,6 +88,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -662,8 +663,8 @@ public class SkillAPI extends JavaPlugin {
      * @param runnable the task to schedule
      * @param delay    the delay in ticks
      */
-    public static void schedule(BukkitRunnable runnable, int delay) {
-        runnable.runTaskLater(singleton(), delay);
+    public static BukkitTask schedule(BukkitRunnable runnable, int delay) {
+        return runnable.runTaskLater(singleton(), delay);
     }
 
     /**
@@ -672,8 +673,8 @@ public class SkillAPI extends JavaPlugin {
      * @param runnable the task to schedule
      * @param delay    the delay in ticks
      */
-    public static void schedule(Runnable runnable, int delay) {
-        Bukkit.getScheduler().runTaskLater(singleton, runnable, delay);
+    public static BukkitTask schedule(Runnable runnable, int delay) {
+        return Bukkit.getScheduler().runTaskLater(singleton, runnable, delay);
     }
 
     /**
@@ -683,8 +684,8 @@ public class SkillAPI extends JavaPlugin {
      * @param delay    the delay in ticks before the first tick
      * @param period   how often to run in ticks
      */
-    public static void schedule(BukkitRunnable runnable, int delay, int period) {
-        runnable.runTaskTimer(singleton(), delay, period);
+    public static BukkitTask schedule(BukkitRunnable runnable, int delay, int period) {
+        return runnable.runTaskTimer(singleton(), delay, period);
     }
 
     /**

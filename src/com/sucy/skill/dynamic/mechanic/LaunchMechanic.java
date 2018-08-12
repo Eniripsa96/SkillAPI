@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
@@ -35,7 +34,7 @@ import java.util.List;
 /**
  * Launches the target in a given direction relative to their forward direction
  */
-public class LaunchMechanic extends EffectComponent
+public class LaunchMechanic extends MechanicComponent
 {
     private Vector up = new Vector(0, 1, 0);
 
@@ -44,6 +43,11 @@ public class LaunchMechanic extends EffectComponent
     private static final String RIGHT   = "right";
 
     private static final String RELATIVE = "relative";
+
+    @Override
+    public String getKey() {
+        return "launch";
+    }
 
     /**
      * Executes the component
@@ -63,9 +67,9 @@ public class LaunchMechanic extends EffectComponent
         }
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double forward = attr(caster, FORWARD, level, 0, isSelf);
-        double upward = attr(caster, UPWARD, level, 0, isSelf);
-        double right = attr(caster, RIGHT, level, 0, isSelf);
+        double forward = parseValues(caster, FORWARD, level, 0);
+        double upward = parseValues(caster, UPWARD, level, 0);
+        double right = parseValues(caster, RIGHT, level, 0);
         String relative = settings.getString(RELATIVE, "target").toLowerCase();
         for (LivingEntity target : targets)
         {

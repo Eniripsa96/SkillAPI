@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,11 +52,16 @@ import static com.sucy.skill.listener.MechanicListener.SKILL_LEVEL;
 /**
  * Heals each target
  */
-public class PotionProjectileMechanic extends EffectComponent
+public class PotionProjectileMechanic extends MechanicComponent
 {
     private static final String POTION = "type";
     private static final String ALLY   = "group";
     private static final String LINGER = "linger";
+
+    @Override
+    public String getKey() {
+        return "potion projectile";
+    }
 
     /**
      * Executes the component

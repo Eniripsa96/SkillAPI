@@ -30,7 +30,6 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaCost;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.player.PlayerData;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -39,10 +38,15 @@ import java.util.List;
 /**
  * Gives mana to each target
  */
-public class ManaMechanic extends EffectComponent
+public class ManaMechanic extends MechanicComponent
 {
     private static final String TYPE  = "type";
     private static final String VALUE = "value";
+
+    @Override
+    public String getKey() {
+        return "mana";
+    }
 
     /**
      * Executes the component
@@ -58,7 +62,7 @@ public class ManaMechanic extends EffectComponent
     {
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean percent = settings.getString(TYPE, "mana").toLowerCase().equals("percent");
-        double value = attr(caster, VALUE, level, 1.0, isSelf);
+        double value = parseValues(caster, VALUE, level, 1.0);
 
         boolean worked = false;
         for (LivingEntity target : targets)

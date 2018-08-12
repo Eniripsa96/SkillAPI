@@ -1,7 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.hook.PlaceholderAPIHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.log.Logger;
@@ -14,11 +13,16 @@ import java.util.List;
  * SkillAPI © 2018
  * com.sucy.skill.dynamic.mechanic.ValuePlaceholderMechanic
  */
-public class ValuePlaceholderMechanic extends EffectComponent
+public class ValuePlaceholderMechanic extends MechanicComponent
 {
     private static final String KEY  = "key";
     private static final String TYPE = "type";
     private static final String PLACEHOLDER = "placeholder";
+
+    @Override
+    public String getKey() {
+        return "value placeholder";
+    }
 
     /**
      * Executes the component

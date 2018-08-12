@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,12 +33,17 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public class ValueLoreSlotMechanic extends EffectComponent
+public class ValueLoreSlotMechanic extends MechanicComponent
 {
     private static final String KEY        = "key";
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
     private static final String SLOT       = "slot";
+
+    @Override
+    public String getKey() {
+        return "value lore slot";
+    }
 
     /**
      * Executes the component
@@ -58,7 +62,7 @@ public class ValueLoreSlotMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
+        double multiplier = parseValues(caster, MULTIPLIER, level, 1);
         int slot = settings.getInt(SLOT);
         String regex = settings.getString(REGEX, "Damage: {value}");
 

@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.text.TextFormatter;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -36,9 +35,14 @@ import java.util.List;
 /**
  * Sends a message to each player target
  */
-public class MessageMechanic extends EffectComponent
+public class MessageMechanic extends MechanicComponent
 {
     private static final String MESSAGE = "message";
+
+    @Override
+    public String getKey() {
+        return "message";
+    }
 
     /**
      * Executes the component

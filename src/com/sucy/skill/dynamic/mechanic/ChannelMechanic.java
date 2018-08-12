@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
@@ -37,10 +36,15 @@ import java.util.List;
 /**
  * Executes child components after a delay, applying "channeling" rules
  */
-public class ChannelMechanic extends EffectComponent
+public class ChannelMechanic extends MechanicComponent
 {
     private static final String SECONDS = "time";
     private static final String STILL   = "still";
+
+    @Override
+    public String getKey() {
+        return "channel";
+    }
 
     /**
      * Executes the component
@@ -60,7 +64,7 @@ public class ChannelMechanic extends EffectComponent
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean still = settings.getBool(STILL);
-        int ticks = (int) (20 * attr(caster, SECONDS, level, 2.0, isSelf));
+        int ticks = (int) (20 * parseValues(caster, SECONDS, level, 2.0));
         if (still)
             FlagManager.addFlag(caster, StatusFlag.CHANNELING, ticks + 2);
         Bukkit.getScheduler().runTaskLater(

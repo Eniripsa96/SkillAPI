@@ -30,8 +30,9 @@ function Class(name)
 		new IntValue('Icon Data', 'icon-data', 0).setTooltip('The data/durability value of the item that represents the class in GUIs'),
 		new StringListValue('Icon Lore', 'icon-lore', [
 			'&d' + name
-		],
-		new StringListValue('Unusable Items', 'blacklist', [ ]).setTooltip('The types of items that the class cannot use (one per line)')
+		]),
+		new StringListValue('Unusable Items', 'blacklist', [ ]).setTooltip('The types of items that the class cannot use (one per line)'),
+		new StringValue('Action Bar', 'action-bar', '').setTooltip('The format for the action bar. Leave blank to use the default formatting.')
 	];
     
     this.updateAttribs(10);
@@ -95,6 +96,10 @@ Class.prototype.createFormHTML = function()
         // Append attributes
         if (this.data[i].name == 'Mana')
         {
+            var dragInstructions = document.createElement('label');
+            dragInstructions.id = 'attribute-label';
+            dragInstructions.innerHTML = 'Drag/Drop your attributes.yml file to see custom attributes';
+            form.appendChild(dragInstructions);
             this.updateAttribs(i + 1);
         }
 	}
@@ -103,7 +108,7 @@ Class.prototype.createFormHTML = function()
 	form.appendChild(hr);
 	
 	var save = document.createElement('h5');
-	save.innerHTML = 'Save',
+	save.innerHTML = 'Save Class',
 	save.classData = this;
 	save.addEventListener('click', function(e) {
 		this.classData.update();

@@ -29,7 +29,6 @@ package com.sucy.skill.dynamic.mechanic;
 import com.google.common.collect.ImmutableSet;
 import com.sucy.skill.api.util.FlagManager;
 import com.sucy.skill.api.util.StatusFlag;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffectType;
 
@@ -39,7 +38,7 @@ import java.util.Set;
 /**
  * Purges a target of positive potion or status effects
  */
-public class PurgeMechanic extends EffectComponent
+public class PurgeMechanic extends MechanicComponent
 {
     private static final Set<String> POTIONS = ImmutableSet.of(
             "ABSORPTION", "DAMAGE_RESISTANCE", "FAST_DIGGING", "FIRE_RESISTANCE", "HEALTH_BOOST",
@@ -49,6 +48,11 @@ public class PurgeMechanic extends EffectComponent
 
     private static final String STATUS = "status";
     private static final String POTION = "potion";
+
+    @Override
+    public String getKey() {
+        return "purge";
+    }
 
     /**
      * Executes the component

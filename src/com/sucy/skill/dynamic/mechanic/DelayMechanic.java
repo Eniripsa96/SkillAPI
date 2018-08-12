@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
@@ -35,9 +34,14 @@ import java.util.List;
 /**
  * Executes child components after a delay
  */
-public class DelayMechanic extends EffectComponent
+public class DelayMechanic extends MechanicComponent
 {
     private static final String SECONDS = "delay";
+
+    @Override
+    public String getKey() {
+        return "delay";
+    }
 
     /**
      * Executes the component
@@ -56,7 +60,7 @@ public class DelayMechanic extends EffectComponent
             return false;
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double seconds = attr(caster, SECONDS, level, 2.0, isSelf);
+        double seconds = parseValues(caster, SECONDS, level, 2.0);
         Bukkit.getScheduler().runTaskLater(
             Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
             {

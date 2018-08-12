@@ -5,6 +5,8 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.data.Settings;
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -51,6 +53,14 @@ public class TestUtils {
         reset(mockPlugin);
         reset(mockPlugin);
         reset(language);
+    }
+
+    public static Server getMockServer() throws Exception {
+        final Server server = mock(Server.class);
+        final Field field = Bukkit.class.getDeclaredField("server");
+        field.setAccessible(true);
+        field.set(null, server);
+        return server;
     }
 
     public static SkillAPI getMockPlugin() throws Exception {

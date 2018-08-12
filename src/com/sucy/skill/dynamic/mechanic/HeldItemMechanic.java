@@ -27,15 +27,19 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class HeldItemMechanic extends EffectComponent
+public class HeldItemMechanic extends MechanicComponent
 {
     private static final String SLOT = "slot";
+
+    @Override
+    public String getKey() {
+        return "held item";
+    }
 
     /**
      * Executes the component
@@ -49,7 +53,7 @@ public class HeldItemMechanic extends EffectComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
     {
-        int slot = (int) attr(caster, SLOT, level, 0, false);
+        int slot = (int) parseValues(caster, SLOT, level, 0);
 
         boolean worked = false;
         for (LivingEntity target : targets)

@@ -74,8 +74,8 @@ public class CmdExpTest {
 
     @Test
     public void execute_playerWithGroupFound() {
-        SUBJECT.execute(cmd, plugin, player, "3", "race");
         when(playerData.getClass("race")).thenReturn(playerClass);
+        SUBJECT.execute(cmd, plugin, player, "3", "race");
 
         verify(playerClass).giveExp(3, ExpSource.COMMAND, true);
     }

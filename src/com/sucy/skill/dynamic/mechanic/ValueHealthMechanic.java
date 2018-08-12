@@ -27,15 +27,19 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class ValueHealthMechanic extends EffectComponent {
+public class ValueHealthMechanic extends MechanicComponent {
     private static final String KEY  = "key";
     private static final String TYPE = "type";
+
+    @Override
+    public String getKey() {
+        return "value health";
+    }
 
     /**
      * Executes the component

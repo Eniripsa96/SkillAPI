@@ -26,34 +26,37 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
+import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
 
-/**
- * Simple condition to check the current execution level
- */
-public class CastLevelCondition extends EffectComponent
-{
+public class CastLevelCondition extends ConditionComponent {
     private static final String MIN_LEVEL = "min-level";
     private static final String MAX_LEVEL = "max-level";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
-    @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        int min = settings.getInt(MIN_LEVEL, 1);
-        int max = settings.getInt(MAX_LEVEL, 99);
+    private int min, max;
 
-        return level >= min && level <= max && executeChildren(caster, level, targets);
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        min = settings.getInt(MIN_LEVEL, 1);
+        max = settings.getInt(MAX_LEVEL, 99);
+    }
+
+    @Override
+    public String getKey() {
+        return "cast level";
+    }
+
+    @Override
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        return test(caster, level, null) && executeChildren(caster, level, targets);
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return level >= min && level <= max;
     }
 }

@@ -3,7 +3,6 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.api.util.Buff;
 import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.BuffType;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
  * SkillAPI © 2017
  * com.sucy.skill.dynamic.mechanic.BuffMechanic
  */
-public class BuffMechanic extends EffectComponent {
+public class BuffMechanic extends MechanicComponent {
 
     private static final String MODIFIER = "modifier";
     private static final String CATEGORY = "category";
@@ -20,6 +19,11 @@ public class BuffMechanic extends EffectComponent {
     private static final String VALUE    = "value";
     private static final String SECONDS  = "seconds";
     private static final String IMMEDIATE = "immediate";
+
+    @Override
+    public String getKey() {
+        return "buff";
+    }
 
     /**
      * Executes the component
@@ -37,7 +41,7 @@ public class BuffMechanic extends EffectComponent {
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
 
         boolean immediate = settings.getString(IMMEDIATE, "false").equalsIgnoreCase("true");
-        double value = attr(caster, VALUE, level, 1.0, isSelf);
+        double value = parseValues(caster, VALUE, level, 1.0);
         boolean percent = settings.getString(MODIFIER, "flat").equalsIgnoreCase("multiplier");
 
         if (immediate) {
@@ -46,7 +50,7 @@ public class BuffMechanic extends EffectComponent {
         }
 
         BuffType buffType = BuffType.valueOf(settings.getString(TYPE, "DAMAGE"));
-        double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+        double seconds = parseValues(caster, SECONDS, level, 3.0);
         String category = settings.getString(CATEGORY, null);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {

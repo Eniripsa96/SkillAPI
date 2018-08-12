@@ -13,6 +13,13 @@ function requireValue(key, values)
 	return this;
 }
 
+function copyRequirements(source, target) {
+    if (source.requirements) {
+        target.requirements = source.requirements;
+    }
+    return target;
+}
+
 /**
  * Applies the values required from above
  */ 
@@ -71,7 +78,8 @@ function checkRequireValue(e)
  */
 function setTooltip(text)
 {
-	this.tooltip = text;
+	if (text.charAt(0) == '[') this.tooltip = text;
+	else this.tooltip = '[' + this.key + '] ' + text;
 	return this;
 }
 

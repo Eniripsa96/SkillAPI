@@ -29,17 +29,21 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class ValueManaMechanic extends EffectComponent
+public class ValueManaMechanic extends MechanicComponent
 {
     private static final String KEY  = "key";
     private static final String TYPE = "type";
+
+    @Override
+    public String getKey() {
+        return "value mana";
+    }
 
     /**
      * Executes the component

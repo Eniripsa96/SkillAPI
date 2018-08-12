@@ -1,8 +1,7 @@
 package com.sucy.skill.hook;
 
-import com.sk89q.worldguard.bukkit.BukkitUtil;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sucy.skill.SkillAPI;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
 import org.bukkit.Location;
 
 import java.util.List;
@@ -20,7 +19,10 @@ public class WorldGuardHook {
      * @return region IDs for the location
      */
     public static List<String> getRegionIds(final Location loc) {
-        final WorldGuardPlugin plugin = SkillAPI.getPlugin(WorldGuardPlugin.class);
-        return plugin.getRegionManager(loc.getWorld()).getApplicableRegionsIDs(BukkitUtil.toVector(loc));
+        return WorldGuard.getInstance()
+                .getPlatform()
+                .getRegionContainer()
+                .get(BukkitAdapter.adapt(loc.getWorld()))
+                .getApplicableRegionsIDs(BukkitAdapter.asVector(loc));
     }
 }

@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -36,12 +35,17 @@ import java.util.List;
 /**
  * Plays a particle effect
  */
-public class SoundMechanic extends EffectComponent
+public class SoundMechanic extends MechanicComponent
 {
     private static final String SOUND  = "sound";
     private static final String SOUND2 = "newsound";
     private static final String VOLUME = "volume";
     private static final String PITCH  = "pitch";
+
+    @Override
+    public String getKey() {
+        return "sound";
+    }
 
     /**
      * Executes the component
@@ -64,8 +68,8 @@ public class SoundMechanic extends EffectComponent
         try
         {
             Sound sound = Sound.valueOf(type);
-            float volume = (float) attr(caster, VOLUME, level, 100.0, true) / 100;
-            float pitch = (float) attr(caster, PITCH, level, 0.0, true);
+            float volume = (float) parseValues(caster, VOLUME, level, 100.0) / 100;
+            float pitch = (float) parseValues(caster, PITCH, level, 0.0);
 
             volume = Math.max(0, volume);
             pitch = Math.min(2, Math.max(0.5f, pitch));

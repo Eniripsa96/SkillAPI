@@ -59,6 +59,7 @@ import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1211,10 +1212,12 @@ public class Settings {
     private static final String COMBO_CLICK   = COMBO_BASE + "use-click-";
     private static final String COMBO_SIZE    = COMBO_BASE + "combo-size";
     private static final String COMBO_TIME    = COMBO_BASE + "click-time";
+    private static final String COMBO_AUTO    = COMBO_BASE + "auto-assign";
 
     private boolean[] clicks;
     private boolean   combosEnabled;
     private boolean   customCombos;
+    private boolean   autoAssignCombos;
     private int       comboSize;
     private int       clickTime;
 
@@ -1234,6 +1237,10 @@ public class Settings {
      */
     public boolean isCustomCombosAllowed() {
         return customCombos;
+    }
+
+    public boolean shouldAutoAssignCombos() {
+        return autoAssignCombos;
     }
 
     /**
@@ -1264,6 +1271,7 @@ public class Settings {
     private void loadComboSettings() {
         combosEnabled = config.getBoolean(COMBO_ENABLED);
         customCombos = combosEnabled && config.getBoolean(COMBO_CUSTOM);
+        autoAssignCombos = combosEnabled && config.getBoolean(COMBO_AUTO, true);
         comboSize = config.getInt(COMBO_SIZE);
         clickTime = (int) (1000 * config.getDouble(COMBO_TIME));
 
@@ -1295,6 +1303,7 @@ public class Settings {
     private boolean    showExpMessages;
     private boolean    showLevelMessages;
     private boolean    showLossMessages;
+    private Set<String> expLostBlacklist;
 
     /**
      * Gets the required amount of experience at a given level
@@ -1393,6 +1402,14 @@ public class Settings {
         return showLossMessages;
     }
 
+    /**
+     * @param world world a player died in
+     * @return true if the world is blacklisted for losing experience
+     */
+    public boolean shouldIgnoreExpLoss(final World world) {
+        return expLostBlacklist.contains(world.getName());
+    }
+
     private static final String EXP_BASE = "Experience.";
 
     private void loadExpSettings() {
@@ -1403,6 +1420,7 @@ public class Settings {
         this.showExpMessages = config.getBoolean(EXP_BASE + "exp-message-enabled");
         this.showLevelMessages = config.getBoolean(EXP_BASE + "level-message-enabled");
         this.showLossMessages = config.getBoolean(EXP_BASE + "lose-exp-message");
+        this.expLostBlacklist = new HashSet<>(config.getList(EXP_BASE + "lose-exp-blacklist"));
 
         DataSection formula = config.getSection(EXP_BASE + "formula");
         int x = formula.getInt("x");

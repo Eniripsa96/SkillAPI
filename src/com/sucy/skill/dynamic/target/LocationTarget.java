@@ -26,12 +26,9 @@
  */
 package com.sucy.skill.dynamic.target;
 
+import com.google.common.collect.ImmutableList;
 import com.rit.sucy.player.TargetHelper;
-import com.sucy.skill.cast.CircleIndicator;
 import com.sucy.skill.cast.IIndicator;
-import com.sucy.skill.cast.IndicatorType;
-import com.sucy.skill.cast.SphereIndicator;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,7 +36,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,99 +43,53 @@ import java.util.Set;
 /**
  * Applies child components to a location using the caster's faced direction
  */
-public class LocationTarget extends EffectComponent
-{
-    private static final String RANGE  = "range";
+public class LocationTarget extends TargetComponent {
+    private static final String RANGE = "range";
     private static final String GROUND = "ground";
 
-    private static final Set<Material> NULL_SET = null;
-
-    /**
-     * Creates the list of indicators for the skill
-     *
-     * @param list   list to store indicators in
-     * @param caster caster reference
-     * @param target location to base location on
-     * @param level  the level of the skill to create for
-     */
+    /** {@inheritDoc} */
     @Override
-    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
-    {
-        target = getTargetLoc(caster, level, target);
-        if (target == null)
-            return;
-
-        if (indicatorType == IndicatorType.DIM_3)
-        {
-            Location loc = target.getLocation();
-            IIndicator indicator = new SphereIndicator(0.5);
-            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
-            list.add(indicator);
-        }
-        else if (indicatorType == IndicatorType.DIM_2)
-        {
-            Location loc = target.getLocation();
-            IIndicator indicator = new CircleIndicator(0.5);
-            indicator.moveTo(loc.getX(), loc.getY() + 0.1, loc.getZ());
-            list.add(indicator);
-        }
-
-        for (EffectComponent component : children)
-            component.makeIndicators(list, caster, target, level);
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
+        final List<LivingEntity> locs = getTargets(caster, level, ImmutableList.of(target));
+        if (!locs.isEmpty()) makeCircleIndicator(list, locs.get(0), 0.5);
     }
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity t : targets)
-        {
-            TempEntity temp = getTargetLoc(caster, level, t);
-            if (temp == null)
-                continue;
-
-            list.add(temp);
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    List<LivingEntity> getTargets(
+            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        final double range = parseValues(caster, RANGE, level, 5.0);
+        final boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
+        return determineTargets(caster, level, targets, t -> getTargetLoc(caster, t, range, groundOnly));
     }
 
-    private TempEntity getTargetLoc(LivingEntity caster, int level, LivingEntity t)
-    {
-        boolean isSelf = caster == t;
-        double range = attr(caster, RANGE, level, 5.0, isSelf);
-        boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
-
+    private List<LivingEntity> getTargetLoc(
+            LivingEntity caster,
+            LivingEntity t,
+            final double range,
+            final boolean groundOnly) {
         Location loc = calcTargetLoc(t, range);
         if (groundOnly && AIR_BLOCKS.contains(loc.getBlock().getType())) {
-            return null;
+            return ImmutableList.of();
         }
 
         if (!groundOnly) {
-            LivingEntity target = TargetHelper.getLivingTarget(t, range, 4);
-            Location casterLoc = caster.getLocation();
+            final LivingEntity target = TargetHelper.getLivingTarget(t, range, 4);
+            final Location casterLoc = caster.getLocation();
             if (target != null && target.getLocation().distanceSquared(casterLoc) < loc.distanceSquared(casterLoc)) {
                 loc = target.getLocation();
             }
         }
 
-        return new TempEntity(loc);
+        return ImmutableList.of(new TempEntity(loc));
     }
 
     private Location calcTargetLoc(LivingEntity entity, double maxRange) {
         Location start = entity.getEyeLocation();
         Vector dir = entity.getLocation().getDirection();
-        if (dir.getX() == 0) dir.setX(Double.MIN_NORMAL);
-        if (dir.getY() == 0) dir.setY(Double.MIN_NORMAL);
-        if (dir.getZ() == 0) dir.setY(Double.MIN_NORMAL);
+        if (dir.getX() == 0) { dir.setX(Double.MIN_NORMAL); }
+        if (dir.getY() == 0) { dir.setY(Double.MIN_NORMAL); }
+        if (dir.getZ() == 0) { dir.setY(Double.MIN_NORMAL); }
         int ox = dir.getX() > 0 ? 1 : 0;
         int oy = dir.getY() > 0 ? 1 : 0;
         int oz = dir.getZ() > 0 ? 1 : 0;
@@ -162,11 +112,17 @@ public class LocationTarget extends EffectComponent
     }
 
     private static final Set<Material> AIR_BLOCKS = new HashSet<Material>();
+
     static {
         for (Material material : Material.values()) {
             if (material.isTransparent()) {
                 AIR_BLOCKS.add(material);
             }
         }
+    }
+
+    @Override
+    public String getKey() {
+        return "location";
     }
 }

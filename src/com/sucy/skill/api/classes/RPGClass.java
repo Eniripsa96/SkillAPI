@@ -716,6 +716,7 @@ public abstract class RPGClass implements IconHolder
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
         tree = DefaultTreeType.getByName(config.getString(TREE, "requirement"));
         for (final String type : config.getList(BLACKLIST)) {
+            if (type.isEmpty()) continue;
             final Material mat = Material.matchMaterial(type.toUpperCase().replace(' ', '_'));
             if (mat != null) {
                 blacklist.add(mat);

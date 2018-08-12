@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
@@ -36,9 +35,14 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueLocationMechanic extends EffectComponent
+public class ValueLocationMechanic extends MechanicComponent
 {
     private static final String KEY = "key";
+
+    @Override
+    public String getKey() {
+        return "value location";
+    }
 
     /**
      * Executes the component

@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
@@ -35,11 +34,16 @@ import java.util.List;
 /**
  * Creates an explosion at the target's location
  */
-public class ExplosionMechanic extends EffectComponent
+public class ExplosionMechanic extends MechanicComponent
 {
     private static final String POWER  = "power";
     private static final String DAMAGE = "damage";
     private static final String FIRE   = "fire";
+
+    @Override
+    public String getKey() {
+        return "explosion";
+    }
 
     /**
      * Executes the component
@@ -58,7 +62,7 @@ public class ExplosionMechanic extends EffectComponent
             return false;
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double power = attr(caster, POWER, level, 4, isSelf);
+        double power = parseValues(caster, POWER, level, 4);
         boolean fire = settings.getBool(FIRE, false);
         boolean damage = settings.getBool(DAMAGE, false);
         for (LivingEntity target : targets)

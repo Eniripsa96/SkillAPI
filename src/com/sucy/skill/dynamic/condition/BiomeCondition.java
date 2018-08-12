@@ -26,76 +26,37 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
+import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-/**
- * A condition for dynamic skills that requires the target to be in a specified biome
- */
-public class BiomeCondition extends EffectComponent
+public class BiomeCondition extends ConditionComponent
 {
     private static final String TYPE  = "type";
     private static final String BIOME = "biome";
 
-    private static final String[] BIOMES = {
-        "BEACH",
-        "DESERT",
-        "FOREST",
-        "FROZEN",
-        "HELL",
-        "HILLS",
-        "ICE",
-        "JUNGLE",
-        "MESA",
-        "MOUNTAINS",
-        "MUSHROOM",
-        "OCEAN",
-        "PLAINS",
-        "PLATEAU",
-        "RIVER",
-        "SAVANNA",
-        "SHORE",
-        "SKY",
-        "SWAMPLAND",
-        "TAIGA"
-    };
+    private Set<String> biomes;
+    private boolean     requiresIn;
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        int biomes = settings.getInt(BIOME, 0);
-        boolean inBiome = !settings.getString(TYPE, "in biome").toLowerCase().equals("not in biome");
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity target : targets)
-        {
-            String biome = target.getLocation().getBlock().getBiome().name();
-            boolean any = false;
-            for (int i = 0; i < BIOMES.length; i++)
-            {
-                if ((biomes & (1 << i)) != 0 && biome.contains(BIOMES[i]))
-                {
-                    any = true;
-                    break;
-                }
-            }
-            if (any == inBiome)
-            {
-                list.add(target);
-            }
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    public String getKey() {
+        return "biome";
+    }
 
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        requiresIn = !settings.getString(TYPE, "in biome").toLowerCase().equals("not in biome");
+        biomes = settings.getStringList(BIOME).stream()
+                .map(s -> s.toUpperCase().replace(' ', '_'))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return biomes.contains(target.getLocation().getBlock().getBiome().name()) == requiresIn;
     }
 }

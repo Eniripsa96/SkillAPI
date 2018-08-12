@@ -482,6 +482,15 @@ public abstract class Skill implements IconHolder
                 || player.hasPermission(Permissions.SKILL + "." + name.toLowerCase().replace(" ", "-"));
     }
 
+    public boolean hasDependency(final PlayerData playerData) {
+        // Must meet any skill requirements
+        if (getSkillReq() != null) {
+            PlayerSkill req = playerData.getSkill(getSkillReq());
+            return req == null || req.getLevel() >= getSkillReqLevel();
+        }
+        return true;
+    }
+
     public boolean isCompatible(final PlayerData playerData) {
         for (final String skillName : settings.getStringList(SkillAttribute.INCOMPATIBLE)) {
             final PlayerSkill skill = playerData.getSkill(skillName);
@@ -528,6 +537,7 @@ public abstract class Skill implements IconHolder
         final String costReq = skillData.getCost() <= skillData.getPlayerClass().getPoints() ? MET : NOT_MET;
         final String spentReq = hasInvestedEnough(skillData.getPlayerData()) ? MET : NOT_MET;
         final String branchReq = isCompatible(skillData.getPlayerData()) ? MET : NOT_MET;
+        final String skillReq = isCompatible(skillData.getPlayerData()) ? MET : NOT_MET;
 
         String attrChanging = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_CHANGING, true, FilterType.COLOR).get(0);
         String attrStatic = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, true, FilterType.COLOR).get(0);
@@ -543,6 +553,7 @@ public abstract class Skill implements IconHolder
                         .replace("{req:cost}", costReq)
                         .replace("{req:spent}", spentReq)
                         .replace("{req:branch}", branchReq)
+                        .replace("{req:skill}", skillReq)
                         .replace("{max}", "" + maxLevel)
                         .replace("{name}", name)
                         .replace("{type}", type);

@@ -26,42 +26,34 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
+import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class EntityTypeCondition extends EffectComponent {
+public class EntityTypeCondition extends ConditionComponent {
 
     private static final String TYPE = "types";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    private Set<String> types;
+
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        List<String> raw = settings.getStringList(TYPE);
-        HashSet<String> types = new HashSet<String>();
-        for (String item : raw) {
-            types.add(item.toUpperCase());
-        }
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity target : targets)
-        {
-            if (types.contains(target.getType().name()))
-            {
-                list.add(target);
-            }
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    public String getKey() {
+        return "entity type";
+    }
+
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        types = settings.getStringList(TYPE).stream()
+                .map(s -> s.toUpperCase().replace(' ', '_'))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return types.contains(target.getType().name());
     }
 }

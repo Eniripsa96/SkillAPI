@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
@@ -36,10 +35,15 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueMultiplyMechanic extends EffectComponent
+public class ValueMultiplyMechanic extends MechanicComponent
 {
     private static final String KEY        = "key";
     private static final String MULTIPLIER = "multiplier";
+
+    @Override
+    public String getKey() {
+        return "value multiply";
+    }
 
     /**
      * Executes the component
@@ -60,7 +64,7 @@ public class ValueMultiplyMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
+        double multiplier = parseValues(caster, MULTIPLIER, level, 1);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         if (data.containsKey(key))
             data.put(key, multiplier * (Double) data.get(key));

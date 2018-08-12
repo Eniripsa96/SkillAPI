@@ -26,109 +26,45 @@
  */
 package com.sucy.skill.dynamic.target;
 
+import com.google.common.collect.ImmutableList;
 import com.rit.sucy.player.TargetHelper;
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.cast.CircleIndicator;
 import com.sucy.skill.cast.IIndicator;
-import com.sucy.skill.cast.IndicatorType;
-import com.sucy.skill.cast.SphereIndicator;
-import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Applies child components to the closest linear entity of each of the
  * provided targets.
  */
-public class SingleTarget extends EffectComponent
-{
+public class SingleTarget extends TargetComponent {
     private static final String RANGE     = "range";
     private static final String TOLERANCE = "tolerance";
-    private static final String ALLY      = "group";
-    private static final String WALL      = "wall";
 
-    /**
-     * Creates the list of indicators for the skill
-     *
-     * @param list   list to store indicators in
-     * @param caster caster reference
-     * @param target location to base location on
-     * @param level  the level of the skill to create for
-     */
+    /** {@inheritDoc} */
     @Override
-    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
-    {
-        target = getTarget(caster, level, target);
-        if (target == null)
-            return;
-
-        if (indicatorType == IndicatorType.DIM_3)
-        {
-            Location loc = target.getLocation();
-            IIndicator indicator = new SphereIndicator(0.5);
-            indicator.moveTo(loc.getX(), loc.getY() + target.getEyeHeight() / 2, loc.getZ());
-            list.add(indicator);
-        }
-        else if (indicatorType == IndicatorType.DIM_2)
-        {
-            Location loc = target.getLocation();
-            IIndicator indicator = new CircleIndicator(0.5);
-            indicator.moveTo(loc.getX(), loc.getY() + target.getEyeHeight() / 2, loc.getZ());
-            list.add(indicator);
-        }
-
-        for (EffectComponent component : children)
-            if (component.hasEffect)
-                component.makeIndicators(list, caster, target, level);
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
+        double range = parseValues(caster, RANGE, level, 3.0);
+        double angle = parseValues(caster, TOLERANCE, level, 4.0);
+        makeConeIndicator(list, target, range, angle);
     }
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity t : targets)
-        {
-            LivingEntity target = getTarget(caster, level, t);
-            if (target != null)
-                list.add(target);
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    List<LivingEntity> getTargets(
+            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+
+        double range = parseValues(caster, RANGE, level, 5.0);
+        double tolerance = parseValues(caster, TOLERANCE, level, 4.0);
+        return determineTargets(caster, level, targets, t -> {
+            final LivingEntity target = TargetHelper.getLivingTarget(t, range, tolerance);
+            return target == null ? ImmutableList.of() : ImmutableList.of(target);
+        });
     }
 
-    private LivingEntity getTarget(LivingEntity caster, int level, LivingEntity target)
-    {
-        boolean isSelf = target == caster;
-        double range = attr(caster, RANGE, level, 5.0, isSelf);
-        double tolerance = attr(caster, TOLERANCE, level, 4.0, isSelf);
-        boolean both = settings.getString(ALLY, "enemy").equalsIgnoreCase("both");
-        boolean ally = settings.getString(ALLY, "enemy").equalsIgnoreCase("ally");
-        boolean throughWall = settings.getString(WALL, "false").equalsIgnoreCase("true");
-        Location wallCheckLoc = target.getLocation().add(0, 0.5, 0);
-
-        target = TargetHelper.getLivingTarget(target, range, tolerance);
-        if (target != null && SkillAPI.getSettings().isValidTarget(target))
-        {
-            if (!throughWall && TargetHelper.isObstructed(wallCheckLoc, target.getLocation().add(0, 0.5, 0)))
-            {
-                return null;
-            }
-            if (both || ally != SkillAPI.getSettings().canAttack(caster, target))
-                return target;
-        }
-
-        return null;
+    @Override
+    public String getKey() {
+        return "single";
     }
 }

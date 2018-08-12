@@ -26,51 +26,38 @@
  */
 package com.sucy.skill.dynamic.condition;
 
+import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.api.util.Combat;
-import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A condition for dynamic skills that requires the target to be a player
  * who's combat status matches the settings
  */
-public class CombatCondition extends EffectComponent
+public class CombatCondition extends ConditionComponent
 {
     private static final String COMBAT  = "combat";
     private static final String SECONDS = "seconds";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
-    @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean combat = !settings.getString(COMBAT, "true").toLowerCase().equals("false");
-        double seconds = settings.getDouble(SECONDS, 10);
+    private boolean combat;
+    private double seconds;
 
-        List<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity target : targets)
-        {
-            if (target instanceof Player)
-            {
-                Player player = (Player) target;
-                if (Combat.isInCombat(player, seconds) == combat)
-                {
-                    list.add(player);
-                }
-            }
-        }
-        return list.size() > 0
-            && executeChildren(caster, level, list);
+    @Override
+    public String getKey() {
+        return "combat";
+    }
+
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        combat = !settings.getString(COMBAT, "true").toLowerCase().equals("false");
+        seconds = settings.getDouble(SECONDS, 10);
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return target instanceof Player && Combat.isInCombat((Player) target, seconds) == combat;
     }
 }

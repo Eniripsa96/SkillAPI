@@ -29,7 +29,6 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -38,11 +37,16 @@ import java.util.List;
 /**
  * Lowers the cooldowns of the caster's skills
  */
-public class CooldownMechanic extends EffectComponent
+public class CooldownMechanic extends MechanicComponent
 {
     private static final String SKILL = "skill";
     private static final String TYPE  = "type";
     private static final String VALUE = "value";
+
+    @Override
+    public String getKey() {
+        return "cooldown";
+    }
 
     /**
      * Executes the component
@@ -61,7 +65,7 @@ public class CooldownMechanic extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String skill = settings.getString(SKILL, "");
         String type = settings.getString(TYPE, "all").toLowerCase();
-        double value = attr(caster, VALUE, level, 0, isSelf);
+        double value = parseValues(caster, VALUE, level, 0);
 
         PlayerData playerData = SkillAPI.getPlayerData((Player) caster);
 

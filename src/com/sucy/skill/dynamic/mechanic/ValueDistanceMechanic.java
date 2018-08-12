@@ -1,7 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -12,9 +11,14 @@ import java.util.List;
  * SkillAPI © 2017
  * com.sucy.skill.dynamic.mechanic.ValueDistanceMechanic
  */
-public class ValueDistanceMechanic extends EffectComponent
+public class ValueDistanceMechanic extends MechanicComponent
 {
     private static final String KEY  = "key";
+
+    @Override
+    public String getKey() {
+        return "value distance";
+    }
 
     /**
      * Executes the component

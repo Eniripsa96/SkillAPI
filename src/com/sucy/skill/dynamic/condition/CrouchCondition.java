@@ -26,37 +26,29 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
+import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CrouchCondition extends EffectComponent
-{
+public class CrouchCondition extends ConditionComponent {
     private static final String CROUCH = "crouch";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
-    @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean crouch = !settings.getString(CROUCH, "true").toLowerCase().equals("false");
+    private boolean crouch;
 
-        List<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity target : targets)
-        {
-            if (target instanceof Player && ((Player) target).isSneaking() == crouch)
-                list.add(target);
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    @Override
+    public String getKey() {
+        return "crouch";
+    }
+
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        crouch = !settings.getString(CROUCH, "true").toLowerCase().equals("false");
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return target instanceof Player && ((Player) target).isSneaking() == crouch;
     }
 }

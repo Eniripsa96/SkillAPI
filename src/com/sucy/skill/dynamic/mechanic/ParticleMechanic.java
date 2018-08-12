@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.util.ParticleHelper;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
@@ -38,13 +37,18 @@ import java.util.List;
 /**
  * Plays a particle effect
  */
-public class ParticleMechanic extends EffectComponent
+public class ParticleMechanic extends MechanicComponent
 {
     private static final Vector UP = new Vector(0, 1, 0);
 
     private static final String FORWARD = "forward";
     private static final String UPWARD  = "upward";
     private static final String RIGHT   = "right";
+
+    @Override
+    public String getKey() {
+        return "particle";
+    }
 
     /**
      * Executes the component
@@ -68,8 +72,8 @@ public class ParticleMechanic extends EffectComponent
         double right = settings.getDouble(RIGHT, 0);
 
         final Settings copy = new Settings(settings);
-        copy.set(ParticleHelper.PARTICLES_KEY, attr(caster, ParticleHelper.PARTICLES_KEY, level, 1, true), 0);
-        copy.set(ParticleHelper.RADIUS_KEY, attr(caster, ParticleHelper.RADIUS_KEY, level, 0, true), 0);
+        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0), 0);
         copy.set("level", level);
 
         for (LivingEntity target : targets)

@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.target.RememberTarget;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -37,9 +36,14 @@ import java.util.List;
 /**
  * Launches the target in a given direction relative to their forward direction
  */
-public class PushMechanic extends EffectComponent {
+public class PushMechanic extends MechanicComponent {
     private static final String SPEED  = "speed";
     private static final String SOURCE = "source";
+
+    @Override
+    public String getKey() {
+        return "push";
+    }
 
     /**
      * Executes the component
@@ -57,10 +61,10 @@ public class PushMechanic extends EffectComponent {
         }
 
         final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        final double speed = attr(caster, SPEED, level, 3.0, isSelf);
+        final double speed = parseValues(caster, SPEED, level, 3.0);
         final String type = settings.getString("type", "scaled").toLowerCase();
 
-        final List<LivingEntity> sources = RememberTarget.getTargets(caster, settings.getString(SOURCE, "_none"));
+        final List<LivingEntity> sources = RememberTarget.remember(caster, settings.getString(SOURCE, "_none"));
         final Location center = sources == null ? caster.getLocation() : sources.get(0).getLocation();
 
         boolean worked = false;

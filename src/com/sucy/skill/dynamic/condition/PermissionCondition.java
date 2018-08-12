@@ -26,32 +26,25 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
-/**
- * Condition checking the permissions of the caster
- */
-public class PermissionCondition extends EffectComponent
-{
+public class PermissionCondition extends ConditionComponent {
     private static final String PERM = "perm";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        String perm = settings.getString(PERM);
-        return caster instanceof Player && caster.hasPermission(perm) && executeChildren(caster, level, targets);
+    public String getKey() {
+        return "permission";
+    }
+
+    @Override
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        return test(caster, level, null) && executeChildren(caster, level, targets);
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return caster.hasPermission(settings.getString(PERM));
     }
 }

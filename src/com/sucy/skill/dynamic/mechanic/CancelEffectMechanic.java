@@ -29,14 +29,18 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.api.particle.EffectData;
 import com.sucy.skill.api.particle.EffectManager;
 import com.sucy.skill.api.particle.target.EntityTarget;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
 
-public class CancelEffectMechanic extends EffectComponent {
+public class CancelEffectMechanic extends MechanicComponent {
 
-    private static final String KEY      = "effect-key";
+    private static final String KEY = "effect-key";
+
+    @Override
+    public String getKey() {
+        return "cancel effect";
+    }
 
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)

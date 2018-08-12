@@ -50,6 +50,12 @@ html, body {
     background-color: black;
 }
 
+#attribute-label {
+    width: 90% !important;
+    text-align: center !important;
+    color: #888;
+}
+
 #badBrowser p {
     text-align: center;
     margin-top: 40%;
@@ -65,14 +71,6 @@ html, body {
 
 #skillForm, /*#builder,*/ #componentChooser, #triggerChooser {
 	display: none;
-}
-
-#componentChooser h5 {
-    background-color: #181818;
-}
-
-#componentChooser h5:hover {
-    background-color: #777;
 }
 
 #skills, #classes {
@@ -165,7 +163,7 @@ h5 {
 	float: left;
 	width: 225px;
 	padding: 10px 5px;
-	background-color: #043;
+	background-color: #181818;
 	margin-bottom: 10px;
 	margin-left: 10px;
 	border-radius: 5px;
@@ -178,7 +176,7 @@ h5 {
 }
 
 h5:hover {
-	background-color: #666;
+	background-color: #777;
 	cursor: pointer;
 }
 
@@ -320,11 +318,11 @@ hr {
 	margin-bottom: 5px;
 }
 
-#componentChooser .premium {
+.premium {
     background-color: #033;
 }
 
-#componentChooser .premium:hover {
+.premium:hover {
     background-color: #6aa;
 }
 

@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.version.VersionManager;
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
@@ -37,12 +36,17 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueLoreMechanic extends EffectComponent
+public class ValueLoreMechanic extends MechanicComponent
 {
     private static final String KEY        = "key";
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
     private static final String HAND       = "hand";
+
+    @Override
+    public String getKey() {
+        return "value lore";
+    }
 
     /**
      * Executes the component
@@ -61,7 +65,7 @@ public class ValueLoreMechanic extends EffectComponent
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
-        double multiplier = attr(caster, MULTIPLIER, level, 1, isSelf);
+        double multiplier = parseValues(caster, MULTIPLIER, level, 1);
         boolean offhand = settings.getString(HAND, "").equalsIgnoreCase("offhand");
         String regex = settings.getString(REGEX, "Damage: {value}");
 

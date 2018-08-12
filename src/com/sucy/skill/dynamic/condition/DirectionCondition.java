@@ -26,55 +26,40 @@
  */
 package com.sucy.skill.dynamic.condition;
 
+import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.player.TargetHelper;
-import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.BiPredicate;
 
 /**
  * A condition for dynamic skills that requires the target or caster to be facing a direction relative to the other
  */
-public class DirectionCondition extends EffectComponent
+public class DirectionCondition extends ConditionComponent
 {
     private static final String TYPE      = "type";
     private static final String DIRECTION = "direction";
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
-    @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        String type = settings.getString(TYPE).toLowerCase();
-        String dir = settings.getString(DIRECTION).toLowerCase();
-        boolean towards = dir.equals("towards");
+    private BiPredicate<LivingEntity, LivingEntity> test;
+    private boolean towards;
 
-        ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (LivingEntity target : targets)
-        {
-            if (type.equals("target"))
-            {
-                if (TargetHelper.isInFront(target, caster) == towards)
-                {
-                    list.add(target);
-                }
-            }
-            else // type.equals("normal")
-            {
-                if (TargetHelper.isInFront(caster, target) == towards)
-                {
-                    list.add(target);
-                }
-            }
-        }
-        return list.size() > 0 && executeChildren(caster, level, list);
+    @Override
+    public String getKey() {
+        return "direction";
+    }
+
+    @Override
+    public void load(DynamicSkill skill, DataSection config) {
+        super.load(skill, config);
+        towards = settings.getString(DIRECTION).equalsIgnoreCase("towards");
+        test = settings.getString(TYPE).equalsIgnoreCase("target")
+                ? (caster, target) -> TargetHelper.isInFront(target, caster)
+                : TargetHelper::isInFront;
+    }
+
+    @Override
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+        return test.test(caster, target) == towards;
     }
 }

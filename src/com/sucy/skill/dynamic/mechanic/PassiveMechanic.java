@@ -28,7 +28,6 @@ package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerSkill;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -40,7 +39,7 @@ import java.util.Map;
 /**
  * Executes child components continuously
  */
-public class PassiveMechanic extends EffectComponent {
+public class PassiveMechanic extends MechanicComponent {
     private static final String PERIOD = "seconds";
 
     private final Map<Integer, PassiveTask> tasks = new HashMap<>();
@@ -60,13 +59,18 @@ public class PassiveMechanic extends EffectComponent {
 
         if (targets.size() > 0) {
             final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-            final int period = (int) (attr(caster, PERIOD, level, 1.0, isSelf) * 20);
+            final int period = (int) (parseValues(caster, PERIOD, level, 1.0) * 20);
             final PassiveTask task = new PassiveTask(caster, level, targets, period);
             tasks.put(caster.getEntityId(), task);
 
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String getKey() {
+        return "passive";
     }
 
     @Override

@@ -29,7 +29,6 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.api.util.Buff;
 import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.BuffType;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -37,12 +36,17 @@ import java.util.List;
 /**
  * Applies a flag to each target
  */
-public class DefenseBuffMechanic extends EffectComponent
+public class DefenseBuffMechanic extends MechanicComponent
 {
     private static final String TYPE    = "type";
     private static final String SKILL   = "skill";
     private static final String VALUE   = "value";
     private static final String SECONDS = "seconds";
+
+    @Override
+    public String getKey() {
+        return "defense buff";
+    }
 
     /**
      * Executes the component
@@ -60,8 +64,8 @@ public class DefenseBuffMechanic extends EffectComponent
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean skill = settings.getString(SKILL, "false").equalsIgnoreCase("true");
         boolean percent = settings.getString(TYPE, "flat").toLowerCase().equals("multiplier");
-        double value = attr(caster, VALUE, level, 1.0, isSelf);
-        double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+        double value = parseValues(caster, VALUE, level, 1.0);
+        double seconds = parseValues(caster, SECONDS, level, 3.0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
             BuffManager.addBuff(

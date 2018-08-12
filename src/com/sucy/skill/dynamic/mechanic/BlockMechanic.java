@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,7 +47,7 @@ import java.util.Map;
  * Mechanic that changes blocks for a duration before
  * returning them to what they were
  */
-public class BlockMechanic extends EffectComponent {
+public class BlockMechanic extends MechanicComponent {
     private static final Vector UP = new Vector(0, 1, 0);
 
     private static final String SHAPE   = "shape";
@@ -91,23 +90,23 @@ public class BlockMechanic extends EffectComponent {
 
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean sphere = settings.getString(SHAPE, "sphere").toLowerCase().equals("sphere");
-        int ticks = (int) (20 * attr(caster, SECONDS, level, 5, isSelf));
+        int ticks = (int) (20 * parseValues(caster, SECONDS, level, 5));
         byte data = (byte) settings.getInt(DATA, 0);
 
         String type = settings.getString(TYPE, "solid").toLowerCase();
         boolean solid = type.equals("solid");
         boolean air = type.equals("air");
 
-        double forward = attr(caster, FORWARD, level, 0, isSelf);
-        double upward = attr(caster, UPWARD, level, 0, isSelf);
-        double right = attr(caster, RIGHT, level, 0, isSelf);
+        double forward = parseValues(caster, FORWARD, level, 0);
+        double upward = parseValues(caster, UPWARD, level, 0);
+        double right = parseValues(caster, RIGHT, level, 0);
 
         List<Block> blocks = new ArrayList<Block>();
         World w = caster.getWorld();
 
         // Grab blocks in a sphere
         if (sphere) {
-            double radius = attr(caster, RADIUS, level, 3, isSelf);
+            double radius = parseValues(caster, RADIUS, level, 3);
             double x, y, z, dx, dy, dz;
             double rSq = radius * radius;
             for (LivingEntity t : targets) {
@@ -146,9 +145,9 @@ public class BlockMechanic extends EffectComponent {
         // Grab blocks in a cuboid
         else {
             // Cuboid options
-            double width = (attr(caster, WIDTH, level, 5, isSelf) - 1) / 2;
-            double height = (attr(caster, HEIGHT, level, 5, isSelf) - 1) / 2;
-            double depth = (attr(caster, DEPTH, level, 5, isSelf) - 1) / 2;
+            double width = (parseValues(caster, WIDTH, level, 5) - 1) / 2;
+            double height = (parseValues(caster, HEIGHT, level, 5) - 1) / 2;
+            double depth = (parseValues(caster, DEPTH, level, 5) - 1) / 2;
             double x, y, z;
 
             for (LivingEntity t : targets) {
@@ -204,6 +203,11 @@ public class BlockMechanic extends EffectComponent {
         tasks.computeIfAbsent(caster.getEntityId(), ArrayList::new).add(task);
 
         return true;
+    }
+
+    @Override
+    public String getKey() {
+        return "block";
     }
 
     @Override

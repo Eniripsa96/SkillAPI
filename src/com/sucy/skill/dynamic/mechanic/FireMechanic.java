@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -34,9 +33,14 @@ import java.util.List;
 /**
  * Executes child components after a delay
  */
-public class FireMechanic extends EffectComponent
+public class FireMechanic extends MechanicComponent
 {
     private static final String SECONDS = "seconds";
+
+    @Override
+    public String getKey() {
+        return "fire";
+    }
 
     /**
      * Executes the component
@@ -55,7 +59,7 @@ public class FireMechanic extends EffectComponent
             return false;
         }
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-        double seconds = attr(caster, SECONDS, level, 3.0, isSelf);
+        double seconds = parseValues(caster, SECONDS, level, 3.0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {

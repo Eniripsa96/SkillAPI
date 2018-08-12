@@ -215,6 +215,8 @@ public class PlayerCombos {
         if (skill.hasCombo()) {
             setSkill(skill, skill.getCombo());
             return;
+        } else if (!SkillAPI.getSettings().shouldAutoAssignCombos()) {
+            return;
         }
 
         // Get next available combo

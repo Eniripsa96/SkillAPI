@@ -26,70 +26,33 @@
  */
 package com.sucy.skill.dynamic.target;
 
-import com.sucy.skill.cast.CircleIndicator;
+import com.google.common.collect.ImmutableList;
 import com.sucy.skill.cast.IIndicator;
-import com.sucy.skill.cast.IndicatorType;
-import com.sucy.skill.cast.SphereIndicator;
-import com.sucy.skill.dynamic.EffectComponent;
-import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Applies child components to the caster
  */
-public class SelfTarget extends EffectComponent
-{
-    /**
-     * Creates the list of indicators for the skill
-     *
-     * @param list   list to store indicators in
-     * @param caster caster reference
-     * @param target location to base location on
-     * @param level  the level of the skill to create for
-     */
-    @Override
-    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level)
-    {
-        if (indicatorType == IndicatorType.DIM_3)
-        {
-            Location loc = caster.getLocation();
-            IIndicator indicator = new SphereIndicator(0.5);
-            indicator.moveTo(loc.getX(), loc.getY() + caster.getEyeHeight() / 2, loc.getZ());
-            list.add(indicator);
-        }
-        else if (indicatorType == IndicatorType.DIM_2)
-        {
-            Location loc = caster.getLocation();
-            IIndicator indicator = new CircleIndicator(0.5);
-            indicator.moveTo(loc.getX(), loc.getY() + caster.getEyeHeight() / 2, loc.getZ());
-            list.add(indicator);
-        }
+public class SelfTarget extends TargetComponent {
 
-        for (EffectComponent component : children)
-            if (component.hasEffect)
-                component.makeIndicators(list, caster, caster, level);
+    /** {@inheritDoc} */
+    @Override
+    public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
+        makeCircleIndicator(list, caster, 0.5);
     }
 
-    /**
-     * Executes the component
-     *
-     * @param caster  caster of the skill
-     * @param level   level of the skill
-     * @param targets targets to apply to
-     *
-     * @return true if applied to something, false otherwise
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        final ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
-        for (int i = 0; i < targets.size(); i++)
-            list.add(caster);
+    List<LivingEntity> getTargets(
+            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        return ImmutableList.of(caster);
+    }
 
-        return list.size() > 0 && executeChildren(caster, level, list);
+    @Override
+    public String getKey() {
+        return "self";
     }
 }

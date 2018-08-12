@@ -391,6 +391,12 @@ Click Combos:
   # Whether or not players can customize their combos
   allow-custom: false
   #
+  # Whether or not to automatically assign combos to skills
+  # without a combo manually defined. When disabled, only skills
+  # configured to have a combo or have had a combo set by
+  # a command will have combos.
+  auto-assign: true
+  #
   # Whether or not left clicks are allowed at all
   use-click-left: true
   #
@@ -494,6 +500,10 @@ Experience:
   #
   # Whether or not to show a message when losing exp de to dying
   lose-exp-message: true
+  #
+  # Worlds where experience is not lost on death
+  lose-exp-blacklist:
+  - 'pvpWorld'
   #
   # The formula used for calculating required experience
   # The formula is: x*lvl*lvl + y*lvl + z

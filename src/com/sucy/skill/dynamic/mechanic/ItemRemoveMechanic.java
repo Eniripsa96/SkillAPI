@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.ItemChecker;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,8 +35,13 @@ import java.util.List;
 /**
  * Removes an item to from each player target
  */
-public class ItemRemoveMechanic extends EffectComponent
+public class ItemRemoveMechanic extends MechanicComponent
 {
+    @Override
+    public String getKey() {
+        return "item remove";
+    }
+
     /**
      * Executes the component
      *

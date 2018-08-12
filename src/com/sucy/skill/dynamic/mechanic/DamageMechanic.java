@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -34,12 +33,17 @@ import java.util.List;
 /**
  * Deals damage to each target
  */
-public class DamageMechanic extends EffectComponent
+public class DamageMechanic extends MechanicComponent
 {
     private static final String TYPE   = "type";
     private static final String DAMAGE = "value";
     private static final String TRUE   = "true";
     private static final String CLASSIFIER = "classifier";
+
+    @Override
+    public String getKey() {
+        return "damage";
+    }
 
     /**
      * Executes the component
@@ -59,7 +63,7 @@ public class DamageMechanic extends EffectComponent
         boolean missing = pString.equals("percent missing");
         boolean left = pString.equals("percent left");
         boolean trueDmg = settings.getBool(TRUE, false);
-        double damage = attr(caster, DAMAGE, level, 1.0, isSelf);
+        double damage = parseValues(caster, DAMAGE, level, 1.0);
         String classification = settings.getString(CLASSIFIER, "default");
         if (damage < 0) return false;
         for (LivingEntity target : targets)

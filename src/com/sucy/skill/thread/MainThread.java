@@ -27,12 +27,12 @@
 package com.sucy.skill.thread;
 
 import java.util.ConcurrentModificationException;
+import java.util.Objects;
 
 /**
  * The main async task for SkillAPI functions
  */
-public class MainThread extends Thread
-{
+public class MainThread extends Thread {
     private static final TaskList tasks = new TaskList();
 
     private long time;
@@ -44,8 +44,7 @@ public class MainThread extends Thread
     /**
      * Sets up the main thread
      */
-    public MainThread()
-    {
+    public MainThread() {
         time = System.currentTimeMillis();
         enabled = true;
         start();
@@ -55,28 +54,20 @@ public class MainThread extends Thread
      * Runs the thread until disabled or interrupted
      */
     @Override
-    public void run()
-    {
-        while (enabled)
-        {
-            try
-            {
+    public void run() {
+        while (enabled) {
+            try {
                 tasks.iterator();
-                while (tasks.hasNext())
-                    if (tasks.next().tick())
-                        tasks.remove();
+                while (tasks.hasNext()) { if (tasks.next().tick()) { tasks.remove(); } }
 
                 long current = System.currentTimeMillis();
                 time += 50;
                 sleep(Math.max(1, time - current));
-            }
-            catch (ConcurrentModificationException ex) {
+            } catch (ConcurrentModificationException ex) {
                 // Concurrent exceptions would happen infrequently
                 // but shouldn't be a concern. We'll just continue
                 // functionality next tick.
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 if (print) {
                     ex.printStackTrace();
                     print = false;
@@ -88,10 +79,8 @@ public class MainThread extends Thread
     /**
      * Disables the main thread, stopping future runs
      */
-    public void disable()
-    {
-        for (IThreadTask task : tasks)
-            task.run();
+    public void disable() {
+        for (IThreadTask task : tasks) { task.run(); }
         tasks.clear();
         enabled = false;
     }
@@ -101,8 +90,8 @@ public class MainThread extends Thread
      *
      * @param task task to run
      */
-    public static void register(IThreadTask task)
-    {
+    public static void register(IThreadTask task) {
+        Objects.requireNonNull(task, "Cannot register a null task");
         tasks.add(task);
     }
 }

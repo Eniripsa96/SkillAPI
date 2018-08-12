@@ -29,7 +29,6 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.util.ParticleHelper;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -40,7 +39,7 @@ import java.util.List;
 /**
  * Plays a particle effect
  */
-public class ParticleAnimationMechanic extends EffectComponent
+public class ParticleAnimationMechanic extends MechanicComponent
 {
     private static final String FORWARD  = "forward";
     private static final String UPWARD   = "upward";
@@ -54,6 +53,11 @@ public class ParticleAnimationMechanic extends EffectComponent
     private static final String V_TRANS  = "v-translation";
     private static final String H_CYCLES = "h-cycles";
     private static final String V_CYCLES = "v-cycles";
+
+    @Override
+    public String getKey() {
+        return "particle animation";
+    }
 
     /**
      * Executes the component
@@ -73,8 +77,8 @@ public class ParticleAnimationMechanic extends EffectComponent
         }
 
         final Settings copy = new Settings(settings);
-        copy.set(ParticleHelper.PARTICLES_KEY, attr(caster, ParticleHelper.PARTICLES_KEY, level, 1, true), 0);
-        copy.set(ParticleHelper.RADIUS_KEY, attr(caster, ParticleHelper.RADIUS_KEY, level, 0, true), 0);
+        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0), 0);
         copy.set("level", level);
         new ParticleTask(caster, targets, level, copy);
         return targets.size() > 0;
@@ -122,10 +126,10 @@ public class ParticleAnimationMechanic extends EffectComponent
             this.freq = (int) (settings.getDouble(FREQ, 1.0) * 20);
             this.angle = settings.getInt(ANGLE, 0);
             this.startAngle = settings.getInt(START, 0);
-            this.duration = steps * (int) (20 * attr(caster, DURATION, level, 3.0, true));
+            this.duration = steps * (int) (20 * parseValues(caster, DURATION, level, 3.0));
             this.life = 0;
-            this.ht = attr(caster, H_TRANS, level, 0, true);
-            this.vt = attr(caster, V_TRANS, level, 0, true);
+            this.ht = parseValues(caster, H_TRANS, level, 0);
+            this.vt = parseValues(caster, V_TRANS, level, 0);
             this.hc = settings.getInt(H_CYCLES, 1);
             this.vc = settings.getInt(V_CYCLES, 1);
             this.hl = duration / hc;

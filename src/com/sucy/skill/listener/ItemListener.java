@@ -30,7 +30,6 @@ import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.event.PlayerAccountChangeEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.language.ErrorNodes;
@@ -96,14 +95,6 @@ public class ItemListener extends SkillAPIListener
     {
         if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
             SkillAPI.getPlayerData(player).getEquips().update(player);
-    }
-
-    @EventHandler
-    public void onSwitch(PlayerAccountChangeEvent event)
-    {
-        final Player player = event.getNewAccount().getPlayer();
-        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
-            event.getNewAccount().getEquips().update(player);
     }
 
     @EventHandler

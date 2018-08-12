@@ -27,7 +27,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.rit.sucy.player.TargetHelper;
-import com.sucy.skill.dynamic.EffectComponent;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
@@ -38,7 +37,7 @@ import java.util.List;
 /**
  * Strikes lightning about each target with an offset
  */
-public class WarpMechanic extends EffectComponent
+public class WarpMechanic extends MechanicComponent
 {
     private static final Vector UP = new Vector(0, 1, 0);
 
@@ -46,6 +45,11 @@ public class WarpMechanic extends EffectComponent
     private static final String FORWARD = "forward";
     private static final String UPWARD  = "upward";
     private static final String RIGHT   = "right";
+
+    @Override
+    public String getKey() {
+        return "warp";
+    }
 
     /**
      * Executes the component
@@ -67,9 +71,9 @@ public class WarpMechanic extends EffectComponent
         // Get the world
         boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
-        double forward = attr(caster, FORWARD, level, 0.0, isSelf);
-        double upward = attr(caster, UPWARD, level, 0.0, isSelf);
-        double right = attr(caster, RIGHT, level, 0.0, isSelf);
+        double forward = parseValues(caster, FORWARD, level, 0.0);
+        double upward = parseValues(caster, UPWARD, level, 0.0);
+        double right = parseValues(caster, RIGHT, level, 0.0);
 
         for (LivingEntity target : targets)
         {

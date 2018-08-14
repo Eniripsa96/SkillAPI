@@ -88,7 +88,6 @@ public class BlockMechanic extends MechanicComponent {
             // Use default
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean sphere = settings.getString(SHAPE, "sphere").toLowerCase().equals("sphere");
         int ticks = (int) (20 * parseValues(caster, SECONDS, level, 5));
         byte data = (byte) settings.getInt(DATA, 0);
@@ -237,7 +236,7 @@ public class BlockMechanic extends MechanicComponent {
      */
     private class RevertTask extends BukkitRunnable {
         private ArrayList<Location> locs;
-        private LivingEntity caster;
+        private LivingEntity        caster;
 
         RevertTask(final LivingEntity caster, final ArrayList<Location> locs) {
             this.caster = caster;

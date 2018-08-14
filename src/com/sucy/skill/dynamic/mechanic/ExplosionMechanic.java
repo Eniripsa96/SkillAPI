@@ -34,8 +34,7 @@ import java.util.List;
 /**
  * Creates an explosion at the target's location
  */
-public class ExplosionMechanic extends MechanicComponent
-{
+public class ExplosionMechanic extends MechanicComponent {
     private static final String POWER  = "power";
     private static final String DAMAGE = "damage";
     private static final String FIRE   = "fire";
@@ -55,18 +54,14 @@ public class ExplosionMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double power = parseValues(caster, POWER, level, 4);
         boolean fire = settings.getBool(FIRE, false);
         boolean damage = settings.getBool(DAMAGE, false);
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             Location loc = target.getLocation();
             target.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), (float) power, fire, damage);
         }

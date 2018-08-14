@@ -39,8 +39,7 @@ import java.util.Set;
 /**
  * Cleanses a target of negative potion or status effects
  */
-public class CleanseMechanic extends MechanicComponent
-{
+public class CleanseMechanic extends MechanicComponent {
     private static final Set<String> POTIONS = ImmutableSet.of(
             "BLINDNESS", "CONFUSION", "HUNGER", "LEVITATION", "POISON",
             "SLOW", "SLOW_DIGGING", "WEAKNESS", "WITHER"
@@ -64,53 +63,38 @@ public class CleanseMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         boolean worked = false;
         String status = settings.getString(STATUS, "None").toLowerCase();
         String potion = settings.getString(POTION).toUpperCase().replace(' ', '_');
         PotionEffectType type = null;
-        try
-        {
+        try {
             type = PotionEffectType.getByName(potion);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             // Invalid potion type
         }
 
-        for (LivingEntity target : targets)
-        {
-            if (status.equals("all"))
-            {
-                for (String flag : StatusFlag.NEGATIVE)
-                {
-                    if (FlagManager.hasFlag(target, flag))
-                    {
+        for (LivingEntity target : targets) {
+            if (status.equals("all")) {
+                for (String flag : StatusFlag.NEGATIVE) {
+                    if (FlagManager.hasFlag(target, flag)) {
                         FlagManager.removeFlag(target, flag);
                         worked = true;
                     }
                 }
-            }
-            else if (FlagManager.hasFlag(target, status))
-            {
+            } else if (FlagManager.hasFlag(target, status)) {
                 FlagManager.removeFlag(target, status);
                 worked = true;
             }
 
-            if (potion.equals("ALL"))
-            {
-                for (PotionEffect p : target.getActivePotionEffects())
-                {
-                    if (POTIONS.contains(p.getType().getName()))
-                    {
+            if (potion.equals("ALL")) {
+                for (PotionEffect p : target.getActivePotionEffects()) {
+                    if (POTIONS.contains(p.getType().getName())) {
                         target.removePotionEffect(p.getType());
                         worked = true;
                     }
                 }
-            }
-            else if (type != null && target.hasPotionEffect(type))
-            {
+            } else if (type != null && target.hasPotionEffect(type)) {
                 target.removePotionEffect(type);
                 worked = true;
             }

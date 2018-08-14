@@ -33,8 +33,7 @@ import java.util.List;
 /**
  * Cancels the event that caused the trigger to go off
  */
-public class CancelMechanic extends MechanicComponent
-{
+public class CancelMechanic extends MechanicComponent {
     @Override
     public String getKey() {
         return "cancel";
@@ -50,8 +49,7 @@ public class CancelMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         skill.cancelTrigger();
         return true;
     }

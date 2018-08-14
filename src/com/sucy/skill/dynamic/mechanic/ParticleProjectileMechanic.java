@@ -135,7 +135,6 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         // Get common values
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");

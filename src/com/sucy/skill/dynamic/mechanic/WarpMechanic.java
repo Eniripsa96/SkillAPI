@@ -37,8 +37,7 @@ import java.util.List;
 /**
  * Strikes lightning about each target with an offset
  */
-public class WarpMechanic extends MechanicComponent
-{
+public class WarpMechanic extends MechanicComponent {
     private static final Vector UP = new Vector(0, 1, 0);
 
     private static final String WALL    = "walls";
@@ -61,28 +60,23 @@ public class WarpMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
 
         // Get the world
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
         double forward = parseValues(caster, FORWARD, level, 0.0);
         double upward = parseValues(caster, UPWARD, level, 0.0);
         double right = parseValues(caster, RIGHT, level, 0.0);
 
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             Vector dir = target.getLocation().getDirection();
             Vector side = dir.clone().crossProduct(UP).multiply(right);
             Location loc = target.getLocation().add(dir.multiply(forward)).add(side).add(0, upward, 0).add(0, 1, 0);
             loc = TargetHelper.getOpenLocation(target.getLocation().add(0, 1, 0), loc, throughWalls);
-            if (!loc.getBlock().getType().isSolid() && loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid())
-            {
+            if (!loc.getBlock().getType().isSolid() && loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid()) {
                 loc.add(0, 1, 0);
             }
             target.teleport(loc.subtract(0, 1, 0));

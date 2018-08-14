@@ -36,8 +36,7 @@ import java.util.List;
 /**
  * Applies a flag to each target
  */
-public class DefenseBuffMechanic extends MechanicComponent
-{
+public class DefenseBuffMechanic extends MechanicComponent {
     private static final String TYPE    = "type";
     private static final String SKILL   = "skill";
     private static final String VALUE   = "value";
@@ -59,9 +58,8 @@ public class DefenseBuffMechanic extends MechanicComponent
      */
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
-        if (targets.size() == 0) return false;
+        if (targets.size() == 0) { return false; }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean skill = settings.getString(SKILL, "false").equalsIgnoreCase("true");
         boolean percent = settings.getString(TYPE, "flat").toLowerCase().equals("multiplier");
         double value = parseValues(caster, VALUE, level, 1.0);

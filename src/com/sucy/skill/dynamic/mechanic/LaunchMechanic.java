@@ -34,8 +34,7 @@ import java.util.List;
 /**
  * Launches the target in a given direction relative to their forward direction
  */
-public class LaunchMechanic extends MechanicComponent
-{
+public class LaunchMechanic extends MechanicComponent {
     private Vector up = new Vector(0, 1, 0);
 
     private static final String FORWARD = "forward";
@@ -59,28 +58,22 @@ public class LaunchMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double forward = parseValues(caster, FORWARD, level, 0);
         double upward = parseValues(caster, UPWARD, level, 0);
         double right = parseValues(caster, RIGHT, level, 0);
         String relative = settings.getString(RELATIVE, "target").toLowerCase();
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             final Vector dir;
             if (relative.equals("caster")) {
                 dir = caster.getLocation().getDirection().setY(0).normalize();
-            }
-            else if (relative.equals("between")) {
+            } else if (relative.equals("between")) {
                 dir = target.getLocation().toVector().subtract(caster.getLocation().toVector()).setY(0).normalize();
-            }
-            else {
+            } else {
                 dir = target.getLocation().getDirection().setY(0).normalize();
             }
 

@@ -35,8 +35,7 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueRandomMechanic extends MechanicComponent
-{
+public class ValueRandomMechanic extends MechanicComponent {
     private static final String KEY  = "key";
     private static final String TYPE = "type";
     private static final String MIN  = "min";
@@ -57,14 +56,11 @@ public class ValueRandomMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0 || !settings.has(KEY))
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0 || !settings.has(KEY)) {
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
         boolean triangular = settings.getString(TYPE).toUpperCase().equals("triangular");
         double min = parseValues(caster, MIN, level, 1);

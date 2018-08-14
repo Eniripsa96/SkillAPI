@@ -18,6 +18,7 @@ import com.sucy.skill.dynamic.condition.ElseCondition;
 import com.sucy.skill.dynamic.condition.EntityTypeCondition;
 import com.sucy.skill.dynamic.condition.FireCondition;
 import com.sucy.skill.dynamic.condition.FlagCondition;
+import com.sucy.skill.dynamic.condition.GroundCondition;
 import com.sucy.skill.dynamic.condition.HealthCondition;
 import com.sucy.skill.dynamic.condition.InventoryCondition;
 import com.sucy.skill.dynamic.condition.ItemCondition;
@@ -35,6 +36,7 @@ import com.sucy.skill.dynamic.condition.TimeCondition;
 import com.sucy.skill.dynamic.condition.ToolCondition;
 import com.sucy.skill.dynamic.condition.ValueCondition;
 import com.sucy.skill.dynamic.condition.WaterCondition;
+import com.sucy.skill.dynamic.condition.WeatherCondition;
 import com.sucy.skill.dynamic.custom.CustomComponent;
 import com.sucy.skill.dynamic.custom.CustomEffectComponent;
 import com.sucy.skill.dynamic.custom.EditorOption;
@@ -291,6 +293,7 @@ public class ComponentRegistry {
         register(new EntityTypeCondition());
         register(new FireCondition());
         register(new FlagCondition());
+        register(new GroundCondition());
         register(new HealthCondition());
         register(new InventoryCondition());
         register(new ItemCondition());
@@ -308,6 +311,7 @@ public class ComponentRegistry {
         register(new ToolCondition());
         register(new ValueCondition());
         register(new WaterCondition());
+        register(new WeatherCondition());
 
         // Mechanics
         register(new AttributeMechanic());

@@ -36,8 +36,7 @@ import java.util.List;
 /**
  * Heals each target
  */
-public class HealMechanic extends MechanicComponent
-{
+public class HealMechanic extends MechanicComponent {
     private static final String TYPE  = "type";
     private static final String VALUE = "value";
 
@@ -56,27 +55,21 @@ public class HealMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         boolean percent = settings.getString(TYPE, "health").toLowerCase().equals("percent");
         double value = parseValues(caster, VALUE, level, 1.0);
-        if (value < 0) return false;
-        for (LivingEntity target : targets)
-        {
-            if (target.isDead())
-                continue;
+        if (value < 0) { return false; }
+        for (LivingEntity target : targets) {
+            if (target.isDead()) { continue; }
 
             double amount = value;
-            if (percent)
-            {
+            if (percent) {
                 amount = target.getMaxHealth() * value / 100;
             }
 
             SkillHealEvent event = new SkillHealEvent(caster, target, amount);
             Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled())
-            {
+            if (!event.isCancelled()) {
                 VersionManager.heal(target, event.getAmount());
             }
         }

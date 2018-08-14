@@ -59,7 +59,6 @@ public class ValueSetMechanic extends MechanicComponent {
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
         double value = parseValues(caster, VALUE, level, 1);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);

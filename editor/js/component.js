@@ -80,6 +80,7 @@ var Condition = {
     ENTITY_TYPE: { name: 'Entity Type', container: true, construct: ConditionEntityType,premium: true },
     FIRE:        { name: 'Fire',        container: true, construct: ConditionFire       },
     FLAG:        { name: 'Flag',        container: true, construct: ConditionFlag       },
+    GROUND:      { name: 'Ground',      container: true, construct: ConditionGround,    premium: true },
     HEALTH:      { name: 'Health',      container: true, construct: ConditionHealth     },
     INVENTORY:   { name: 'Inventory',   container: true, construct: ConditionInventory  },
     ITEM:        { name: 'Item',        container: true, construct: ConditionItem       },
@@ -95,7 +96,8 @@ var Condition = {
     TIME:        { name: 'Time',        container: true, construct: ConditionTime       },
     TOOL:        { name: 'Tool',        container: true, construct: ConditionTool       },
     VALUE:       { name: 'Value',       container: true, construct: ConditionValue      },
-    WATER:       { name: 'Water',       container: true, construct: ConditionWater      }
+    WATER:       { name: 'Water',       container: true, construct: ConditionWater      },
+    WEATHER:     { name: 'Weather',     container: true, construct: ConditionWeather,   premium: true }
 };
 
 /**
@@ -1166,6 +1168,18 @@ function ConditionFlag()
     );
 }
 
+extend('ConditionGround', 'Component');
+function ConditionGround()
+{
+    this.super('Ground', Type.CONDITION, true);
+
+    this.description = 'Applies child components when the target is on the ground';
+
+    this.data.push(new ListValue('Type', 'type', [ 'On Ground', 'Not On Ground' ], 'On Ground')
+        .setTooltip('Whether or not the target should be on the ground')
+    );
+}
+
 extend('ConditionHealth', 'Component');
 function ConditionHealth()
 {
@@ -1399,6 +1413,18 @@ function ConditionWater()
     this.description = 'Applies child components when the target is in or out of water, depending on the settings.';
 
     this.data.push(new ListValue('State', 'state', [ 'In Water', 'Out Of Water' ], 'In Water')
+        .setTooltip('Whether or not the target needs to be in the water')
+    );
+}
+
+extend('ConditionWeather', 'Component');
+function ConditionWeather()
+{
+    this.super('Weather', Type.CONDITION, true);
+
+    this.description = 'Applies child components when the target\'s location has the given weather condition';
+
+    this.data.push(new ListValue('Type', 'type', [ 'None', 'Rain', 'Snow', 'Thunder' ], 'Rain')
         .setTooltip('Whether or not the target needs to be in the water')
     );
 }

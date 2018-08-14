@@ -37,8 +37,7 @@ import java.util.Random;
 /**
  * Strikes lightning about each target with an offset
  */
-public class WarpRandomMechanic extends MechanicComponent
-{
+public class WarpRandomMechanic extends MechanicComponent {
     private static final Random random = new Random();
 
     private static final String WALL       = "walls";
@@ -60,35 +59,28 @@ public class WarpRandomMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
 
         // Get the world
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean horizontal = !settings.getString(HORIZONTAL, "true").toLowerCase().equals("false");
         double distance = parseValues(caster, DISTANCE, level, 3.0);
 
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             Location loc;
             Location temp = target.getLocation();
-            do
-            {
+            do {
                 loc = temp.clone().add(rand(distance), 0, rand(distance));
-                if (!horizontal)
-                {
+                if (!horizontal) {
                     loc.add(0, rand(distance), 0);
                 }
             }
             while (temp.distanceSquared(loc) > distance * distance);
             loc = TargetHelper.getOpenLocation(target.getLocation().add(0, 1, 0), loc, throughWalls);
-            if (!loc.getBlock().getType().isSolid() && loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid())
-            {
+            if (!loc.getBlock().getType().isSolid() && loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid()) {
                 loc.add(0, 1, 0);
             }
             target.teleport(loc.subtract(0, 1, 0));
@@ -96,8 +88,7 @@ public class WarpRandomMechanic extends MechanicComponent
         return targets.size() > 0;
     }
 
-    private double rand(double distance)
-    {
+    private double rand(double distance) {
         return random.nextDouble() * distance * 2 - distance;
     }
 }

@@ -34,8 +34,7 @@ import java.util.List;
 /**
  * Executes child components after a delay
  */
-public class DelayMechanic extends MechanicComponent
-{
+public class DelayMechanic extends MechanicComponent {
     private static final String SECONDS = "delay";
 
     @Override
@@ -53,23 +52,15 @@ public class DelayMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double seconds = parseValues(caster, SECONDS, level, 2.0);
         Bukkit.getScheduler().runTaskLater(
-            Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    executeChildren(caster, level, targets);
-                }
-            }, (long) (seconds * 20)
+                Bukkit.getPluginManager().getPlugin("SkillAPI"),
+                () -> executeChildren(caster, level, targets),
+                (long) (seconds * 20)
         );
         return true;
     }

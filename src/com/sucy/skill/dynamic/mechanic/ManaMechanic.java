@@ -38,8 +38,7 @@ import java.util.List;
 /**
  * Gives mana to each target
  */
-public class ManaMechanic extends MechanicComponent
-{
+public class ManaMechanic extends MechanicComponent {
     private static final String TYPE  = "type";
     private static final String VALUE = "value";
 
@@ -58,17 +57,13 @@ public class ManaMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         boolean percent = settings.getString(TYPE, "mana").toLowerCase().equals("percent");
         double value = parseValues(caster, VALUE, level, 1.0);
 
         boolean worked = false;
-        for (LivingEntity target : targets)
-        {
-            if (!(target instanceof Player))
-            {
+        for (LivingEntity target : targets) {
+            if (!(target instanceof Player)) {
                 continue;
             }
 
@@ -76,21 +71,15 @@ public class ManaMechanic extends MechanicComponent
 
             PlayerData data = SkillAPI.getPlayerData((Player) target);
             double amount;
-            if (percent)
-            {
+            if (percent) {
                 amount = data.getMaxMana() * value / 100;
-            }
-            else
-            {
+            } else {
                 amount = value;
             }
 
-            if (amount > 0)
-            {
+            if (amount > 0) {
                 data.giveMana(amount, ManaSource.SKILL);
-            }
-            else
-            {
+            } else {
                 data.useMana(-amount, ManaCost.SKILL_EFFECT);
             }
         }

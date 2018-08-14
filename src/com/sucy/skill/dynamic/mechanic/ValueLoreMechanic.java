@@ -36,8 +36,7 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueLoreMechanic extends MechanicComponent
-{
+public class ValueLoreMechanic extends MechanicComponent {
     private static final String KEY        = "key";
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
@@ -58,24 +57,20 @@ public class ValueLoreMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0 || !settings.has(KEY))
-            return false;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0 || !settings.has(KEY)) { return false; }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
         double multiplier = parseValues(caster, MULTIPLIER, level, 1);
         boolean offhand = settings.getString(HAND, "").equalsIgnoreCase("offhand");
         String regex = settings.getString(REGEX, "Damage: {value}");
 
-        if (caster.getEquipment() == null)
-            return false;
+        if (caster.getEquipment() == null) { return false; }
 
         ItemStack hand;
-        if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
+        if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
             hand = caster.getEquipment().getItemInOffHand();
-        else hand = caster.getEquipment().getItemInHand();
+        } else { hand = caster.getEquipment().getItemInHand(); }
 
         return ItemChecker.findLore(caster, hand, regex, key, multiplier);
     }

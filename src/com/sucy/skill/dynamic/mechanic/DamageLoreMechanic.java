@@ -39,8 +39,7 @@ import java.util.regex.Pattern;
 /**
  * Deals damage based on a held item's lore to each target
  */
-public class DamageLoreMechanic extends MechanicComponent
-{
+public class DamageLoreMechanic extends MechanicComponent {
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
     private static final String HAND       = "hand";
@@ -62,59 +61,46 @@ public class DamageLoreMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         String regex = settings.getString(REGEX, "Damage: {value}");
         regex = regex.replace("{value}", "([0-9]+)");
         Pattern pattern = Pattern.compile(regex);
         double m = parseValues(caster, MULTIPLIER, level, 1.0);
         boolean worked = false;
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
-            && settings.getString(HAND).equalsIgnoreCase("offhand");
+                && settings.getString(HAND).equalsIgnoreCase("offhand");
         boolean trueDmg = settings.getBool(TRUE, false);
         String classification = settings.getString(CLASSIFIER, "default");
 
-        if (caster.getEquipment() == null)
-            return false;
+        if (caster.getEquipment() == null) { return false; }
 
         ItemStack hand;
-        if (offhand)
-            hand = caster.getEquipment().getItemInOffHand();
-        else hand = caster.getEquipment().getItemInHand();
+        if (offhand) { hand = caster.getEquipment().getItemInOffHand(); } else {
+            hand = caster.getEquipment().getItemInHand();
+        }
 
-        if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore())
-            return false;
+        if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore()) { return false; }
 
         List<String> lore = hand.getItemMeta().getLore();
-        for (String line : lore)
-        {
+        for (String line : lore) {
             line = ChatColor.stripColor(line);
             Matcher matcher = pattern.matcher(line);
-            if (matcher.find())
-            {
+            if (matcher.find()) {
                 String value = matcher.group(1);
-                try
-                {
+                try {
                     double base = NumberParser.parseDouble(value);
-                    if (base * m > 0)
-                    {
-                        for (LivingEntity target : targets)
-                        {
-                            if (target.isDead())
-                                continue;
+                    if (base * m > 0) {
+                        for (LivingEntity target : targets) {
+                            if (target.isDead()) { continue; }
 
-                            if (trueDmg)
-                                skill.trueDamage(target, base * m, caster);
-                            else
+                            if (trueDmg) { skill.trueDamage(target, base * m, caster); } else {
                                 skill.damage(target, base * m, caster, classification);
+                            }
                         }
                         worked = targets.size() > 0;
                         break;
                     }
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     // Not a valid value
                 }
             }

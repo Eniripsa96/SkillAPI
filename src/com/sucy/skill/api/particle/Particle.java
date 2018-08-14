@@ -249,7 +249,7 @@ public class Particle {
             final org.bukkit.Particle bukkit = org.bukkit.Particle.valueOf(name);
             switch (bukkit) {
                 case REDSTONE:
-                    final Color color = Color.fromRGB((int) (255 * (dx + 1)), (int) (255 * dy), (int) (255 * dz));
+                    final Color color = Color.fromRGB(mapColor(dx + 1), mapColor(dy), mapColor(dz));
                     dx = 0;
                     dy = 0;
                     dz = 0;
@@ -290,5 +290,9 @@ public class Particle {
         else {
             return packet.newInstance(name, (float) x, (float) y, (float) z, dx, dy, dz, amount, 1);
         }
+    }
+
+    private static int mapColor(double decimal) {
+        return (int) Math.max(0, Math.min(255, decimal * 255));
     }
 }

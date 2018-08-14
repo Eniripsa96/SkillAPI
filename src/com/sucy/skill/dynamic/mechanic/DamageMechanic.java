@@ -33,11 +33,10 @@ import java.util.List;
 /**
  * Deals damage to each target
  */
-public class DamageMechanic extends MechanicComponent
-{
-    private static final String TYPE   = "type";
-    private static final String DAMAGE = "value";
-    private static final String TRUE   = "true";
+public class DamageMechanic extends MechanicComponent {
+    private static final String TYPE       = "type";
+    private static final String DAMAGE     = "value";
+    private static final String TRUE       = "true";
     private static final String CLASSIFIER = "classifier";
 
     @Override
@@ -55,9 +54,7 @@ public class DamageMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         String pString = settings.getString(TYPE, "damage").toLowerCase();
         boolean percent = pString.equals("multiplier") || pString.equals("percent");
         boolean missing = pString.equals("percent missing");
@@ -65,30 +62,23 @@ public class DamageMechanic extends MechanicComponent
         boolean trueDmg = settings.getBool(TRUE, false);
         double damage = parseValues(caster, DAMAGE, level, 1.0);
         String classification = settings.getString(CLASSIFIER, "default");
-        if (damage < 0) return false;
-        for (LivingEntity target : targets)
-        {
+        if (damage < 0) { return false; }
+        for (LivingEntity target : targets) {
             if (target.isDead()) {
                 continue;
             }
 
             double amount = damage;
-            if (percent)
-            {
+            if (percent) {
                 amount = damage * target.getMaxHealth() / 100;
-            }
-            else if (missing)
-            {
+            } else if (missing) {
                 amount = damage * (target.getMaxHealth() - target.getHealth()) / 100;
-            }
-            else if (left)
-            {
+            } else if (left) {
                 amount = damage * target.getHealth() / 100;
             }
-            if (trueDmg)
-                skill.trueDamage(target, amount, caster);
-            else
+            if (trueDmg) { skill.trueDamage(target, amount, caster); } else {
                 skill.damage(target, amount, caster, classification);
+            }
         }
         return targets.size() > 0;
     }

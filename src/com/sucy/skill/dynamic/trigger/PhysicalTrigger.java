@@ -27,6 +27,6 @@ public abstract class PhysicalTrigger implements Trigger<PhysicalDamageEvent> {
     }
 
     boolean isUsingTarget(final Settings settings) {
-        return settings.getString("target", "true").equalsIgnoreCase("true");
+        return settings.getString("target", "true").equalsIgnoreCase("false");
     }
 }

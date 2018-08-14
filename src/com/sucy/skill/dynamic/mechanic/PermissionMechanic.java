@@ -35,8 +35,7 @@ import java.util.List;
 /**
  * Applies a flag to each target
  */
-public class PermissionMechanic extends MechanicComponent
-{
+public class PermissionMechanic extends MechanicComponent {
     private static final String PERM    = "perm";
     private static final String SECONDS = "seconds";
 
@@ -55,19 +54,15 @@ public class PermissionMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0 || !settings.has(PERM) || !PluginChecker.isVaultActive())
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0 || !settings.has(PERM) || !PluginChecker.isVaultActive()) {
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(PERM);
         double seconds = parseValues(caster, SECONDS, level, 3.0);
         int ticks = (int) (seconds * 20);
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             if (!target.hasPermission(key)) {
                 FlagManager.addFlag(target, "perm:" + key, ticks);
             }

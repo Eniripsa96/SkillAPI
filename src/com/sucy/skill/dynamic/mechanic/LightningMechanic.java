@@ -35,8 +35,7 @@ import java.util.List;
 /**
  * Strikes lightning about each target with an offset
  */
-public class LightningMechanic extends MechanicComponent
-{
+public class LightningMechanic extends MechanicComponent {
     private static final Vector up = new Vector(0, 1, 0);
 
     private static final String FORWARD = "forward";
@@ -58,25 +57,20 @@ public class LightningMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean damage = settings.getBool(DAMAGE, true);
         double forward = parseValues(caster, FORWARD, level, 0);
         double right = parseValues(caster, RIGHT, level, 0);
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();
             Vector nor = dir.clone().crossProduct(up);
             Location loc = target.getLocation().add(dir.multiply(forward).add(nor.multiply(right)));
-            if (damage)
-                target.getWorld().strikeLightning(loc);
-            else
+            if (damage) { target.getWorld().strikeLightning(loc); } else {
                 target.getWorld().strikeLightningEffect(loc);
+            }
         }
         return targets.size() > 0;
     }

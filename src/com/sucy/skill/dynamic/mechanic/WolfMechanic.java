@@ -79,7 +79,6 @@ public class WolfMechanic extends MechanicComponent {
 
         final Player player = (Player) caster;
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == player;
         String color = settings.getString(COLOR);
         double health = parseValues(player, HEALTH, level, 10.0);
         String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", player.getName()));

@@ -35,8 +35,7 @@ import java.util.List;
 /**
  * Executes child components after a delay
  */
-public class PotionMechanic extends MechanicComponent
-{
+public class PotionMechanic extends MechanicComponent {
     private static final String POTION  = "potion";
     private static final String AMBIENT = "ambient";
     private static final String TIER    = "tier";
@@ -57,29 +56,24 @@ public class PotionMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
 
-        try
-        {
-            boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-            PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption").toUpperCase().replace(' ', '_'));
+        try {
+            PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption")
+                    .toUpperCase()
+                    .replace(' ', '_'));
             int tier = (int) parseValues(caster, TIER, level, 1) - 1;
             double seconds = parseValues(caster, SECONDS, level, 3.0);
             boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
             int ticks = (int) (seconds * 20);
-            for (LivingEntity target : targets)
-            {
+            for (LivingEntity target : targets) {
                 target.addPotionEffect(new PotionEffect(potion, ticks, tier, ambient), true);
             }
             return targets.size() > 0;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return false;
         }
     }

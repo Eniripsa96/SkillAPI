@@ -37,8 +37,7 @@ import java.util.List;
 /**
  * Lowers the cooldowns of the caster's skills
  */
-public class CooldownMechanic extends MechanicComponent
-{
+public class CooldownMechanic extends MechanicComponent {
     private static final String SKILL = "skill";
     private static final String TYPE  = "type";
     private static final String VALUE = "value";
@@ -58,11 +57,9 @@ public class CooldownMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (!(caster instanceof Player)) return false;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (!(caster instanceof Player)) { return false; }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String skill = settings.getString(SKILL, "");
         String type = settings.getString(TYPE, "all").toLowerCase();
         double value = parseValues(caster, VALUE, level, 0);
@@ -70,35 +67,24 @@ public class CooldownMechanic extends MechanicComponent
         PlayerData playerData = SkillAPI.getPlayerData((Player) caster);
 
         PlayerSkill skillData = playerData.getSkill(skill);
-        if (skillData == null && !skill.equals("all"))
-        {
+        if (skillData == null && !skill.equals("all")) {
             skillData = playerData.getSkill(this.skill.getName());
         }
 
         boolean worked = false;
-        if (skill.equals("all"))
-        {
-            for (PlayerSkill data : playerData.getSkills())
-            {
-                if (type.equals("percent"))
-                {
+        if (skill.equals("all")) {
+            for (PlayerSkill data : playerData.getSkills()) {
+                if (type.equals("percent")) {
                     data.subtractCooldown(value * data.getCooldown() / 100);
-                }
-                else
-                {
+                } else {
                     data.subtractCooldown(value);
                 }
                 worked = true;
             }
-        }
-        else if (skillData != null)
-        {
-            if (type.equals("percent"))
-            {
+        } else if (skillData != null) {
+            if (type.equals("percent")) {
                 skillData.subtractCooldown(value * skillData.getCooldown() / 100);
-            }
-            else
-            {
+            } else {
                 skillData.subtractCooldown(value);
             }
             worked = true;

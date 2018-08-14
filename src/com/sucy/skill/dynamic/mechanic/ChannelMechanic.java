@@ -36,8 +36,7 @@ import java.util.List;
 /**
  * Executes child components after a delay, applying "channeling" rules
  */
-public class ChannelMechanic extends MechanicComponent
-{
+public class ChannelMechanic extends MechanicComponent {
     private static final String SECONDS = "time";
     private static final String STILL   = "still";
 
@@ -56,31 +55,21 @@ public class ChannelMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         boolean still = settings.getBool(STILL);
         int ticks = (int) (20 * parseValues(caster, SECONDS, level, 2.0));
-        if (still)
-            FlagManager.addFlag(caster, StatusFlag.CHANNELING, ticks + 2);
+        if (still) { FlagManager.addFlag(caster, StatusFlag.CHANNELING, ticks + 2); }
         Bukkit.getScheduler().runTaskLater(
-            Bukkit.getPluginManager().getPlugin("SkillAPI"), new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    if (FlagManager.hasFlag(caster, StatusFlag.CHANNEL))
-                    {
+                Bukkit.getPluginManager().getPlugin("SkillAPI"), () -> {
+                    if (FlagManager.hasFlag(caster, StatusFlag.CHANNEL)) {
                         FlagManager.removeFlag(caster, StatusFlag.CHANNEL);
                         FlagManager.removeFlag(caster, StatusFlag.CHANNELING);
                         executeChildren(caster, level, targets);
                     }
-                }
-            }, ticks
+                }, ticks
         );
         FlagManager.addFlag(caster, StatusFlag.CHANNEL, ticks + 2);
         return true;

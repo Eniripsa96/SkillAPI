@@ -35,8 +35,7 @@ import java.util.List;
 /**
  * Executes a command for each target
  */
-public class CommandMechanic extends MechanicComponent
-{
+public class CommandMechanic extends MechanicComponent {
     private static final String COMMAND = "command";
     private static final String TYPE    = "type";
 
@@ -55,33 +54,26 @@ public class CommandMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0 || !settings.has(COMMAND))
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0 || !settings.has(COMMAND)) {
             return false;
         }
 
         String command = settings.getString(COMMAND);
         String type = settings.getString(TYPE).toLowerCase();
         boolean worked = false;
-        for (LivingEntity t : targets)
-        {
-            if (t instanceof Player)
-            {
+        for (LivingEntity t : targets) {
+            if (t instanceof Player) {
                 Player p = (Player) t;
                 worked = true;
 
                 command = filter(caster, p, command);
-                if (type.equals("op"))
-                {
+                if (type.equals("op")) {
                     boolean op = p.isOp();
                     p.setOp(true);
                     Bukkit.getServer().dispatchCommand(p, command);
                     p.setOp(op);
-                }
-                else
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                } else { Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command); }
             }
         }
 

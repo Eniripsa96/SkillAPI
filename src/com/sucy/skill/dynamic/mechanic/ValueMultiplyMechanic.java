@@ -35,8 +35,7 @@ import java.util.List;
 /**
  * Adds to a cast data value
  */
-public class ValueMultiplyMechanic extends MechanicComponent
-{
+public class ValueMultiplyMechanic extends MechanicComponent {
     private static final String KEY        = "key";
     private static final String MULTIPLIER = "multiplier";
 
@@ -55,19 +54,15 @@ public class ValueMultiplyMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0 || !settings.has(KEY))
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0 || !settings.has(KEY)) {
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
         double multiplier = parseValues(caster, MULTIPLIER, level, 1);
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        if (data.containsKey(key))
-            data.put(key, multiplier * (Double) data.get(key));
+        if (data.containsKey(key)) { data.put(key, multiplier * (Double) data.get(key)); }
         return true;
     }
 }

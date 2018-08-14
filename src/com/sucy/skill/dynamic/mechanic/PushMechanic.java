@@ -60,7 +60,6 @@ public class PushMechanic extends MechanicComponent {
             return false;
         }
 
-        final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         final double speed = parseValues(caster, SPEED, level, 3.0);
         final String type = settings.getString("type", "scaled").toLowerCase();
 

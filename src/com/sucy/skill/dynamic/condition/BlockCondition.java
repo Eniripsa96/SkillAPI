@@ -28,6 +28,7 @@ package com.sucy.skill.dynamic.condition;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.sucy.skill.dynamic.DynamicSkill;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
 
@@ -39,7 +40,8 @@ public class BlockCondition extends ConditionComponent {
     private static final String STANDING = "standing";
 
     private Set<String> types;
-    private boolean requiresMatch;
+    private boolean negated;
+    private boolean in;
 
     @Override
     public String getKey() {
@@ -49,7 +51,9 @@ public class BlockCondition extends ConditionComponent {
     @Override
     public void load(DynamicSkill skill, DataSection config) {
         super.load(skill, config);
-        requiresMatch = !settings.getString(STANDING, "on block").equalsIgnoreCase("not on block");
+        final String type = settings.getString(STANDING).toLowerCase();
+        negated = type.startsWith("not");
+        in = type.endsWith("in block");
         types = settings.getStringList(MATERIAL).stream()
                 .map(s -> s.toUpperCase().replace(' ', '_'))
                 .collect(Collectors.toSet());
@@ -57,6 +61,8 @@ public class BlockCondition extends ConditionComponent {
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        return requiresMatch == types.contains(target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().name());
+        final Block in = target.getLocation().getBlock();
+        final Block tested = this.in ? in : in.getRelative(BlockFace.DOWN);
+        return negated != types.contains(tested.getType().name());
     }
 }

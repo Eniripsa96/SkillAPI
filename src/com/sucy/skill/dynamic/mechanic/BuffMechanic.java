@@ -38,8 +38,6 @@ public class BuffMechanic extends MechanicComponent {
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         if (targets.size() == 0) return false;
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
-
         boolean immediate = settings.getString(IMMEDIATE, "false").equalsIgnoreCase("true");
         double value = parseValues(caster, VALUE, level, 1.0);
         boolean percent = settings.getString(MODIFIER, "flat").equalsIgnoreCase("multiplier");

@@ -55,7 +55,6 @@ public class ElevationCondition extends ConditionComponent {
      */
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String type = settings.getString(TYPE).toLowerCase();
         double min = parseValues(caster, MIN, level, 0);
         double max = parseValues(caster, MAX, level, 255);

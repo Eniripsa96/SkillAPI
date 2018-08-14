@@ -35,12 +35,11 @@ import java.util.List;
 /**
  * Applies a damage immunity flag to each target
  */
-public class ImmunityMechanic extends MechanicComponent
-{
+public class ImmunityMechanic extends MechanicComponent {
     public static final String META_KEY = "sapi_immunity";
 
-    private static final String TYPE    = "type";
-    private static final String SECONDS = "seconds";
+    private static final String TYPE       = "type";
+    private static final String SECONDS    = "seconds";
     private static final String MULTIPLIER = "multiplier";
 
     @Override
@@ -58,20 +57,16 @@ public class ImmunityMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0 || !settings.has(TYPE))
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0 || !settings.has(TYPE)) {
             return false;
         }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(TYPE);
         double seconds = parseValues(caster, SECONDS, level, 3.0);
         double multiplier = parseValues(caster, MULTIPLIER, level, 0);
         int ticks = (int) (seconds * 20);
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             FlagManager.addFlag(target, "immune:" + key.toUpperCase().replace(" ", "_"), ticks);
             SkillAPI.setMeta(target, META_KEY, multiplier);
         }

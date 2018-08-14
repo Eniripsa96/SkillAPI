@@ -33,8 +33,7 @@ import java.util.List;
 /**
  * Executes child components after a delay
  */
-public class FireMechanic extends MechanicComponent
-{
+public class FireMechanic extends MechanicComponent {
     private static final String SECONDS = "seconds";
 
     @Override
@@ -52,17 +51,13 @@ public class FireMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0)
-        {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0) {
             return false;
         }
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         double seconds = parseValues(caster, SECONDS, level, 3.0);
         int ticks = (int) (seconds * 20);
-        for (LivingEntity target : targets)
-        {
+        for (LivingEntity target : targets) {
             int newTicks = ticks <= 0 ? 0 : Math.max(ticks, target.getFireTicks());
             target.setFireTicks(newTicks);
         }

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class DurabilityMechanic extends MechanicComponent {
 
-    private static final String AMOUNT = "amount";
+    private static final String AMOUNT  = "amount";
     private static final String OFFHAND = "offhand";
 
     @Override
@@ -30,16 +30,14 @@ public class DurabilityMechanic extends MechanicComponent {
             return false;
         }
 
-        final Player player = (Player)caster;
-        final boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
+        final Player player = (Player) caster;
         final boolean offhand = settings.getBool(OFFHAND, false);
-        final short amount = (short)(parseValues(caster, AMOUNT, level, 1) * targets.size());
+        final short amount = (short) (parseValues(caster, AMOUNT, level, 1) * targets.size());
 
         final ItemStack item;
         if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
             item = player.getInventory().getItemInOffHand();
-        }
-        else item = player.getInventory().getItemInHand();
+        } else { item = player.getInventory().getItemInHand(); }
 
         if (item == null || item.getType().getMaxDurability() == 0) {
             return false;
@@ -49,7 +47,7 @@ public class DurabilityMechanic extends MechanicComponent {
             player.getInventory().setItemInOffHand(null);
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
         }
-        item.setDurability((short)(item.getDurability() - amount));
+        item.setDurability((short) (item.getDurability() - amount));
         return true;
     }
 }

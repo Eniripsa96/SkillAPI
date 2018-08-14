@@ -33,8 +33,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public class ValueLoreSlotMechanic extends MechanicComponent
-{
+public class ValueLoreSlotMechanic extends MechanicComponent {
     private static final String KEY        = "key";
     private static final String REGEX      = "regex";
     private static final String MULTIPLIER = "multiplier";
@@ -55,12 +54,9 @@ public class ValueLoreSlotMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
-        if (targets.size() == 0 || !settings.has(KEY) || !(caster instanceof Player))
-            return false;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+        if (targets.size() == 0 || !settings.has(KEY) || !(caster instanceof Player)) { return false; }
 
-        boolean isSelf = targets.size() == 1 && targets.get(0) == caster;
         String key = settings.getString(KEY);
         double multiplier = parseValues(caster, MULTIPLIER, level, 1);
         int slot = settings.getInt(SLOT);

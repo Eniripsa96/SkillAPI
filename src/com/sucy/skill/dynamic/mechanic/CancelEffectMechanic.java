@@ -43,14 +43,12 @@ public class CancelEffectMechanic extends MechanicComponent {
     }
 
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
-    {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         String key = settings.getString(KEY, skill.getName());
 
         for (LivingEntity target : targets) {
             EffectData effectData = EffectManager.getEffectData(new EntityTarget(target));
-            if (effectData != null)
-                effectData.cancel(key);
+            if (effectData != null) { effectData.cancel(key); }
         }
 
         return targets.size() > 0;

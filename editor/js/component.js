@@ -823,6 +823,9 @@ function TargetArea()
     this.data.push(new AttributeValue("Max Targets", "max", 99, 0)
         .setTooltip('The max amount of targets to apply children to')
     );
+    this.data.push(new ListValue("Random", "random", [ 'True', 'False' ], 'False')
+        .setTooltip('Whether or not to randomize the targets selected')
+    );
 }
 
 extend('TargetCone', 'Component');

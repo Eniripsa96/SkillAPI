@@ -4,7 +4,7 @@ var DAMAGE_TYPES = [ 'Block Explosion', 'Contact', 'Cramming', 'Dragon Breath', 
 
 function canDrop(thing, target) {
     if (thing == target) return false;
-    
+
     var temp = target;
     while (temp.parentNode) {
         temp = temp.parentNode;
@@ -47,7 +47,7 @@ var Trigger = {
 
 /**
  * Available target component data
- */ 
+ */
 var Target = {
     AREA     : { name: 'Area',     container: true, construct: TargetArea     },
     CONE     : { name: 'Cone',     container: true, construct: TargetCone     },
@@ -62,7 +62,7 @@ var Target = {
 
 /**
  * Available condition component data
- */ 
+ */
 var Condition = {
     ARMOR:       { name: 'Armor',       container: true, construct: ConditionArmor      },
     ATTRIBUTE:   { name: 'Attribute',   container: true, construct: ConditionAttribute  },
@@ -80,6 +80,7 @@ var Condition = {
     ENTITY_TYPE: { name: 'Entity Type', container: true, construct: ConditionEntityType,premium: true },
     FIRE:        { name: 'Fire',        container: true, construct: ConditionFire       },
     FLAG:        { name: 'Flag',        container: true, construct: ConditionFlag       },
+    GROUND:      { name: 'Ground',      container: true, construct: ConditionGround,    premium: true },
     HEALTH:      { name: 'Health',      container: true, construct: ConditionHealth     },
     INVENTORY:   { name: 'Inventory',   container: true, construct: ConditionInventory  },
     ITEM:        { name: 'Item',        container: true, construct: ConditionItem       },
@@ -95,7 +96,8 @@ var Condition = {
     TIME:        { name: 'Time',        container: true, construct: ConditionTime       },
     TOOL:        { name: 'Tool',        container: true, construct: ConditionTool       },
     VALUE:       { name: 'Value',       container: true, construct: ConditionValue      },
-    WATER:       { name: 'Water',       container: true, construct: ConditionWater      }
+    WATER:       { name: 'Water',       container: true, construct: ConditionWater      },
+    WEATHER:     { name: 'Weather',     container: true, construct: ConditionWeather,   premium: true }
 };
 
 /**
@@ -232,7 +234,7 @@ Component.prototype.dupe = function(parent)
     }
     ele.description = this.description;
     return ele;
-}
+};
 
 /**
  * Creates the builder HTML element for the component and
@@ -363,7 +365,7 @@ Component.prototype.createBuilderHTML = function(target)
     target.appendChild(container);
 
     this.html = childContainer;
-}
+};
 
 Component.prototype.allowDrop = function(e) {
     e.preventDefault();
@@ -501,7 +503,7 @@ Component.prototype.update = function()
     {
         this.data[j].update();
     }
-}
+};
 
 /**
  * Gets the save string for the component
@@ -541,7 +543,7 @@ Component.prototype.getSaveString = function(spacing)
         }
     }
     return result;
-}
+};
 
 /**
  * Loads component data from the config lines stating at the given index
@@ -1094,7 +1096,7 @@ function ConditionBiome()
             'Wooded Mountains'
         ],
         [ 'Badlands' ])
-        .setTooltip('The biomes to check for. The expectation would be any of the selected biomes need to match')
+            .setTooltip('The biomes to check for. The expectation would be any of the selected biomes need to match')
     );
 }
 
@@ -1105,7 +1107,7 @@ function ConditionBlock()
 
     this.description = 'Applies child components if the target is currently standing on a block of the given type.';
 
-    this.data.push(new ListValue('Type', 'standing', [ 'On Block', 'Not On Block' ], 'On Block')
+    this.data.push(new ListValue('Type', 'standing', [ 'On Block', 'Not On Block', 'In Block', 'Not In Block' ], 'On Block')
         .setTooltip('Whether or not the target should be in the biome. If checking for in the biome, they must be in any one of the checked biomes. If checking for the opposite, they must not be in any of the checked biomes.')
     );
     this.data.push(new ListValue('Material', 'material', materialList, 'Dirt')
@@ -1274,6 +1276,18 @@ function ConditionFlag()
     );
     this.data.push(new StringValue('Key', 'key', 'key')
         .setTooltip('The unique key representing the flag. This should match the key for when you set it using the Flag mechanic or the Flat Toggle mechanic')
+    );
+}
+
+extend('ConditionGround', 'Component');
+function ConditionGround()
+{
+    this.super('Ground', Type.CONDITION, true);
+
+    this.description = 'Applies child components when the target is on the ground';
+
+    this.data.push(new ListValue('Type', 'type', [ 'On Ground', 'Not On Ground' ], 'On Ground')
+        .setTooltip('Whether or not the target should be on the ground')
     );
 }
 
@@ -1510,6 +1524,18 @@ function ConditionWater()
     this.description = 'Applies child components when the target is in or out of water, depending on the settings.';
 
     this.data.push(new ListValue('State', 'state', [ 'In Water', 'Out Of Water' ], 'In Water')
+        .setTooltip('Whether or not the target needs to be in the water')
+    );
+}
+
+extend('ConditionWeather', 'Component');
+function ConditionWeather()
+{
+    this.super('Weather', Type.CONDITION, true);
+
+    this.description = 'Applies child components when the target\'s location has the given weather condition';
+
+    this.data.push(new ListValue('Type', 'type', [ 'None', 'Rain', 'Snow', 'Thunder' ], 'Rain')
         .setTooltip('Whether or not the target needs to be in the water')
     );
 }

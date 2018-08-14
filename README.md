@@ -8,4 +8,4 @@ for all server owners to create unique and fully custom classes and skills.
 * Bukkit Page      | http://dev.bukkit.org/bukkit-plugins/skillapi/
 * Dynamic Editor   | http://eniripsa96.github.io/SkillAPI/
 * Examples Database | https://skillexamples.herokuapp.com/
-* Help Chat        | https://skillapi.herokuapp.com/
+* Help Chat        | https://discord.gg/Xuegdv

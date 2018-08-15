@@ -52,7 +52,7 @@ public abstract class TargetComponent extends EffectComponent {
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         final List<LivingEntity> list = getTargets(caster, level, targets);
-        return (list.size() > 0 && executeChildren(caster, level, list));
+        return (!list.isEmpty() && executeChildren(caster, level, list));
     }
 
     @Override

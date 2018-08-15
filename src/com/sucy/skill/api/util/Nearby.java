@@ -75,8 +75,11 @@ public class Nearby
      *
      * @return nearby entities
      */
-    public static List<LivingEntity> getLivingNearby(Location loc, double radius)
-    {
+    public static List<LivingEntity> getLivingNearby(Location loc, double radius) {
+        return getLivingNearby(null, loc, radius);
+    }
+
+    private static List<LivingEntity> getLivingNearby(Entity source, Location loc, double radius) {
         List<LivingEntity> result = new ArrayList<LivingEntity>();
 
         int minX = (int) (loc.getX() - radius) >> 4;
@@ -89,7 +92,10 @@ public class Nearby
         for (int i = minX; i <= maxX; i++)
             for (int j = minZ; j <= maxZ; j++)
                 for (Entity entity : loc.getWorld().getChunkAt(i, j).getEntities())
-                    if (entity instanceof LivingEntity && entity.getWorld() == loc.getWorld() && entity.getLocation().distanceSquared(loc) < radius)
+                    if (entity != source
+                            && entity instanceof LivingEntity
+                            && entity.getWorld() == loc.getWorld()
+                            && entity.getLocation().distanceSquared(loc) < radius)
                         result.add((LivingEntity) entity);
 
         return result;
@@ -118,7 +124,7 @@ public class Nearby
      */
     public static List<LivingEntity> getLivingNearby(Entity entity, double radius)
     {
-        return getLivingNearby(entity.getLocation(), radius);
+        return getLivingNearby(entity, entity.getLocation(), radius);
     }
 
     public static List<Entity> getNearbyBox(Location loc, double radius)

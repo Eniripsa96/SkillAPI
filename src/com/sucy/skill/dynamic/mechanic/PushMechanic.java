@@ -64,7 +64,7 @@ public class PushMechanic extends MechanicComponent {
         final String type = settings.getString("type", "scaled").toLowerCase();
 
         final List<LivingEntity> sources = RememberTarget.remember(caster, settings.getString(SOURCE, "_none"));
-        final Location center = sources == null ? caster.getLocation() : sources.get(0).getLocation();
+        final Location center = sources.isEmpty() ? caster.getLocation() : sources.get(0).getLocation();
 
         boolean worked = false;
         for (LivingEntity target : targets) {

@@ -32,6 +32,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -48,8 +49,15 @@ public class NearestTarget extends TargetComponent {
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
 
         final double radius = parseValues(caster, RADIUS, level, 3.0);
-        return determineTargets(caster, level, targets,
-                t -> sort(Nearby.getLivingNearby(t.getLocation(), radius), t.getLocation()));
+        final List<LivingEntity> result = new ArrayList<>();
+        for (LivingEntity target : targets) {
+            final Comparator<LivingEntity> comparator = new DistanceComparator(target.getLocation());
+            Nearby.getLivingNearby(target, radius).stream()
+                    .min(comparator)
+                    .ifPresent(result::add);
+
+        }
+        return result;
     }
 
     /** {@inheritDoc} */
@@ -63,8 +71,16 @@ public class NearestTarget extends TargetComponent {
         return "nearest";
     }
 
-    private List<LivingEntity> sort(final List<LivingEntity> list, final Location loc) {
-        list.sort(Comparator.comparing(e -> e.getLocation().distanceSquared(loc)));
-        return list;
+    private static class DistanceComparator implements Comparator<LivingEntity> {
+        private Location loc;
+
+        private DistanceComparator(final Location loc) {
+            this.loc = loc;
+        }
+
+        @Override
+        public int compare(final LivingEntity o1, final LivingEntity o2) {
+            return Double.compare(o1.getLocation().distanceSquared(loc), o2.getLocation().distanceSquared(loc));
+        }
     }
 }

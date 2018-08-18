@@ -21,8 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-var ATTRIBS = [
+let ATTRIBS = [
     'vitality',
     'spirit',
     'intelligence',
@@ -30,18 +29,17 @@ var ATTRIBS = [
     'strength'
 ];
 
-depend('sounds');
 depend('filter');
 depend('input');
 depend('yaml');
 depend('component', function() {
-    var config = localStorage.getItem('config');
+    const config = localStorage.getItem('config');
     if (config) {
         parseConfig(config);
     }
     refreshOptions();
 });
-depend('material', function () {
+depend('data/data', function () {
     depend('skill', function () {
         document.getElementById('skillList').addEventListener('change', function (e) {
             activeSkill.update();
@@ -68,8 +66,8 @@ depend('material', function () {
             saveToFile(activeSkill.data[0].value + '.yml', activeSkill.getSaveString());
         });
         document.getElementById('deleteSkill').addEventListener('click', function (e) {
-            var list = document.getElementById('skillList');
-            var index = list.selectedIndex;
+            const list = document.getElementById('skillList');
+            let index = list.selectedIndex;
 
             skills.splice(index, 1);
             if (skills.length == 0) {
@@ -100,6 +98,17 @@ depend('material', function () {
             saveToFile('classes.yml', getClassSaveData());
         });
     });
+
+    document.getElementById("version-select").onchange = e => {
+        DATA = window['DATA_' + e.target.value.substr(2)];
+        localStorage.setItem('server-version', e.target.value);
+    };
+
+    const previousValue = localStorage.getItem('server-version');
+    if (previousValue) {
+        DATA = window['DATA_' + previousValue.substr(2)];
+        document.getElementById('version-select').value = previousValue;
+    }
 });
 
 function getSkillSaveData() {
@@ -107,16 +116,16 @@ function getSkillSaveData() {
     if (activeComponent) {
         activeComponent.update();
     }
-    var data = 'loaded: false\n';
-    var alphabetic = skills.slice(0);
+    let data = 'loaded: false\n';
+    const alphabetic = skills.slice(0);
     alphabetic.sort(function (a, b) {
-        var an = a.data[0].value;
-        var bn = b.data[0].value;
+        const an = a.data[0].value;
+        const bn = b.data[0].value;
         if (an > bn) return 1;
         if (an < bn) return -1;
         return 0;
     });
-    for (var i = 0; i < alphabetic.length; i++) {
+    for (let i = 0; i < alphabetic.length; i++) {
         data += alphabetic[i].getSaveString();
     }
     return data;
@@ -124,8 +133,8 @@ function getSkillSaveData() {
 
 function getClassSaveData() {
     activeClass.update();
-    var data = 'loaded: false\n';
-    for (var i = 0; i < classes.length; i++) {
+    let data = 'loaded: false\n';
+    for (let i = 0; i < classes.length; i++) {
         data += classes[i].getSaveString();
     }
     return data;
@@ -141,10 +150,10 @@ function refreshOptions() {
 
 function setupOptionList(div, list, type) {
     div.innerHTML = '';
-    var x;
-    var output = '';
-    var keys = Object.keys(list).sort();
-    for (var i = 0; i < keys.length; i++) {
+    let x;
+    let output = '';
+    const keys = Object.keys(list).sort();
+    for (let i = 0; i < keys.length; i++) {
         x = keys[i];
         if (i % 4 == 0)
             output += '| ';
@@ -152,7 +161,7 @@ function setupOptionList(div, list, type) {
         if ((i + 1) % 4 == 0)
             output += '\n';
 
-        var e = document.createElement('h5');
+        const e = document.createElement('h5');
         if (list[x].premium)
             e.className = 'premium';
         e.innerHTML = list[x].name;
@@ -163,7 +172,7 @@ function setupOptionList(div, list, type) {
             }
             else {
                 showSkillPage('skillForm');
-                var component = this.component.construct
+                const component = this.component.construct
                     ? new this.component.construct()
                     : this.component.supplier();
                 component.parent = activeComponent;
@@ -178,14 +187,14 @@ function setupOptionList(div, list, type) {
     //saveToFile('wiki_' + type + '.txt', output);
 }
 
-var skillsActive = true;
+let skillsActive = true;
 
 // Set up event listeners when the page loads
 window.onload = function () {
-    var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
-    var isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
-    var isChrome = !!window.chrome && !isOpera;              // Chrome 1+
-    var badBrowser = !isOpera && !isFirefox && !isChrome;
+    const isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+    const isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+    const isChrome = !!window.chrome && !isOpera;              // Chrome 1+
+    const badBrowser = !isOpera && !isFirefox && !isChrome;
     document.getElementById('badBrowser').style.display = badBrowser ? 'block' : 'none';
     if (badBrowser) {
         return;
@@ -204,18 +213,18 @@ window.onload = function () {
         switchToClasses();
     });
 
-    var cancelButtons = document.querySelectorAll('.cancelButton');
-    for (var i = 0; i < cancelButtons.length; i++) {
+    const cancelButtons = document.querySelectorAll('.cancelButton');
+    for (let i = 0; i < cancelButtons.length; i++) {
         cancelButtons[i].addEventListener('click', function (e) {
             showSkillPage('builder');
         });
     }
 
-    var attribs = localStorage.getItem('attribs');
-    var skillData = localStorage.getItem('skillData');
-    var skillIndex = localStorage.getItem('skillIndex');
-    var classData = localStorage.getItem('classData');
-    var classIndex = localStorage.getItem('classIndex');
+    const attribs = localStorage.getItem('attribs');
+    const skillData = localStorage.getItem('skillData');
+    const skillIndex = localStorage.getItem('skillIndex');
+    const classData = localStorage.getItem('classData');
+    const classIndex = localStorage.getItem('classIndex');
     if (attribs) {
         ATTRIBS = attribs.split(",");
     }
@@ -304,9 +313,9 @@ function Attribute(key, base, scale) {
  * https://thiscouldbebetter.wordpress.com/2012/12/18/loading-editing-and-saving-a-text-file-in-html5-using-javascrip/
  */
 function saveToFile(file, data) {
-    var textFileAsBlob = new Blob([data], {type: 'text/plain;charset=utf-8'});
+    const textFileAsBlob = new Blob([data], {type: 'text/plain;charset=utf-8'});
 
-    var downloadLink = document.createElement("a");
+    const downloadLink = document.createElement("a");
     downloadLink.download = file;
     downloadLink.innerHTML = "Download File";
     if (window.webkitURL != null) {
@@ -339,9 +348,9 @@ document.addEventListener('dragover', function (e) {
 document.addEventListener('drop', function (e) {
     e.stopPropagation();
     e.preventDefault();
-    for (var i = 0; i < e.dataTransfer.files.length; i++) {
-        var file = e.dataTransfer.files[i];
-        var reader = new FileReader();
+    for (let i = 0; i < e.dataTransfer.files.length; i++) {
+        const file = e.dataTransfer.files[i];
+        const reader = new FileReader();
         if (file.name == 'tool-config.json') {
             reader.onload = loadConfig;
         } else if (file.name.indexOf('.yml') == -1) {
@@ -358,21 +367,21 @@ document.addEventListener('drop', function (e) {
 }, false);
 
 function loadConfig(e) {
-    var text = e.target.result;
+    const text = e.target.result;
     localStorage.setItem("config", text);
     parseConfig(text);
     refreshOptions();
 }
 
 function parseConfig(text) {
-    var data = JSON.parse(text);
-    var mapping = {
+    const data = JSON.parse(text);
+    const mapping = {
         CONDITION: Condition,
         MECHANIC: Mechanic,
         TARGET: Target,
         TRIGGER: Trigger
     };
-    for (var i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {
         const entry = data[i];
         mapping[entry.type][entry.display.toUpperCase().replace(/ /g, '_')] = {
             name: entry.display,
@@ -386,7 +395,7 @@ function parseConfig(text) {
 
 // Loads an individual skill or class file
 function loadIndividual(e) {
-    var text = e.target.result;
+    const text = e.target.result;
     if (text.indexOf('global:') >= 0) {
         loadAttributes(e);
     }
@@ -401,9 +410,9 @@ function loadIndividual(e) {
 // Loads attribute data from a file
 // e - event details
 function loadAttributes(e) {
-    var text = e.target.result;
+    const text = e.target.result;
     document.activeElement.blur();
-    var yaml = parseYAML(text);
+    const yaml = parseYAML(text);
     ATTRIBS = Object.keys(yaml);
     if (!skillsActive) {
         activeClass.update();
@@ -415,7 +424,7 @@ function loadAttributes(e) {
 // Loads skill data from a file after it has been read
 // e - event details
 function loadSkills(e) {
-    var text = e.target.result;
+    const text = e.target.result;
     document.activeElement.blur();
     loadSkillText(text);
 }
@@ -424,8 +433,8 @@ function loadSkills(e) {
 function loadSkillText(text) {
 
     // Load new skills
-    var data = parseYAML(text);
-    for (var key in data) {
+    const data = parseYAML(text);
+    for (let key in data) {
         if (data[key] instanceof YAMLObject && key != 'loaded') {
             if (isSkillNameTaken(key)) {
                 getSkill(key).load(data[key]);
@@ -444,7 +453,7 @@ function loadSkillText(text) {
 // Loads class data from a file after it has been read
 // e - event details
 function loadClasses(e) {
-    var text = e.target.result;
+    const text = e.target.result;
     document.activeElement.blur();
     loadClassText(text);
 }
@@ -453,8 +462,8 @@ function loadClasses(e) {
 function loadClassText(text) {
 
     // Load new classes
-    var data = parseYAML(text);
-    for (var key in data) {
+    const data = parseYAML(text);
+    for (let key in data) {
         if (data[key] instanceof YAMLObject && key != 'loaded' && !isClassNameTaken(key)) {
             if (isClassNameTaken(key)) {
                 getClass(key).load(data[key]);
@@ -474,9 +483,9 @@ function loadClassText(text) {
  */
 function loadSection(data) {
     this.components = [];
-    for (var x in data) {
+    for (let x in data) {
         if (x == this.dataKey) {
-            var attribs = data[x];
+            const attribs = data[x];
             for (var y in attribs) {
                 for (var i = 0; i < this.data.length; i++) {
                     if (this.data[i].key == y && this.data[i].load) {
@@ -495,10 +504,10 @@ function loadSection(data) {
             }
         }
         else if (x == this.componentKey) {
-            var components = data[x];
+            const components = data[x];
             for (var y in components) {
-                var type = components[y].type;
-                var list;
+                const type = components[y].type;
+                let list;
                 if (type == Type.TRIGGER) {
                     list = Trigger;
                 }
@@ -512,14 +521,14 @@ function loadSection(data) {
                     list = Mechanic;
                 }
 
-                var key = y;
+                let key = y;
                 if (key.indexOf('-') > 0) key = key.substring(0, key.indexOf('-'));
                 if (list !== undefined) {
-                    for (var z in list) {
+                    for (let z in list) {
                         if (list[z].name.toLowerCase() == key.toLowerCase()) {
-                            var component = list[z].construct
-                                    ? new list[z].construct()
-                                    : list[z].supplier();
+                            const component = list[z].construct
+                                ? new list[z].construct()
+                                : list[z].supplier();
                             component.parent = this;
                             this.components.push(component);
                             component.load(components[y]);

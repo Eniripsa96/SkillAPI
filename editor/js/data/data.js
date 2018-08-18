@@ -51,6 +51,10 @@ function getBadPotions() {
     return [ 'None', ...list ];
 }
 
+function getDyes() {
+    return DYES;
+}
+
 const GOOD_POTIONS = [
     "Speed",
     "Fast Digging",
@@ -83,4 +87,23 @@ const BAD_POTIONS = [
     "Wither",
     "Levitation",
     "Unluck"
+];
+
+const DYES = [
+    'BLACK',
+    'BLUE',
+    'BROWN',
+    'CYAN',
+    'GRAY',
+    'GREEN',
+    'LIGHT_BLUE',
+    'LIGHT_GRAY',
+    'LIME',
+    'MAGENTA',
+    'ORANGE',
+    'PINK',
+    'PURPLE',
+    'RED',
+    'WHITE',
+    'YELLOW'
 ];

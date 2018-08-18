@@ -2805,7 +2805,7 @@ function MechanicWolf()
     
     this.description = 'Summons a wolf on each target for a duration. Child components will start off targeting the wolf so you can add effects to it. You can also give it its own skillset, though Cast triggers will not occur.';
     
-    this.data.push(new ListValue('Collar Color', 'color', dyeList, 'Black')
+    this.data.push(new ListValue('Collar Color', 'color', getDyes(), 'Black')
         .setTooltip('The color of the collar that the wolf should wear')
     );
     this.data.push(new StringValue('Wolf Name', 'name', "{player}'s Wolf")

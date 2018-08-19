@@ -2,6 +2,7 @@ package com.sucy.skill.dynamic.trigger;
 
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.SkillDamageEvent;
+import com.sucy.skill.dynamic.DynamicSkill;
 
 import java.util.List;
 
@@ -26,6 +27,18 @@ public abstract class SkillTrigger implements Trigger<SkillDamageEvent> {
         final boolean empty = types.isEmpty() || types.get(0).isEmpty();
         return event.getDamage() >= min && event.getDamage() <= max &&
                 (empty || types.contains(event.getClassification()));
+    }
+
+    /**
+     * Handles applying other effects after the skill resolves
+     *
+     * @param event event details
+     * @param skill skill to resolve
+     */
+    @Override
+    public void postProcess(final SkillDamageEvent event, final DynamicSkill skill) {
+        final double damage = skill.applyImmediateBuff(event.getDamage());
+        event.setDamage(damage);
     }
 
     boolean isUsingTarget(final Settings settings) {

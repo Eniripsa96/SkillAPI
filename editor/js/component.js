@@ -365,7 +365,7 @@ Component.prototype.createBuilderHTML = function(target)
     target.appendChild(container);
 
     this.html = childContainer;
-}
+};
 
 Component.prototype.allowDrop = function(e) {
     e.preventDefault();

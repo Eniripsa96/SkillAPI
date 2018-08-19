@@ -39,8 +39,7 @@ import java.util.List;
  * (e.g. adding classes in the registerClasses method and skills
  * in the registerSkills method). It keeps the API working nicely!</p>
  */
-public interface SkillPlugin
-{
+public interface SkillPlugin {
     /**
      * <p>Method to add new skills to the game</p>
      * <p>Use api.addSkills(Skill ... skills) to add them</p>

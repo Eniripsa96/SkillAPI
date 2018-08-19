@@ -61,6 +61,7 @@ import java.util.HashMap;
  */
 public class AttributeListener extends SkillAPIListener
 {
+    public static final String PHYSICAL = "physical";
     private static HashMap<String, Double> BONUSES = new HashMap<>();
 
     @Override
@@ -210,6 +211,11 @@ public class AttributeListener extends SkillAPIListener
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage());
+            if (event.isProjectile()) {
+                newAmount = data.scaleStat(AttributeManager.PROJECTILE_DAMAGE, newAmount);
+            } else {
+                newAmount = data.scaleStat(AttributeManager.MELEE_DAMAGE, newAmount);
+            }
             event.setDamage(newAmount);
         }
 
@@ -223,6 +229,11 @@ public class AttributeListener extends SkillAPIListener
             PlayerData data = SkillAPI.getPlayerData(player);
 
             double newAmount = data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage());
+            if (event.isProjectile()) {
+                newAmount = data.scaleStat(AttributeManager.PROJECTILE_DEFENSE, newAmount);
+            } else {
+                newAmount = data.scaleStat(AttributeManager.MELEE_DEFENSE, newAmount);
+            }
             event.setDamage(newAmount);
         }
     }
@@ -244,10 +255,14 @@ public class AttributeListener extends SkillAPIListener
 
             final PlayerData data = SkillAPI.getPlayerData(player);
 
-            final String classified = AttributeManager.SKILL_DAMAGE + "-" + event.getClassification();
-            final double firstPass = data.scaleStat(classified, event.getDamage());
-            final double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, firstPass);
-            event.setDamage(newAmount);
+            if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
+                event.setDamage(data.scaleStat(AttributeManager.PHYSICAL_DAMAGE, event.getDamage()));
+            } else {
+                final String classified = AttributeManager.SKILL_DAMAGE + "-" + event.getClassification();
+                final double firstPass = data.scaleStat(classified, event.getDamage());
+                final double newAmount = data.scaleStat(AttributeManager.SKILL_DAMAGE, firstPass);
+                event.setDamage(newAmount);
+            }
         }
 
         // Skill Defense
@@ -259,10 +274,14 @@ public class AttributeListener extends SkillAPIListener
 
             final PlayerData data = SkillAPI.getPlayerData(player);
 
-            final String classified = AttributeManager.SKILL_DEFENSE + "-" + event.getClassification();
-            final double firstPass = data.scaleStat(classified, event.getDamage());
-            final double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, firstPass);
-            event.setDamage(newAmount);
+            if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
+                event.setDamage(data.scaleStat(AttributeManager.PHYSICAL_DEFENSE, event.getDamage()));
+            } else {
+                final String classified = AttributeManager.SKILL_DEFENSE + "-" + event.getClassification();
+                final double firstPass = data.scaleStat(classified, event.getDamage());
+                final double newAmount = data.scaleStat(AttributeManager.SKILL_DEFENSE, firstPass);
+                event.setDamage(newAmount);
+            }
         }
     }
 

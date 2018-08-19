@@ -1,6 +1,7 @@
 package com.sucy.skill.dynamic.trigger;
 
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.dynamic.DynamicSkill;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -51,5 +52,17 @@ public class EnvironmentalTrigger implements Trigger<EntityDamageEvent> {
     @Override
     public LivingEntity getTarget(final EntityDamageEvent event, final Settings settings) {
         return getCaster(event);
+    }
+
+    /**
+     * Handles applying other effects after the skill resolves
+     *
+     * @param event event details
+     * @param skill skill to resolve
+     */
+    @Override
+    public void postProcess(final EntityDamageEvent event, final DynamicSkill skill) {
+        final double damage = skill.applyImmediateBuff(event.getDamage());
+        event.setDamage(damage);
     }
 }

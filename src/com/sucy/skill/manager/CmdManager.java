@@ -116,12 +116,12 @@ public class CmdManager
     }
 
     public static String join(String[] args, int start) {
-        return join(args, start, args.length);
+        return join(args, start, args.length - 1);
     }
 
     public static String join(String[] args, int start, int end) {
-        final StringBuilder builder = new StringBuilder();
-        for (int i = start; i <= end; i++) builder.append(args[i]);
+        final StringBuilder builder = new StringBuilder(args[start]);
+        for (int i = start + 1; i <= end; i++) builder.append(' ').append(args[i]);
         return builder.toString();
     }
 

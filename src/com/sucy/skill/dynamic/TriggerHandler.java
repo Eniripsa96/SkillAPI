@@ -12,7 +12,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -92,11 +91,7 @@ public class TriggerHandler implements Listener {
         trigger(caster, target, level);
 
         if (event instanceof Cancellable) { skill.applyCancelled((Cancellable) event); }
-        if (event instanceof EntityDamageEvent) {
-            final EntityDamageEvent damageEvent = (EntityDamageEvent) event;
-            final double modified = skill.applyImmediateBuff(damageEvent.getDamage());
-            damageEvent.setDamage(modified);
-        }
+        trigger.postProcess(event, skill);
     }
 
     boolean trigger(final LivingEntity user, final LivingEntity target, final int level) {

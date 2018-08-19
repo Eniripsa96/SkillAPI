@@ -947,6 +947,8 @@ public class Settings {
             GUI_BOARD  = GUI_BASE + "scoreboard-enabled",
             GUI_NAME   = GUI_BASE + "show-class-name",
             GUI_LEVEL  = GUI_BASE + "show-class-level",
+            GUI_BINDS  = GUI_BASE + "show-binds",
+            GUI_BIND_TEXT = GUI_BASE + "show-binds-text",
             GUI_LVLTXT = GUI_BASE + "class-level-text",
             GUI_TITLE  = GUI_BASE + "title-enabled",
             GUI_DUR    = GUI_BASE + "title-duration",
@@ -966,6 +968,8 @@ public class Settings {
     private boolean showScoreboard;
     private boolean showClassName;
     private boolean showClassLevel;
+    private boolean showBinds;
+    private String  bindText;
     private boolean useTitle;
     private int     titleDuration;
     private int     titleFadeIn;
@@ -1052,6 +1056,14 @@ public class Settings {
         return showClassLevel;
     }
 
+    public boolean isShowBinds() {
+        return showBinds;
+    }
+
+    public String getBindText() {
+        return bindText;
+    }
+
     /**
      * @return text shown alongside the class level
      */
@@ -1103,6 +1115,8 @@ public class Settings {
         showScoreboard = config.getBoolean(GUI_BOARD);
         showClassName = config.getBoolean(GUI_NAME);
         showClassLevel = config.getBoolean(GUI_LEVEL);
+        showBinds = config.getBoolean(GUI_BINDS);
+        bindText = config.getString(GUI_BIND_TEXT);
         useTitle = config.getBoolean(GUI_TITLE);
         titleDuration = (int) (20 * config.getFloat(GUI_DUR));
         titleFadeIn = (int) (20 * config.getFloat(GUI_FADEI));

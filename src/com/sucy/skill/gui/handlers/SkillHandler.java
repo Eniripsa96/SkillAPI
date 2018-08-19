@@ -32,34 +32,27 @@ import com.sucy.skill.gui.tool.GUIHolder;
 
 import java.util.HashMap;
 
-public class SkillHandler extends GUIHolder<Skill>
-{
+public class SkillHandler extends GUIHolder<Skill> {
     private HashMap<String, Integer> start = new HashMap<String, Integer>();
 
     @Override
-    public void onSetup()
-    {
-        for (String key : data.keySet())
-            start.put(key, player.getSkillLevel(key));
+    public void onSetup() {
+        for (String key : data.keySet()) { start.put(key, player.getSkillLevel(key)); }
     }
 
     @Override
-    public void onClick(Skill type, int slot, boolean left, boolean shift)
-    {
-        if (left)
-        {
-            if (player.upgradeSkill(type))
-                setPage(page);
-        }
-        else if ((SkillAPI.getSettings().isAllowDowngrade() || player.getSkillLevel(type.getKey()) > start.get(type.getKey()))
-            && player.downgradeSkill(type))
-            setPage(page);
+    public void onClick(Skill type, int slot, boolean left, boolean shift) {
+        if (left) {
+            if (player.upgradeSkill(type)) { setPage(page); }
+        } else if ((SkillAPI.getSettings()
+                .isAllowDowngrade() || player.getSkillLevel(type.getKey()) > start.get(type.getKey()))
+                && player.downgradeSkill(type)) { setPage(page); }
     }
 
     @Override
-    public void onHotBar(Skill type, int from, int to)
-    {
-        if (player.getSkillBar().isSetup() && type.canCast() && player.hasSkill(type.getName()))
+    public void onHotBar(Skill type, int from, int to) {
+        if (player.getSkillBar().isSetup() && type.canCast() && player.hasSkill(type.getName())) {
             player.getSkillBar().assign(player.getSkill(type.getName()), to);
+        }
     }
 }

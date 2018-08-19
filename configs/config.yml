@@ -276,6 +276,12 @@ GUI:
   # The text to show with the player's level when enabled.
   # This always appears as {level} {text}
   class-level-text: 'Level'
+  #
+  # Whether or not to append text to skill icons to show what type of item the skill is bound to
+  show-binds: false
+  #
+  # Text to show for bound materials
+  show-bind-text: 'Bound to {material}'
 #
 Casting:
   #

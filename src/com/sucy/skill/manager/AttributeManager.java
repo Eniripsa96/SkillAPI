@@ -60,23 +60,27 @@ import java.util.Set;
  */
 public class AttributeManager {
     // Keys for supported stat modifiers
-    public static final String HEALTH           = "health";
-    public static final String MANA             = "mana";
-    public static final String MANA_REGEN       = "mana-regen";
-    public static final String PHYSICAL_DAMAGE  = "physical-damage";
-    public static final String PHYSICAL_DEFENSE = "physical-defense";
-    public static final String SKILL_DAMAGE     = "skill-damage";
-    public static final String SKILL_DEFENSE    = "skill-defense";
-    public static final String MOVE_SPEED       = "move-speed";
-    public static final String ATTACK_SPEED     = "attack-speed";
-    public static final String ARMOR            = "armor";
-    public static final String LUCK             = "luck";
-    public static final String ARMOR_TOUGHNESS  = "armor-toughness";
-    public static final String EXPERIENCE       = "exp";
-    public static final String HUNGER           = "hunger";
-    public static final String HUNGER_HEAL      = "hunger-heal";
-    public static final String COOLDOWN         = "cooldown";
-    public static final String KNOCKBACK_RESIST = "knockback-resist";
+    public static final String HEALTH             = "health";
+    public static final String MANA               = "mana";
+    public static final String MANA_REGEN         = "mana-regen";
+    public static final String PHYSICAL_DAMAGE    = "physical-damage";
+    public static final String MELEE_DAMAGE       = "melee-damage";
+    public static final String PROJECTILE_DAMAGE  = "projectile-damage";
+    public static final String PHYSICAL_DEFENSE   = "physical-defense";
+    public static final String MELEE_DEFENSE      = "melee-defense";
+    public static final String PROJECTILE_DEFENSE = "projectile-defense";
+    public static final String SKILL_DAMAGE       = "skill-damage";
+    public static final String SKILL_DEFENSE      = "skill-defense";
+    public static final String MOVE_SPEED         = "move-speed";
+    public static final String ATTACK_SPEED       = "attack-speed";
+    public static final String ARMOR              = "armor";
+    public static final String LUCK               = "luck";
+    public static final String ARMOR_TOUGHNESS    = "armor-toughness";
+    public static final String EXPERIENCE         = "exp";
+    public static final String HUNGER             = "hunger";
+    public static final String HUNGER_HEAL        = "hunger-heal";
+    public static final String COOLDOWN           = "cooldown";
+    public static final String KNOCKBACK_RESIST   = "knockback-resist";
 
     private final HashMap<String, Attribute>       attributes  = new LinkedHashMap<>();
     private final HashMap<String, Attribute>       lookup      = new HashMap<>();

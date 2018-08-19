@@ -30,6 +30,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.ItemProjectileHitEvent;
 import com.sucy.skill.api.event.ItemProjectileLandEvent;
 import com.sucy.skill.api.event.ItemProjectileLaunchEvent;
+import com.sucy.skill.api.util.DamageLoreRemover;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
@@ -68,6 +69,7 @@ public class ItemProjectile extends CustomProjectile
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(NAME + NEXT++);
         item.setItemMeta(meta);
+        DamageLoreRemover.removeAttackDmg(item);
 
         this.item = thrower.getWorld().dropItem(loc.add(0, 1, 0), item);
         this.item.setVelocity(vel);

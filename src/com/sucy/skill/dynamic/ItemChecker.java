@@ -215,8 +215,7 @@ public class ItemChecker
 
     public static boolean findLore(LivingEntity caster, ItemStack item, String regex, String key, double multiplier)
     {
-        regex = regex.replace("{value}", "([0-9]+)");
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(regex.replace("{value}", "([+-]?[0-9]+([.,][0-9]+)?)"));
 
         if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasLore())
             return false;

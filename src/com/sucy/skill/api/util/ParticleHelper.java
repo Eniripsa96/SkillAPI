@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.util;
 
+import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.reflect.Particle;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.Settings;
@@ -43,6 +44,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Helper class for playing particles via config strings in various ways.
@@ -198,8 +200,8 @@ public class ParticleHelper {
             }
 
             // Entity effects
-            else if (ENTITY_EFFECTS.containsKey(particle)) {
-                play(loc, ENTITY_EFFECTS.get(particle));
+            else if (ENTITY_EFFECTS.contains(particle)) {
+                play(loc, EntityEffect.valueOf(particle.toUpperCase().replace(' ', '_')));
             }
 
             // v1.13 particles
@@ -346,14 +348,8 @@ public class ParticleHelper {
         put("potion break", Effect.POTION_BREAK);
     }};
 
-    private static final HashMap<String, EntityEffect> ENTITY_EFFECTS = new HashMap<String, EntityEffect>() {{
-        put("death", EntityEffect.DEATH);
-        put("hurt", EntityEffect.HURT);
-        put("sheep eat", EntityEffect.SHEEP_EAT);
-        put("wolf hearts", EntityEffect.WOLF_HEARTS);
-        put("wolf shake", EntityEffect.WOLF_SHAKE);
-        put("wolf smoke", EntityEffect.WOLF_SMOKE);
-    }};
+    private static final Set<String> ENTITY_EFFECTS = ImmutableSet.of(
+            "death", "hurt", "sheep eat", "wolf hearts", "wolf shake", "wolf smoke");
 
     private static final HashMap<String, String> REFLECT_PARTICLES = new HashMap<String, String>() {{
         put("angry villager", "angryVillager");

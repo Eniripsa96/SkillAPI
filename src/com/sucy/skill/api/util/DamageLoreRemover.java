@@ -105,8 +105,7 @@ public class DamageLoreRemover
             Object nbtCompound = GET_TAG.invoke(nmsStack);
 
             // Disable durability if needed
-            if (item.getType().getMaxDurability() > 0
-                && item.getDurability() > 0)
+            if (item.getType().getMaxDurability() > 0)
             {
                 SET_BOOL.invoke(nbtCompound, "Unbreakable", true);
                 SET_INT.invoke(nbtCompound, "HideFlags", 4);

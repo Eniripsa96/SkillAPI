@@ -145,7 +145,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         }
     }
 
-    double applyImmediateBuff(final double damage) {
+    public double applyImmediateBuff(final double damage) {
         final double result = damage * multiplier + bonus;
         multiplier = 1;
         bonus = 0;

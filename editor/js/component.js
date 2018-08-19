@@ -597,7 +597,7 @@ function TriggerBlockBreak() {
     this.super('Block Break', Type.TRIGGER, true);
     this.description = 'Applies skill effects when a player breaks a block matching  the given details';
 
-    this.data.push(new MultiListValue('Material', 'material', [ 'Any' ].concat(getMaterials), [ 'Any' ])
+    this.data.push(new MultiListValue('Material', 'material', getAnyMaterials, [ 'Any' ])
         .setTooltip('The type of block expected to be broken')
     );
     this.data.push(new IntValue('Data', 'data', -1)
@@ -610,7 +610,7 @@ function TriggerBlockPlace() {
     this.super('Block Place', Type.TRIGGER, true);
     this.description = 'Applies skill effects when a player places a block matching  the given details';
 
-    this.data.push(new MultiListValue('Material', 'material', [ 'Any' ].concat(getMaterials), [ 'Any' ])
+    this.data.push(new MultiListValue('Material', 'material', getAnyMaterials, [ 'Any' ])
         .setTooltip('The type of block expected to be placed')
     );
     this.data.push(new IntValue('Data', 'data', -1)

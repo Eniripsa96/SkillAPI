@@ -13,6 +13,10 @@ function getMaterials() {
     return DATA.MATERIALS;
 }
 
+function getAnyMaterials() {
+    return [ 'Any', ...DATA.MATERIALS ];
+}
+
 function getSounds() {
     return DATA.SOUNDS;
 }

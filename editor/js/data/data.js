@@ -42,7 +42,7 @@ function getPotionTypes() {
 }
 
 function getAnyPotion() {
-    return DATA.ANY_POTION;
+    return [ 'Any', ...DATA.POTIONS ];
 }
 
 function getGoodPotions() {

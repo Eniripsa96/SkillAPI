@@ -1036,7 +1036,7 @@ function ConditionBlock()
     this.description = 'Applies child components if the target is currently standing on a block of the given type.';
 
     this.data.push(new ListValue('Type', 'standing', [ 'On Block', 'Not On Block', 'In Block', 'Not In Block' ], 'On Block')
-        .setTooltip('Whether or not the target should be in the biome. If checking for in the biome, they must be in any one of the checked biomes. If checking for the opposite, they must not be in any of the checked biomes.')
+        .setTooltip('Specifies which block to check and whether or not it should match the selected mateiral. "On Block" is directly below the player while "In Block" is the block a player\'s feet are in.')
     );
     this.data.push(new ListValue('Material', 'material', getMaterials, 'Dirt')
         .setTooltip('The type of the block to require the targets to stand on')

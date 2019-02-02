@@ -1,13 +1,13 @@
 let DATA = {};
 
-depend('data/1.8');
-depend('data/1.9');
-depend('data/1.10');
-depend('data/1.11');
-depend('data/1.12');
-depend('data/1.13', function() {
-    DATA = DATA_13;
-});
+const version = (localStorage.getItem('server-version') || '1.13').substr(2);
+
+depend('data/1.8', function() { if (version === '8') DATA = DATA_8 });7
+depend('data/1.9', function() { if (version === '9') DATA = DATA_9 });
+depend('data/1.10', function() { if (version === '10') DATA = DATA_10 });
+depend('data/1.11', function() { if (version === '11') DATA = DATA_11 });
+depend('data/1.12', function() { if (version === '12') DATA = DATA_12 });
+depend('data/1.13', function() { if (version === '13') DATA = DATA_13 });
 
 function getMaterials() {
     return DATA.MATERIALS;

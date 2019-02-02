@@ -106,7 +106,6 @@ depend('data/data', function () {
 
     const previousValue = localStorage.getItem('server-version');
     if (previousValue) {
-        DATA = window['DATA_' + previousValue.substr(2)];
         document.getElementById('version-select').value = previousValue;
     }
 });

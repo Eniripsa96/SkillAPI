@@ -1,6 +1,7 @@
 .idea/
 out/
 *.iml
+lib/
 
 #################
 ## Eclipse

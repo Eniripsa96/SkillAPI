@@ -77,7 +77,7 @@ public class PacketInjector {
         try {
             Channel ch = getChannel(p);
             if (ch.pipeline().get("PacketInjector") == null) {
-                PacketHandlerV1_13 h = new PacketHandlerV1_13(p, dropField);
+                PacketHandler h = new PacketHandler(p, dropField);
                 ch.pipeline().addBefore("packet_handler", "PacketInjector", h);
             }
         } catch (Throwable t) {

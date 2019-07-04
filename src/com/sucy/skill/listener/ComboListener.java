@@ -27,12 +27,11 @@
 package com.sucy.skill.listener;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.KeyPressEvent;
 import com.sucy.skill.api.player.PlayerCombos;
 import com.sucy.skill.data.Click;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -45,7 +44,7 @@ import java.util.UUID;
  * Handles transferring click actions by the player to
  * combos that cast skills.
  */
-public class FallbackClickListener extends SkillAPIListener {
+public class ComboListener extends SkillAPIListener {
     private HashMap<UUID, Long> lastClick = new HashMap<UUID, Long>();
 
     @Override
@@ -65,7 +64,7 @@ public class FallbackClickListener extends SkillAPIListener {
      * @param event event details
      */
     @EventHandler
-    public void onClick(PlayerInteractEvent event) {
+    public void onClick(final KeyPressEvent event) {
         final Long time = lastClick.get(event.getPlayer().getUniqueId());
         if (time != null && time > System.currentTimeMillis()) {
             return;
@@ -74,24 +73,35 @@ public class FallbackClickListener extends SkillAPIListener {
         // Get the history
         PlayerCombos combo = SkillAPI.getPlayerData(event.getPlayer()).getComboData();
 
-        // Left clicks
-        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (event.getPlayer().isSneaking() && SkillAPI.getComboManager().isClickEnabled(Click.LEFT_SHIFT.getId())) {
-                combo.applyClick(Click.LEFT_SHIFT);
-            } else {
-                combo.applyClick(Click.LEFT);
-            }
-            lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis() + 40);
+        switch (event.getKey()) {
+            case Q:
+                combo.applyClick(Click.Q);
+                break;
+            case LEFT:
+                if (event.getPlayer().isSneaking() && SkillAPI.getComboManager().isClickEnabled(Click.LEFT_SHIFT.getId())) {
+                    combo.applyClick(Click.LEFT_SHIFT);
+                } else {
+                    combo.applyClick(Click.LEFT);
+                }
+                break;
+            case RIGHT:
+                if (event.getPlayer().isSneaking() && SkillAPI.getComboManager().isClickEnabled(Click.RIGHT_SHIFT.getId())) {
+                    combo.applyClick(Click.RIGHT_SHIFT);
+                } else {
+                    combo.applyClick(Click.RIGHT);
+                }
+                break;
+            default:
+                return;
         }
 
-        // Right clicks
-        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
-            if (event.getPlayer().isSneaking() && SkillAPI.getComboManager().isClickEnabled(Click.RIGHT_SHIFT.getId())) {
-                combo.applyClick(Click.RIGHT_SHIFT);
-            } else {
-                combo.applyClick(Click.RIGHT);
-            }
-            lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis() + 40);
+        lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis() + 40);
+    }
+
+    @EventHandler
+    public void onDrop(final PlayerDropItemEvent event) {
+        if (SkillAPI.getComboManager().isClickEnabled(Click.Q.getId())) {
+            event.setCancelled(true);
         }
     }
 
@@ -104,16 +114,6 @@ public class FallbackClickListener extends SkillAPIListener {
     public void onShiftClick(PlayerToggleSneakEvent event) {
         if (event.isSneaking()) {
             SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.SHIFT);
-        }
-    }
-
-    private HashSet<UUID> onGround = new HashSet<UUID>();
-
-    @EventHandler
-    public void onDrop(final PlayerDropItemEvent event) {
-        if (SkillAPI.getComboManager().isClickEnabled(Click.Q.getId())) {
-            event.setCancelled(true);
-            SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.Q);
         }
     }
 
@@ -130,4 +130,6 @@ public class FallbackClickListener extends SkillAPIListener {
             onGround.remove(event.getPlayer().getUniqueId());
         }
     }
+
+    private HashSet<UUID> onGround = new HashSet<UUID>();
 }

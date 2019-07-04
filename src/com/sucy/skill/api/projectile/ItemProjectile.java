@@ -137,6 +137,16 @@ public class ItemProjectile extends CustomProjectile
         return item.getVelocity().length() / 2;
     }
 
+    @Override
+    protected Vector getVelocity() {
+        return item.getVelocity();
+    }
+
+    @Override
+    protected void setVelocity(final Vector velocity) {
+        item.setVelocity(velocity);
+    }
+
     /**
      * <p>Updates the projectile's position.</p>
      * <p>This is for the repeating task and if you call it yourself, it

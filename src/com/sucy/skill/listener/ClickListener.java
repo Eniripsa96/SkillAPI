@@ -26,56 +26,18 @@
  */
 package com.sucy.skill.listener;
 
-import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.KeyPressEvent;
-import com.sucy.skill.api.player.PlayerCombos;
-import com.sucy.skill.data.Click;
-import com.sucy.skill.packet.PacketInjector;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
  * Handles transferring click actions by the player to
  * combos that cast skills.
  */
 public class ClickListener extends SkillAPIListener {
-    private HashMap<UUID, Long> lastClick = new HashMap<UUID, Long>();
-
-    private PacketInjector injector;
-
-    public ClickListener(final PacketInjector injector) {
-        this.injector = injector;
-    }
-
-    @Override
-    public void init() {
-        Bukkit.getServer().getOnlinePlayers().forEach(injector::addPlayer);
-    }
-
-    @Override
-    public void cleanup() {
-        lastClick.clear();
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        injector.addPlayer(event.getPlayer());
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        lastClick.remove(event.getPlayer().getUniqueId());
-        onGround.remove(event.getPlayer().getUniqueId());
-        injector.removePlayer(event.getPlayer());
-    }
 
     /**
      * Registers clicks as they happen
@@ -83,65 +45,20 @@ public class ClickListener extends SkillAPIListener {
      * @param event event details
      */
     @EventHandler
-    public void onClick(final KeyPressEvent event) {
-        final Long time = lastClick.get(event.getPlayer().getUniqueId());
-        if (time != null && time > System.currentTimeMillis()) {
-            return;
+    public void onClick(PlayerInteractEvent event) {
+        // Left clicks
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            Bukkit.getServer().getPluginManager().callEvent(new KeyPressEvent(event.getPlayer(), KeyPressEvent.Key.LEFT));
         }
 
-        // Get the history
-        PlayerCombos combo = SkillAPI.getPlayerData(event.getPlayer()).getComboData();
-
-        switch (event.getKey()) {
-            case Q:
-                combo.applyClick(Click.Q);
-                break;
-            case LEFT:
-                if (event.getPlayer().isSneaking() && SkillAPI.getComboManager().isClickEnabled(Click.LEFT_SHIFT.getId())) {
-                    combo.applyClick(Click.LEFT_SHIFT);
-                } else {
-                    combo.applyClick(Click.LEFT);
-                }
-                break;
-            case RIGHT:
-                if (event.getPlayer().isSneaking() && SkillAPI.getComboManager().isClickEnabled(Click.RIGHT_SHIFT.getId())) {
-                    combo.applyClick(Click.RIGHT_SHIFT);
-                } else {
-                    combo.applyClick(Click.RIGHT);
-                }
-                break;
-            default:
-                return;
-        }
-
-        lastClick.put(event.getPlayer().getUniqueId(), System.currentTimeMillis() + 40);
-    }
-
-    /**
-     * Registers shift clicks as they happen
-     *
-     * @param event event details
-     */
-    @EventHandler
-    public void onShiftClick(PlayerToggleSneakEvent event) {
-        if (event.isSneaking()) {
-            SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.SHIFT);
+        // Right clicks
+        else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
+            Bukkit.getServer().getPluginManager().callEvent(new KeyPressEvent(event.getPlayer(), KeyPressEvent.Key.RIGHT));
         }
     }
 
     @EventHandler
-    public void onJump(final PlayerMoveEvent event) {
-        if (event.getTo().getY() > event.getFrom().getY()
-                && event.getPlayer().getNoDamageTicks() == 0
-                && onGround.contains(event.getPlayer().getUniqueId())) {
-            SkillAPI.getPlayerData(event.getPlayer()).getComboData().applyClick(Click.SPACE);
-        }
-        if (event.getPlayer().isOnGround()) {
-            onGround.add(event.getPlayer().getUniqueId());
-        } else {
-            onGround.remove(event.getPlayer().getUniqueId());
-        }
+    public void onDrop(final PlayerDropItemEvent event) {
+        Bukkit.getServer().getPluginManager().callEvent(new KeyPressEvent(event.getPlayer(), KeyPressEvent.Key.Q));
     }
-
-    private HashSet<UUID> onGround = new HashSet<UUID>();
 }

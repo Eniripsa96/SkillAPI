@@ -17,11 +17,11 @@ import java.lang.reflect.Field;
 /**
  * Handles the interception of packets, applying effects where necessary
  */
-class PacketHandlerV1_13 extends ChannelDuplexHandler {
+class PacketHandler extends ChannelDuplexHandler {
     private Player player;
     private Field dropField;
 
-    PacketHandlerV1_13(final Player player, final Field dropField) {
+    PacketHandler(final Player player, final Field dropField) {
         this.player = player;
         this.dropField = dropField;
     }

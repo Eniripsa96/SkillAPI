@@ -44,7 +44,11 @@ public class DurabilityMechanic extends MechanicComponent {
         }
 
         if (item.getDurability() <= amount) {
-            player.getInventory().setItemInOffHand(null);
+            if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+                player.getInventory().setItemInOffHand(null);
+            } else {
+                player.getInventory().setItemInMainHand(null);
+            }
             player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
         }
         item.setDurability((short) (item.getDurability() - amount));

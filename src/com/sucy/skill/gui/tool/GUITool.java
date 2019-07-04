@@ -143,12 +143,22 @@ public class GUITool implements ToolMenu
 
     public static ItemStack parseItem(DataSection data)
     {
-        ItemStack item = new ItemStack(
-            Material.valueOf(data.getString("type").toUpperCase().replace(" ", "_")),
-            1,
-            data.getShort("durability"),
-            data.getByte("data")
-        );
+        ItemStack item;
+        try {
+            item = new ItemStack(
+                    Material.valueOf(data.getString("type").toUpperCase().replace(" ", "_")),
+                    1,
+                    data.getShort("durability"),
+                    data.getByte("data")
+            );
+        } catch (Exception ex) {
+            item = new ItemStack(
+                    Material.matchMaterial(data.getString("type")),
+                    1,
+                    data.getShort("durability")
+            );
+        }
+
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(TextFormatter.colorString(data.getString("name")));
         meta.setLore(TextFormatter.colorStringList(data.getList("lore")));

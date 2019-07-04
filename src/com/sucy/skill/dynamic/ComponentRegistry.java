@@ -153,9 +153,9 @@ import java.util.Map;
  */
 public class ComponentRegistry {
 
-    private static final Map<ComponentType, Map<String, Class<?>>> COMPONENTS = new EnumMap<>(ComponentType.class);
+    static final Map<ComponentType, Map<String, Class<?>>> COMPONENTS = new EnumMap<>(ComponentType.class);
 
-    private static final Map<String, Trigger<?>>        TRIGGERS  = new HashMap<>();
+    static final Map<String, Trigger<?>> TRIGGERS = new HashMap<>();
     private static final Map<Trigger<?>, EventExecutor> EXECUTORS = new HashMap<>();
 
     public static Trigger<?> getTrigger(final String key) {
@@ -187,7 +187,10 @@ public class ComponentRegistry {
         }
 
         TRIGGERS.put(trigger.getKey(), trigger);
-        EXECUTORS.put(trigger, (listener, event) -> ((TriggerHandler) listener).apply((T) event, trigger));
+        EXECUTORS.put(trigger, (listener, event) -> {
+            if (!trigger.getEvent().isInstance(event)) return;
+            ((TriggerHandler) listener).apply((T) event, trigger);
+        });
     }
 
     public static void register(final CustomEffectComponent component) {
@@ -215,7 +218,9 @@ public class ComponentRegistry {
     }
 
     private static void append(final Object obj, final StringBuilder builder) {
-        if (!(obj instanceof CustomComponent)) { return; }
+        if (!(obj instanceof CustomComponent)) {
+            return;
+        }
 
         final CustomComponent component = (CustomComponent) obj;
         builder.append("{\"type\":\"").append(component.getType().name())
@@ -227,7 +232,9 @@ public class ComponentRegistry {
 
         boolean first = true;
         for (EditorOption option : component.getOptions()) {
-            if (!first) { builder.append(','); }
+            if (!first) {
+                builder.append(',');
+            }
             first = false;
 
             builder.append("{\"type\":\"").append(option.type)

@@ -60,10 +60,13 @@ public class ValueHealthMechanic extends MechanicComponent {
         switch (type) {
             case "max":
                 data.put(key, target.getMaxHealth());
+                break;
             case "percent":
                 data.put(key, target.getHealth() / target.getMaxHealth());
+                break;
             case "missing":
                 data.put(key, target.getMaxHealth() - target.getHealth());
+                break;
             default: // current
                 data.put(key, target.getHealth());
         }

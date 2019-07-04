@@ -55,15 +55,16 @@ import com.sucy.skill.listener.CastCombatListener;
 import com.sucy.skill.listener.CastItemListener;
 import com.sucy.skill.listener.CastListener;
 import com.sucy.skill.listener.CastOffhandListener;
-import com.sucy.skill.listener.ClickListener;
+import com.sucy.skill.listener.ComboListener;
 import com.sucy.skill.listener.DeathListener;
 import com.sucy.skill.listener.ExperienceListener;
-import com.sucy.skill.listener.FallbackClickListener;
+import com.sucy.skill.listener.ClickListener;
 import com.sucy.skill.listener.ItemListener;
 import com.sucy.skill.listener.KillListener;
 import com.sucy.skill.listener.LingeringPotionListener;
 import com.sucy.skill.listener.MainListener;
 import com.sucy.skill.listener.MechanicListener;
+import com.sucy.skill.listener.PacketListener;
 import com.sucy.skill.listener.SkillAPIListener;
 import com.sucy.skill.listener.StatusListener;
 import com.sucy.skill.listener.ToolListener;
@@ -174,10 +175,10 @@ public class SkillAPI extends JavaPlugin {
         listen(new BarListener(), settings.isSkillBarEnabled());
         if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
             final PacketInjector injector = new PacketInjector(this);
-            listen(new ClickListener(injector), settings.isCombosEnabled());
-        } else {
-            listen(new FallbackClickListener(), settings.isCombosEnabled());
+            listen(new PacketListener(injector), true);
+            listen(new ClickListener(), settings.isCombosEnabled());
         }
+        listen(new ComboListener(), settings.isCombosEnabled());
         listen(new AttributeListener(), settings.isAttributesEnabled());
         listen(new CastListener(), settings.isUsingBars());
         listen(

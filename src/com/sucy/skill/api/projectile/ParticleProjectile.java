@@ -164,6 +164,7 @@ public class ParticleProjectile extends CustomProjectile
     /**
      * @return velocity of the projectile
      */
+    @Override
     public Vector getVelocity()
     {
         return vel;
@@ -184,6 +185,7 @@ public class ParticleProjectile extends CustomProjectile
      *
      * @param vel new velocity
      */
+    @Override
     public void setVelocity(Vector vel)
     {
         this.vel = vel;

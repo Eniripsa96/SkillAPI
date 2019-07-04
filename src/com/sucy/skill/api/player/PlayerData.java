@@ -34,22 +34,8 @@ import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
-import com.sucy.skill.api.enums.ExpSource;
-import com.sucy.skill.api.enums.ManaCost;
-import com.sucy.skill.api.enums.ManaSource;
-import com.sucy.skill.api.enums.PointSource;
-import com.sucy.skill.api.enums.SkillStatus;
-import com.sucy.skill.api.event.PlayerCastSkillEvent;
-import com.sucy.skill.api.event.PlayerClassChangeEvent;
-import com.sucy.skill.api.event.PlayerManaGainEvent;
-import com.sucy.skill.api.event.PlayerManaLossEvent;
-import com.sucy.skill.api.event.PlayerPreClassChangeEvent;
-import com.sucy.skill.api.event.PlayerRefundAttributeEvent;
-import com.sucy.skill.api.event.PlayerSkillCastFailedEvent;
-import com.sucy.skill.api.event.PlayerSkillDowngradeEvent;
-import com.sucy.skill.api.event.PlayerSkillUnlockEvent;
-import com.sucy.skill.api.event.PlayerSkillUpgradeEvent;
-import com.sucy.skill.api.event.PlayerUpAttributeEvent;
+import com.sucy.skill.api.enums.*;
+import com.sucy.skill.api.event.*;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
@@ -79,21 +65,9 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.CANCELED;
-import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.CASTER_DEAD;
-import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.EFFECT_FAILED;
-import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NOT_UNLOCKED;
-import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NO_MANA;
-import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.NO_TARGET;
-import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.ON_COOLDOWN;
-import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.SPECTATOR;
+import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.*;
 
 /**
  * Represents one account for a player which can contain one class from each group
@@ -684,8 +658,9 @@ public class PlayerData {
         if (data == null || getPlayer() == null || !skill.isAllowed(getPlayer())) { return; }
 
         int lastLevel = data.getLevel();
-        while (data.getData().canAutoLevel() && !data.isMaxed() && data.getLevelReq() <= data.getPlayerClass()
-                .getLevel()) {
+        while (data.getData().canAutoLevel(lastLevel)
+                && !data.isMaxed()
+                && data.getLevelReq() <= data.getPlayerClass().getLevel()) {
             upgradeSkill(skill);
             if (lastLevel == data.getLevel()) {
                 break;

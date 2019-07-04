@@ -201,10 +201,23 @@ public abstract class Skill implements IconHolder
      * level up to the next stage.
      *
      * @return true if can level up automatically, false otherwise
+     * @deprecated use {@link Skill#canAutoLevel(int)} instead
      */
+    @Deprecated
     public boolean canAutoLevel()
     {
         return getCost(0) == 0 && getCost(1) == 0;
+    }
+
+    /**
+     * Checks whether or not the skill can automatically
+     * level up to the next stage.
+     *
+     * @param level - the current level of the skill
+     * @return true if can level up automatically to the next level, false otherwise
+     */
+    public boolean canAutoLevel(final int level) {
+        return getCost(level) == 0;
     }
 
     /**

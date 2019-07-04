@@ -948,7 +948,7 @@ public class Settings {
             GUI_NAME   = GUI_BASE + "show-class-name",
             GUI_LEVEL  = GUI_BASE + "show-class-level",
             GUI_BINDS  = GUI_BASE + "show-binds",
-            GUI_BIND_TEXT = GUI_BASE + "show-binds-text",
+            GUI_BIND_TEXT = GUI_BASE + "show-bind-text",
             GUI_LVLTXT = GUI_BASE + "class-level-text",
             GUI_TITLE  = GUI_BASE + "title-enabled",
             GUI_DUR    = GUI_BASE + "title-duration",

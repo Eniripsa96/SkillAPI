@@ -110,7 +110,10 @@ public class RepeatMechanic extends MechanicComponent {
         @Override
         public void cancel() {
             super.cancel();
-            tasks.get(caster.getEntityId()).remove(this);
+            final List<RepeatTask> casterTasks = tasks.get(caster.getEntityId());
+            if (casterTasks != null) {
+                casterTasks.remove(this);
+            }
         }
 
         @Override

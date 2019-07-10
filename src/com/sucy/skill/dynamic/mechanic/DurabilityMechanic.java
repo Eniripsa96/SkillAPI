@@ -43,7 +43,8 @@ public class DurabilityMechanic extends MechanicComponent {
             return false;
         }
 
-        if (item.getDurability() <= amount) {
+        int durability = item.getType().getMaxDurability() - item.getDurability();
+        if (durability <= -amount) {
             if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
                 player.getInventory().setItemInOffHand(null);
             } else {

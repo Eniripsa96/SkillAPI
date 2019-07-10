@@ -11,6 +11,7 @@ import com.sucy.skill.cast.SphereIndicator;
 import com.sucy.skill.dynamic.ComponentType;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
+import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -148,6 +149,10 @@ public abstract class TargetComponent extends EffectComponent {
     }
 
     boolean isValidTarget(final LivingEntity caster, final LivingEntity from, final LivingEntity target) {
+        if (target instanceof TempEntity) {
+            return true;
+        }
+
         return target != caster && SkillAPI.getSettings().isValidTarget(target)
                 && (throughWall || !TargetHelper.isObstructed(from.getEyeLocation(), target.getEyeLocation()))
                 && (everyone || allies == SkillAPI.getSettings().isAlly(caster, target));

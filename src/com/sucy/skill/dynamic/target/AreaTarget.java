@@ -71,7 +71,7 @@ public class AreaTarget extends TargetComponent {
 
         final List<LivingEntity> list = new ArrayList<>();
         while (!targets.isEmpty()) {
-            list.add(targets.remove(this.random.nextInt(list.size())));
+            list.add(targets.remove(this.random.nextInt(targets.size())));
         }
         return list;
     }

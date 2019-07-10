@@ -1715,7 +1715,12 @@ public class PlayerData {
         passive = false;
         for (PlayerSkill skill : skills.values()) {
             if (skill.isUnlocked() && (skill.getData() instanceof PassiveSkill)) {
-                ((PassiveSkill) skill.getData()).stopEffects(player, skill.getLevel());
+                try {
+                    ((PassiveSkill) skill.getData()).stopEffects(player, skill.getLevel());
+                } catch (Exception ex) {
+                    Logger.bug("Failed to stop passive skill " + skill.getData().getName());
+                    ex.printStackTrace();
+                }
             }
         }
     }

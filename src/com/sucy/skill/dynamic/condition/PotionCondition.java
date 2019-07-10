@@ -1,21 +1,21 @@
 /**
  * SkillAPI
  * com.sucy.skill.dynamic.condition.PotionCondition
- *
+ * <p>
  * The MIT License (MIT)
- *
+ * <p>
  * Copyright (c) 2014 Steven Sucy
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software") to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.condition;
 
+import com.rit.sucy.version.VersionManager;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -36,8 +37,8 @@ import java.util.Collection;
  * A condition for dynamic skills that requires the target to have a specified potion effect
  */
 public class PotionCondition extends ConditionComponent {
-    private static final String TYPE     = "type";
-    private static final String POTION   = "potion";
+    private static final String TYPE = "type";
+    private static final String POTION = "potion";
     private static final String MIN_RANK = "min-rank";
     private static final String MAX_RANK = "max-rank";
 
@@ -64,8 +65,20 @@ public class PotionCondition extends ConditionComponent {
     }
 
     private boolean has(LivingEntity target, PotionEffectType type, int min, int max) {
-        if (!target.hasPotionEffect(type)) { return false; }
-        int rank = target.getPotionEffect(type).getAmplifier();
+        int rank;
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
+            rank = target.getPotionEffect(type).getAmplifier();
+            if (!target.hasPotionEffect(type)) {
+                return false;
+            }
+        } else {
+            rank = target.getActivePotionEffects().stream()
+                    .filter(effect -> effect.getType() == type)
+                    .findFirst()
+                    .map(PotionEffect::getAmplifier)
+                    .orElse(-1);
+            if (rank == -1) return false;
+        }
         return rank >= min && rank <= max;
     }
 

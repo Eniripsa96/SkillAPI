@@ -44,27 +44,21 @@ public class PotionCondition extends ConditionComponent {
 
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
-        final boolean active = settings.getString(TYPE, "active").toLowerCase().equals("not active");
+        final boolean active = !settings.getString(TYPE, "active").toLowerCase().equals("not active");
         final Collection<PotionEffect> effects = target.getActivePotionEffects();
-    	System.out.println("active: " + active);
         if (effects.isEmpty()) {
-        	System.out.println("Empty");
         	return !active;
         }
 
         final String potion = settings.getString(POTION, "").toUpperCase().replace(' ', '_');
         final int minRank = (int) parseValues(caster, MIN_RANK, level, 0);
         final int maxRank = (int) parseValues(caster, MAX_RANK, level, 999);
-    	System.out.println("1");
         try {
-        	System.out.println("2");
             final PotionEffectType type = PotionEffectType.getByName(potion);
             return has(target, type, minRank, maxRank) == active;
         } catch (Exception ex) {
-        	System.out.println("Debug");
             for (final PotionEffect check : effects) {
                 if (check.getAmplifier() >= minRank && check.getAmplifier() <= maxRank && check.getType().equals(PotionEffectType.getByName(potion))) {
-                	System.out.println(check);
                     return true;
                 }
             }
@@ -75,14 +69,11 @@ public class PotionCondition extends ConditionComponent {
     private boolean has(LivingEntity target, PotionEffectType type, int min, int max) {
         int rank;
         if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
-        	System.out.println("3");
             rank = target.getPotionEffect(type).getAmplifier();
             if (!target.hasPotionEffect(type)) {
-            	System.out.println("4");
                 return false;
             }
         } else {
-        	System.out.println("5");
             rank = target.getActivePotionEffects().stream()
                     .filter(effect -> effect.getType() == type)
                     .findFirst()
@@ -90,7 +81,6 @@ public class PotionCondition extends ConditionComponent {
                     .orElse(-1);
             if (rank == -1) return false;
         }
-    	System.out.println("6 rank " + rank + " min " + min + " max " + max + " return " + (rank >= min && rank <= max));
         return rank >= min && rank <= max;
     }
 

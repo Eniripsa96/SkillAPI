@@ -323,6 +323,7 @@ public final class PlayerClass
         // Add experience if not cancelled
         if (!event.isCancelled() && event.getExp() > 0)
         {
+            amount = event.getExp();
             if (SkillAPI.getSettings().isShowExpMessages() && player.getPlayer() != null)
             {
                 TitleManager.show(

@@ -35,7 +35,6 @@ import com.rit.sucy.sql.direct.SQLTable;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.data.Settings;
 import com.sucy.skill.data.io.SQLIO;
-import com.sun.xml.internal.fastinfoset.Encoder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -116,7 +115,7 @@ public class CmdBackup implements IFunction
                     String name = query.getString("Name");
 
                     FileOutputStream out = new FileOutputStream(new File(file, name + ".yml"));
-                    BufferedWriter write = new BufferedWriter(new OutputStreamWriter(out, Encoder.UTF_8));
+                    BufferedWriter write = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
 
                     write.write(yaml);
 

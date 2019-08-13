@@ -388,12 +388,12 @@ public class BarListener extends SkillAPIListener
         if (event.getNewGameMode() == GameMode.CREATIVE && data.hasClass())
             data.getSkillBar().clear(event.getPlayer());
 
-        // Setup on leaving creative mode
-        else if (event.getPlayer().getGameMode() == GameMode.CREATIVE && data.hasClass())
-        {
-            final Player player = event.getPlayer();
-            SkillAPI.schedule(() -> SkillAPI.getPlayerData(player).getSkillBar().setup(player), 0);
-        }
+        // Setup on leaving creative mode (Removed by Neoblade298)
+//        else if (event.getPlayer().getGameMode() == GameMode.CREATIVE && data.hasClass())
+//        {
+//            final Player player = event.getPlayer();
+//            SkillAPI.schedule(() -> SkillAPI.getPlayerData(player).getSkillBar().setup(player), 0);
+//        }
     }
 
     private void handleClear(final Player player) {

@@ -50,7 +50,7 @@ public class SQLIO extends IOManager
 {
     public static final String ID     = "id";
     public static final String DATA   = "data";
-    public static final char   STRING = '√';
+    public static final char   STRING = 'a';
 
     /**
      * Initializes the SQL IO Manager

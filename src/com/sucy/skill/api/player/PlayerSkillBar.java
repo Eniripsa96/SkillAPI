@@ -159,9 +159,11 @@ public class PlayerSkillBar
             return -1;
 
         ItemStack[] items = p.getInventory().getContents();
-        for (int i = 0; i < items.length; i++)
-            if ((items[i] == null || items[i].getType() == Material.AIR) && !slots.containsKey(i + 1) && !reserved.contains(i))
+        for (int i = 0; i < 36; i++)
+            if ((items[i] == null || items[i].getType() == Material.AIR) && !slots.containsKey(i + 1) && !reserved.contains(i)) {
+            	System.out.println("i = " + i + ", item = " + items[i]);
                 count++;
+            }
 
         return count;
     }

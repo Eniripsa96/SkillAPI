@@ -190,8 +190,8 @@ public class SkillAPI extends JavaPlugin {
         listen(new LingeringPotionListener(), VersionManager.isVersionAtLeast(VersionManager.V1_9_0));
         listen(new ExperienceListener(), settings.yieldsEnabled());
 
-        // Set up tasks
-        if (settings.isManaEnabled()) { MainThread.register(new ManaTask()); }
+        // Set up tasks (Mana task disabled because it must be async)
+        // if (settings.isManaEnabled()) { MainThread.register(new ManaTask()); }
         if (settings.isSkillBarCooldowns()) { MainThread.register(new CooldownTask()); }
         if (settings.isAutoSave()) { MainThread.register(new SaveTask(this)); }
         MainThread.register(new GUITask(this));
@@ -207,6 +207,18 @@ public class SkillAPI extends JavaPlugin {
         for (SkillAPIListener listener : listeners) {
             listener.init();
         }
+        
+
+	    // Non-task mana gain
+		BukkitRunnable manaGain = new BukkitRunnable() {
+			public void run() {
+		        for (Player player : Bukkit.getOnlinePlayers()) {
+		            PlayerData data = SkillAPI.getPlayerData(player);
+		            data.regenMana();
+		        }
+			}
+		};
+		manaGain.runTaskTimer(this, 0L, 20L);
 
         ResourceManager.copyQuestsModule();
         ResourceManager.copyPlaceholdersModule();

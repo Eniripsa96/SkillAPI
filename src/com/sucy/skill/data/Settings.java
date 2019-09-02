@@ -548,14 +548,15 @@ public class Settings {
         minutes = config.getInt(SAVE_MINS);
         useSql = config.getBoolean(SAVE_SQL);
 
+        DataSection details = config.getSection(SAVE_SQLD);
+        sqlDelay = details.getInt("delay");
+
         if (useSql) {
-            DataSection details = config.getSection(SAVE_SQLD);
             sqlHost = details.getString("host");
             sqlPort = details.getString("port");
             sqlDatabase = details.getString("database");
             sqlUser = details.getString("username");
             sqlPass = details.getString("password");
-            sqlDelay = details.getInt("delay");
         }
     }
 

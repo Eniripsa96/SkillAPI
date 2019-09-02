@@ -46,34 +46,8 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.BungeeHook;
 import com.sucy.skill.hook.PluginChecker;
-import com.sucy.skill.listener.AddonListener;
-import com.sucy.skill.listener.AttributeListener;
-import com.sucy.skill.listener.BarListener;
-import com.sucy.skill.listener.BindListener;
-import com.sucy.skill.listener.BuffListener;
-import com.sucy.skill.listener.CastCombatListener;
-import com.sucy.skill.listener.CastItemListener;
-import com.sucy.skill.listener.CastListener;
-import com.sucy.skill.listener.CastOffhandListener;
-import com.sucy.skill.listener.ComboListener;
-import com.sucy.skill.listener.DeathListener;
-import com.sucy.skill.listener.ExperienceListener;
-import com.sucy.skill.listener.ClickListener;
-import com.sucy.skill.listener.ItemListener;
-import com.sucy.skill.listener.KillListener;
-import com.sucy.skill.listener.LingeringPotionListener;
-import com.sucy.skill.listener.MainListener;
-import com.sucy.skill.listener.MechanicListener;
-import com.sucy.skill.listener.PacketListener;
-import com.sucy.skill.listener.SkillAPIListener;
-import com.sucy.skill.listener.StatusListener;
-import com.sucy.skill.listener.ToolListener;
-import com.sucy.skill.manager.AttributeManager;
-import com.sucy.skill.manager.ClassBoardManager;
-import com.sucy.skill.manager.CmdManager;
-import com.sucy.skill.manager.ComboManager;
-import com.sucy.skill.manager.RegistrationManager;
-import com.sucy.skill.manager.ResourceManager;
+import com.sucy.skill.listener.*;
+import com.sucy.skill.manager.*;
 import com.sucy.skill.packet.PacketInjector;
 import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.GUITask;
@@ -119,6 +93,7 @@ public class SkillAPI extends JavaPlugin {
     private AttributeManager    attributeManager;
 
     private MainThread mainThread;
+    private BukkitTask manaTask;
 
     private boolean loaded = false;
     private boolean disabling = false;
@@ -191,7 +166,18 @@ public class SkillAPI extends JavaPlugin {
         listen(new ExperienceListener(), settings.yieldsEnabled());
 
         // Set up tasks
-        if (settings.isManaEnabled()) { MainThread.register(new ManaTask()); }
+        if (settings.isManaEnabled()) {
+            if (VersionManager.isVersionAtLeast(11400)) {
+                manaTask = Bukkit.getScheduler().runTaskTimer(
+                        this,
+                        new ManaTask(),
+                        SkillAPI.getSettings().getGainFreq(),
+                        SkillAPI.getSettings().getGainFreq()
+                );
+            } else {
+                MainThread.register(new ManaTask());
+            }
+        }
         if (settings.isSkillBarCooldowns()) { MainThread.register(new CooldownTask()); }
         if (settings.isAutoSave()) { MainThread.register(new SaveTask(this)); }
         MainThread.register(new GUITask(this));
@@ -237,6 +223,11 @@ public class SkillAPI extends JavaPlugin {
 
         mainThread.disable();
         mainThread = null;
+
+        if (manaTask != null) {
+            manaTask.cancel();
+            manaTask = null;
+        }
 
         for (SkillAPIListener listener : listeners) { listener.cleanup(); }
         listeners.clear();
@@ -476,8 +467,13 @@ public class SkillAPI extends JavaPlugin {
         if (singleton().players.containsKey(id)) { return singleton.players.get(id); }
 
         // Load the data
+        return doLoad(player);
+    }
+
+    private static PlayerAccounts doLoad(OfflinePlayer player) {
+        // Load the data
         PlayerAccounts data = singleton.io.loadData(player);
-        singleton.players.put(id, data);
+        singleton.players.put(player.getUniqueId().toString(), data);
         return data;
     }
 
@@ -496,8 +492,7 @@ public class SkillAPI extends JavaPlugin {
      * has made since joining.
      */
     public static void reloadPlayerData(final Player player) {
-        singleton().players.remove(player.getUniqueId().toString());
-        loadPlayerData(player);
+        doLoad(player);
     }
 
     /**
@@ -530,13 +525,19 @@ public class SkillAPI extends JavaPlugin {
      * @param player player to unload data for
      */
     public static void unloadPlayerData(final OfflinePlayer player) {
+        unloadPlayerData(player, false);
+    }
+
+    public static void unloadPlayerData(final OfflinePlayer player, final boolean skipSaving) {
         if (singleton == null || player == null || singleton.disabling || !singleton.players.containsKey(new VersionPlayer(player).getIdString())) {
             return;
         }
 
         singleton.getServer().getScheduler().runTaskAsynchronously(singleton, () -> {
             PlayerAccounts accounts = getPlayerAccountData(player);
-            singleton.io.saveData(accounts);
+            if (!skipSaving) {
+                singleton.io.saveData(accounts);
+            }
             singleton.players.remove(new VersionPlayer(player).getIdString());
         });
     }

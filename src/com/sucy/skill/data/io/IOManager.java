@@ -31,6 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.*;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.listener.MainListener;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.ComboManager;
 import org.bukkit.Material;
@@ -117,7 +118,9 @@ public abstract class IOManager
     {
         for (PlayerAccounts data : SkillAPI.getPlayerAccountData().values())
         {
-            saveData(data);
+            if (!MainListener.loadingPlayers.containsKey(data.getOfflinePlayer().getUniqueId())) {
+                saveData(data);
+            }
         }
     }
 

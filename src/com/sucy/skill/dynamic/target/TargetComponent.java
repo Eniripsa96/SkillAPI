@@ -134,16 +134,22 @@ public abstract class TargetComponent extends EffectComponent {
             final List<LivingEntity> found = conversion.apply(target);
             for (LivingEntity entity : found) {
                 if (isValidTarget(caster, target, entity)) {
-                    list.add(entity);
+            		list.add(entity);
                     if (list.size() - count >= max) {
                         break;
                     }
                 }
+            	if (caster.getName().equals(entity.getName()) && self) {
+            		list.add(entity);
+                    if (list.size() - count >= max) {
+                        break;
+                    }
+            	}
             }
         });
-        if (self) {
-            list.add(caster);
-        }
+//        if (self) {
+//            list.add(caster);
+//        }
 
         return list;
     }

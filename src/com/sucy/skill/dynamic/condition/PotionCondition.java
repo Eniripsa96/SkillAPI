@@ -59,11 +59,11 @@ public class PotionCondition extends ConditionComponent {
         } catch (Exception ex) {
             for (final PotionEffect check : effects) {
                 if (check.getAmplifier() >= minRank && check.getAmplifier() <= maxRank && check.getType().equals(PotionEffectType.getByName(potion))) {
-                    return true;
+                    return active;
                 }
             }
+            return !active;
         }
-        return false;
     }
 
     private boolean has(LivingEntity target, PotionEffectType type, int min, int max) {

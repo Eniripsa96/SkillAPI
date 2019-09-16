@@ -92,7 +92,7 @@ public class Nearby
         for (int i = minX; i <= maxX; i++)
             for (int j = minZ; j <= maxZ; j++)
                 for (Entity entity : loc.getWorld().getChunkAt(i, j).getEntities())
-                    if (entity instanceof LivingEntity
+                    if (entity != source && entity instanceof LivingEntity
                             && entity.getWorld() == loc.getWorld()
                             && entity.getLocation().distanceSquared(loc) < radius)
                         result.add((LivingEntity) entity);

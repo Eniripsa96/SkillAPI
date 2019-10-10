@@ -508,6 +508,11 @@ public class SkillAPI extends JavaPlugin {
     public static void saveData() {
         singleton().io.saveAll();
     }
+    
+    public static void saveSingle(Player p) {
+    	PlayerAccounts data = getPlayerAccountData(p);
+    	singleton().io.saveData(data);
+    }
 
     /**
      * Checks whether or not SkillAPI currently has loaded data for the

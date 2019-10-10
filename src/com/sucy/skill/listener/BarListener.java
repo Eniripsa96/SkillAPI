@@ -57,6 +57,9 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -68,6 +71,7 @@ import java.util.UUID;
 public class BarListener extends SkillAPIListener
 {
     private final HashSet<UUID> ignored = new HashSet<UUID>();
+    private final Plugin sapi = Bukkit.getPluginManager().getPlugin("SkillAPI");
 
     @Override
     public void init()
@@ -107,12 +111,17 @@ public class BarListener extends SkillAPIListener
      */
     public void onJoin(final Player player)
     {
-        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
-            final PlayerData data = SkillAPI.getPlayerData(player);
-            if (data.hasClass()) {
-                data.getSkillBar().setup(player);
-            }
-        }
+		BukkitRunnable enableBar = new BukkitRunnable() {
+			public void run() {
+		        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
+		            final PlayerData data = SkillAPI.getPlayerData(player);
+		            if (data.hasClass()) {
+		                data.getSkillBar().setup(player);
+		            }
+		        }
+			}
+		};
+		enableBar.runTaskLater(sapi, 40L);
     }
 
     /**

@@ -121,7 +121,7 @@ public class BarListener extends SkillAPIListener
 		        }
 			}
 		};
-		enableBar.runTaskLater(sapi, 40L);
+		enableBar.runTaskLater(sapi, 100L);
     }
 
     /**

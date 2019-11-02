@@ -102,6 +102,8 @@ public class MainListener extends SkillAPIListener
 
         if (SkillAPI.getSettings().isUseSql() && SkillAPI.getSettings().getSqlDelay() > 0)
             SkillAPI.initFakeData(player);
+        else if (SkillAPI.getSettings().isUseSql() && SkillAPI.getSettings().getSqlDelay() == 0)
+            SkillAPI.loadPlayerDataSQL(player);
         else
             SkillAPI.loadPlayerData(player);
     }

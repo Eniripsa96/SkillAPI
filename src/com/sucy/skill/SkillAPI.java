@@ -455,6 +455,13 @@ public class SkillAPI extends JavaPlugin {
         if (player == null) { return null; }
         return getPlayerAccountData(player).getActiveData();
     }
+    
+    public static PlayerAccounts loadPlayerDataSQL(OfflinePlayer player) {
+        if (player == null) { return null; }
+        
+        // Load the data
+        return doLoad(player);
+    }
 
     /**
      * Loads the data for a player when they join the server. This is handled

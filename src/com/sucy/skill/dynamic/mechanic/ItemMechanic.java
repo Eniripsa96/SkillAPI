@@ -77,9 +77,10 @@ public class ItemMechanic extends MechanicComponent
         }
         int amount = settings.getInt(AMOUNT, 1);
         int durability = settings.getInt(DATA, 0);
-        int data = settings.getInt(BYTE, 0);
-        ItemStack item = new ItemStack(material, amount, (short) durability, (byte) data);
+        //int data = settings.getInt(BYTE, 0);
+        ItemStack item = new ItemStack(material, amount);
 
+        
         boolean custom = settings.getString(CUSTOM, "false").toLowerCase().equals("true");
         if (custom)
         {

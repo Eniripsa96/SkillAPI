@@ -1,0 +1,65 @@
+name: SkillAPI
+main: com.sucy.skill.SkillAPI
+version: 2.0
+author: [Eniripsa96,iomatix]
+depend: [MCCore]
+softdepend: [Vault]
+loadbefore: [Quests]
+api-version: 1.14
+
+permissions:
+  skillapi.basic:
+    description: access to skill trees and using skills
+    default: true
+  skillapi.reset:
+    description: access to resetting your class
+    default: true
+  skillapi.exp:
+    description: access to gaining exp
+    default: true
+  skillapi.level:
+    description: access to using the level and exp commands
+    default: op
+  skillapi.mana:
+    description: access to using the mana command
+    default: op
+  skillapi.points:
+    description: access to using the points command
+    default: op
+  skillapi.reload:
+    description: access to using the reload command
+    default: op
+  skillapi.class:
+    description: access to all classes
+    default: op
+  skillapi.skill:
+    description: access to all skills
+    default: op
+  skillapi.lore:
+    description: access to all lore commands
+    default: op
+  skillapi.force:
+    description: access to force commands
+    default: false
+  skillapi.attrib:
+    description: access to giving attribute points
+    default: op
+  skillapi.gui:
+    description: access to GUI editor menu
+    default: op
+
+  skillapi.*:
+    description: access to all commands and features
+    default: op
+    children:
+      skillapi.basic: true
+      skillapi.reset: true
+      skillapi.exp: true
+      skillapi.level: true
+      skillapi.mana: true
+      skillapi.points: true
+      skillapi.reload: true
+      skillapi.class: true
+      skillapi.skill: true
+      skillapi.lore: true
+      skillapi.gui: true

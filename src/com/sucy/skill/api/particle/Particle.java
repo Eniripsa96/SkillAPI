@@ -256,7 +256,7 @@ public class Particle {
                     obj = new org.bukkit.Particle.DustOptions(color, amount);
                     break;
                 case ITEM_CRACK:
-                    obj = new ItemStack(material, 1, (short) 0, (byte) data);
+                    obj = new ItemStack(material, 1);
                     break;
                 case BLOCK_CRACK:
                 case BLOCK_DUST:

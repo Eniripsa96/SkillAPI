@@ -246,7 +246,7 @@ public class SkillAPI extends JavaPlugin {
         }
 
         // Only save on disable if not an instance
-        if (settings.isInstance()) {
+        if (!settings.isInstance()) {
             io.saveAll();
         }
 

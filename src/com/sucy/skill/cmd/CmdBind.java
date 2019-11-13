@@ -76,7 +76,7 @@ public class CmdBind implements IFunction
 
         else if (args.length >= 1)
         {
-            ItemStack item = ((Player) sender).getItemInHand();
+            ItemStack item = ((Player) sender).getInventory().getItemInMainHand();
             if (item == null || item.getType() == Material.AIR)
             {
                 command.sendMessage(sender, NO_ITEM, "&4You are not holding an item");
@@ -103,8 +103,14 @@ public class CmdBind implements IFunction
             }
             else
             {
+            	if(item.getItemMeta().hasDisplayName()) {
+            	player.bind(item.getItemMeta().getDisplayName(), skill);
+            	 command.sendMessage(sender, SKILL_BOUND, "&6{skill} &2has been bound to &6{item}", RPGFilter.SKILL.setReplacement(skill.getData().getName()), RPGFilter.ITEM.setReplacement(TextFormatter.format(item.getItemMeta().getDisplayName().replaceAll("§.", ""))));
+            	}else {
                 player.bind(item.getType(), skill);
                 command.sendMessage(sender, SKILL_BOUND, "&6{skill} &2has been bound to &6{item}", RPGFilter.SKILL.setReplacement(skill.getData().getName()), RPGFilter.ITEM.setReplacement(TextFormatter.format(item.getType().name())));
+            	}
+               
             }
         }
         else

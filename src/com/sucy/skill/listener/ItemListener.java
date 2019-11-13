@@ -149,8 +149,8 @@ public class ItemListener extends SkillAPIListener
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())
             && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-            && event.getPlayer().getItemInHand() != null
-            && ARMOR_TYPES.contains(event.getPlayer().getItemInHand().getType()))
+            && event.getPlayer().getInventory().getItemInMainHand() != null
+            && ARMOR_TYPES.contains(event.getPlayer().getInventory().getItemInMainHand().getType()))
         {
             SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
         }

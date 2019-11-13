@@ -54,15 +54,23 @@ public class BindListener extends SkillAPIListener {
         }
 
         PlayerData data = SkillAPI.getPlayerData(player);
-        Material heldItem = player.getItemInHand().getType();
-
+        String dispname = null;
+        Material heldItem = player.getInventory().getItemInMainHand().getType();
+        if(player.getInventory().getItemInMainHand().getItemMeta().hasDisplayName()) {
+        	dispname = player.getInventory().getItemInMainHand().getItemMeta().getDisplayName();
+        }
         // Must be right clicking with an item
         if (event.getKey() != KeyPressEvent.Key.RIGHT || heldItem == null) {
             return;
         }
 
         // Must have a valid item
-        final PlayerSkill skill = data.getBoundSkill(heldItem);
+        final PlayerSkill skill;
+        if(dispname != null) {
+        skill = data.getBoundSkill(dispname);
+        }else {
+        skill = data.getBoundSkill(heldItem);
+        }
         if (skill == null || !SkillAPI.isSkillRegistered(skill.getData().getName())) {
             return;
         }

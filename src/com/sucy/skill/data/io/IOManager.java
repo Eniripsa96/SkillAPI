@@ -275,7 +275,7 @@ public abstract class IOManager
             {
                 for (String bindKey : binds.keys())
                 {
-                    acc.bind(Material.valueOf(bindKey), acc.getSkill(binds.getString(bindKey)));
+                    acc.bind(bindKey, acc.getSkill(binds.getString(bindKey)));
                 }
             }
         }
@@ -324,10 +324,10 @@ public abstract class IOManager
 
                 // Save binds
                 DataSection binds = account.createSection(BINDS);
-                for (Map.Entry<Material, PlayerSkill> bind : acc.getBinds().entrySet())
+                for (Map.Entry<String, PlayerSkill> bind : acc.getBinds().entrySet())
                 {
                     if (bind.getKey() == null || bind.getValue() == null) continue;
-                    binds.set(bind.getKey().name(), bind.getValue().getData().getName());
+                    binds.set(bind.getKey().replaceAll("§.", "").replace(" ","_").toUpperCase(), bind.getValue().getData().getName());
                 }
 
                 // Save skill bar

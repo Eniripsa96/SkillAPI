@@ -49,7 +49,7 @@ public final class PlayerSkill
     private Skill       skill;
     private PlayerData  player;
     private PlayerClass parent;
-    private Material    bind;
+    private String    bind;
     private long        cooldown;
     private int         level;
     private int         points;
@@ -117,7 +117,7 @@ public final class PlayerSkill
      *
      * @return the current material bound to or null if not bound
      */
-    public Material getBind()
+    public String getBind()
     {
         return bind;
     }
@@ -304,10 +304,16 @@ public final class PlayerSkill
      *
      * @param mat new bind material
      */
-    public void setBind(Material mat)
+    public void setBindMat(Material mat)
     {
-        this.bind = mat;
+        this.bind = mat.toString();
         getPlayerData().bind(mat, this);
+    }
+    
+    public void setBindDispName(String dispname)
+    {
+        this.bind = dispname;
+        getPlayerData().bind(dispname, this);
     }
 
     /**

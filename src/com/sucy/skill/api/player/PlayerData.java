@@ -80,7 +80,7 @@ import static com.sucy.skill.api.event.PlayerSkillCastFailedEvent.Cause.*;
 public class PlayerData {
     private final HashMap<String, PlayerClass>   classes     = new HashMap<>();
     private final HashMap<String, PlayerSkill>   skills      = new HashMap<>();
-    private final HashMap<Material, PlayerSkill> binds       = new HashMap<>();
+    private final HashMap<String, PlayerSkill> binds       = new HashMap<>();
     private final HashMap<String, Integer>       attributes  = new HashMap<>();
     private final HashMap<String, Integer>       bonusAttrib = new HashMap<>();
 
@@ -1558,7 +1558,11 @@ public class PlayerData {
      * @return skill bound to the material or null if none are bound
      */
     public PlayerSkill getBoundSkill(Material mat) {
-        return binds.get(mat);
+        return binds.get(mat.toString());
+    }
+    public PlayerSkill getBoundSkill(String dispname) {
+    	dispname = dispname.replaceAll("§.", "").replace(" ","_").toUpperCase();
+        return binds.get(dispname);
     }
 
     /**
@@ -1567,7 +1571,7 @@ public class PlayerData {
      *
      * @return the skill binds data for the player
      */
-    public HashMap<Material, PlayerSkill> getBinds() {
+    public HashMap<String, PlayerSkill> getBinds() {
         return binds;
     }
 
@@ -1579,9 +1583,12 @@ public class PlayerData {
      * @return true if a skill is bound to it, false otherwise
      */
     public boolean isBound(Material mat) {
-        return binds.containsKey(mat);
+        return binds.containsKey(mat.toString());
     }
-
+    public boolean isBound(String dispname) {
+    	dispname = dispname.replaceAll("§.", "").replace(" ","_").toUpperCase();
+        return binds.containsKey(dispname);
+    }
     /**
      * Binds a skill to a material for the player. The bind will not work if the skill
      * was already bound to the material.
@@ -1601,19 +1608,19 @@ public class PlayerData {
         if (bound != skill) {
             // Apply the binding
             if (skill == null) {
-                binds.remove(mat);
+                binds.remove(mat.toString());
             } else {
-                binds.put(mat, skill);
+                binds.put(mat.toString(), skill);
             }
 
             // Update the old skill's bind
             if (bound != null) {
-                bound.setBind(null);
+                bound.setBindMat(null);
             }
 
             // Update the new skill's bind
             if (skill != null) {
-                skill.setBind(mat);
+                skill.setBindMat(mat);
             }
 
             return true;
@@ -1624,7 +1631,40 @@ public class PlayerData {
             return false;
         }
     }
+    // iomatix: bind by disp name
+    public boolean bind(String dispname, PlayerSkill skill) {
+        // Special cases
+        if (dispname == null || (skill != null && skill.getPlayerData() != this)) {
+            return false;
+        }
+        dispname = dispname.replaceAll("§.", "").replace(" ","_").toUpperCase();
+        PlayerSkill bound = getBoundSkill(dispname);
+        if (bound != skill) {
+            // Apply the binding
+            if (skill == null) {
+                binds.remove(dispname);
+            } else {
+                binds.put(dispname, skill);
+            }
 
+            // Update the old skill's bind
+            if (bound != null) {
+                bound.setBindDispName(null);
+            }
+
+            // Update the new skill's bind
+            if (skill != null) {
+                skill.setBindDispName(dispname);
+            }
+
+            return true;
+        }
+
+        // The skill was already bound
+        else {
+            return false;
+        }
+    }
     /**
      * Clears a skill binding on the material. If there is no binding on the
      * material, this will do nothing.
@@ -1633,8 +1673,9 @@ public class PlayerData {
      *
      * @return true if a binding was cleared, false otherwise
      */
-    public boolean clearBind(Material mat) {
-        return binds.remove(mat) != null;
+    public boolean clearBind(String dispname) {
+    	dispname = dispname.replaceAll("§.", "").replace(" ","_").toUpperCase();
+        return binds.remove(dispname) != null;
     }
 
     /**
@@ -1644,8 +1685,8 @@ public class PlayerData {
      * @param skill skill to unbind
      */
     public void clearBinds(Skill skill) {
-        ArrayList<Material> keys = new ArrayList<>(binds.keySet());
-        for (Material key : keys) {
+        ArrayList<String> keys = new ArrayList<>(binds.keySet());
+        for (String key : keys) {
             PlayerSkill bound = binds.get(key);
             if (bound.getData() == skill) {
                 binds.remove(key);

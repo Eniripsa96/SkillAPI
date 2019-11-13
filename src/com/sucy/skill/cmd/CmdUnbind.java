@@ -74,7 +74,7 @@ public class CmdUnbind implements IFunction
 
         else
         {
-            ItemStack item = ((Player) sender).getItemInHand();
+            ItemStack item = ((Player) sender).getInventory().getItemInMainHand();
             if (item == null || item.getType() == Material.AIR)
             {
                 command.sendMessage(sender, NO_ITEM, "&4You are not holding an item");
@@ -83,15 +83,24 @@ public class CmdUnbind implements IFunction
 
             PlayerData player = SkillAPI.getPlayerData((Player) sender);
 
-            if (!player.isBound(item.getType()))
+            if (player.isBound(item.getType()))
             {
-                command.sendMessage(sender, NOT_BOUND, "&4There are no skills bound to the held item");
-            }
+            	  PlayerSkill skill = player.getBoundSkill(item.getType());
+                  player.clearBind(item.getType().toString());
+                  
+                  command.sendMessage(sender, SKILL_BOUND, "&6{skill} &2has been unbound from &6{item}", RPGFilter.SKILL.setReplacement(skill.getData().getName()), RPGFilter.ITEM.setReplacement(TextFormatter.format(item.getType().name())));
+                
+            }else if (item.getItemMeta().hasDisplayName() && player.isBound(item.getItemMeta().getDisplayName()))
+            { 
+            	PlayerSkill skill = player.getBoundSkill(item.getItemMeta().getDisplayName());
+            	player.clearBind(item.getItemMeta().getDisplayName());
+            	command.sendMessage(sender, SKILL_BOUND, "&6{skill} &2has been unbound from &6{item}", RPGFilter.SKILL.setReplacement(skill.getData().getName()), RPGFilter.ITEM.setReplacement(TextFormatter.format(item.getItemMeta().getDisplayName().replaceAll("§.", ""))));
+            	
+            } 
             else
             {
-                PlayerSkill skill = player.getBoundSkill(item.getType());
-                player.clearBind(item.getType());
-                command.sendMessage(sender, SKILL_BOUND, "&6{skill} &2has been unbound from &6{item}", RPGFilter.SKILL.setReplacement(skill.getData().getName()), RPGFilter.ITEM.setReplacement(TextFormatter.format(item.getType().name())));
+            	command.sendMessage(sender, NOT_BOUND, "&4There are no skills bound to the held item");
+            	
             }
         }
     }

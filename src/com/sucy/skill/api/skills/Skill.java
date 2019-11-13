@@ -645,7 +645,7 @@ public abstract class Skill implements IconHolder
         // Binds
         if (SkillAPI.getSettings().isShowBinds() && skillData.getBind() != null) {
             lore.add("");
-            final String type = TextFormatter.format(skillData.getBind().name().replace("LEGACY_", ""));
+            final String type = TextFormatter.format(skillData.getBind().replace("LEGACY_", "").replace("_", " "));
             lore.add(SkillAPI.getSettings().getBindText().replace("{material}", type));
         }
 

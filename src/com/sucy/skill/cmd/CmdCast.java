@@ -37,7 +37,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
- * Command to bind a skill to an item
+ * Command to cast a skill
  */
 public class CmdCast implements IFunction
 {

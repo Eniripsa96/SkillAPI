@@ -113,6 +113,7 @@ public class Settings {
         loadSaveSettings();
         loadTargetingSettings();
         loadWorldGuardSettings();
+        loadIsInstance();
     }
 
     ///////////////////////////////////////////////////////
@@ -1636,5 +1637,16 @@ public class Settings {
 
         skillDisabledRegions = ImmutableSet.copyOf(data.getList(WG_SKILLS));
         expDisabledRegions = ImmutableSet.copyOf(data.getList(WG_EXP));
+    }
+    
+    // Instance
+    private boolean      isInstance;
+    private static final String IS_INSTANCE = "is-instance";
+    private void loadIsInstance() {
+    	isInstance = config.getBoolean(IS_INSTANCE);
+    }
+    
+    public boolean isInstance() {
+        return isInstance;
     }
 }

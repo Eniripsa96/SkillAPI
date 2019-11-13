@@ -245,7 +245,10 @@ public class SkillAPI extends JavaPlugin {
             MainListener.unload(player);
         }
 
-        io.saveAll();
+        // Only save on disable if not an instance
+        if (settings.isInstance()) {
+            io.saveAll();
+        }
 
         skills.clear();
         classes.clear();

@@ -1,5 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class HealthSetMechanic extends MechanicComponent {
         final double health = Math.max(1, parseValues(caster, HEALTH, level, 1));
 
         for (final LivingEntity target : targets) {
-            target.setHealth(Math.min(health, target.getMaxHealth()));
+            target.setHealth(Math.min(health, target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
         }
 
         return true;

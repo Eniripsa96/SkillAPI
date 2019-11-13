@@ -37,7 +37,7 @@ public class DurabilityMechanic extends MechanicComponent {
         final ItemStack item;
         if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
             item = player.getInventory().getItemInOffHand();
-        } else { item = player.getInventory().getItemInHand(); }
+        } else { item = player.getInventory().getItemInMainHand(); }
 
         if (item == null || item.getType().getMaxDurability() == 0) {
             return false;

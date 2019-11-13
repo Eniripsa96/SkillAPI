@@ -88,7 +88,7 @@ public class PotionProjectileMechanic extends MechanicComponent
             return false;
         }
 
-        Potion p = new Potion(type, 1);
+       Potion p = new Potion(type, 1);
         ItemStack item;
         try
         {
@@ -103,6 +103,7 @@ public class PotionProjectileMechanic extends MechanicComponent
         {
             item = new ItemStack(Material.POTION);
         }
+       
         p.apply(item);
 
         // Fire from each target

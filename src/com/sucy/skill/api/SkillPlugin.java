@@ -58,7 +58,7 @@ public interface SkillPlugin {
      */
     void registerClasses(SkillAPI api);
 
-    default List<Trigger> getTriggers() {
+	default List<Trigger> getTriggers() {
         return ImmutableList.of();
     }
 

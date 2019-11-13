@@ -42,8 +42,8 @@ public class ItemMechanic extends MechanicComponent
 {
     private static final String MATERIAL = "material";
     private static final String AMOUNT   = "amount";
-    private static final String DATA     = "data";
-    private static final String BYTE     = "byte";
+ //   private static final String DATA     = "data";
+ //   private static final String BYTE     = "byte";
     private static final String CUSTOM   = "custom";
     private static final String NAME     = "name";
     private static final String LORE     = "lore";
@@ -76,8 +76,8 @@ public class ItemMechanic extends MechanicComponent
             return false;
         }
         int amount = settings.getInt(AMOUNT, 1);
-        int durability = settings.getInt(DATA, 0);
-        //int data = settings.getInt(BYTE, 0);
+       // int durability = settings.getInt(DATA, 0);
+       // int data = settings.getInt(BYTE, 0);
         ItemStack item = new ItemStack(material, amount);
 
         

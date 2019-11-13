@@ -1361,7 +1361,7 @@ public class PlayerData {
         if (health <= 0) {
             health = SkillAPI.getSettings().getDefaultHealth();
         }
-        if (SkillAPI.getSettings().isModifyHealth()) { player.setMaxHealth(health); }
+        if (SkillAPI.getSettings().isModifyHealth()) { player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health); }
         mana = Math.min(mana, maxMana);
 
         // Health scaling is available starting with 1.6.2
@@ -1380,7 +1380,8 @@ public class PlayerData {
      *
      * @param amount amount of bonus health to give
      */
-    public void addMaxHealth(double amount) {
+    
+	public void addMaxHealth(double amount) {
         bonusHealth += amount;
         final Player player = getPlayer();
         if (player != null) {
@@ -1393,7 +1394,10 @@ public class PlayerData {
                 if (player.getMaxHealth() > newHealth) {
                     player.setMaxHealth(newHealth * 2 - player.getMaxHealth());
                 }
+            
             }
+        
+
         }
     }
 
@@ -1929,7 +1933,7 @@ public class PlayerData {
         this.startPassives(player);
         this.updateScoreboard();
         if (this.getLastHealth() > 0 && !player.isDead()) {
-            player.setHealth(Math.min(this.getLastHealth(), player.getMaxHealth()));
+            player.setHealth(Math.min(this.getLastHealth(), player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
         }
     }
 }

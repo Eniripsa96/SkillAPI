@@ -76,7 +76,7 @@ public class DamageLoreMechanic extends MechanicComponent {
 
         ItemStack hand;
         if (offhand) { hand = caster.getEquipment().getItemInOffHand(); } else {
-            hand = caster.getEquipment().getItemInHand();
+            hand = caster.getEquipment().getItemInMainHand();
         }
 
         if (hand == null || !hand.hasItemMeta() || !hand.getItemMeta().hasLore()) { return false; }

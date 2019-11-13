@@ -57,7 +57,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
+//import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1524,7 +1524,7 @@ public class Settings {
 
         final int data = icon.getInt("data", 0);
         unassigned.setDurability((short) data);
-        unassigned.setData(new MaterialData(mat, (byte) data));
+       // unassigned.setData(new MaterialData(mat, (byte) data));
 
         ItemMeta meta = unassigned.getItemMeta();
         if (icon.isList("text")) {

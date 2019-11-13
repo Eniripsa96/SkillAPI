@@ -29,6 +29,7 @@ package com.sucy.skill.dynamic.mechanic;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.event.SkillHealEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public class HealMechanic extends MechanicComponent {
 
             double amount = value;
             if (percent) {
-                amount = target.getMaxHealth() * value / 100;
+                amount = target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * value / 100;
             }
 
             SkillHealEvent event = new SkillHealEvent(caster, target, amount);

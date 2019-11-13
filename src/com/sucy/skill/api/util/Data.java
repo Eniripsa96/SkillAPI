@@ -32,7 +32,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
+//import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class Data {
             }
 
             final ItemStack item = new ItemStack(material);
-            item.setData(new MaterialData(material, data));
+            //item.setData(new MaterialData(material, data));
             item.setDurability(dur);
 
             if (lore != null && !lore.isEmpty()) {
@@ -79,7 +79,7 @@ public class Data {
     public static void serializeIcon(ItemStack item, DataSection config) {
         config.set(MAT, item.getType().name());
         config.set(DURABILITY, item.getDurability());
-        config.set(DATA, item.getData().getData());
+        config.set(DATA, item.getData());
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             List<String> lore = item.getItemMeta().getLore();

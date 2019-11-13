@@ -181,9 +181,10 @@ public class MainListener extends SkillAPIListener
         player.setDisplayName(player.getName());
         if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
             player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
-        } else {
-            player.setMaxHealth(20);
-        }
+        } 
+        //else {
+        //    player.setMaxHealth(20);
+        // }
         player.setWalkSpeed(0.2f);
         SkillAPI.unloadPlayerData(player, skipSaving);
     }

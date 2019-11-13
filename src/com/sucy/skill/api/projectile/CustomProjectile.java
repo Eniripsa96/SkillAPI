@@ -218,7 +218,7 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
             Object predicate = getEntities == null ? GUAVA_PREDICATE : JAVA_PREDICATE;
             Object list = (getEntities == null ? getEntitiesGuava : getEntities)
                     .invoke(nmsWorld, null, getBoundingBox(), predicate);
-            for (Object item : (List) list) {
+            for (Object item : (List<?>) list) {
                 result.add((LivingEntity) getBukkitEntity.invoke(item));
             }
         }

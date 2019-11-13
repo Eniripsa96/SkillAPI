@@ -148,8 +148,16 @@ Skills:
   - 'ender chest'
   - 'trapped chest'
   - 'redstone*'
-  - 'wall sign'
-  - 'sign post'
+  - 'acacia wall sign'
+  - 'acacia sign'
+  - 'birch wall sign'
+  - 'birch sign'
+  - 'dark oak wall sign'
+  - 'dark oak sign'
+  - 'oak wall sign'
+  - 'oak sign'
+  - 'jungle wall sign'
+  - 'jungle sign'
 #
 Items:
   #

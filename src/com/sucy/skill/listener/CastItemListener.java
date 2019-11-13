@@ -236,10 +236,8 @@ public class CastItemListener extends SkillAPIListener
             && event.getPlayer().getInventory().getHeldItemSlot() == slot)
         {
             event.setCancelled(true);
-            if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
-                get(event.getPlayer()).next();
-            else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-                get(event.getPlayer()).prev();
+            if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) get(event.getPlayer()).next();
+            else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) get(event.getPlayer()).prev();
         }
     }
 

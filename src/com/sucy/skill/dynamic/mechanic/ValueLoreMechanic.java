@@ -70,7 +70,7 @@ public class ValueLoreMechanic extends MechanicComponent {
         ItemStack hand;
         if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {
             hand = caster.getEquipment().getItemInOffHand();
-        } else { hand = caster.getEquipment().getItemInHand(); }
+        } else { hand = caster.getEquipment().getItemInMainHand(); }
 
         return ItemChecker.findLore(caster, hand, regex, key, multiplier);
     }

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -70,9 +71,9 @@ public class DamageMechanic extends MechanicComponent {
 
             double amount = damage;
             if (percent) {
-                amount = damage * target.getMaxHealth() / 100;
+                amount = damage * target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() / 100;
             } else if (missing) {
-                amount = damage * (target.getMaxHealth() - target.getHealth()) / 100;
+                amount = damage * (target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()  - target.getHealth()) / 100;
             } else if (left) {
                 amount = damage * target.getHealth() / 100;
             }

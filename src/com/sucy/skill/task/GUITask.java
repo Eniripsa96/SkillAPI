@@ -36,6 +36,8 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.thread.RepeatThreadTask;
+
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 /**
@@ -106,7 +108,7 @@ public class GUITask extends RepeatThreadTask
                 if (oldHealth)
                     player.setHealthScale(20);
                 else
-                    player.setHealthScale(player.getMaxHealth());
+                    player.setHealthScale(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             }
 
             // Level bar options
@@ -181,7 +183,7 @@ public class GUITask extends RepeatThreadTask
                     .replace("{maxMana}", "" + (int) data.getMaxMana())
                     .replace("{name}", player.getName())
                     .replace("{health}", "" + (int) player.getHealth())
-                    .replace("{maxHealth}", "" + (int) player.getMaxHealth())
+                    .replace("{maxHealth}", "" + (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue())
                     .replace("{attr}", "" + data.getAttributePoints())
                     .replace("{sp}", "" + main.getPoints());
                 while (filtered.contains("{value:"))

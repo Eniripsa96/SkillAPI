@@ -64,7 +64,7 @@ public class CmdLore implements IFunction
         if (args.length >= 1 && sender instanceof Player)
         {
             Player player = (Player) sender;
-            ItemStack held = player.getInventory().getItemInHand();
+            ItemStack held = player.getInventory().getItemInMainHand();
 
             // No held item
             if (held == null)

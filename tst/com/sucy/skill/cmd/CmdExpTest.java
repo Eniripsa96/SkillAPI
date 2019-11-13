@@ -55,7 +55,7 @@ public class CmdExpTest {
 
     @Test
     public void execute_simplePlayerUsage() {
-        SUBJECT.execute(cmd, plugin, player, "3");
+        SUBJECT.execute(cmd, plugin, player, new String[] {"3"});
 
         verify(playerData).giveExp(3, ExpSource.COMMAND, true);
         verify(cmd).sendMessage(
@@ -68,14 +68,14 @@ public class CmdExpTest {
 
     @Test
     public void execute_playerWithGroupNotFound() {
-        SUBJECT.execute(cmd, plugin, player, "3", "race");
+        SUBJECT.execute(cmd, plugin, player, new String[] {"3", "race"});
         verify(playerData).getClass("race");
     }
 
     @Test
     public void execute_playerWithGroupFound() {
         when(playerData.getClass("race")).thenReturn(playerClass);
-        SUBJECT.execute(cmd, plugin, player, "3", "race");
+        SUBJECT.execute(cmd, plugin, player, new String[] {"3", "race"});
 
         verify(playerClass).giveExp(3, ExpSource.COMMAND, true);
     }

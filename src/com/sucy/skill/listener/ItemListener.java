@@ -34,13 +34,15 @@ import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.data.PlayerEquips;
 import com.sucy.skill.language.ErrorNodes;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+//import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -48,7 +50,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -111,10 +112,12 @@ public class ItemListener extends SkillAPIListener
      * @param event event details
      */
     @EventHandler
-    public void onPickup(PlayerPickupItemEvent event)
+    public void onPickup(EntityPickupItemEvent event)
     {
-        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
+         if( event.getEntityType() == EntityType.PLAYER) {
+        if (SkillAPI.getSettings().isWorldEnabled(event.getEntity().getWorld()))
+            SkillAPI.schedule(new UpdateTask((Player)event.getEntity(), false), 1);
+         }
     }
 
     /**
@@ -179,11 +182,11 @@ public class ItemListener extends SkillAPIListener
         if (event.getEntity() instanceof Player && VersionManager.isVersionAtLeast(VersionManager.V1_9_0))
         {
             Player player = (Player) event.getEntity();
-            final boolean blocking = event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0;
+            final boolean blocking = event.getDamage() < 0;
             if (blocking && !SkillAPI.getPlayerData(player).getEquips().canBlock())
             {
                 SkillAPI.getLanguage().sendMessage(ErrorNodes.CANNOT_USE, event.getEntity(), FilterType.COLOR);
-                event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, 0);
+                event.setDamage(0);
             }
         }
     }

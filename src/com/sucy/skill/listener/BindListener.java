@@ -56,14 +56,14 @@ public class BindListener extends SkillAPIListener {
         PlayerData data = SkillAPI.getPlayerData(player);
         String dispname = null;
         Material heldItem = player.getInventory().getItemInMainHand().getType();
-        if(player.getInventory().getItemInMainHand().getItemMeta().hasDisplayName()) {
-        	dispname = player.getInventory().getItemInMainHand().getItemMeta().getDisplayName();
-        }
         // Must be right clicking with an item
         if (event.getKey() != KeyPressEvent.Key.RIGHT || heldItem == null) {
             return;
         }
-
+        //disp name 
+        if(player.getInventory().getItemInMainHand().hasItemMeta() && player.getInventory().getItemInMainHand().getItemMeta().hasDisplayName()) {
+        	dispname = player.getInventory().getItemInMainHand().getItemMeta().getDisplayName();
+        }
         // Must have a valid item
         final PlayerSkill skill;
         if(dispname != null) {

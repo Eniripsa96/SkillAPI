@@ -34,6 +34,7 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
 import org.bukkit.DyeColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
@@ -101,7 +102,7 @@ public class WolfMechanic extends MechanicComponent {
             for (int i = 0; i < amount; i++) {
                 Wolf wolf = target.getWorld().spawn(target.getLocation(), Wolf.class);
                 wolf.setOwner(player);
-                wolf.setMaxHealth(health);
+                wolf.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
                 wolf.setHealth(health);
                 wolf.setSitting(sitting);
                 SkillAPI.setMeta(wolf, MechanicListener.SUMMON_DAMAGE, damage);

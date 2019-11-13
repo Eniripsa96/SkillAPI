@@ -350,6 +350,8 @@ public class PlayerCastBars implements InventoryHolder
             case INVENTORY:
                 oldSlot = event.getPreviousSlot();
                 return false;
+		default:
+			break;
         }
 
         return false;
@@ -376,6 +378,8 @@ public class PlayerCastBars implements InventoryHolder
                 }
                 restore(player);
                 return true;
+		default:
+			break;
         }
         return false;
     }

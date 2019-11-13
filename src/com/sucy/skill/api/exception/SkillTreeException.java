@@ -31,7 +31,8 @@ package com.sucy.skill.api.exception;
  */
 public class SkillTreeException extends Exception
 {
-    /**
+   
+	/**
      * Constructor
      *
      * @param message exception message

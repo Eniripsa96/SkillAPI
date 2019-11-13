@@ -56,6 +56,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -789,7 +790,7 @@ public abstract class Skill implements IconHolder
         TrueDamageEvent event = new TrueDamageEvent(this, source, target, damage);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled() && event.getDamage() != 0)
-            target.setHealth(Math.max(Math.min(target.getHealth() - event.getDamage(), target.getMaxHealth()), 0));
+            target.setHealth(Math.max(Math.min(target.getHealth() - event.getDamage(), target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()), 0));
     }
 
     /**

@@ -27,6 +27,8 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import com.sucy.skill.dynamic.DynamicSkill;
+
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
@@ -59,13 +61,13 @@ public class ValueHealthMechanic extends MechanicComponent {
         final LivingEntity target = targets.get(0);
         switch (type) {
             case "max":
-                data.put(key, target.getMaxHealth());
+                data.put(key, target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 break;
             case "percent":
-                data.put(key, target.getHealth() / target.getMaxHealth());
+                data.put(key, target.getHealth() / target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 break;
             case "missing":
-                data.put(key, target.getMaxHealth() - target.getHealth());
+                data.put(key, target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() - target.getHealth());
                 break;
             default: // current
                 data.put(key, target.getHealth());

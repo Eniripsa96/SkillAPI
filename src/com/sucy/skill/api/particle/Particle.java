@@ -262,6 +262,8 @@ public class Particle {
                 case BLOCK_DUST:
                 case FALLING_DUST:
                     obj = material.createBlockData();
+			default:
+				break;
             }
             final Object particle = toNms.invoke(null, bukkit, obj);
             return packet.newInstance(particle, true, (float) x, (float) y, (float) z, dx, dy, dz, speed, amount);

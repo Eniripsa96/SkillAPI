@@ -198,7 +198,7 @@ public class ItemSerializer {
                 builder.append(i);
                 builder.append('#');
 
-                String isType = String.valueOf(is.getType().getId());
+                String isType = String.valueOf(is.getType()); //.getId());
                 builder.append("t@");
                 builder.append(isType);
 

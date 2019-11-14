@@ -77,7 +77,8 @@ public class DamageMechanic extends MechanicComponent {
             } else if (left) {
                 amount = damage * target.getHealth() / 100;
             }
-            if (trueDmg) { skill.trueDamage(target, amount, caster); } else {
+            if (trueDmg) { skill.trueDamage(target, amount, caster); } 
+            else {
                 skill.damage(target, amount, caster, classification);
             }
         }

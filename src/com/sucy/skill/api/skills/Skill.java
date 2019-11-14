@@ -758,7 +758,7 @@ public abstract class Skill implements IconHolder
         {
             if (source instanceof Player)
             {
-                Player player = (Player) source;
+                final Player player = (Player) source;
                 if (PluginChecker.isNoCheatActive()) NoCheatHook.exempt(player);
                 skillDamage = true;
                 target.setNoDamageTicks(0);

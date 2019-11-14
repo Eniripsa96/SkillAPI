@@ -1933,7 +1933,7 @@ public class PlayerData {
         this.startPassives(player);
         this.updateScoreboard();
         if (this.getLastHealth() > 0 && !player.isDead()) {
-            player.setHealth(Math.min(this.getLastHealth(), player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
+           player.setHealth(Math.min(this.getLastHealth(), player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()));
         }
     }
 }

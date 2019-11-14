@@ -189,6 +189,7 @@ public class ProjectileMechanic extends MechanicComponent
      */
     public void callback(Projectile projectile, LivingEntity hit)
     {
+    	
         if (hit == null)
             hit = new TempEntity(projectile.getLocation());
 

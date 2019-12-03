@@ -76,7 +76,7 @@ public class CmdManager
             new ConfigurableCommand(api, "points", SenderType.ANYONE, new CmdPoints(), "Gives player points", "[player] <amount>", Permissions.POINTS),
             PROFESS_COMMAND = new ConfigurableCommand(api, "profess", SenderType.PLAYER_ONLY, new CmdProfess(), "Professes classes", "<class>", Permissions.BASIC),
             new ConfigurableCommand(api, "reload", SenderType.ANYONE, new CmdReload(), "Reloads the plugin", "", Permissions.RELOAD),
-            new ConfigurableCommand(api, "refund", SenderType.PLAYER_ONLY, new CmdRefund(), "Refunds skillpoints", "", Permissions.REFUND),
+            new ConfigurableCommand(api, "refund", SenderType.ANYONE, new CmdRefund(), "Refunds self attribute points or skill points", "[player] |attr|points|", Permissions.REFUND),
             new ConfigurableCommand(api, "reset", SenderType.PLAYER_ONLY, new CmdReset(), "Resets account data", "", Permissions.BASIC),
             new ConfigurableCommand(api, "skill", SenderType.PLAYER_ONLY, new CmdSkill(), "Shows player skills", "", Permissions.BASIC),
             new ConfigurableCommand(api, "unbind", SenderType.PLAYER_ONLY, new CmdUnbind(), "Unbinds held item", "", Permissions.BASIC),

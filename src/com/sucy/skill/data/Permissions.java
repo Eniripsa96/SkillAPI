@@ -35,6 +35,7 @@ public class Permissions
 
     public static final String BASIC  = ROOT + "basic";
     public static final String REFUND  = ROOT + "refund";
+    public static final String REFUND_OTHERS  = ROOT + "refund.others";
     public static final String BACKUP = ROOT + "backup";
     public static final String EXP    = ROOT + "exp";
     public static final String LVL    = ROOT + "level";

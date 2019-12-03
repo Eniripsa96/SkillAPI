@@ -4,7 +4,7 @@
  * <p>
  * The MIT License (MIT)
  * <p>
- * Copyright (c) 2016 Steven Sucy
+ * Copyright (c) 2016 Steven Sucy, 2019 iomatix
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,13 @@ package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.data.Permissions;
+
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -38,46 +42,134 @@ import org.bukkit.plugin.Plugin;
 /**
  * Command for refunding invested skill points
  */
-public class CmdRefund implements IFunction
-{
-    private static final String CANNOT_USE = "cannot-use";
-    private static final String NO_CLASS   = "no-class";
-    private static final String REFUNDED   = "refunded";
+public class CmdRefund implements IFunction {
+	private static final String CANNOT_USE = "cannot-use";
+	private static final String NOT_PLAYER = "not-player";
+	private static final String NO_CLASS = "no-class";
+	private static final String REFUNDED_ALL = "refunded-all";
+	private static final String REFUNDED_AP = "refunded-ap";
+	private static final String REFUNDED_SP = "refunded-sp";
+	private static final String NOT_PLAYER_OR_ARG = "not-player-or-argument";
+	private static final String NO_PERMISSION = "no-permission";
 
-    /**
-     * Runs the command
-     *
-     * @param cmd    command that was executed
-     * @param plugin plugin reference
-     * @param sender sender of the command
-     * @param args   argument list
-     */
-    @Override
-    public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args)
-    {
-        // Only players have skills
-        if (sender instanceof Player)
-        {
-            PlayerData player = SkillAPI.getPlayerData((Player) sender);
+	/**
+	 * Runs the command
+	 *
+	 * @param cmd    command that was executed
+	 * @param plugin plugin reference
+	 * @param sender sender of the command
+	 * @param args   argument list
+	 */
+	@Override
+	public void execute(ConfigurableCommand cmd, Plugin plugin, CommandSender sender, String[] args) {
 
-            // Player must have a class
-            if (!player.hasClass())
-            {
-                cmd.sendMessage(sender, NO_CLASS, "&4You have not professed as any class yet");
-            }
+		// Players
+		if (sender instanceof Player) {
+			// Reset all skills or attr
+			if (args.length >= 1) {
+				if (args[0].toLowerCase().equals("attr") || args[0].toLowerCase().equals("points")) {
+					PlayerData player = SkillAPI.getPlayerData((Player) sender);
+					// Player must have a class
+					if (!player.hasClass()) {
+						cmd.sendMessage(sender, NO_CLASS, "&4You have not professed as any class yet.");
+						return;
+					}
+					if (args[0].toLowerCase().equals("attr")) {
+						player.refundAttributes();
+						cmd.sendMessage(sender, REFUNDED_AP, "&2Your attribute points have been refunded.");
+					} else if (args[0].toLowerCase().equals("points")) {
+						player.refundSkills();
+						cmd.sendMessage(sender, REFUNDED_SP, "&2Your skill points have been refunded.");
+					}
+				} else {
+					if (!sender.hasPermission(Permissions.REFUND_OTHERS)) {
+						cmd.sendMessage(sender, NO_PERMISSION, "&cYou are not allowed to run this command.");
+						return;
+					}
+					OfflinePlayer target = VersionManager.getOfflinePlayer(args[0], false);
+					if (target == null) {
+						cmd.sendMessage(sender, NOT_PLAYER_OR_ARG,
+								ChatColor.RED + "That is not a valid player name or argument.");
+						return;
+					}
+					PlayerData player = SkillAPI.getPlayerData(target);
+					// Player must have a class
+					if (!player.hasClass()) {
+						cmd.sendMessage(sender, NO_CLASS, "&4Target has not professed as any class yet.");
+						return;
+					}
 
-            // Reset all skills
-            else
-            {
-                player.refundSkills();
-                cmd.sendMessage(sender, REFUNDED, "&2Your skill points have been refunded");
-            }
-        }
+					if (args.length >= 2) {
+						if (args[1].toLowerCase().equals("attr")) {
+							player.refundAttributes();
+							if (target.isOnline()) {
+								cmd.sendMessage(target.getPlayer(), REFUNDED_AP,
+										"&2Your attribute points have been refunded.");
+							}
+						} else if (args[1].toLowerCase().equals("points")) {
+							player.refundSkills();
+							if (target.isOnline()) {
+								cmd.sendMessage(target.getPlayer(), REFUNDED_SP,
+										"&2Your skill points have been refunded.");
+							}
+						}
+					} else {
+						player.refundSkills();
+						player.refundAttributes();
+						if (target.isOnline()) {
+							cmd.sendMessage(target.getPlayer(), REFUNDED_ALL,
+									"&2Your skill points and attribute points have been refunded.");
+						}
+					}
+				}
+			} else {
+				PlayerData player = SkillAPI.getPlayerData((Player) sender);
+				player.refundSkills();
+				player.refundAttributes();
+				cmd.sendMessage(sender, REFUNDED_ALL, "&2Your skill points and attribute points have been refunded.");
+			}
 
-        // Console doesn't have profession options
-        else
-        {
-            cmd.sendMessage(sender, CANNOT_USE, ChatColor.RED + "This cannot be used by the console");
-        }
-    }
+		}
+
+		// Console
+		else {
+			if (args.length >= 1) {
+				if (!sender.hasPermission(Permissions.REFUND_OTHERS)) {
+					cmd.sendMessage(sender, NO_PERMISSION, "&cYou are not allowed to run this command.");
+					return;
+				}
+
+				OfflinePlayer target = VersionManager.getOfflinePlayer(args[0], false);
+				if (target == null) {
+					cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name.");
+					return;
+				}
+				PlayerData player = SkillAPI.getPlayerData(target);
+				if (args.length >= 2) {
+					if (args[1].toLowerCase().equals("attr")) {
+						player.refundAttributes();
+						if (target.isOnline()) {
+							cmd.sendMessage(target.getPlayer(), REFUNDED_AP,
+									"&2Your attribute points have been refunded.");
+						}
+					}else if (args[1].toLowerCase().equals("points")) {
+						player.refundSkills();
+						if (target.isOnline()) {
+							cmd.sendMessage(target.getPlayer(), REFUNDED_SP, "&2Your skill points have been refunded.");
+						}
+					}
+				} else {
+					player.refundSkills();
+					player.refundAttributes();
+					if (target.isOnline()) {
+						cmd.sendMessage(target.getPlayer(), REFUNDED_ALL,
+								"&2Your skill points and attribute points have been refunded.");
+					}
+				}
+
+			} else {
+				cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "Specify a valid player name.");
+			}
+		}
+	}
 }

@@ -582,7 +582,7 @@ public abstract class Skill implements IconHolder
                     Object nextValue = getAttr(player, attr, Math.min(skillData.getLevel() + 1, maxLevel));
                     if (attr.equals("level") || attr.equals("cost"))
                     {
-                        nextValue = (int) Math.floor(NumberParser.parseDouble(nextValue.toString()));
+                    	nextValue = (int) Math.floor(NumberParser.parseDouble(nextValue.toString()));
                         currValue = nextValue;
                     }
 

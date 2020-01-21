@@ -13,10 +13,12 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.dynamic.TempEntity;
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,6 +55,13 @@ public abstract class TargetComponent extends EffectComponent {
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
         final List<LivingEntity> list = getTargets(caster, level, targets);
+        Iterator<LivingEntity> iter = list.iterator();
+        while (iter.hasNext()) {
+        	LivingEntity ent = iter.next();
+        	if (!ent.isValid()) {
+        		iter.remove();
+        	}
+        }
         return (!list.isEmpty() && executeChildren(caster, level, list));
     }
 

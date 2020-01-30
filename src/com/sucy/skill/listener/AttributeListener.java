@@ -344,7 +344,6 @@ public class AttributeListener extends SkillAPIListener
         Player player = data.getPlayer();
         if (player != null && SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
         {
-        	System.out.println("Updating player...");
             double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth(), 0, Double.MAX_VALUE);
             data.addMaxHealth(change);
 
@@ -409,7 +408,7 @@ public class AttributeListener extends SkillAPIListener
             double current = BONUSES.containsKey(mapKey) ? BONUSES.remove(mapKey) : 0;
             double updated = Math.max(min, Math.min(max, data.scaleStat(key, value - current) - value + current));
             BONUSES.put(mapKey, updated);
-            return updated - current;
+            return (updated - current) >= 0 ? (updated - current) : 0;
         }
         return 0;
     }

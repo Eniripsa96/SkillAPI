@@ -366,7 +366,6 @@ public class PlayerData {
      * @param amount amount to give
      */
     public void giveAttribute(String key, int amount) {
-    	System.out.println("Give attribute");
         key = key.toLowerCase();
         int current = getInvestedAttribute(key);
         int max = SkillAPI.getAttributeManager().getAttribute(key).getMax();
@@ -385,7 +384,6 @@ public class PlayerData {
      * @param amount amount to add
      */
     public void addBonusAttributes(String key, int amount) {
-    	System.out.println("Add Bonus Attributes");
         key = SkillAPI.getAttributeManager().normalize(key);
         amount += bonusAttrib.getOrDefault(key, 0);
         bonusAttrib.put(key, amount);
@@ -1352,19 +1350,15 @@ public class PlayerData {
 
         // Update maxes
         double health = bonusHealth;
-    	System.out.println("Bonus health = " + bonusHealth);
         maxMana = bonusMana;
         for (PlayerClass c : classes.values()) {
-        	System.out.println("Health += " + c.getHealth());
             health += c.getHealth();
             maxMana += c.getMana();
         }
         if (health == bonusHealth) {
-        	System.out.println("Health == bonusHealth, += defaulthealth " + SkillAPI.getSettings().getDefaultHealth());
             health += SkillAPI.getSettings().getDefaultHealth();
         }
         if (health <= 0) {
-        	System.out.println("Health <= 0, = defaulthealth " + SkillAPI.getSettings().getDefaultHealth());
             health = SkillAPI.getSettings().getDefaultHealth();
         }
         if (SkillAPI.getSettings().isModifyHealth()) { player.setMaxHealth(health); }

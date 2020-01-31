@@ -1388,7 +1388,7 @@ public class PlayerData {
      */
     public void addMaxHealth(double amount) {
         bonusHealth += amount;
-    	System.out.println("add max health + " + amount + " = " + bonusHealth);
+        bonusHealth = bonusHealth >= 0 ? bonusHealth : 0;
         final Player player = getPlayer();
         if (player != null) {
             if (VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {

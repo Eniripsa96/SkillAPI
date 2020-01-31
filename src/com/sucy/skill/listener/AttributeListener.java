@@ -407,8 +407,8 @@ public class AttributeListener extends SkillAPIListener
             String mapKey = player.getName() + ":" + key;
             double current = BONUSES.containsKey(mapKey) ? BONUSES.remove(mapKey) : 0;
             double updated = Math.max(min, Math.min(max, data.scaleStat(key, value - current) - value + current));
-            BONUSES.put(mapKey, updated);
-            return (updated - current) >= 0 ? (updated - current) : 0;
+            BONUSES.put(mapKey, updated >= 0 ? updated : 0);
+            return updated - current;
         }
         return 0;
     }

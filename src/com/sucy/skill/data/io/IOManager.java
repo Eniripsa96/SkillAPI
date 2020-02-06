@@ -290,6 +290,9 @@ public abstract class IOManager
     {
         try
         {
+        	if (data.getData(1).getClass("class").getData().getName() == null) {
+        		throw new Exception("Account 1 was not professed");
+        	}
             DataSection file = new DataSection();
             file.set(LIMIT, data.getAccountLimit());
             file.set(ACTIVE, data.getActiveId());
@@ -393,7 +396,7 @@ public abstract class IOManager
         }
         catch (Exception ex)
         {
-            Logger.bug("Failed to save player data for " + data.getPlayer().getName());
+            Logger.bug("Failed to save player data for " + data.getPlayerName());
             ex.printStackTrace();
             return null;
         }

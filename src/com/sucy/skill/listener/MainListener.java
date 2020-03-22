@@ -121,7 +121,7 @@ public class MainListener extends SkillAPIListener
         if (SkillAPI.getSettings().isUseSql() && delay > 0) {
             final BukkitTask task = SkillAPI.schedule(() -> {
                 try {
-                    SkillAPI.reloadPlayerData(player);
+                    SkillAPI.loadPlayerDataSQL(player);
                     init(player);
                 } finally {
                     loadingPlayers.remove(event.getPlayer().getUniqueId());

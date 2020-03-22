@@ -1344,7 +1344,7 @@ public class PlayerData {
      * @param player player to update the health and mana for
      */
     public void updateHealthAndMana(Player player) {
-        if (player == null) {
+        if (player == null || !SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
             return;
         }
 
@@ -1882,6 +1882,7 @@ public class PlayerData {
      */
     public void init(Player player) {
         if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld())) { return; }
+        System.out.println("REAL INIT");
 
         AttributeListener.updatePlayer(this);
         getEquips().update(player);

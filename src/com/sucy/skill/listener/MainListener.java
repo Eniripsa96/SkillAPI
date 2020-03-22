@@ -390,6 +390,7 @@ public class MainListener extends SkillAPIListener
     {
         if (Skill.isSkillDamage()
             || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
+            || event.getCause() == EntityDamageEvent.DamageCause.THORNS
             || !(event.getEntity() instanceof LivingEntity)
             || event.getDamage() <= 0)
         {

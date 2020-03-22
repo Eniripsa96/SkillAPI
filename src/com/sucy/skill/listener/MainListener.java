@@ -114,7 +114,7 @@ public class MainListener extends SkillAPIListener
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        if (player.hasMetadata("NPC") || !SkillAPI.getSettings().isWorldEnabled(player.getWorld()))
+        if (player.hasMetadata("NPC"))
             return;
 
         final int delay = SkillAPI.getSettings().getSqlDelay();

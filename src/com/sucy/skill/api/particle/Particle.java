@@ -53,7 +53,7 @@ public class Particle {
     private static Field connection;
 
     private static HashMap<String, Object> particleTypes = new HashMap<>();
-
+    
     /**
      * Initializes the SkillAPI particle utility
      */
@@ -66,11 +66,31 @@ public class Particle {
             connection = Class.forName(nms + "EntityPlayer").getDeclaredField("playerConnection");
             sendPacket = Class.forName(nms + "PlayerConnection")
                     .getDeclaredMethod("sendPacket", Class.forName(nms + "Packet"));
-
+            
             Class<?> packetClass;
             // 1.13+ Servers
             Class<?> particleEnum;
-            if (VersionManager.isVersionAtLeast(11300)) {
+
+            // 1.15 servers
+            if (VersionManager.isVersionAtLeast(11500)) {
+                Class<?> craftParticle = Class.forName(craft + "CraftParticle");
+                toNms = craftParticle.getDeclaredMethod("toNMS", org.bukkit.Particle.class, Object.class);
+                particleEnum = Class.forName(nms + "ParticleParam");
+                packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
+                packet = packetClass.getConstructor(
+                        particleEnum,
+                        boolean.class,
+                        double.class,
+                        double.class,
+                        double.class,
+                        float.class,
+                        float.class,
+                        float.class,
+                        float.class,
+                        int.class);
+            }
+            
+            else if (VersionManager.isVersionAtLeast(11300)) {
                 Class<?> craftParticle = Class.forName(craft + "CraftParticle");
                 toNms = craftParticle.getDeclaredMethod("toNMS", org.bukkit.Particle.class, Object.class);
                 particleEnum = Class.forName(nms + "ParticleParam");
@@ -123,6 +143,7 @@ public class Particle {
                         Integer.TYPE);
             }
         } catch (Exception ex) {
+        	ex.printStackTrace();
             System.out.println("Failed to set up particles, are you using Cauldron?");
         }
     }
@@ -243,8 +264,35 @@ public class Particle {
             Material material,
             int data) throws Exception {
 
-        // 1.13+ servers
-        if (VersionManager.isVersionAtLeast(11300)) {
+        
+    	// 1.15+ servers
+        if (VersionManager.isVersionAtLeast(11500)) {
+            Object obj = data;
+            final org.bukkit.Particle bukkit = org.bukkit.Particle.valueOf(name);
+            switch (bukkit) {
+                case REDSTONE:
+                    final Color color = Color.fromRGB((int) (255 * (dx + 1)), (int) (255 * dy), (int) (255 * dz));
+                    dx = 0;
+                    dy = 0;
+                    dz = 0;
+                    obj = new org.bukkit.Particle.DustOptions(color, amount);
+                    break;
+                case ITEM_CRACK:
+                    obj = new ItemStack(material, 1, (short) 0, (byte) data);
+                    break;
+                case BLOCK_CRACK:
+                case BLOCK_DUST:
+                case FALLING_DUST:
+                    obj = material.createBlockData();
+            }
+        	if(toNms == null)
+            	init();
+            final Object particle = toNms.invoke(null, bukkit, obj);
+            return packet.newInstance(particle, true, x, y, z, dx, dy, dz, speed, amount);
+        }
+        
+    	// 1.13+ servers
+        else if (VersionManager.isVersionAtLeast(11300)) {
             Object obj = data;
             final org.bukkit.Particle bukkit = org.bukkit.Particle.valueOf(name);
             switch (bukkit) {
@@ -263,6 +311,8 @@ public class Particle {
                 case FALLING_DUST:
                     obj = material.createBlockData();
             }
+        	if(toNms == null)
+            	init();
             final Object particle = toNms.invoke(null, bukkit, obj);
             return packet.newInstance(particle, true, (float) x, (float) y, (float) z, dx, dy, dz, speed, amount);
         }

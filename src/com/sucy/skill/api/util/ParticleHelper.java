@@ -184,7 +184,7 @@ public class ParticleHelper {
      * @param settings data to play the particle with
      */
     public static void play(Location loc, String particle, Settings settings) {
-        particle = particle.toLowerCase().replace("_", " ");
+//        particle = particle.toLowerCase().replace("_", " ");
         final int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
         final float dx = (float)settings.getDouble(DX_KEY, 0.0);
         final float dy = (float)settings.getDouble(DY_KEY, 0.0);
@@ -235,6 +235,7 @@ public class ParticleHelper {
                 Particle.play(particle, loc, rad, dx, dy, dz, speed, amount);
             }
         } catch (Exception ex) {
+        	ex.printStackTrace();
             Logger.invalid(ex.getCause().getMessage());
         }
     }

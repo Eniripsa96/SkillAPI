@@ -183,7 +183,7 @@ public class ParticleHelper {
      * @param particle particle to play
      * @param settings data to play the particle with
      */
-    public static void play(Location loc, String particle, Settings settings) {
+    public static void play(Location loc, final String particle, Settings settings) {
 //        particle = particle.toLowerCase().replace("_", " ");
         final int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
         final float dx = (float)settings.getDouble(DX_KEY, 0.0);

@@ -25,7 +25,7 @@ public class SpigotParticles {
     }
 
     private static void play(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material) {
-        final Particle effect = Particle.valueOf(particle.toUpperCase());
+        final Particle effect = Particle.valueOf(particle.toUpperCase().replace(' ', '_'));
         if (effect == null) return;
 
         try {

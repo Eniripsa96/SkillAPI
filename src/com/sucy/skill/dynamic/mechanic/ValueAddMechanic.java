@@ -62,7 +62,11 @@ public class ValueAddMechanic extends MechanicComponent {
         String key = settings.getString(KEY);
         double amount = parseValues(caster, AMOUNT, level, 1) * targets.size();
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
-        if (!data.containsKey(key)) { data.put(key, amount); } else { data.put(key, amount + (Double) data.get(key)); }
+        if (!data.containsKey(key)) {
+        	data.put(key, amount);
+        } else {
+        	data.put(key, amount + (double) data.get(key));
+        }
         return true;
     }
 }

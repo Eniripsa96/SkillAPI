@@ -33,6 +33,7 @@ import com.sucy.skill.api.particle.target.FixedTarget;
 import com.sucy.skill.api.util.Nearby;
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -40,6 +41,7 @@ import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
@@ -47,8 +49,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -56,9 +60,12 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -66,6 +73,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Temporary dummy entity used for targeting a location in the dynamic system
@@ -662,4 +672,89 @@ public class TempEntity implements LivingEntity {
     public AttributeInstance getAttribute(Attribute attribute) {
         return null;
     }
+
+	@Override
+	public double getAbsorptionAmount() {
+		return 0;
+	}
+
+	@Override
+	public void setAbsorptionAmount(double arg0) {
+		
+	}
+
+	@Override
+	public BoundingBox getBoundingBox() {
+		return null;
+	}
+
+	@Override
+	public BlockFace getFacing() {
+		return null;
+	}
+
+	@Override
+	public Pose getPose() {
+		return null;
+	}
+
+	@Override
+	public boolean isPersistent() {
+		return false;
+	}
+
+	@Override
+	public void setPersistent(boolean arg0) {
+		
+	}
+
+	@Override
+	public void setRotation(float arg0, float arg1) {
+		
+	}
+
+	@Override
+	public PersistentDataContainer getPersistentDataContainer() {
+		return null;
+	}
+
+	@Override
+	public <T> T getMemory(@Nonnull MemoryKey<T> arg0) {
+		return null;
+	}
+
+	@Override
+	public @Nullable Block getTargetBlockExact(int arg0) {
+		return null;
+	}
+
+	@Override
+	public @Nullable Block getTargetBlockExact(int arg0, @Nonnull FluidCollisionMode arg1) {
+		return null;
+	}
+
+	@Override
+	public boolean isRiptiding() {
+		return false;
+	}
+
+	@Override
+	public boolean isSleeping() {
+		return false;
+	}
+
+	@Override
+	public @Nullable RayTraceResult rayTraceBlocks(double arg0) {
+		return null;
+	}
+
+	@Override
+	public @Nullable RayTraceResult rayTraceBlocks(double arg0, @Nonnull FluidCollisionMode arg1) {
+		return null;
+	}
+
+	@Override
+	public <T> void setMemory(@Nonnull MemoryKey<T> arg0, @Nullable T arg1) {
+		
+	}
 }

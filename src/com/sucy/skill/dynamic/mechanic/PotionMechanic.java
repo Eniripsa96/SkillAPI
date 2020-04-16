@@ -70,7 +70,6 @@ public class PotionMechanic extends MechanicComponent {
             boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
             int ticks = (int) (seconds * 20);
             for (LivingEntity target : targets) {
-            	target.removePotionEffect(potion);
                 target.addPotionEffect(new PotionEffect(potion, ticks, tier, ambient), true);
             }
             return targets.size() > 0;

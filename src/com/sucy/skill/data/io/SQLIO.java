@@ -142,6 +142,7 @@ public class SQLIO extends IOManager
     private void saveSingle(SQLConnection connection, PlayerAccounts data)
     {
         DataSection file = save(data);
+        if (data.getPlayer().hasMetadata("NPC")) return;
 
         try
         {

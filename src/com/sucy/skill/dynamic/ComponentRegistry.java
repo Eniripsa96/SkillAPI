@@ -130,10 +130,13 @@ import com.sucy.skill.dynamic.trigger.EnvironmentalTrigger;
 import com.sucy.skill.dynamic.trigger.KillTrigger;
 import com.sucy.skill.dynamic.trigger.LandTrigger;
 import com.sucy.skill.dynamic.trigger.LaunchTrigger;
+import com.sucy.skill.dynamic.trigger.LeftClickTrigger;
 import com.sucy.skill.dynamic.trigger.MoveTrigger;
 import com.sucy.skill.dynamic.trigger.PhysicalDealtTrigger;
 import com.sucy.skill.dynamic.trigger.PhysicalTakenTrigger;
+import com.sucy.skill.dynamic.trigger.SkillCastTrigger;
 import com.sucy.skill.dynamic.trigger.SkillDealtTrigger;
+import com.sucy.skill.dynamic.trigger.SkillHealTrigger;
 import com.sucy.skill.dynamic.trigger.SkillTakenTrigger;
 import com.sucy.skill.dynamic.trigger.Trigger;
 import org.bukkit.event.Event;
@@ -270,6 +273,11 @@ public class ComponentRegistry {
         register(new PhysicalTakenTrigger());
         register(new SkillDealtTrigger());
         register(new SkillTakenTrigger());
+        
+        // Custom Triggers
+        register(new SkillCastTrigger());
+        register(new SkillHealTrigger());
+        register(new LeftClickTrigger());
 
         // Targets
         register(new AreaTarget());

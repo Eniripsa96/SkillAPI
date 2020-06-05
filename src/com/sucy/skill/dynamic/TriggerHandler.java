@@ -79,6 +79,16 @@ public class TriggerHandler implements Listener {
                 trigger.getEvent(), this, EventPriority.HIGHEST, getExecutor(trigger), plugin, true);
     }
 
+    /**
+     * Registers needed events for the skill, intentionally not ignoring unused events
+     *
+     * @param plugin plugin reference
+     */
+    public void registerNoIgnore(final SkillAPI plugin) {
+        plugin.getServer().getPluginManager().registerEvent(
+                trigger.getEvent(), this, EventPriority.HIGHEST, getExecutor(trigger), plugin, false);
+    }
+
     <T extends Event> void apply(final T event, final Trigger<T> trigger) {
         final LivingEntity caster = trigger.getCaster(event);
         if (caster == null || !active.containsKey(caster.getEntityId())) { return; }

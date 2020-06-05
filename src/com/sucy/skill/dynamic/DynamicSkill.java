@@ -186,6 +186,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
      */
     public void registerEvents(final SkillAPI plugin) {
         for (final TriggerHandler triggerHandler : triggers) {
+        	if (triggerHandler.getTrigger().getKey().equals("LEFT_CLICK")) {
+        		triggerHandler.registerNoIgnore(plugin);
+        	}
             triggerHandler.register(plugin);
         }
     }

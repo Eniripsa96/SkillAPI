@@ -136,7 +136,7 @@ public abstract class IOManager
     {
         PlayerAccounts data = new PlayerAccounts(player);
         DataSection accounts = file.getSection(ACCOUNTS);
-        if (accounts == null)
+        if (accounts == null || accounts.keys() == null)
         {
             data.getActiveData().endInit();
             return data;

@@ -71,7 +71,6 @@ public class SkillHealTrigger implements CustomTrigger<SkillHealEvent> {
 		// TODO Auto-generated method stub
         final double min = settings.getDouble("heal-min", 0);
         final double max = settings.getDouble("heal-max", 999999);
-		System.out.println("PLAYER HEAL");
 		return !e.isCancelled() && min <= e.getAmount() && max >= e.getAmount();
 	}
 

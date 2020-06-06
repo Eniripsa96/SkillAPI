@@ -57,7 +57,6 @@ public class SkillCastTrigger implements CustomTrigger<PlayerCastSkillEvent> {
 	@Override
 	public boolean shouldTrigger(PlayerCastSkillEvent e, final int level, Settings s) {
 		// TODO Auto-generated method stub
-		System.out.println("SKILL CAST");
 		return !e.isCancelled();
 	}
 

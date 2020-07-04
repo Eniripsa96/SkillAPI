@@ -26,7 +26,6 @@
  */
 package com.sucy.skill.dynamic.condition;
 
-import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 
@@ -53,6 +52,9 @@ public class ToolCondition extends ConditionComponent {
         }
         if (tool.equalsIgnoreCase("_WEAPON")) {
         	return hand.contains("AXE") || hand.contains("SWORD") || hand.contains("TRIDENT");
+        }
+        if (tool.equalsIgnoreCase("_HEAVY")) {
+        	return hand.contains("AXE") || hand.contains("TRIDENT");
         }
         return (material.equals("ANY") || hand.contains(material)) && (tool.equals("_ANY") || hand.contains(tool));
     }

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.particle;
 
+import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.particle.direction.DirectionHandler;
 import com.sucy.skill.data.Point2D;
 import com.sucy.skill.data.Point3D;
@@ -160,25 +161,44 @@ public class ParticleEffect
             double p = (double) frame / animation.getSteps();
 
             int j = 0, k = 0;
-            for (int i = frame * animation.getCopies(); i < next; i++)
-            {
-                Point3D p1 = animPoints[i];
-                double animSize = this.animSize.compute(t, p, cs.x, cs.y, p1.x, p1.y, p1.z, level);
-                for (Point3D p2 : shapePoints)
-                {
-                    double size = this.size.compute(t, p, cs.x, cs.y, p2.x, p2.y, p2.z, level);
-                    packets[k++] = particle.instance(
-                        p1.x * animSize + animDir.rotateX(p2, trig[j]) * size + loc.getX(),
-                        p1.y * animSize + animDir.rotateY(p2, trig[j]) * size + loc.getY(),
-                        p1.z * animSize + animDir.rotateZ(p2, trig[j]) * size + loc.getZ()
-                    );
+
+            if (VersionManager.isVersionAtLeast(11300)) {
+                org.bukkit.Particle effect = org.bukkit.Particle.valueOf(this.particle.type.name());
+                int count = this.particle.amount;
+                double dx = this.particle.dx;
+                double dy = this.particle.dy;
+                double dz = this.particle.dz;
+                float speed = this.particle.speed;
+                Object data = com.sucy.skill.api.particle.Particle.data(effect, dx, dy, dz, count, this.particle.material);
+
+                for(int i = frame * this.animation.getCopies(); i < next; ++i) {
+                    Point3D p1 = animPoints[i];
+                    double animSize = this.animSize.compute(t, p, cs.x, cs.y, p1.x, p1.y, p1.z, level);
+
+                    for (Point3D p2 : shapePoints) {
+                        double size = this.size.compute(t, p, cs.x, cs.y, p2.x, p2.y, p2.z, (double) level);
+                        loc.getWorld().spawnParticle(effect, p1.x * animSize + this.animDir.rotateX(p2, trig[j]) * size + loc.getX(), p1.y * animSize + this.animDir.rotateY(p2, trig[j]) * size + loc.getY(), p1.z * animSize + this.animDir.rotateZ(p2, trig[j]) * size + loc.getZ(), count, dx, dy, dz, (double) speed, data);
+                    }
+                    ++j;
                 }
-                j++;
+            } else {
+                for (int i = frame * animation.getCopies(); i < next; i++) {
+                    Point3D p1 = animPoints[i];
+                    double animSize = this.animSize.compute(t, p, cs.x, cs.y, p1.x, p1.y, p1.z, level);
+                    for (Point3D p2 : shapePoints)
+                    {
+                        double size = this.size.compute(t, p, cs.x, cs.y, p2.x, p2.y, p2.z, level);
+                        packets[k++] = particle.instance(
+                                p1.x * animSize + animDir.rotateX(p2, trig[j]) * size + loc.getX(),
+                                p1.y * animSize + animDir.rotateY(p2, trig[j]) * size + loc.getY(),
+                                p1.z * animSize + animDir.rotateZ(p2, trig[j]) * size + loc.getZ()
+                        );
+                    }
+                    j++;
+                }
+                Particle.send(loc, packets, view);
             }
-            Particle.send(loc, packets, view);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }

@@ -2,6 +2,7 @@ package com.sucy.skill.api.particle;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.rit.sucy.version.VersionManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -33,9 +34,13 @@ public class SpigotParticles {
         if (effect == null) return;
 
         try {
-            final Object packet = com.sucy.skill.api.particle.Particle.make(
-                    effect.name(), loc.getX(), loc.getY(), loc.getZ(), dx, dy, dz, speed, count, material, 0);
-            com.sucy.skill.api.particle.Particle.send(loc, ImmutableList.of(packet), distance);
+            if (VersionManager.isVersionAtLeast(11300)) {
+                loc.getWorld().spawnParticle(effect, loc, count, dx, dy, dz, speed, com.sucy.skill.api.particle.Particle.data(effect, dx, dy, dz, count, material));
+            } else {
+                final Object packet = com.sucy.skill.api.particle.Particle.make(
+                        effect.name(), loc.getX(), loc.getY(), loc.getZ(), dx, dy, dz, speed, count, material, 0);
+                com.sucy.skill.api.particle.Particle.send(loc, ImmutableList.of(packet), distance);
+            }
         } catch (final Exception ex) {
             if (error) {
                 ex.printStackTrace();

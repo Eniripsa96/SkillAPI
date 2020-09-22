@@ -28,6 +28,7 @@ package com.sucy.skill.api.particle;
 
 import com.rit.sucy.config.parse.DataSection;
 import org.bukkit.Material;
+import org.bukkit.World;
 
 /**
  * Settings for playing a particle

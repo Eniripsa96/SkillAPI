@@ -27,10 +27,7 @@
 package com.sucy.skill.api.particle;
 
 import com.rit.sucy.version.VersionManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -123,7 +120,9 @@ public class Particle {
                         Integer.TYPE);
             }
         } catch (Exception ex) {
-            System.out.println("Failed to set up particles, are you using Cauldron?");
+            if (!VersionManager.isVersionAtLeast(11300)) {
+                System.out.println("Failed to set up particles, are you using Cauldron?");
+            }
         }
     }
 
@@ -212,6 +211,7 @@ public class Particle {
      *
      * @throws Exception
      */
+
     public static Object make(ParticleSettings settings, double x, double y, double z) throws Exception {
         // Invalid particle settings
         if (settings == null || settings.type == null) { return null; }
@@ -243,32 +243,8 @@ public class Particle {
             Material material,
             int data) throws Exception {
 
-        // 1.13+ servers
-        if (VersionManager.isVersionAtLeast(11300)) {
-            Object obj = data;
-            final org.bukkit.Particle bukkit = org.bukkit.Particle.valueOf(name);
-            switch (bukkit) {
-                case REDSTONE:
-                    final Color color = Color.fromRGB(mapColor(dx + 1), mapColor(dy), mapColor(dz));
-                    dx = 0;
-                    dy = 0;
-                    dz = 0;
-                    obj = new org.bukkit.Particle.DustOptions(color, amount);
-                    break;
-                case ITEM_CRACK:
-                    obj = new ItemStack(material, 1, (short) 0, (byte) data);
-                    break;
-                case BLOCK_CRACK:
-                case BLOCK_DUST:
-                case FALLING_DUST:
-                    obj = material.createBlockData();
-            }
-            final Object particle = toNms.invoke(null, bukkit, obj);
-            return packet.newInstance(particle, true, (float) x, (float) y, (float) z, dx, dy, dz, speed, amount);
-        }
-
         // 1.8+ servers use an enum value to validate the particle type
-        else if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
+        if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
             Object enumType = particleTypes.get(name);
             return packet.newInstance(
                     enumType,
@@ -294,5 +270,23 @@ public class Particle {
 
     private static int mapColor(double decimal) {
         return (int) Math.max(0, Math.min(255, decimal * 255));
+    }
+
+    public static Object data(org.bukkit.Particle particle, double dx, double dy, double dz, int amount, Material material) {
+        Object data = null;
+        switch (particle) {
+            case REDSTONE:
+                final Color color = Color.fromRGB(mapColor(dx + 1), mapColor(dy), mapColor(dz));
+                data = new org.bukkit.Particle.DustOptions(color, amount);
+                break;
+            case ITEM_CRACK:
+                data = new ItemStack(material);
+                break;
+            case BLOCK_CRACK:
+            case BLOCK_DUST:
+            case FALLING_DUST:
+                data = material.createBlockData();
+        }
+        return data;
     }
 }

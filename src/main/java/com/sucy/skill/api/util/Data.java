@@ -31,6 +31,7 @@ import com.rit.sucy.text.TextFormatter;
 import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
@@ -82,11 +83,8 @@ public class Data {
     public static void serializeIcon(ItemStack item, DataSection config) {
         config.set(MAT, item.getType().name());
         config.set(DURABILITY, item.getDurability());
-        int cmd = 0;
-        try {
-            cmd = item.getItemMeta().getCustomModelData();
-        } catch (NullPointerException ignored) {}
-        config.set(DATA, cmd);
+        ItemMeta meta = item.getItemMeta();
+        config.set(DATA, meta.hasCustomModelData() ? meta.getCustomModelData() : 0);
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             List<String> lore = item.getItemMeta().getLore();

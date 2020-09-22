@@ -176,7 +176,7 @@ public class ParticleEffect
                     double animSize = this.animSize.compute(t, p, cs.x, cs.y, p1.x, p1.y, p1.z, level);
 
                     for (Point3D p2 : shapePoints) {
-                        double size = this.size.compute(t, p, cs.x, cs.y, p2.x, p2.y, p2.z, (double) level);
+                        double size = this.size.compute(t, p, cs.x, cs.y, p2.x, p2.y, p2.z, level);
                         loc.getWorld().spawnParticle(effect, p1.x * animSize + this.animDir.rotateX(p2, trig[j]) * size + loc.getX(), p1.y * animSize + this.animDir.rotateY(p2, trig[j]) * size + loc.getY(), p1.z * animSize + this.animDir.rotateZ(p2, trig[j]) * size + loc.getZ(), count, dx, dy, dz, (double) speed, data);
                     }
                     ++j;

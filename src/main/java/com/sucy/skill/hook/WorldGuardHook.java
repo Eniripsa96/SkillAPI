@@ -1,7 +1,7 @@
 package com.sucy.skill.hook;
 
 import com.google.common.collect.ImmutableList;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -46,8 +46,8 @@ public class WorldGuardHook {
         }
     }
 
-    private static Vector asVector(final Location location) {
-        return new Vector(location.getX(), location.getY(), location.getZ());
+    private static BlockVector3 asVector(final Location location) {
+        return BlockVector3.at(location.getX(), location.getY(),location.getZ());
     }
 
     private static Method getRegionMethod() throws Exception {

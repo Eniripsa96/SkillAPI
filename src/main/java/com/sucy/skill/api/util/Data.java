@@ -28,6 +28,7 @@ package com.sucy.skill.api.util;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
+import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +47,7 @@ public class Data {
     private static final String DURABILITY = "icon-durability";
     private static final String LORE       = "icon-lore";
 
-    private static ItemStack parse(final String mat, final short dur, final byte data, final List<String> lore) {
+    private static ItemStack parse(final String mat, final short dur, final int data, final List<String> lore) {
         try {
             Material material = Material.matchMaterial(mat);
             if (material == null) {
@@ -54,16 +55,18 @@ public class Data {
             }
 
             final ItemStack item = new ItemStack(material);
-            item.setData(new MaterialData(material, data));
+            final ItemMeta meta = item.getItemMeta();
+            if (data!=0) {
+                meta.setCustomModelData(data);
+            }
             item.setDurability(dur);
 
             if (lore != null && !lore.isEmpty()) {
                 final List<String> colored = TextFormatter.colorStringList(lore);
-                final ItemMeta meta = item.getItemMeta();
                 meta.setDisplayName(colored.remove(0));
                 meta.setLore(colored);
-                item.setItemMeta(meta);
             }
+            item.setItemMeta(meta);
             return DamageLoreRemover.removeAttackDmg(item);
         } catch (final Exception ex) {
             return new ItemStack(Material.JACK_O_LANTERN);
@@ -79,7 +82,11 @@ public class Data {
     public static void serializeIcon(ItemStack item, DataSection config) {
         config.set(MAT, item.getType().name());
         config.set(DURABILITY, item.getDurability());
-        config.set(DATA, item.getData().getData());
+        int cmd = 0;
+        try {
+            cmd = item.getItemMeta().getCustomModelData();
+        } catch (NullPointerException ignored) {}
+        config.set(DATA, cmd);
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             List<String> lore = item.getItemMeta().getLore();
@@ -107,7 +114,7 @@ public class Data {
         return parse(
                 config.getString(MAT, "JACK_O_LANTERN"),
                 (short) config.getInt(DURABILITY, data),
-                (byte) data,
+                data,
                 config.getList(LORE, null));
     }
 }

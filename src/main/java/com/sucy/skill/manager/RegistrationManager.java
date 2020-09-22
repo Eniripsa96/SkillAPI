@@ -166,6 +166,7 @@ public class RegistrationManager {
                     }
                 } catch (Exception ex) {
                     Logger.invalid("Failed to load skill: " + key + " - " + ex.getMessage());
+                    ex.printStackTrace();
                 }
             }
         } else {
@@ -200,6 +201,7 @@ public class RegistrationManager {
                         }
                     } catch (Exception ex) {
                         Logger.invalid("Failed to load skill: " + name + " - " + ex.getMessage());
+                        ex.printStackTrace();
                     }
                 }
             }

@@ -1520,11 +1520,12 @@ public class Settings {
         if (mat == null) { mat = Material.PUMPKIN_SEEDS; }
         unassigned = new ItemStack(mat);
 
-        final int data = icon.getInt("data", 0);
-        unassigned.setDurability((short) data);
-        unassigned.setData(new MaterialData(mat, (byte) data));
-
         ItemMeta meta = unassigned.getItemMeta();
+        int customModelData = icon.getInt("data", 0);
+        if (customModelData!=0) {
+            meta.setCustomModelData(icon.getInt("data", 0));
+        }
+
         if (icon.isList("text")) {
             List<String> format = TextFormatter.colorStringList(icon.getList("text"));
             meta.setDisplayName(format.remove(0));

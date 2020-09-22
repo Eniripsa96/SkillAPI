@@ -2,3 +2,4 @@
 *.iml
 lib/
 pom.xml
+/*.c

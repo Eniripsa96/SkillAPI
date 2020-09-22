@@ -1,0 +1,249 @@
+Baby Turtle:
+  size: 0.32
+  height: 0.12
+Baby Rabbit:
+  size: 0.2
+  height: 0.25
+Cod:
+  size: 0.5
+  height: 0.3
+Baby Chicken:
+  size: 0.2
+  height: 0.35
+Baby Ocelot/Cat:
+  size: 0.3
+  height: 0.35
+Tropical Fish:
+  size: 0.5
+  height: 0.4
+Salmon:
+  size: 0.7
+  height: 0.4
+Turtle:
+  size: 1.1
+  height: 0.4
+Baby Wolf:
+  size: 0.3
+  height: 0.425
+Baby Pig:
+  size: 0.45
+  height: 0.45
+Rabbit:
+  size: 0.4
+  height: 0.5
+Pufferfish:
+  size: 0.7
+  height: 0.7
+Dolphin:
+  size: 0.9
+  height: 0.6
+Baby Panda:
+  size: 0.65
+  height: 0.625
+Baby Sheep:
+  size: 0.45
+  height: 0.675
+Chicken:
+  size: 0.4
+  height: 0.7
+Baby Cow:
+  size: 0.45
+  height: 0.7
+Baby Mooshroom:
+  size: 0.45
+  height: 0.7
+Baby Polar Bear:
+  size: 0.65
+  height: 0.7
+Ocelot:
+  size: 0.6
+  height: 0.7
+Cat:
+  size: 0.6
+  height: 0.7
+Baby Horses:
+  size: 0.6982
+  height: 0.8
+Wolf:
+  size: 0.6
+  height: 0.85
+Dog:
+  size: 0.6
+  height: 0.85
+Pig:
+  size: 0.9
+  height: 0.9
+Baby Llama:
+  size: 0.45
+  height: 0.9375
+Panda:
+  size: 1.3
+  height: 1.25
+Sheep:
+  size: 0.9
+  height: 1.3
+Cow:
+  size: 0.9
+  height: 1.4
+Mooshroom:
+  size: 0.9
+  height: 1.4
+Polar Bear:
+  size: 1.3
+  height: 1.4
+Horse:
+  size: 1.3964
+  height: 1.6
+Llama:
+  size: 0.9
+  height: 1.875
+Ravager:
+  size: 1.95
+  height: 2.2
+Endermite:
+  size: 0.4
+  height: 0.3
+Silverfish:
+  size: 0.4
+  height: 0.3
+Cave Spider:
+  size: 0.7
+  height: 0.5
+Phantom:
+  size: 0.8
+  height: 0.5
+Small Slime:
+  size: 0.51
+  height: 0.51
+Magma Cube:
+  size: 0.51
+  height: 0.51
+Vex:
+  size: 0.4
+  height: 0.8
+Guardian:
+  size: 0.85
+  height: 0.85
+Spider:
+  size: 1.4
+  height: 0.9
+Baby Zombie:
+  size: 0.3
+  height: 0.975
+Baby Husk:
+  size: 0.3
+  height: 0.975
+Baby Drowned:
+  size: 0.3
+  height: 0.975
+Shulker:
+  size: 1
+  height: 1
+Medium Slime:
+  size: 1.02
+  height: 1.02
+Medium Magma Cube:
+  size: 1.02
+  height: 1.02
+Creeper:
+  size: 0.6
+  height: 1.7
+Blaze:
+  size: 0.6
+  height: 1.8
+Zombie:
+  size: 0.6
+  height: 1.95
+Evoker:
+  size: 0.6
+  height: 1.95
+Villager:
+  size: 0.6
+  height: 1.95
+Husk:
+  size: 0.6
+  height: 1.95
+Witch:
+  size: 0.6
+  height: 1.95
+Vindicator:
+  size: 0.6
+  height: 1.95
+Illusioner:
+  size: 0.6
+  height: 1.95
+Drowned:
+  size: 0.6
+  height: 1.95
+Pigman:
+  size: 0.6
+  height: 1.95
+Pillager:
+  size: 0.6
+  height: 1.95
+Skeleton/Stray:
+  size: 0.6
+  height: 1.99
+Elder Guardian:
+  size: 2
+  height: 2
+Large Slime:
+  size: 2.04
+  height: 2.04
+Large Magma Cube:
+  size: 2.04
+  height: 2.04
+Wither Skeleton:
+  size: 0.7
+  height: 2.4
+Enderman:
+  size: 0.6
+  height: 2.9
+Wither:
+  size: 0.9
+  height: 3.5
+Ghast:
+  size: 4
+  height: 4
+Giant:
+  size: 3.6
+  height: 11.7
+Ender Dragon:
+  size: 16
+  height: 8
+Squid:
+  size: 0.8
+  height: 0.8
+Bat/Parrot:
+  size: 0.5
+  height: 0.9
+Snow Golem:
+  size: 0.7
+  height: 1.9
+Iron Golem:
+  size: 1.4
+  height: 2.7
+Minecart:
+  size: 0.98
+  height: 0.7
+Boat:
+  size: 1.375
+  height: 0.5625
+Armor Stand:
+  size: 0.5
+  height: 1.975
+Falling Block:
+  size: 0.98
+  height: 0.98
+Xp Orb:
+  size: 0.5
+  height: 0.5
+Item:
+  size: 0.25
+  height: 0.25
+Ender Crystal:
+  size: 2﻿
+  height: 2
+Player:
+  size: 0.6
+  height: 1.8

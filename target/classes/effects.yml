@@ -1,0 +1,128 @@
+single:
+  formula: 0
+  steps: 1
+  copies: 1
+  domain: 1
+  x: 0
+  y: 0
+  z: 0
+linear:
+  formula: 1
+  steps: 20
+  copies: 1
+  domain: 0
+  x: 0
+  y: 0
+  z: 0
+linear-quick:
+  formula: 1
+  steps: 10
+  copies: 1
+  domain: 0
+  x: 0
+  y: 0
+  z: 0
+still:
+  formula: 0
+  steps: 20
+  copies: 1
+  domain: 0
+  x: 0
+  y: 0
+  z: 0
+one-point:
+  formula: 1
+  steps: 1
+  copies: 1
+  domain: 1
+  x: 0
+  y: 0
+  z: 0
+two-point:
+  formula: 1
+  steps: 2
+  copies: 1
+  domain: 1
+  x: 0
+  y: 0
+  z: 0
+three-point:
+  formula: 1
+  steps: 3
+  copies: 1
+  domain: 1
+  x: 0
+  y: 0
+  z: 0
+one-circle:
+  formula: 1
+  steps: 20
+  copies: 1
+  domain: 1
+  x: 0
+  y: 0
+  z: 0
+two-circle:
+  formula: 1
+  steps: 20
+  copies: 2
+  domain: 1
+  x: 0
+  y: 0
+  z: 0
+three-circle:
+  formula: 1
+  steps: 20
+  copies: 3
+  domain: 1
+  x: 0
+  y: 0
+  z: 0
+one-spiral:
+  formula: t
+  steps: 20
+  copies: 1
+  domain: 1
+  x: 0
+  y: 0
+  z: 0
+two-spiral:
+  formula: t*0.5
+  steps: 40
+  copies: 1
+  domain: 2
+  x: 0
+  y: 0
+  z: 0
+three-spiral:
+  formula: t*0.333
+  steps: 60
+  copies: 1
+  domain: 3
+  x: 0
+  y: 0
+  z: 0
+square:
+  formula: 1/c
+  steps: 5
+  copies: 8
+  domain: 0.125
+  x: 0
+  y: 0
+  z: 0
+pentagon:
+  formula: 1/c
+  steps: 5
+  copies: 10
+  domain: 0.1
+  x: 0
+  y: 0
+  z: 0
+hexagon:
+  formula: 1/c
+  steps: 4
+  copies: 12
+  domain: 0.08333
+  x: 0
+  y: 0
+  z: 0

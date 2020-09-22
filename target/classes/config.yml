@@ -1,0 +1,592 @@
+# ---------------------------------------------- #
+#              General Configuration             #
+# ---------------------------------------------- #
+# If you are unsure of how to use this file,     #
+# but would like to change how the plugin shows  #
+# text, visit the BukkitDev page at:             #
+# http://dev.bukkit.org/bukkit-plugins/skillapi/ #
+# and look at the default configuration section  #
+# ---------------------------------------------- #
+Accounts:
+  #
+  # The main class group used for GUI displays
+  main-class-group: class
+  #
+  # Allows one "account" per class, providing the "/class switch"
+  # command to change between them. This is an alternative to
+  # using "/class acc <id>" which professes as a class at the same
+  # time and makes it easier to correlate an account to a class.
+  # This will not work well if you have one common class
+  # that turns into the rest.
+  one-per-class: false
+  #
+  # The max number of accounts a normal user can use
+  max-accounts: 3
+  #
+  # The max number of accounts users can have with certain permissions
+  # must be in the format '<permission>:<accounts>'
+  perm-accounts:
+  - 'skillapi.account.admin:10'
+#
+# While targeting settings aren't necessary most of the time,
+# they can help make running ally checks much faster if
+# you are able to use them.
+Targeting:
+  #
+  # Whether or not all monsters are enemies.
+  # If you are using pets that include zombies/spiders/etc,
+  # you shouldn't enable this.
+  # If you want to enable it for specific worlds, list out the
+  # worlds it should apply to in a list format such as:
+  # monsters-enemy:
+  # - world1
+  # - world2
+  monsters-enemy: false
+  #
+  # Whether or not all passive mobs are allies.
+  # If there are custom passive mobs that you can fight,
+  # you should not enable this.
+  # If you want to enable it for specific worlds, list out the
+  # worlds it should apply to in a list format such as:
+  # passive-ally:
+  # - world1
+  # - world2
+  passive-ally: false
+  #
+  # Whether or not all players are allies.
+  # If you have any PvP, this should not be enabled.
+  # If you want to enable it for specific worlds, list out the
+  # worlds it should apply to in a list format such as:
+  # player-ally:
+  # - world1
+  # - world2
+  player-ally: false
+  #
+  # Whether or not to check for player allies via Parties
+  parties-ally: false
+  #
+  # Whether or not for skills to affect NPCs
+  affect-npcs: false
+  #
+  # Whether or not for skills to affect armor stands
+  affect-armor-stands: false
+#
+Saving:
+  #
+  # Whether or not to auto save data periodically
+  auto-save: false
+  #
+  # How often to auto-save in minutes
+  minutes: 30
+  #
+  # Whether or not to use an SQL database to save
+  sql-database: false
+  #
+  # Details for connecting to the database
+  sql-details:
+    host: localhost
+    port: 54321
+    database: plugins
+    username: username
+    password: password
+    # Time to wait on loading data from the SQL database in ticks.
+    # Can be used to give time for other servers to synchronize data. Note:
+    # this does not apply when loading player data on server startup since
+    # players wouldn't be coming from another server.
+    delay: 0
+#
+Classes:
+  #
+  # Whether or not to use SkillAPI's health system
+  modify-health: true
+  #
+  # The default health for players without a class
+  classless-hp: 20
+  #
+  # Whether or not non-castable auto-leveled skills are shown
+  show-auto-skills: false
+  #
+  # Whether or not attributes are enabled
+  attributes-enabled: false
+  #
+  # Whether or not attributes can be refunded
+  attributes-downgrade: false
+  #
+  # This casts the dynamic skill for the player when they level up,
+  # allowing you to use dynamic mechanics for level up effects. If
+  # there is no existing dynamic skill with the name, no effect
+  # will be played. For level-specific effects, use the level condition.
+  level-up-skill: 'lvlup'
+#
+Mana:
+  #
+  # Whether or not to use SkillAPI's mana system
+  enabled: true
+  #
+  # How frequently mana is gained in seconds
+  freq: 1
+#
+Skills:
+  #
+  # Whether or not players are allowed to downgrade skills
+  allow-downgrade: true
+  #
+  # Whether or not messages should be shown on casting a skill
+  show-messages: true
+  #
+  # The radius in which to show cast messages to nearby players
+  message-radius: 20
+  #
+  # Whether or not to apply damage knockback when damage is blocked
+  # by defensive or offesnive buffs and debuffs
+  knockback-no-damage: false
+  #
+  # Blocks to ignore when using the Block mechanic in dynamic skills
+  # End values in an * to do all materials containing the value
+  block-filter:
+  - 'chest'
+  - 'ender chest'
+  - 'trapped chest'
+  - 'redstone*'
+  - 'wall sign'
+  - 'sign post'
+#
+Items:
+  #
+  # Whether or not to check for class, level, and attribute
+  # requirements in an item's lore
+  lore-requirements: false
+  #
+  # Whether or not to check for skill requirements
+  # in an item's lore
+  skill-requirements: false
+  #
+  # Whether or not to check for stat bonuses in an item's lore
+  lore-attributes: false
+  #
+  # Whether or not to drop weapons when unable to use them
+  drop-weapon: false
+  #
+  # The text used for class requirements in the lore
+  lore-class-text: 'Class Req: '
+  #
+  # The text used for skill requirements in lore
+  lore-skill-text: 'Requires {skill}: '
+  #
+  # the text used for level requirements in the lore
+  lore-level-text: 'Level Req: '
+  #
+  # The text used for excluded classes in the lore
+  lore-exclude-text: 'Excluded Class: '
+  #
+  # The text used for attribute requirements
+  lore-attribute-text: '{attr} Req: '
+  #
+  # The text used for providing attributes
+  attribute-text: '{attr}: '
+  #
+  # The slots to check for items in and apply requirements to.
+  # This does not include held item, as that fluctuates and is assumed
+  # Slots are based on the following:
+  # 0-8 = hot bar
+  # 9-35 = main inventory
+  # 36 = boots
+  # 37 = leggings
+  # 38 = chestplate
+  # 39 = helmet
+  # 40 = off hand
+  slots:
+  - 36
+  - 37
+  - 38
+  - 39
+  - 40
+#
+GUI:
+  #
+  # Whether or not to lock the health bar to 10 hearts
+  # This does not affect total health, only the display
+  old-health-bar: false
+  #
+  # Whether or not to force SkillAPI to override
+  # health scaling of other plugins
+  force-scaling: false
+  #
+  # This is what to display using the level bar, if anything.
+  # Options are: none, mana, level
+  level-bar: none
+  #
+  # This is what to display using the food bar, if anything.
+  # Options are: none, mana, exp
+  food-bar: none
+  #
+  # Whether or not to use the action bar
+  use-action-bar: false
+  #
+  # The text to display on the action bar.
+  # Available filters:
+  #   {combo}       - the player's current click combo
+  #   {class}       - the player's main class name
+  #   {level}       - the player's main class level
+  #   {exp}         - the player's main class exp
+  #   {expReq}      - the player's main class required experience
+  #   {expLeft}     - the player's main class experience until the next level
+  #   {health}      - the player's current health
+  #   {maxHealth}   - the player's max health
+  #   {mana}        - the player's current mana
+  #   {maxMana}     - the player's max mana
+  #   {name}        - the name of the player
+  #   {attr}        - the player's attribute points
+  #   {sp}          - the player's main class skill points
+  #   {value:<key>} - a skill value
+  action-bar-text: '{combo}'
+  #
+  # Whether or not to use title messages
+  title-enabled: false
+  #
+  # Duration for title messages in seconds
+  title-duration: 3
+  #
+  # Fade in time for title messages in seconds
+  title-fade-in: 0.5
+  #
+  # Fade out time for title messages in seconds
+  title-fade-out: 0.5
+  #
+  # Messages to display using the Title bar
+  # Second lines of messages will be displayed in the subtitle
+  # Ones you can use include:
+  #   level_up
+  #   exp_gained
+  #   exp_lost
+  #   status
+  title-messages:
+  - level_up
+  - exp_lost
+  #
+  # Whether or not to display class information on a scoreboard
+  scoreboard-enabled: true
+  #
+  # Whether or not to add a prefix to players with their class name
+  show-class-name: true
+  #
+  # Whether or not to display a player's level below their name
+  show-class-level: true
+  #
+  # The text to show with the player's level when enabled.
+  # This always appears as {level} {text}
+  class-level-text: 'Level'
+  #
+  # Whether or not to append text to skill icons to show what type of item the skill is bound to
+  show-binds: false
+  #
+  # Text to show for bound materials
+  show-bind-text: 'Bound to {material}'
+#
+Casting:
+  #
+  # Whether or not the main casting option is enabled
+  enabled: false
+  #
+  # Whether or not to use the mult-bar implementation.
+  # When enabled:
+  # - Left/Right clicking on item opens skill bars
+  # - Skills assigned through tree
+  # - Preview when hovering in the skill bar
+  # - Limited number of skills can be put on skill bars
+  # When disabled:
+  # - Left/Right clicking on item cycles through skills
+  # - Preview when hovering the item
+  # - No limit on skills (though makes cycling hard to find skills)
+  bars: true
+  #
+  # Whether or not to use the combat bar implementation. Details:
+  # - Specified slot becomes a toggle item
+  # - Can optionally move over or require interacting (left, right, or drop) to swap modes
+  # - Swaps between combat mode and passive mode
+  # - In combat mode, works like the classic skill bar
+  # - In passive mode, no skills are shown
+  # - Passive and combat modes each have their own stored contents
+  # - combat mode uses the skill bar settings
+  combat: false
+  #
+  # Global cooldown between skill casts in seconds
+  cooldown: 0
+  #
+  # Settings for skill target indicators that play effects
+  # to show where a skill will hit
+  cast-indicator:
+    #
+    # Whether or not the feature is enabled
+    enabled: true
+    #
+    # How tightly to pack particles in the effect. A higher
+    # density will play more particles. It represents the
+    # amount of particles played per block units
+    density: 1
+    #
+    # How often the particles are played for the effect
+    # in plays per second
+    frequency: 10
+    #
+    # How fast position animations happen in blocks per second
+    animation: 1
+    #
+    # Particle to use when it has a target
+    particle:
+      particle: 'crit'
+      dx: 0
+      dy: 0
+      dz: 0
+      speed: 0
+      amount: 1
+  #
+  # The slot the item is kept in, must be in the range 1-9
+  slot: 9
+  #
+  # The item to use in the cast slot.
+  # When not using bars, this only shows up when no skills
+  # are available for use.
+  item:
+    type: BOOK
+    data: 0
+    durability: 0
+    name: '&dSkills'
+    lore:
+    - ''
+    - '&6Left Click&2 - First skill set'
+    - '&6Right Click&2 - Second skill set'
+    - '&6Q&2 - Organize skills'
+  #
+  # The item used in the bar GUI to describe the hover bar
+  hover-item:
+    type: BOOKSHELF
+    data: 0
+    durability: 0
+    name: '&6Hover Bar'
+    lore:
+    - ''
+    - 'Skills in this row will'
+    - 'be usable via left clicking'
+    - 'the cast item and will let'
+    - 'you see where they will hit'
+    - 'before casting them.'
+  #
+  # The item used in the bar GUI to describe the instant bar
+  instant-item:
+    type: BOOKSHELF
+    data: 0
+    durability: 0
+    name: '&6Instant Bar'
+    data: 0
+    durability: 0
+    name: '&6Instant Bar'
+    lore:
+    - ''
+    - 'Skills in this row will'
+    - 'be usable via right clicking'
+    - 'the cast item and will be'
+    - 'cast immediately when switching'
+    - 'to their slot.'
+#
+Click Combos:
+  #
+  # Whether or not to use click combinations
+  enabled: false
+  #
+  # Whether or not players can customize their combos
+  allow-custom: false
+  #
+  # Whether or not to automatically assign combos to skills
+  # without a combo manually defined. When disabled, only skills
+  # configured to have a combo or have had a combo set by
+  # a command will have combos.
+  auto-assign: true
+  #
+  # Whether or not left clicks are allowed at all
+  use-click-left: true
+  #
+  # Whether or not right clicks are allowed at all
+  use-click-right: true
+  #
+  # Whether or not shift clicks are allowed at all
+  use-click-shift: false
+  #
+  # Whether or not right shift clicks are allowed at all
+  # This will disable "use-click-shift" if enabled
+  use-click-right-shift: false
+  #
+  # Whether or not left shift clicks are allowed at all
+  # This will disable "use-click-shift" if enabled
+  use-click-left-shift: false
+  #
+  # Whether or not jump clicks are allowed at all
+  use-click-space: false
+  #
+  # Whether or not Q clicks are allowed at all.
+  # Enabling this disables dropping items via Q outside of menus.
+  use-click-q: false
+  #
+  # How many clicks are needed to perform a combo
+  combo-size: 4
+  #
+  # Inactivity time in seconds before clicks for a combo are reset
+  click-time: 1.0
+#
+Skill Bar:
+  #
+  # Whether or not to use skill bars
+  enabled: false
+  #
+  # Whether or not to show skill cooldowns in the skill bar
+  show-cooldown: true
+  #
+  # The item to use as a placeholder in the skill bar
+  empty-icon:
+    material: PUMPKIN_SEEDS
+    data: 0
+    text: '&7Unassigned'
+  #
+  # The default layout for skill bars
+  # Players can customize unlocked slots
+  layout:
+    1:
+      skill: true
+      locked: false
+    2:
+      skill: true
+      locked: false
+    3:
+      skill: true
+      locked: false
+    4:
+      skill: true
+      locked: false
+    5:
+      skill: true
+      locked: false
+    6:
+      skill: false
+      locked: false
+    7:
+      skill: false
+      locked: false
+    8:
+      skill: false
+      locked: false
+    9:
+      skill: false
+      locked: false
+#
+Experience:
+  #
+  # Whether or not to use vanilla exp drops for class exp
+  # Note: any dropped exp will not count towards class exp,
+  # only enabled sources will count. By default, this is only
+  # mob deaths.
+  use-exp-orbs: true
+  #
+  # Whether or not to prevent gaining experience from mobs
+  # spawned via a mob spawner block
+  block-mob-spawner: true
+  #
+  # Whether or not to prevent gaining experience from mobs
+  # spawned via a mob spawn egg
+  block-mob-egg: true
+  #
+  # Whether or not to prevent gaining experience while
+  # in creative mode
+  block-creative: true
+  #
+  # Whether or not to display a message when gaining experience
+  exp-message-enabled: true
+  #
+  # Whether or not to display a message when gaining a level
+  level-message-enabled: true
+  #
+  # Whether or not to show a message when losing exp de to dying
+  lose-exp-message: true
+  #
+  # Worlds where experience is not lost on death
+  lose-exp-blacklist:
+  - 'pvpWorld'
+  #
+  # The formula used for calculating required experience
+  # The formula is: x*lvl*lvl + y*lvl + z
+  formula:
+    x: 1
+    y: 8
+    z: 16
+  #
+  # Whether or not to use a custom equation
+  use-custom: false
+  #
+  # The custom formula to use with 'lvl' being the current player level
+  # Note: this formula does not use x, y, or z. Use numbers directly
+  # in the formula instead.
+  custom-formula: '25(1.1^(lvl-1))'
+  #
+  # The experience yields from each mob type
+  # When exp orbs are enabled, these values are ignored
+  yields:
+    blaze: '10'
+    cavespider: '5'
+    creeper: '3'
+    elderguardian: '10'
+    enderdragon: '400'
+    enderman: '5'
+    endermite: '3'
+    evoker: '10'
+    ghast: '5'
+    giant: '20'
+    guardian: '10'
+    husk: '2'
+    irongolem: '10'
+    magmacube: '1'
+    pigzombie: '5'
+    player: '5'
+    shulker: '5'
+    silverfish: '2'
+    skeleton: '3'
+    slime: '1'
+    spider: '3'
+    stray: '5'
+    vex: '3'
+    vindicator: '5'
+    witch: '3'
+    wither: '500'
+    witherskeleton: '5'
+    zombie: '2'
+#
+# How much logging to do when loading SkillAPI
+# When testing setting up skills/classes, increase this to 1-5
+Logging:
+  #
+  # Logs for loading attributes
+  attribute-load: 0
+  #
+  # Logs for attack/defense buffs applying
+  buff: 0
+  #
+  # Logs for registration of skills and classes
+  registration: 0
+  #
+  # Logs for GUI updates
+  gui: 0
+  #
+  # Logs for mana updates
+  mana: 0
+#
+Worlds:
+  #
+  # Whether or not to enable the world restriction
+  enable: false
+  #
+  # Whether or not to use the list as an enabling list
+  # If true, only worlds in the list will let players use SkillAPI
+  # If false, any world not in the list will let players use SkillAPI
+  use-as-enabling: true
+  #
+  # The worlds to include in the enable/disable list
+  worlds:
+  - world

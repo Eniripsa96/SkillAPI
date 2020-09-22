@@ -1,5 +1,4 @@
 .idea/
-target/
 *.iml
 lib/
 pom.xml

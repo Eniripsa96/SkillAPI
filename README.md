@@ -1,8 +1,4 @@
 This fork introduces some fixes to the now unmantained SkillAPI. Mostly fixing it for personal use, so can't guarantee to do requested changes. But if they're not too time consuming I might :)
-- Fixed particles for 1.13+
-- Disabled PlaceholderAPI hook due to bugginess
-- 'data' field in skill indicators now controls CustomModelData
-
 * Compiled using IntellIJ and Maven
 
 # SkillAPI

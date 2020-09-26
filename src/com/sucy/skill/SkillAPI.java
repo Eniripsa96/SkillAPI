@@ -456,7 +456,8 @@ public class SkillAPI extends JavaPlugin {
      */
     public static PlayerData getPlayerData(OfflinePlayer player) {
         if (player == null) { return null; }
-        return getPlayerAccountData(player).getActiveData();
+	PlayerAccounts account = getPlayerAccountData(player);
+	return account == null ? null : account.getActiveData();
     }
     
     public static PlayerAccounts loadPlayerDataSQL(OfflinePlayer player) {

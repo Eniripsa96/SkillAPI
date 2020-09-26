@@ -64,7 +64,8 @@ public class ManaTask extends RepeatThreadTask
         for (Player player : players)
         {
             PlayerData data = SkillAPI.getPlayerData(player);
-            data.regenMana();
+            if(data != null)
+                data.regenMana();
         }
     }
 }

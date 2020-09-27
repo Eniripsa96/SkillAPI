@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.dynamic.ComponentType;
+import com.sucy.skill.dynamic.custom.CustomEffectComponent;
 import com.sucy.skill.dynamic.custom.CustomTrigger;
 import com.sucy.skill.dynamic.custom.EditorOption;
 
@@ -25,7 +26,12 @@ public class SkillCastTrigger implements CustomTrigger<PlayerCastSkillEvent> {
 
 	@Override
 	public List<EditorOption> getOptions() {
-        return ImmutableList.of();
+        return ImmutableList.of(
+                EditorOption.text(
+                        "skill_name",
+                        "Skill Name",
+                        "Skill name",
+                        ""));
 	}
 
 	@Override
@@ -57,7 +63,7 @@ public class SkillCastTrigger implements CustomTrigger<PlayerCastSkillEvent> {
 	@Override
 	public boolean shouldTrigger(PlayerCastSkillEvent e, final int level, Settings s) {
 		// TODO Auto-generated method stub
-		return !e.isCancelled();
+		return e.getSkill().isOnCooldown();
 	}
 
 }

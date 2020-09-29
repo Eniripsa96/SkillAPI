@@ -1,11 +1,11 @@
 name: SkillAPI
 main: com.sucy.skill.SkillAPI
-version: 1.90
+version: 1.92
 author: Eniripsa96
 depend: [MCCore]
 softdepend: [Vault]
 loadbefore: [Quests]
-api-version: 1.13
+api-version: 1.15
 
 permissions:
   skillapi.basic:

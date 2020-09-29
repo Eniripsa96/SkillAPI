@@ -34,6 +34,9 @@ import com.sucy.skill.data.formula.Formula;
 import com.sucy.skill.data.formula.IValue;
 import com.sucy.skill.data.formula.value.CustomValue;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 /**
  * A particle effect that can be played
@@ -163,6 +166,12 @@ public class ParticleEffect
             int j = 0, k = 0;
 
             if (VersionManager.isVersionAtLeast(11300)) {
+                ArrayList<Player> players = new ArrayList<>();
+                for (Player player : loc.getWorld().getPlayers()) {
+                    if (loc.distance(player.getLocation()) <= view) {
+                        players.add(player);
+                    }
+                }
                 org.bukkit.Particle effect = org.bukkit.Particle.valueOf(this.particle.type.name());
                 int count = this.particle.amount;
                 double dx = this.particle.dx;
@@ -177,7 +186,9 @@ public class ParticleEffect
 
                     for (Point3D p2 : shapePoints) {
                         double size = this.size.compute(t, p, cs.x, cs.y, p2.x, p2.y, p2.z, level);
-                        loc.getWorld().spawnParticle(effect, p1.x * animSize + this.animDir.rotateX(p2, trig[j]) * size + loc.getX(), p1.y * animSize + this.animDir.rotateY(p2, trig[j]) * size + loc.getY(), p1.z * animSize + this.animDir.rotateZ(p2, trig[j]) * size + loc.getZ(), count, dx, dy, dz, (double) speed, data);
+                        for (Player player : players) {
+                            player.spawnParticle(effect, p1.x * animSize + this.animDir.rotateX(p2, trig[j]) * size + loc.getX(), p1.y * animSize + this.animDir.rotateY(p2, trig[j]) * size + loc.getY(), p1.z * animSize + this.animDir.rotateZ(p2, trig[j]) * size + loc.getZ(), count, dx, dy, dz, speed, data);
+                        }
                     }
                     ++j;
                 }

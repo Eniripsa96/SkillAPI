@@ -111,7 +111,7 @@ public class MainListener extends SkillAPIListener
     /**
      * Starts passives and applies class data when a player logs in.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR) //With EventPriority.Monitor we are being called last so we restore here the bar
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         if (player.hasMetadata("NPC"))
@@ -146,7 +146,7 @@ public class MainListener extends SkillAPIListener
      *
      * @param event event details
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST) // Lowest = We called it first before MPDB
     public void onQuit(PlayerQuitEvent event)
     {
         unload(event.getPlayer());
@@ -173,6 +173,8 @@ public class MainListener extends SkillAPIListener
         {
             data.record(player);
             data.stopPassives(player);
+            // We remove the SkillBar
+            data.getSkillBar().clear(player);
         }
 
         FlagManager.clearFlags(player);

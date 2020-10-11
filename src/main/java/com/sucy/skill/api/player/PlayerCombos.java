@@ -159,6 +159,7 @@ public class PlayerCombos {
     public String getCurrentComboString() {
         if (clickIndex == 0) { return ""; } else if (clickIndex == clicks.length) {
             final int id = SkillAPI.getComboManager().convertCombo(clicks);
+            checkExpired();
             if (skills.containsKey(id)) {
                 return SkillAPI.getSkill(skills.get(id)).getName();
             } else { return ""; }

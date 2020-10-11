@@ -48,21 +48,13 @@ import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>The management class for SkillAPI's config.yml settings.</p>
@@ -1464,6 +1456,7 @@ public class Settings {
     private ItemStack unassigned;
     private boolean[] defaultBarLayout = new boolean[9];
     private boolean[] lockedSlots      = new boolean[9];
+    private boolean customModelData;
 
     /**
      * Checks whether or not the skill bar is enabled
@@ -1510,10 +1503,28 @@ public class Settings {
         return lockedSlots;
     }
 
+    /**
+     * Checks whether or not CustomModelData is enabled
+     *
+     * @return true if enabled, false otherwise
+     */
+    public boolean useCustomModelData() {
+        return customModelData;
+    }
+
     private void loadSkillBarSettings() {
         DataSection bar = config.getSection("Skill Bar");
         skillBarEnabled = bar.getBoolean("enabled", false) && !castEnabled;
         skillBarCooldowns = bar.getBoolean("show-cooldown", true);
+        customModelData = bar.getBoolean("use-custommodeldata", false);
+        if (customModelData) {
+            try {
+                ItemMeta.class.getMethod("hasCustomModelData",null);
+            } catch (NoSuchMethodException e) {
+                customModelData = false;
+                Logger.log("CustomModelData not supported below 1.14+. Using item durability/data instead.");
+            }
+        }
 
         DataSection icon = bar.getSection("empty-icon");
         Material mat = Material.matchMaterial(icon.getString("material", "PUMPKIN_SEEDS"));
@@ -1521,9 +1532,18 @@ public class Settings {
         unassigned = new ItemStack(mat);
 
         ItemMeta meta = unassigned.getItemMeta();
-        int customModelData = icon.getInt("data", 0);
-        if (customModelData!=0) {
-            meta.setCustomModelData(icon.getInt("data", 0));
+
+        if (meta instanceof org.bukkit.inventory.meta.Damageable) {
+            ((Damageable) meta).setDamage((short) icon.getInt("durability", 0));
+        }
+
+        final int data = icon.getInt("data", 0);
+        if (customModelData) {
+            if (data!=0) {
+                meta.setCustomModelData(data);
+            }
+        } else {
+            unassigned.setData(new MaterialData(mat, (byte) data));
         }
 
         if (icon.isList("text")) {

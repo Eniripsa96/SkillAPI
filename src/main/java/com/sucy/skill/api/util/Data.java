@@ -28,11 +28,14 @@ package com.sucy.skill.api.util;
 
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.data.Settings;
 import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
@@ -57,11 +60,17 @@ public class Data {
 
             final ItemStack item = new ItemStack(material);
             final ItemMeta meta = item.getItemMeta();
-            if (data!=0) {
-                meta.setCustomModelData(data);
-            }
-            item.setDurability(dur);
 
+            if (meta instanceof Damageable) {
+                ((Damageable) meta).setDamage(dur);
+            }
+            if (SkillAPI.getSettings().useCustomModelData()) {
+                if (data!=0) {
+                    meta.setCustomModelData(data);
+                }
+            } else {
+                item.setData(new MaterialData(material, (byte) data));
+            }
             if (lore != null && !lore.isEmpty()) {
                 final List<String> colored = TextFormatter.colorStringList(lore);
                 meta.setDisplayName(colored.remove(0));
@@ -82,11 +91,17 @@ public class Data {
      */
     public static void serializeIcon(ItemStack item, DataSection config) {
         config.set(MAT, item.getType().name());
-        config.set(DURABILITY, item.getDurability());
-        ItemMeta meta = item.getItemMeta();
-        config.set(DATA, meta.hasCustomModelData() ? meta.getCustomModelData() : 0);
 
-        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+        ItemMeta meta = item.getItemMeta();
+        if (SkillAPI.getSettings().useCustomModelData()) {
+            config.set(DATA, meta.hasCustomModelData() ? meta.getCustomModelData() : 0);
+        } else {
+            config.set(DATA, item.getData().getData());
+        }
+        if (meta instanceof Damageable) {
+            config.set(DURABILITY, ((Damageable) meta).getDamage());
+        }
+        if (meta.hasDisplayName()) {
             List<String> lore = item.getItemMeta().getLore();
             if (lore == null) { lore = new ArrayList<>(); }
             lore.add(0, item.getItemMeta().getDisplayName());

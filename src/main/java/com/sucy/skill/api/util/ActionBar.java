@@ -30,6 +30,8 @@ import com.rit.sucy.reflect.Reflection;
 import com.rit.sucy.text.TextFormatter;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.log.Logger;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
@@ -81,8 +83,13 @@ public class ActionBar
         }
         catch (Exception ex)
         {
-            ex.printStackTrace();
-            Logger.invalid("Failed to setup Action Bar utility - not supported on pre-1.8 servers");
+            try {
+                Player.Spigot.class.getMethod("sendMessage", ChatMessageType.class, BaseComponent.class);
+                supported = true;
+            } catch (NoSuchMethodException e) {
+                ex.printStackTrace();
+                Logger.invalid("Failed to setup Action Bar utility - not supported on pre-1.8 servers");
+            }
         }
     }
 

@@ -36,6 +36,8 @@ import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.thread.RepeatThreadTask;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
 /**
@@ -192,7 +194,11 @@ public class GUITask extends RepeatThreadTask
                     Object value = DynamicSkill.getCastData(player).get(key);
                     filtered = filtered.replace("{value:" + key + "}", (value == null ? "None" : value.toString()));
                 }
-                ActionBar.show(player, filtered);
+                if (VersionManager.isVersionAtLeast(11000)) {
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(filtered));
+                } else {
+                    ActionBar.show(player, filtered);
+                }
             }
         }
     }

@@ -441,9 +441,14 @@ Skill Bar:
   # Whether or not to show skill cooldowns in the skill bar
   show-cooldown: true
   #
+  # Whether the 'data' or 'icon-data' entry in skill icons uses CustomModelData (1.14+ only).
+  # If false, defaults to material data.
+  use-custommodeldata: false
+  #
   # The item to use as a placeholder in the skill bar
   empty-icon:
     material: PUMPKIN_SEEDS
+    durability: 0
     data: 0
     text: '&7Unassigned'
   #

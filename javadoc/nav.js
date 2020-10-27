@@ -14,6 +14,7 @@ window.onload = function () {
     catch (err) { }
     setupSideNavigation();
     setupContent();
+    scrollToElement(targetElement);
 }
 
 // Gets the package and class indices from the window location
@@ -60,8 +61,14 @@ function linkElement(name, id) {
 }
 
 function elementClicked() {
-    var target = document.querySelector('#' + this['eId']);
-    document.querySelector('#main').scrollTop = target.offsetTop;
+    window.location.href = url + '#' + this.eId + '?' + getScrollData() + PACKAGES[packageIndex] + ':' + getClass(classIndex).name;
+}
+
+function scrollToElement(element) {
+    var target = document.querySelector('#' + element);
+    if (target) {
+        document.querySelector('#main').scrollTop = target.offsetTop;
+    }
 }
 
 // Links the class to it's URL
@@ -558,7 +565,13 @@ function addClassTable(element, title, list) {
         var link = addTag(row, 'td', list[i].name);
         link.className = 'classLink';
         link.onclick = linkClicked;
-        var desc = addTag(row, 'td', list[i].description.split('</p>')[0].replace('<p>', '').split('.')[0] + '.');
+        var desc = list[i].description;
+        var copyright = desc.indexOf('©');
+        var space = desc.indexOf(' ', copyright + 10);
+        if (copyright > 0 && space > 0) desc = desc.substr(space + 1);
+        else if (copyright > 0) desc = 'No description provided';
+        while (desc.indexOf('<br>') == 0) desc = desc.substr(4);
+        var desc = addTag(row, 'td', desc.split('</p>')[0].replace('<p>', '').split('. ')[0] + '.');
         link.style.maxHeight = link.style.height = (desc.clientHeight - 14) + 'px';
     }
 }

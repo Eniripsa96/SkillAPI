@@ -4,7 +4,7 @@ var DAMAGE_TYPES = [ 'Block Explosion', 'Contact', 'Cramming', 'Dragon Breath', 
 
 function canDrop(thing, target) {
     if (thing == target) return false;
-    
+
     var temp = target;
     while (temp.parentNode) {
         temp = temp.parentNode;
@@ -47,7 +47,7 @@ var Trigger = {
 
 /**
  * Available target component data
- */ 
+ */
 var Target = {
     AREA     : { name: 'Area',     container: true, construct: TargetArea     },
     CONE     : { name: 'Cone',     container: true, construct: TargetCone     },
@@ -62,7 +62,7 @@ var Target = {
 
 /**
  * Available condition component data
- */ 
+ */
 var Condition = {
     ARMOR:       { name: 'Armor',       container: true, construct: ConditionArmor      },
     ATTRIBUTE:   { name: 'Attribute',   container: true, construct: ConditionAttribute  },
@@ -234,7 +234,7 @@ Component.prototype.dupe = function(parent)
     }
     ele.description = this.description;
     return ele;
-}
+};
 
 /**
  * Creates the builder HTML element for the component and
@@ -503,7 +503,7 @@ Component.prototype.update = function()
     {
         this.data[j].update();
     }
-}
+};
 
 /**
  * Gets the save string for the component
@@ -543,7 +543,7 @@ Component.prototype.getSaveString = function(spacing)
         }
     }
     return result;
-}
+};
 
 /**
  * Loads component data from the config lines stating at the given index
@@ -554,6 +554,42 @@ Component.prototype.getSaveString = function(spacing)
  */
 Component.prototype.load = loadSection;
 
+// -- Custom constructor ------------------------------------------------------- //
+
+extend('CustomComponent', 'Component');
+function CustomComponent(data) {
+    this.super(data.display, data.type.toLowerCase(), data.container);
+    this.description = data.description;
+
+    for (var i = 0; i < data.options.length; i++) {
+        var option = data.options[i];
+        switch (option.type) {
+            case 'NUMBER':
+                this.data.push(new AttributeValue(option.display, option.key, option.base, option.scale)
+                    .setTooltip(option.description)
+                );
+                break;
+            case 'TEXT':
+                this.data.push(new StringValue(option.display, option.key, option.default)
+                    .setTooltip(option.description)
+                );
+                break;
+            case 'DROPDOWN':
+                this.data.push(new ListValue(option.display, option.key, option.options, option.options[0])
+                    .setTooltip(option.description)
+                );
+                break;
+            case 'LIST':
+                this.data.push(new MultiListValue(option.display, option.key, option.options, [ ])
+                    .setTooltip(option.description)
+                );
+                break;
+            default:
+                throw new Error("Invalid component with key " + data.key);
+        }
+    }
+}
+
 // -- Trigger constructors ----------------------------------------------------- //
 
 extend('TriggerBlockBreak', 'Component');
@@ -561,7 +597,7 @@ function TriggerBlockBreak() {
     this.super('Block Break', Type.TRIGGER, true);
     this.description = 'Applies skill effects when a player breaks a block matching  the given details';
 
-    this.data.push(new MultiListValue('Material', 'material', [ 'Any' ].concat(materialList), [ 'Any' ])
+    this.data.push(new MultiListValue('Material', 'material', getAnyMaterials, [ 'Any' ])
         .setTooltip('The type of block expected to be broken')
     );
     this.data.push(new IntValue('Data', 'data', -1)
@@ -574,7 +610,7 @@ function TriggerBlockPlace() {
     this.super('Block Place', Type.TRIGGER, true);
     this.description = 'Applies skill effects when a player places a block matching  the given details';
 
-    this.data.push(new MultiListValue('Material', 'material', [ 'Any' ].concat(materialList), [ 'Any' ])
+    this.data.push(new MultiListValue('Material', 'material', getAnyMaterials, [ 'Any' ])
         .setTooltip('The type of block expected to be placed')
     );
     this.data.push(new IntValue('Data', 'data', -1)
@@ -787,6 +823,9 @@ function TargetArea()
     this.data.push(new AttributeValue("Max Targets", "max", 99, 0)
         .setTooltip('The max amount of targets to apply children to')
     );
+    this.data.push(new ListValue("Random", "random", [ 'True', 'False' ], 'False')
+        .setTooltip('Whether or not to randomize the targets selected')
+    );
 }
 
 extend('TargetCone', 'Component');
@@ -984,8 +1023,8 @@ function ConditionBiome()
     this.data.push(new ListValue('Type', 'type', [ 'In Biome', 'Not In Biome' ], 'In Biome')
         .setTooltip('Whether or not the target should be in the biome. If checking for in the biome, they must be in any one of the checked biomes. If checking for the opposite, they must not be in any of the checked biomes.')
     );
-    this.data.push(new ByteListValue('Biome', 'biome', [ 'Beach', 'Desert', 'Forest', 'Frozen', 'Hell', 'Hills', 'Ice', 'Jungle', 'Mesa', 'Mountains', 'Mushroom', 'Ocean', 'Plains', 'Plateau', 'River', 'Savanna', 'Shore', 'Sky', 'Swampland', 'Taiga' ], 1)
-        .setTooltip('The biomes to check for. These act as biome groups, containing all biomes whose names contain the text. For example, "JUNGLE_HILLS" falls into both Jungle and Hills')
+    this.data.push(new MultiListValue('Biome', 'biome', getBiomes, [ 'Forest' ])
+            .setTooltip('The biomes to check for. The expectation would be any of the selected biomes need to match')
     );
 }
 
@@ -996,10 +1035,10 @@ function ConditionBlock()
 
     this.description = 'Applies child components if the target is currently standing on a block of the given type.';
 
-    this.data.push(new ListValue('Type', 'standing', [ 'On Block', 'Not On Block' ], 'On Block')
-        .setTooltip('Whether or not the target should be in the biome. If checking for in the biome, they must be in any one of the checked biomes. If checking for the opposite, they must not be in any of the checked biomes.')
+    this.data.push(new ListValue('Type', 'standing', [ 'On Block', 'Not On Block', 'In Block', 'Not In Block' ], 'On Block')
+        .setTooltip('Specifies which block to check and whether or not it should match the selected mateiral. "On Block" is directly below the player while "In Block" is the block a player\'s feet are in.')
     );
-    this.data.push(new ListValue('Material', 'material', materialList, 'Dirt')
+    this.data.push(new ListValue('Material', 'material', getMaterials, 'Dirt')
         .setTooltip('The type of the block to require the targets to stand on')
     );
 }
@@ -1136,7 +1175,7 @@ function ConditionEntityType()
 
     this.description = 'Applies child elements if the target matches one of the selected entity types'
 
-    this.data.push(new MultiListValue('Types', 'types', [ 'BAT', 'BLAZE', 'CAVE_SPIDER', 'CHICKEN', 'COW', 'CREEPER', 'DONKEY', 'ELDER_GUARDIAN', 'ENDER_DRAGON', 'ENDERMAN', 'ENDERMITE', 'EVOKER', 'GHAST', 'GIANT', 'GUARDIAN', 'HORSE', 'HUSK', 'IRON_GOLEM', 'LLAMA', 'MAGMA_CUBE', 'MULE', 'MUSHROOM_COW', 'OCELOT', 'PIG', 'PIG_ZOMBIE', 'PLAYER', 'POLAR_BEAR', 'RABBIT', 'SHEEP', 'SHULKER', 'SILVERFISH', 'SKELETON', 'SKELETON_HORSE', 'SLIME', 'SNOWMAN', 'SPIDER', 'SQUID', 'VEX', 'VILLAGER', 'VINDICATOR', 'WITCH', 'WITHER', 'WITHER_SKELETON', 'WOLF', 'ZOMBIE', 'ZOMBIE_HORSE', 'ZOMBIE_VILLAGER' ])
+    this.data.push(new MultiListValue('Types', 'types', getEntities)
         .setTooltip('The entity types to target')
     );
 }
@@ -1303,7 +1342,7 @@ function ConditionPotion()
     this.data.push(new ListValue('Type', 'type', [ 'Active', 'Not Active' ], 'Active')
         .setTooltip('Whether or not the potion should be active')
     );
-    this.data.push(new ListValue('Potion', 'potion', [ 'Any', 'Absorption', 'Blindness', 'Confusion', 'Damage Resistance', 'Fast Digging', 'Fire Resistance', 'Glowing', 'Health Boost', 'Hunger', 'Increase Damage', 'Invisibility', 'Jump', 'Levitation', 'Luck', 'Night Vision', 'Poison', 'Regeneration', 'Saturation', 'Slow', 'Slow Digging', 'Speed', 'Unluck', 'Water Breathing', 'Weakness', 'Wither' ], 'Any')
+    this.data.push(new ListValue('Potion', 'potion', getAnyPotion, 'Any')
         .setTooltip('The type of potion to look for')
     );
     this.data.push(new AttributeValue('Min Rank', 'min-rank', 0, 0)
@@ -1465,7 +1504,7 @@ function MechanicBlock()
     this.data.push(new ListValue('Type', 'type', [ 'Air', 'Any', 'Solid' ], 'Solid' )
         .setTooltip('The type of blocks to replace. Air or any would be for making obstacles while solid would change the environment')
     );
-    this.data.push(new ListValue('Block', 'block', materialList, 'Ice')
+    this.data.push(new ListValue('Block', 'block', getMaterials, 'Ice')
         .setTooltip('The type of block to turn the region into')
     );
     this.data.push(new IntValue('Block Data', 'data', 0)
@@ -1573,7 +1612,7 @@ function MechanicCleanse()
 
     this.description = 'Cleanses negative potion or status effects from the targets.';
 
-    this.data.push(new ListValue('Potion', 'potion', [ 'None', 'All', 'Blindness', 'Confusion', 'Hunger', 'Levitation', 'Poison', 'Slow', 'Slow Digging', 'Weakness', 'Wither' ], 'All')
+    this.data.push(new ListValue('Potion', 'potion', getBadPotions, 'All')
         .setTooltip('The type of potion effect to remove from the target')
     );
     this.data.push(new ListValue('Status', 'status', [ 'None', 'All', 'Curse', 'Disarm', 'Root', 'Silence', 'Stun' ], 'All')
@@ -1934,7 +1973,7 @@ function MechanicItem()
 
     this.description = 'Gives each player target the item defined by the settings.';
 
-    this.data.push(new ListValue('Material', 'material', materialList, 'Arrow')
+    this.data.push(new ListValue('Material', 'material', getMaterials, 'Arrow')
         .setTooltip('The type of item to give to the player')
     );
     this.data.push(new IntValue('Amount', 'amount', 1)
@@ -1966,7 +2005,7 @@ function MechanicItemProjectile()
     this.description = 'Launches a projectile using an item as its visual that applies child components upon landing. The target passed on will be the collided target or the location where it landed if it missed.';
 
 
-    this.data.push(new ListValue('Item', 'item', materialList, 'Jack O Lantern')
+    this.data.push(new ListValue('Item', 'item', getMaterials, 'Jack O Lantern')
         .setTooltip('The item type to use as a projectile')
     ),
     this.data.push(new IntValue('Item Data', 'item-data', 0)
@@ -2197,7 +2236,7 @@ function MechanicPotion()
 
     this.description = 'Applies a potion effect to the target for a duration.';
 
-    this.data.push(new ListValue('Potion', 'potion', [ 'Absorption', 'Blindness', 'Confusion', 'Damage Resistance', 'Fast Digging', 'Fire Resistance', 'Glowing', 'Health Boost', 'Hunger', 'Increase Damage', 'Invisibility', 'Jump', 'Levitation', 'Luck', 'Night Vision', 'Poison', 'Regeneration', 'Saturation', 'Slow', 'Slow Digging', 'Speed', 'Unluck', 'Water Breathing', 'Weakness', 'Wither' ], 'Absorption')
+    this.data.push(new ListValue('Potion', 'potion', getPotionTypes, 'Absorption')
         .setTooltip('The type of potion effect to apply')
     );
     this.data.push(new ListValue('Ambient Particles', 'ambient', [ 'True', 'False' ], 'True')
@@ -2218,7 +2257,7 @@ function MechanicPotionProjectile()
 
     this.description = 'Drops a splash potion from each target that does not apply potion effects by default. This will apply child elements when the potion lands. The targets supplied will be everything hit by the potion. If nothing is hit by the potion, the target will be the location it landed.';
 
-    this.data.push(new ListValue('Type', 'type', [ 'Fire Resistance', 'Instant Damage', 'Instant Heal', 'Invisibility', 'Night Vision', 'Poison', 'Regen', 'Slowness', 'Speed', 'Strength', 'Water', 'Water Breathing', 'Weakness' ], 'Fire Resistance')
+    this.data.push(new ListValue('Type', 'type', getPotionTypes, 'Fire Resistance')
         .setTooltip('The type of the potion to use for the visuals')
     );
     this.data.push(new ListValue("Group", "group", ["Ally", "Enemy", "Both"], "Enemy")
@@ -2257,7 +2296,7 @@ function MechanicPurge()
 
     this.description = 'Purges the target of positive potion effects or statuses';
 
-    this.data.push(new ListValue('Potion', 'potion', [ 'None', 'All', 'Absorption', 'Damage Resistance', 'Fast Digging', 'Fire Resistance', 'Health Boost', 'Increase Damage', 'Invisibility', 'Jump', 'Night Vision', 'Regeneration', 'Saturation', 'Speed', 'Water Breathing' ], 'All')
+    this.data.push(new ListValue('Potion', 'potion', getGoodPotions, 'All')
         .setTooltip('The potion effect to remove from the target, if any')
     );
     this.data.push(new ListValue('Status', 'status', [ 'None', 'All', 'Absorb', 'Invincible' ], 'All')
@@ -2323,17 +2362,9 @@ function MechanicSound()
 
     this.description = "Plays a sound at the target's location.";
 
-    this.data.push(new ListValue('Server Version', 'version', [ '1.9+', 'Pre 1.9' ], '1.9+')
-        .setTooltip('The version of the server this will be playing for. Servers 1.9 and later have much different sounds available')
-    );
-
-    this.data.push(new ListValue('Sound', 'newsound', SOUNDS_POST, 'Ambience Cave').requireValue('version', [ '1.9+' ])
+    this.data.push(new ListValue('Sound', 'sound', getSounds, 'Ambience Cave')
         .setTooltip('The sound clip to play')
     );
-    this.data.push(new ListValue('Sound', 'sound', SOUNDS_PRE, 'Ambience Cave').requireValue('version', [ 'Pre 1.9' ])
-        .setTooltip('The sound clip to play')
-    );
-
     this.data.push(new AttributeValue('Volume', 'volume', 100, 0)
         .setTooltip('The volume of the sound as a percentage. Numbers above 100 will not get any louder, but will be heard from a farther distance')
     );
@@ -2774,7 +2805,7 @@ function MechanicWolf()
     
     this.description = 'Summons a wolf on each target for a duration. Child components will start off targeting the wolf so you can add effects to it. You can also give it its own skillset, though Cast triggers will not occur.';
     
-    this.data.push(new ListValue('Collar Color', 'color', dyeList, 'Black')
+    this.data.push(new ListValue('Collar Color', 'color', getDyes(), 'Black')
         .setTooltip('The color of the collar that the wolf should wear')
     );
     this.data.push(new StringValue('Wolf Name', 'name', "{player}'s Wolf")
@@ -2813,7 +2844,7 @@ function addItemOptions(component) {
     component.data.push(new ListValue('Check Material', 'check-mat', [ 'True', 'False' ], 'True')
         .setTooltip('Whether or not the item needs to be a certain type')
     );
-    component.data.push(new ListValue('Material', 'material', materialList, 'Arrow')
+    component.data.push(new ListValue('Material', 'material', getMaterials, 'Arrow')
         .requireValue('check-mat', [ 'True' ])
         .setTooltip('The type the item needs to be')
     );
@@ -2959,7 +2990,7 @@ function addParticleOptions(component) {
         .setTooltip('The type of particle to display. Particle effects that show the DX, DY, and DZ options are not compatible with Cauldron')
     );
     
-    component.data.push(new ListValue('Material', 'material', materialList, 'Dirt').requireValue('particle', [ 'Block Crack', 'Icon Crack' ])
+    component.data.push(new ListValue('Material', 'material', getMaterials, 'Dirt').requireValue('particle', [ 'Block Crack', 'Icon Crack' ])
         .setTooltip('The material to use for the Block Crack or Icon Crack particles')
     );
     component.data.push(new IntValue('Type', 'type', 0).requireValue('particle', [ 'Block Crack', 'Icon Crack' ])
@@ -3098,7 +3129,7 @@ function addEffectOptions(component, optional)
         ], 'BARRIER')
         .setTooltip('The type of particle to use')
     ));
-    component.data.push(opt(new ListValue('Particle Material', '-particle-material', materialList, 'WOOD')
+    component.data.push(opt(new ListValue('Particle Material', '-particle-material', getMaterials, 'WOOD')
         .requireValue('-particle-type', [ 'BLOCK_CRACK' ])
         .setTooltip('The material to use for the particle')
     ));

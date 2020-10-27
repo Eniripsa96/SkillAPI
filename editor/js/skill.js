@@ -16,8 +16,6 @@ function Skill(name)
 	this.componentKey = 'components';
 	
 	// Skill data
-    var iconList = materialList.slice(0);
-    iconList.splice(materialList.indexOf('Arrow'), 1);
 	this.data = [
 		new StringValue('Name', 'name', name).setTooltip('The name of the skill. This should not contain color codes'),
 		new StringValue('Type', 'type', 'Dynamic').setTooltip('The flavor text describing the skill such as "AOE utility" or whatever you want it to be'),
@@ -31,9 +29,9 @@ function Skill(name)
 		new AttributeValue('Mana', 'mana', 0, 0).setTooltip('The amount of mana it takes to cast the skill (only works with the Cast trigger)'),
 		new AttributeValue('Min Spent', 'points-spent-req', 0, 0).setTooltip('The amount of skill points that need to be spent before upgrading this skill'),
 		new StringValue('Cast Message', 'msg', '&6{player} &2has cast &6{skill}').setTooltip('The message to display to players around the caster when the skill is cast. The radius of the area is in the config.yml options'),
-        new StringValue('Combo', 'combo', '').setTooltip('The click combo to assign the skill (if enabled). Use L, R, and S for the types of clicks separated by spaces. For example, "L L R R" would work for 4 click combos.'),
+        new StringValue('Combo', 'combo', '').setTooltip('The click combo to assign the skill (if enabled). Use L, R, S, LS, RS, P, and Q for the types of clicks separated by spaces. For example, "L L R R" would work for 4 click combos.'),
         new ListValue('Indicator', 'indicator', [ '2D', '3D', 'None' ], '2D').setTooltip('[PREMIUM] What sort of display to use for cast previews. This applies to the "hover bar" in the casting bars setup.'),
-		new ListValue('Icon', 'icon', iconList, 'Jack O Lantern').setTooltip('The item used to represent the skill in skill trees'),
+		new ListValue('Icon', 'icon', getMaterials, 'Jack O Lantern').setTooltip('The item used to represent the skill in skill trees'),
 		new IntValue('Icon Data', 'icon-data', 0).setTooltip('The data/durability value of the item used to represent the skill in skill trees'),
 		new StringListValue('Icon Lore', 'icon-lore', [
 			'&d{name} &7({level}/{max})',

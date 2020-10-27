@@ -122,6 +122,7 @@ html, body {
     height: 100%;
     padding: 5px;
     border: none;
+	margin: 0;
 }
 
 #skillList option, #classList option {
@@ -135,6 +136,13 @@ header {
 	width: 150px;
 	float: left;
 	height: 80px;
+}
+
+#version {
+	width: calc(100% - 350px);
+	float: left;
+	height: 40px;
+	padding: 20px;
 }
 
 h1 {
@@ -398,7 +406,7 @@ hr {
 	width: 200px;
 }
 
-#skillForm label, #classForm label {
+label {
 	float: left;
 	text-align: right;
 	width: 40%;
@@ -409,7 +417,7 @@ hr {
 	clear: both;
 }
 
-#skillForm input, #skillForm select, #classForm input, #classForm select, #skillForm .byteList, #classForm .byteList {
+#skillForm input, select, #classForm input, #skillForm .byteList, #classForm .byteList {
 	font: 20px Sertig-Web;
 	font-weight: bold;
 	background-color: #181818;
@@ -445,7 +453,7 @@ hr {
     background-color: red;
 }
 
-#skillForm select, #classForm select {
+select {
 	background-color: #222;
 	cursor: pointer;
 }

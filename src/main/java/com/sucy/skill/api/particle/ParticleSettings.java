@@ -45,7 +45,7 @@ public class ParticleSettings {
             SPEED_KEY    = "speed";
 
     // Particle type
-    public final ParticleType type;
+    public final org.bukkit.Particle type;
 
     // Offset values
     public final float dx, dy, dz;
@@ -57,8 +57,8 @@ public class ParticleSettings {
     public final int amount;
 
     // Particle extra data
-    public final Material material;
-    public final int data;
+    public Material material;
+    public int data;
 
     /**
      * Sets up a particle that doesn't require material data
@@ -70,14 +70,14 @@ public class ParticleSettings {
      * @param speed  particle speed
      * @param amount particle amount
      */
-    public ParticleSettings(ParticleType type, float dx, float dy, float dz, float speed, int amount) {
+    public ParticleSettings(org.bukkit.Particle type, float dx, float dy, float dz, float speed, int amount) {
         this.type = type;
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
         this.speed = speed;
         this.amount = amount;
-        if (type.usesMat()) {
+        if (Particle.usesData(type)) {
             throw new IllegalArgumentException("Must provide material data for " + type.name());
         } else {
             material = null;
@@ -98,7 +98,7 @@ public class ParticleSettings {
      * @param data     material data value
      */
     public ParticleSettings(
-            ParticleType type,
+            org.bukkit.Particle type,
             float dx,
             float dy,
             float dz,
@@ -112,10 +112,7 @@ public class ParticleSettings {
         this.dz = dz;
         this.speed = speed;
         this.amount = amount;
-        if (type.usesMat()) {
-            this.material = material;
-            this.data = data;
-        } else {
+        if (Particle.usesData(type)) {
             this.material = material;
             this.data = data;
         }
@@ -135,7 +132,7 @@ public class ParticleSettings {
         this.speed = config.getFloat(SPEED_KEY, 1);
         this.amount = config.getInt(AMOUNT_KEY, 1);
 
-        if (this.type.usesMat()) {
+        if (Particle.usesData(this.type)) {
             Material mat = null;
             int data = 0;
             try {

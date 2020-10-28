@@ -26,22 +26,30 @@
  */
 package com.sucy.skill.api.particle;
 
+import org.bukkit.Particle;
+
 import java.util.HashMap;
 
 public class ParticleLookup
 {
-    private static final HashMap<String, ParticleType> BY_EDITOR = new HashMap<String, ParticleType>();
-    private static final HashMap<String, ParticleType> BY_OLD    = new HashMap<String, ParticleType>();
+    private static final HashMap<String, ParticleType> BY_EDITOR = new HashMap<>();
+    private static final HashMap<String, ParticleType> BY_OLD    = new HashMap<>();
 
-    public static ParticleType find(String key)
+    public static Particle find(String key)
     {
-        key = key.toLowerCase();
-        ParticleType type = BY_EDITOR.get(key);
-        if (type == null)
-            type = getByName(key);
-        if (type == null)
-            type = BY_OLD.get(key);
-        return type;
+        try {
+            return Particle.valueOf(key.toUpperCase().replace(" ", "_"));
+        } catch (IllegalArgumentException e) {
+            key = key.toLowerCase();
+            ParticleType type = BY_EDITOR.get(key);
+            if (type == null)
+                type = getByName(key);
+            if (type == null)
+                type = BY_OLD.get(key);
+            try {
+                return Particle.valueOf(type.name());
+            } catch (IllegalArgumentException ex) { return null; }
+        }
     }
 
     public static ParticleType getByEditor(String editorKey)

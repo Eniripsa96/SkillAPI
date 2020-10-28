@@ -31,6 +31,7 @@ import com.sucy.skill.api.particle.direction.Directions;
 import com.sucy.skill.api.particle.target.EffectTarget;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 
 /**
  * Handles playing effects based on configuration settings
@@ -119,11 +120,11 @@ public class EffectPlayer
         String keyMod = noPrefix ? "" : key;
 
         // Grab the particle type
-        ParticleType particleType = ParticleLookup.find(settings.getString(keyMod + P_TYPE, "SPELL"));
+        Particle particleType = ParticleLookup.find(settings.getString(keyMod + P_TYPE, "SPELL"));
         ParticleSettings particle;
 
         // Block Crack and the related use materials
-        if (particleType.usesMat())
+        if (com.sucy.skill.api.particle.Particle.usesData(particleType))
         {
             try
             {

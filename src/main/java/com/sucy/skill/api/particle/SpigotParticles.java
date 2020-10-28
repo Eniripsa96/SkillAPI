@@ -30,10 +30,13 @@ public class SpigotParticles {
     }
 
     private static void play(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material) {
-        final String key = particle.toLowerCase().replace('_', ' ');
-        final Particle effect = CONVERSION.get(key);
+        Particle effect;
+        try {
+            effect = Particle.valueOf(particle.toUpperCase().replace(' ','_'));
+        } catch (IllegalArgumentException e) {
+            effect = CONVERSION.get(particle.toLowerCase().replace('_', ' '));
+        }
         if (effect == null) return;
-
         try {
             if (VersionManager.isVersionAtLeast(11300)) {
                 for (Player player : loc.getWorld().getPlayers()) {

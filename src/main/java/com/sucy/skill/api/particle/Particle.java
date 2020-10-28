@@ -272,6 +272,18 @@ public class Particle {
         return (int) Math.max(0, Math.min(255, decimal * 255));
     }
 
+    public static boolean usesData(org.bukkit.Particle particle) {
+        switch (particle) {
+            case REDSTONE:
+            case ITEM_CRACK:
+            case BLOCK_CRACK:
+            case BLOCK_DUST:
+            case FALLING_DUST:
+                return true;
+        }
+        return false;
+    }
+
     public static Object data(org.bukkit.Particle particle, double dx, double dy, double dz, int amount, Material material) {
         Object data = null;
         switch (particle) {

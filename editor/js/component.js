@@ -2932,15 +2932,15 @@ function addProjectileOptions(component) {
  * @param {Component} component - the component to add to
  */
 function addParticleOptions(component) {
-    component.data.push(new ListValue('Particle', 'particle', getParticles, 'Angry Villager')
+    component.data.push(new ListValue('Particle', 'particle', getParticles, 'Barrier')
         .setTooltip('The type of particle to display. Particle effects that show the DX, DY, and DZ options are not compatible with Cauldron')
     );
     
-    component.data.push(new ListValue('Material', 'material', getMaterials, 'Dirt').requireValue('particle', [ 'Block Crack', 'Icon Crack' ])
-        .setTooltip('The material to use for the Block Crack or Icon Crack particles')
+    component.data.push(new ListValue('Material', 'material', getMaterials, 'Dirt').requireValue('particle', [ 'Item crack', 'Block crack', 'Block dust', 'Falling dust', 'Block Crack', 'Item Crack' ])
+        .setTooltip('The material to use for the particles')
     );
-    component.data.push(new IntValue('Type', 'type', 0).requireValue('particle', [ 'Block Crack', 'Icon Crack' ])
-        .setTooltip('The material data value to se for the Block Crack or Icon Crack particles')
+    component.data.push(new IntValue('Data', 'type', 0).requireValue('particle', [ 'Item crack', 'Item Crack' ])
+        .setTooltip('The material data value to se for the particles. For 1.14+ determines the CustomModelData of the item')
     );
     
     component.data.push(new ListValue('Arrangement', 'arrangement', [ 'Circle', 'Hemisphere', 'Sphere' ], 'Circle')
@@ -2949,7 +2949,7 @@ function addParticleOptions(component) {
     component.data.push(new AttributeValue('Radius', 'radius', 4, 0)
         .setTooltip('The radius of the arrangement in blocks')
     );
-    component.data.push(new AttributeValue('Particles', 'particles', 20, 0)
+    component.data.push(new AttributeValue('Amount', 'particles', 20, 0)
         .setTooltip('The amount of particles to play')
     );
     
@@ -2959,29 +2959,18 @@ function addParticleOptions(component) {
     );
     
     // Bukkit particle data value
-    component.data.push(new IntValue('Data', 'data', 0).requireValue('particle', [ 'Smoke', 'Ender Signal', 'Mobspawner Flames', 'Potion Break' ])
+    component.data.push(new IntValue('Effect Data', 'data', 0).requireValue('particle', [ 'Smoke', 'Ender Signal', 'Mobspawner Flames', 'Potion Break' ])
         .setTooltip('The data value to use for the particle. The effect changes between particles such as the orientation for smoke particles or the color for potion break')
     );
-    
-    // Reflection particle data
-    var reflectList = [ 'Angry Villager', 'Bubble', 'Cloud', 'Crit', 'Damage Indicator', 'Death Suspend', 'Dragon Breath', 'Drip Lava', 'Drip Water', 'Enchantment Table', 'End Rod', 'Explode', 'Fireworks Spark', 'Flame', 'Footstep', 'Happy Villager', 'Hear', 'Huge Explosion', 'Instant Spell', 'Large Explode', 'Large Smoke', 'Lava', 'Magic Crit', 'Mob Spell', 'Mob Spell Ambient', 'Note', 'Portal', 'Red Dust', 'Slime', 'Snowball Poof', 'Snow Shovel', 'Spell', 'Splash', 'Suspend', 'Sweep Attack', 'Town Aura', 'Water Drop', 'Water Wake', 'Witch Magic' ];
-    component.data.push(new IntValue('Visible Radius', 'visible-radius', 25).requireValue('particle', reflectList)
-        .setTooltip('How far away players can see the particles from in blocks')
+    component.data.push(new IntValue('Visible Radius', 'visible-radius', 25).setTooltip('How far away players can see the particles from in blocks')
     );
-    component.data.push(new DoubleValue('DX', 'dx', 0).requireValue('particle', reflectList)
-        .setTooltip('A packet variable that varies between particles. It generally is used for how far from the position a particle can move in the X direction.')
+    component.data.push(new DoubleValue('DX', 'dx', 0).setTooltip('A packet variable that varies between particles. It generally is used for how far from the position a particle can move in the X direction.')
     );
-    component.data.push(new DoubleValue('DY', 'dy', 0).requireValue('particle', reflectList)
-        .setTooltip('A packet variable that varies between particles. It generally is used for how far from the position a particle can move in the Y direction.')
+    component.data.push(new DoubleValue('DY', 'dy', 0).setTooltip('A packet variable that varies between particles. It generally is used for how far from the position a particle can move in the Y direction.')
     );
-    component.data.push(new DoubleValue('DZ', 'dz', 0).requireValue('particle', reflectList)
-        .setTooltip('A packet variable that varies between particles. It generally is used for how far from the position a particle can move in the Z direction.')
+    component.data.push(new DoubleValue('DZ', 'dz', 0).setTooltip('A packet variable that varies between particles. It generally is used for how far from the position a particle can move in the Z direction.')
     );
-    component.data.push(new DoubleValue('Particle Speed', 'speed', 1).requireValue('particle', reflectList)
-        .setTooltip('A packet variable that varies between particles. It generally controlls the color or velocity of the particle.')
-    );
-    component.data.push(new DoubleValue('Packet Amount', 'amount', 1).requireValue('particle', reflectList)
-        .setTooltip('A packet variable that varies between particles. Setting this to 0 lets you control the color of some particles.')
+    component.data.push(new DoubleValue('Speed', 'speed', 0.1).setTooltip('A packet variable that varies between particles. It generally controlls the color or velocity of the particle.')
     );
 }
 
@@ -3029,19 +3018,19 @@ function addEffectOptions(component, optional)
         .setTooltip('How far away the effect can be seen from')
     ));
     
-    component.data.push(opt(new ListValue('Particle Type', '-particle-type', getParticles, 'BARRIER')
+    component.data.push(opt(new ListValue('Particle', '-particle-type', getParticles, 'Barrier')
         .setTooltip('The type of particle to use')
     ));
-    component.data.push(opt(new ListValue('Particle Material', '-particle-material', getMaterials, 'WOOD')
-        .requireValue('-particle-type', [ 'BLOCK_CRACK' ])
+    component.data.push(opt(new ListValue('Material', '-particle-material', getMaterials, 'Dirt')
+        .requireValue('-particle-type', [ 'Item crack', 'Item Crack', 'Block crack', 'Block Crack', 'Block dust', 'Falling dust' ])
         .setTooltip('The material to use for the particle')
     ));
-    component.data.push(opt(new IntValue('Particle Data', '-particle-data', 0)
-        .requireValue('-particle-type', [ 'BLOCK_CRACK' ])
-        .setTooltip('The data value for the material used by the particle')
+    component.data.push(opt(new IntValue('Data', '-particle-data', 0)
+        .requireValue('-particle-type', [ 'Item crack', 'Item Crack' ])
+        .setTooltip('The data value for the material used by the particle. For 1.14+ determines the CustomModelData of the item')
     ));
-    component.data.push(opt(new IntValue('Particle Num', '-particle-amount', 0)
-        .setTooltip('The integer data for the particle, often labeled as "amount"')
+    component.data.push(opt(new IntValue('Amount', '-particle-amount', 1)
+        .setTooltip('Number of particles generated per point')
     ));
     component.data.push(opt(new DoubleValue('DX', '-particle-dx', 0)
         .setTooltip('Particle DX value, often used for color')
@@ -3052,7 +3041,7 @@ function addEffectOptions(component, optional)
     component.data.push(opt(new DoubleValue('DZ', '-particle-dz', 0)
         .setTooltip('Particle DZ value, often used for color')
     ));
-    component.data.push(opt(new DoubleValue('Speed', '-particle-speed', 1)
+    component.data.push(opt(new DoubleValue('Speed', '-particle-speed', 0.1)
         .setTooltip('Speed value for the particle, sometimes relating to velocity')
     ));
 }

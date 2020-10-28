@@ -1,6 +1,6 @@
 let DATA = {};
 
-const version = (localStorage.getItem('server-version') || '1.13').substr(2);
+const version = (localStorage.getItem('server-version') || '1.16').substr(2);
 
 depend('data/1.8', function() { if (version === '8') DATA = DATA_8 });7
 depend('data/1.9', function() { if (version === '9') DATA = DATA_9 });

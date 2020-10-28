@@ -1,6 +1,8 @@
 This fork adds back support to the now unmantained SkillAPI plugin. I'm mostly doing it for personal use, so can't guarantee to do requested changes. But if they're not too time consuming I might :)
 
-If you use this version, I strongly recommend using the mantained Dynamic editor: http://sentropic.github.io/SkillAPI-s/
+If you use this version, I strongly recommend using the mantained Dynamic editor:
+
+* New, mantained editor: http://sentropic.github.io/SkillAPI-s/
 
 Skills made with the old editor should still mantain full functionality, but the new one has new stuff.
 

@@ -86,11 +86,6 @@ public class ParticleHelper {
     public static final String RADIUS_KEY = "radius";
 
     /**
-     * Settings key for the amount of particles to play
-     */
-    public static final String AMOUNT_KEY = "amount";
-
-    /**
      * Settings key for the particle arrangement direction (circles only)
      */
     public static final String DIRECTION_KEY = "direction";
@@ -189,14 +184,16 @@ public class ParticleHelper {
         final float dx = (float)settings.getDouble(DX_KEY, 0.0);
         final float dy = (float)settings.getDouble(DY_KEY, 0.0);
         final float dz = (float)settings.getDouble(DZ_KEY, 0.0);
-        final int amount = settings.getInt(AMOUNT_KEY, 1);
+        final int amount = 1;
         final float speed = (float) settings.getDouble(SPEED_KEY, 1.0);
         final Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
+        final int type = settings.getInt(TYPE_KEY, 0);
+        final int data = settings.getInt(DATA_KEY, 0);
 
         try {
             // Normal bukkit effects
             if (BUKKIT_EFFECTS.containsKey(particle)) {
-                loc.getWorld().playEffect(loc, BUKKIT_EFFECTS.get(particle), settings.getInt(DATA_KEY, 0));
+                loc.getWorld().playEffect(loc, BUKKIT_EFFECTS.get(particle), data);
             }
 
             // Entity effects
@@ -206,13 +203,7 @@ public class ParticleHelper {
 
             // v1.13 particles
             else if (VersionManager.isVersionAtLeast(11300)) {
-                if (particle.startsWith("block")) {
-                    SpigotParticles.playBlock(loc, particle, dx, dy, dz, amount, speed, rad, mat);
-                } else if (particle.startsWith("icon")) {
-                    SpigotParticles.playItem(loc, particle, dx, dy, dz, amount, speed, rad, mat);
-                } else {
-                    SpigotParticles.play(loc, particle, dx, dy, dz, amount, speed, rad);
-                }
+                SpigotParticles.play(loc, particle, dx, dy, dz, amount, speed, rad, mat, type);
             }
 
             // Reflection particles

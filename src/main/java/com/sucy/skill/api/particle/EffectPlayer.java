@@ -123,12 +123,8 @@ public class EffectPlayer
         Particle particleType = ParticleLookup.find(settings.getString(keyMod + P_TYPE, "SPELL"));
         ParticleSettings particle;
 
-        // Block Crack and the related use materials
-        if (com.sucy.skill.api.particle.Particle.usesData(particleType))
-        {
-            try
-            {
-                particle = new ParticleSettings(
+        try {
+            particle = new ParticleSettings(
                     particleType,
                     (float) settings.getDouble(keyMod + DX),
                     (float) settings.getDouble(keyMod + DY),
@@ -136,26 +132,14 @@ public class EffectPlayer
                     (float) settings.getDouble(keyMod + SPEED, 1),
                     settings.getInt(keyMod + AMOUNT, 1),
                     Material.matchMaterial(settings.getString(keyMod + MAT, "DIRT")),
-                    settings.getInt(keyMod + DATA)
-                );
-            }
-            catch (Exception ex)
-            {
-                Logger.invalid("Bad material for particle effect - " + settings.getString(keyMod + MAT));
-                return;
-            }
-        }
-
-        // Others just use basic data
-        else
-            particle = new ParticleSettings(
-                particleType,
-                (float) settings.getDouble(keyMod + DX),
-                (float) settings.getDouble(keyMod + DY),
-                (float) settings.getDouble(keyMod + DZ),
-                (float) settings.getDouble(keyMod + SPEED, 1),
-                settings.getInt(keyMod + AMOUNT, 1)
+                    settings.getInt(keyMod + DATA,0)
             );
+        }
+        catch (Exception ex)
+        {
+            Logger.invalid("Bad material for particle effect - " + settings.getString(keyMod + MAT));
+            return;
+        }
 
         // Make the effect
         ParticleEffect effect = new ParticleEffect(

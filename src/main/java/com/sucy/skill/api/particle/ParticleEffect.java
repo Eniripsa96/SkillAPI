@@ -178,7 +178,7 @@ public class ParticleEffect
                 double dy = this.particle.dy;
                 double dz = this.particle.dz;
                 float speed = this.particle.speed;
-                Object data = com.sucy.skill.api.particle.Particle.data(effect, dx, dy, dz, count, this.particle.material);
+                Object data = com.sucy.skill.api.particle.Particle.data(effect, dx, dy, dz, count, this.particle.material, this.particle.data);
 
                 for(int i = frame * this.animation.getCopies(); i < next; ++i) {
                     Point3D p1 = animPoints[i];

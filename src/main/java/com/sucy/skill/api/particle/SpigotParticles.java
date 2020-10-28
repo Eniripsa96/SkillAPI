@@ -17,19 +17,7 @@ import java.util.Map;
 public class SpigotParticles {
     private static boolean error = true;
 
-    public static void play(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance) {
-        play(loc, particle, dx, dy, dz, count, speed, distance, null);
-    }
-
-    public static void playItem(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material) {
-        play(loc, particle, dx, dy, dz, count, speed, distance, material);
-    }
-
-    public static void playBlock(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material) {
-        play(loc, particle, dx, dy, dz, count, speed, distance, material);
-    }
-
-    private static void play(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material) {
+    public static void play(final Location loc, final String particle, final float dx, final float dy, final float dz, final int count, final float speed, final double distance, final Material material, final int data) {
         Particle effect;
         try {
             effect = Particle.valueOf(particle.toUpperCase().replace(' ','_'));
@@ -41,7 +29,7 @@ public class SpigotParticles {
             if (VersionManager.isVersionAtLeast(11300)) {
                 for (Player player : loc.getWorld().getPlayers()) {
                     if (loc.distance(player.getLocation()) <= distance) {
-                        player.spawnParticle(effect, loc, count, dx, dy, dz, speed, com.sucy.skill.api.particle.Particle.data(effect, dx, dy, dz, count, material));
+                        player.spawnParticle(effect, loc, count, dx, dy, dz, speed, com.sucy.skill.api.particle.Particle.data(effect, dx, dy, dz, count, material, data));
                     }
                 }
             } else {

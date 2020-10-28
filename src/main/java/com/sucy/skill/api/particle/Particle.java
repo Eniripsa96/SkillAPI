@@ -27,9 +27,14 @@
 package com.sucy.skill.api.particle;
 
 import com.rit.sucy.version.VersionManager;
+import com.sucy.skill.log.Logger;
 import org.bukkit.*;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -284,21 +289,32 @@ public class Particle {
         return false;
     }
 
-    public static Object data(org.bukkit.Particle particle, double dx, double dy, double dz, int amount, Material material) {
-        Object data = null;
-        switch (particle) {
-            case REDSTONE:
-                final Color color = Color.fromRGB(mapColor(dx + 1), mapColor(dy), mapColor(dz));
-                data = new org.bukkit.Particle.DustOptions(color, amount);
-                break;
-            case ITEM_CRACK:
-                data = new ItemStack(material);
-                break;
-            case BLOCK_CRACK:
-            case BLOCK_DUST:
-            case FALLING_DUST:
-                data = material.createBlockData();
-        }
-        return data;
+    public static Object data(org.bukkit.Particle particle, double dx, double dy, double dz, int amount, Material material, int data) {
+        Object particleData = null;
+        try {
+            switch (particle) {
+                case REDSTONE:
+                    final Color color = Color.fromRGB(mapColor(dx + 1), mapColor(dy), mapColor(dz));
+                    particleData = new org.bukkit.Particle.DustOptions(color, amount);
+                    break;
+                case ITEM_CRACK:
+                    ItemStack item = new ItemStack(material);
+                    try {
+                        ItemMeta.class.getMethod("hasCustomModelData",null);
+                        ItemMeta meta = item.getItemMeta();
+                        meta.setCustomModelData(data);
+                        item.setItemMeta(meta);
+                    } catch (NoSuchMethodException e) {
+                        item.setData(new MaterialData(material, (byte) data));
+                    }
+                    particleData = item;
+                    break;
+                case BLOCK_CRACK:
+                case BLOCK_DUST:
+                case FALLING_DUST:
+                    particleData = material.createBlockData();
+            }
+        } catch (NullPointerException ignored) {}
+        return particleData;
     }
 }

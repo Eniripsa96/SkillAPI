@@ -29,8 +29,8 @@ public class BlockPlaceTrigger implements Trigger<BlockPlaceEvent> {
     @Override
     public boolean shouldTrigger(final BlockPlaceEvent event, final int level, final Settings settings) {
         final List<String> types = settings.getStringList("material");
-        return types.isEmpty() || (types.size() == 1 && types.get(0).equalsIgnoreCase("ANY"))
-                || types.stream().anyMatch(mat -> event.getBlock().getType().name().equalsIgnoreCase(mat));
+        return types.isEmpty() || types.contains("Any")
+                || types.stream().anyMatch(mat -> event.getBlock().getType().name().equalsIgnoreCase(mat.replace(' ','_')));
     }
 
     /** {@inheritDoc} */

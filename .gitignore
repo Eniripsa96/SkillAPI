@@ -3,3 +3,10 @@
 lib/
 pom.xml
 /*target
+editor/js/data/data generator/Biome.java
+editor/js/data/data generator/EntityDamageEvent.java
+editor/js/data/data generator/EntityType.java
+editor/js/data/data generator/Material.java
+editor/js/data/data generator/Particle.java
+editor/js/data/data generator/PotionEffectType.java
+editor/js/data/data generator/Sound.java

@@ -32,7 +32,7 @@ function Skill(name)
         new StringValue('Combo', 'combo', '').setTooltip('The click combo to assign the skill (if enabled). Use L, R, S, LS, RS, P, and Q for the types of clicks separated by spaces. For example, "L L R R" would work for 4 click combos.'),
         new ListValue('Indicator', 'indicator', [ '2D', '3D', 'None' ], '2D').setTooltip('[PREMIUM] What sort of display to use for cast previews. This applies to the "hover bar" in the casting bars setup.'),
 		new ListValue('Icon', 'icon', getMaterials, 'Jack O Lantern').setTooltip('The item used to represent the skill in skill trees'),
-		new IntValue('Icon Data', 'icon-data', 0).setTooltip('The data/durability value of the item used to represent the skill in skill trees'),
+		new IntValue('Icon Data', 'icon-data', 0).setTooltip('The data/durability value (under 1.14) or the CustomModelData (in 1.14+) of the icon.'),
 		new StringListValue('Icon Lore', 'icon-lore', [
 			'&d{name} &7({level}/{max})',
 			'&2Type: &6{type}',

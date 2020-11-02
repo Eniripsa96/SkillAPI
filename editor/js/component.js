@@ -2970,6 +2970,8 @@ function addParticleOptions(component) {
     );
     component.data.push(new DoubleValue('DZ', 'dz', 0).setTooltip('A packet variable that varies between particles. It generally is used for how far from the position a particle can move in the Z direction.')
     );
+    component.data.push(new DoubleValue('Packet Amount', 'amount', 1).setTooltip('A packet variable that varies between particles. Setting this to 0 lets you control the color of some particles.')
+    );
     component.data.push(new DoubleValue('Speed', 'speed', 0.1).setTooltip('A packet variable that varies between particles. It generally controlls the color or velocity of the particle.')
     );
 }

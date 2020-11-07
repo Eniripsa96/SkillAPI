@@ -45,8 +45,9 @@ public class Data {
     private static final String DATA       = "icon-data";
     private static final String DURABILITY = "icon-durability";
     private static final String LORE       = "icon-lore";
+    private static final String MODEL      = "icon-model";
 
-    private static ItemStack parse(final String mat, final short dur, final byte data, final List<String> lore) {
+    private static ItemStack parse(final String mat, final short dur, final byte data, final List<String> lore, final int model) {
         try {
             Material material = Material.matchMaterial(mat);
             if (material == null) {
@@ -62,6 +63,7 @@ public class Data {
                 final ItemMeta meta = item.getItemMeta();
                 meta.setDisplayName(colored.remove(0));
                 meta.setLore(colored);
+                meta.setCustomModelData(model);
                 item.setItemMeta(meta);
             }
             return DamageLoreRemover.removeAttackDmg(item);
@@ -87,6 +89,7 @@ public class Data {
             lore.add(0, item.getItemMeta().getDisplayName());
             int count = lore.size();
             for (int i = 0; i < count; i++) { lore.add(lore.remove(0).replace(ChatColor.COLOR_CHAR, '&')); }
+            config.set(MODEL, item.getItemMeta().getCustomModelData());
             config.set(LORE, lore);
         }
     }
@@ -104,10 +107,11 @@ public class Data {
         }
 
         final int data = config.getInt(DATA, 0);
+        final int model = config.getInt(MODEL, 0);
         return parse(
                 config.getString(MAT, "JACK_O_LANTERN"),
                 (short) config.getInt(DURABILITY, data),
                 (byte) data,
-                config.getList(LORE, null));
+                config.getList(LORE, null), model);
     }
 }

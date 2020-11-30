@@ -121,13 +121,22 @@ public class RepeatMechanic extends MechanicComponent {
             for (int i = 0; i < targets.size(); i++) {
                 if (targets.get(i).isDead() || !targets.get(i).isValid()) { targets.remove(i); }
             }
+            int level = 1;
 
-            if (!skill.isActive(caster) || targets.size() == 0) {
-                cancel();
-                return;
+            if (!skill.isActive(caster)) {
+            	if (skill.getMaxLevel() != 999) {
+                    cancel();
+                    return;
+            	}
             }
-
-            final int level = skill.getActiveLevel(caster);
+            else {
+            	level = skill.getActiveLevel(caster);
+            }
+            
+            if (targets.size() == 0) {
+            	cancel();
+            	return;
+            }
             boolean success = executeChildren(caster, level, targets);
 
             if (--count <= 0 || (!success && stopOnFail)) {

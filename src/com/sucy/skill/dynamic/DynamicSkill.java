@@ -189,6 +189,9 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         	if (triggerHandler.getTrigger().getKey().equals("LEFT_CLICK")) {
         		triggerHandler.registerNoIgnore(plugin);
         	}
+        	else if (triggerHandler.getTrigger().getKey().equals("RIGHT_CLICK")) {
+        		triggerHandler.registerNoIgnore(plugin);
+        	}
             triggerHandler.register(plugin);
         }
     }

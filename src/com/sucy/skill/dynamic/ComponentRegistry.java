@@ -136,6 +136,7 @@ import com.sucy.skill.dynamic.trigger.MoveTrigger;
 import com.sucy.skill.dynamic.trigger.PhysicalDealtTrigger;
 import com.sucy.skill.dynamic.trigger.PhysicalTakenTrigger;
 import com.sucy.skill.dynamic.trigger.RightClickEntityTrigger;
+import com.sucy.skill.dynamic.trigger.RightClickTrigger;
 import com.sucy.skill.dynamic.trigger.SkillCastTrigger;
 import com.sucy.skill.dynamic.trigger.SkillDealtTrigger;
 import com.sucy.skill.dynamic.trigger.SkillHealTrigger;
@@ -281,6 +282,7 @@ public class ComponentRegistry {
         register(new SkillHealTrigger());
         register(new LeftClickTrigger());
         register(new RightClickEntityTrigger());
+        register(new RightClickTrigger());
         register(new FlagSetTrigger());
 
         // Targets

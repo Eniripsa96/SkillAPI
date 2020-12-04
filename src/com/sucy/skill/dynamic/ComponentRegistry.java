@@ -125,6 +125,7 @@ import com.sucy.skill.dynamic.target.SingleTarget;
 import com.sucy.skill.dynamic.trigger.BlockBreakTrigger;
 import com.sucy.skill.dynamic.trigger.BlockPlaceTrigger;
 import com.sucy.skill.dynamic.trigger.CrouchTrigger;
+import com.sucy.skill.dynamic.trigger.DamageDeathTrigger;
 import com.sucy.skill.dynamic.trigger.DeathTrigger;
 import com.sucy.skill.dynamic.trigger.EnvironmentalTrigger;
 import com.sucy.skill.dynamic.trigger.FlagSetTrigger;
@@ -135,6 +136,7 @@ import com.sucy.skill.dynamic.trigger.LeftClickTrigger;
 import com.sucy.skill.dynamic.trigger.MoveTrigger;
 import com.sucy.skill.dynamic.trigger.PhysicalDealtTrigger;
 import com.sucy.skill.dynamic.trigger.PhysicalTakenTrigger;
+import com.sucy.skill.dynamic.trigger.PotionApplyTrigger;
 import com.sucy.skill.dynamic.trigger.RightClickEntityTrigger;
 import com.sucy.skill.dynamic.trigger.RightClickTrigger;
 import com.sucy.skill.dynamic.trigger.SkillCastTrigger;
@@ -284,6 +286,8 @@ public class ComponentRegistry {
         register(new RightClickEntityTrigger());
         register(new RightClickTrigger());
         register(new FlagSetTrigger());
+        register(new PotionApplyTrigger());
+        register(new DamageDeathTrigger());
 
         // Targets
         register(new AreaTarget());

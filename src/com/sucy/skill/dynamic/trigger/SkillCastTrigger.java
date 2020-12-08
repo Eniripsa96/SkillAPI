@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.event.PlayerCastSkillEvent;
 import com.sucy.skill.dynamic.ComponentType;
-import com.sucy.skill.dynamic.custom.CustomEffectComponent;
 import com.sucy.skill.dynamic.custom.CustomTrigger;
 import com.sucy.skill.dynamic.custom.EditorOption;
 

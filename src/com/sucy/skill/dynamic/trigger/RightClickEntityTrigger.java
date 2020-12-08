@@ -9,6 +9,7 @@ import com.sucy.skill.dynamic.custom.EditorOption;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,8 @@ public class RightClickEntityTrigger implements CustomTrigger<PlayerInteractEnti
 
 	@Override
 	public boolean shouldTrigger(PlayerInteractEntityEvent e, final int level, Settings s) {
-        return !(e.getRightClicked() instanceof Player) && e.getRightClicked() instanceof LivingEntity;
+		if (e.getHand().equals(EquipmentSlot.HAND))
+			return !(e.getRightClicked() instanceof Player) && e.getRightClicked() instanceof LivingEntity;
+		return false;
 	}
 }

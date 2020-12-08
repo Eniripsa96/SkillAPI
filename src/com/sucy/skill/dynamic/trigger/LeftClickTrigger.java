@@ -6,6 +6,7 @@ import java.util.Map;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import com.google.common.collect.ImmutableList;
 import com.sucy.skill.api.Settings;
@@ -59,7 +60,9 @@ public class LeftClickTrigger implements CustomTrigger<PlayerInteractEvent> {
 	@Override
 	public boolean shouldTrigger(PlayerInteractEvent e, final int level, Settings s) {
 		// TODO Auto-generated method stub
-		return e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK);
+		if (e.getHand().equals(EquipmentSlot.HAND))
+			return e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK);
+		return false;
 	}
 
 }

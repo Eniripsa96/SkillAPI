@@ -1804,29 +1804,27 @@ public class PlayerData {
 		}
 
 		// Skill Shots
-		if (skill.getData() instanceof SkillShot) {
+        if (skill.getData() instanceof SkillShot) {
+            PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
+            Bukkit.getPluginManager().callEvent(event);
 
-			try {
-				if (((SkillShot) skill.getData()).cast(p, level)) {
-					PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
-					Bukkit.getPluginManager().callEvent(event);
-					// Make sure it isn't cancelled
-					if (!event.isCancelled()) {
-						return applyUse(p, skill, event.getManaCost());
-					}
-					else {
-						return PlayerSkillCastFailedEvent.invoke(skill, CANCELED);
-					}
-				}
-				else {
-					return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);
-				}
-			} catch (Exception ex) {
-				Logger.bug("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
-				ex.printStackTrace();
-				return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);
-			}
-		}
+            // Make sure it isn't cancelled
+            if (!event.isCancelled()) {
+                try {
+                    if (((SkillShot) skill.getData()).cast(p, level)) {
+                        PlayerSkillCastSuccessEvent success = new PlayerSkillCastSuccessEvent(this, skill, p);
+                        Bukkit.getPluginManager().callEvent(success);
+                        return applyUse(p, skill, event.getManaCost());
+                    } else {
+                        return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);
+                    }
+                } catch (Exception ex) {
+                    Logger.bug("Failed to cast skill - " + skill.getData().getName() + ": Internal skill error");
+                    ex.printStackTrace();
+                    return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);
+                }
+            } else { return PlayerSkillCastFailedEvent.invoke(skill, CANCELED); }
+        }
 
 		// Target Skills
 		else if (skill.getData() instanceof TargetSkill) {

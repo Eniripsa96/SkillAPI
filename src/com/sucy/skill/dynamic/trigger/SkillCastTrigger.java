@@ -6,12 +6,12 @@ import java.util.Map;
 import org.bukkit.entity.LivingEntity;
 import com.google.common.collect.ImmutableList;
 import com.sucy.skill.api.Settings;
-import com.sucy.skill.api.event.PlayerCastSkillEvent;
+import com.sucy.skill.api.event.PlayerSkillCastSuccessEvent;
 import com.sucy.skill.dynamic.ComponentType;
 import com.sucy.skill.dynamic.custom.CustomTrigger;
 import com.sucy.skill.dynamic.custom.EditorOption;
 
-public class SkillCastTrigger implements CustomTrigger<PlayerCastSkillEvent> {
+public class SkillCastTrigger implements CustomTrigger<PlayerSkillCastSuccessEvent> {
 
 	@Override
 	public String getDescription() {
@@ -19,8 +19,8 @@ public class SkillCastTrigger implements CustomTrigger<PlayerCastSkillEvent> {
 	}
 	
 	@Override
-	public Class<PlayerCastSkillEvent> getEvent() {
-		return PlayerCastSkillEvent.class;
+	public Class<PlayerSkillCastSuccessEvent> getEvent() {
+		return PlayerSkillCastSuccessEvent.class;
 	}
 
 	@Override
@@ -44,23 +44,23 @@ public class SkillCastTrigger implements CustomTrigger<PlayerCastSkillEvent> {
 	}
 
 	@Override
-	public LivingEntity getCaster(PlayerCastSkillEvent e) {
+	public LivingEntity getCaster(PlayerSkillCastSuccessEvent e) {
 		return e.getPlayer();
 	}
 
 	@Override
-	public LivingEntity getTarget(PlayerCastSkillEvent e, Settings s) {
+	public LivingEntity getTarget(PlayerSkillCastSuccessEvent e, Settings s) {
 		return e.getPlayer();
 	}
 
 	@Override
-	public void setValues(PlayerCastSkillEvent arg0, Map<String, Object> arg1) {
+	public void setValues(PlayerSkillCastSuccessEvent arg0, Map<String, Object> arg1) {
 		return;
 		
 	}
 
 	@Override
-	public boolean shouldTrigger(PlayerCastSkillEvent e, final int level, Settings s) {
+	public boolean shouldTrigger(PlayerSkillCastSuccessEvent e, final int level, Settings s) {
 		// TODO Auto-generated method stub
 		return !e.isCancelled();
 	}

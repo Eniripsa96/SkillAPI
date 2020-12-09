@@ -60,7 +60,7 @@ public class LeftClickTrigger implements CustomTrigger<PlayerInteractEvent> {
 	@Override
 	public boolean shouldTrigger(PlayerInteractEvent e, final int level, Settings s) {
 		// TODO Auto-generated method stub
-		if (e.getHand().equals(EquipmentSlot.HAND))
+		if (e.getHand() != null && e.getHand().equals(EquipmentSlot.HAND))
 			return e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK);
 		return false;
 	}

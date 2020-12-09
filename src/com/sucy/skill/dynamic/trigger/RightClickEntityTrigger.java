@@ -63,7 +63,7 @@ public class RightClickEntityTrigger implements CustomTrigger<PlayerInteractEnti
 
 	@Override
 	public boolean shouldTrigger(PlayerInteractEntityEvent e, final int level, Settings s) {
-		if (e.getHand().equals(EquipmentSlot.HAND))
+		if (e.getHand() != null && e.getHand().equals(EquipmentSlot.HAND))
 			return !(e.getRightClicked() instanceof Player) && e.getRightClicked() instanceof LivingEntity;
 		return false;
 	}

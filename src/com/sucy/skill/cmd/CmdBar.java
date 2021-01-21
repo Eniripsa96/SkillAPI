@@ -60,6 +60,12 @@ public class CmdBar implements IFunction
     @Override
     public void execute(ConfigurableCommand command, Plugin plugin, CommandSender sender, String[] args)
     {
+
+        // If the skill bar is disabled then we return and un
+        SkillAPI api = (SkillAPI) plugin;
+        if(!api.isSkillBarsEnabled())
+            return;
+
         if (!(sender instanceof Player))
         {
             command.sendMessage(sender, NOT_PLAYER, "&4Only players can use this command");

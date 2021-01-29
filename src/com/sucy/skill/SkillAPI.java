@@ -97,6 +97,15 @@ public class SkillAPI extends JavaPlugin {
 
     private boolean loaded = false;
     private boolean disabling = false;
+    private boolean enabledSkillBars = true;
+
+    public boolean isSkillBarsEnabled() {
+        return enabledSkillBars;
+    }
+
+    public void setSkillBarsEnabled(boolean newValue) {
+        enabledSkillBars = newValue;
+    }
 
     /**
      * <p>Enables SkillAPI, setting up listeners, managers, and loading data. This

@@ -111,6 +111,9 @@ public class BarListener extends SkillAPIListener
      */
     public void onJoin(final Player player)
     {
+        SkillAPI skillAPI = (SkillAPI) sapi;
+        if(!skillAPI.isSkillBarsEnabled())
+            return;
 		BukkitRunnable enableBar = new BukkitRunnable() {
 			public void run() {
 		        if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {

@@ -60,6 +60,7 @@ public class PlayerEquips
 
     private EquipData empty  = new EquipData();
     private EquipData weapon = empty;
+    private EquipData offweapon = empty;
     private EquipData[] other;
 
     private int offhand = -1;
@@ -144,6 +145,12 @@ public class PlayerEquips
             to.apply();
             return to;
         }
+    }
+    
+    public void swapOffhand() {
+    	EquipData temp = weapon;
+    	weapon = offweapon;
+    	offweapon = temp;
     }
 
     private boolean isArmor(final ItemStack item) {

@@ -49,6 +49,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -85,7 +86,7 @@ public class ItemListener extends SkillAPIListener
     public void onBreak(PlayerItemBreakEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false, false), 1);
     }
 
     /**
@@ -114,7 +115,7 @@ public class ItemListener extends SkillAPIListener
     public void onPickup(PlayerPickupItemEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false, false), 1);
     }
 
     /**
@@ -134,14 +135,21 @@ public class ItemListener extends SkillAPIListener
     public void onHeld(PlayerItemHeldEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            SkillAPI.schedule(new UpdateTask(event.getPlayer(), true), 1);
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), true, false), 1);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onOffhandSwap(PlayerSwapHandItemsEvent event)
+    {
+        if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), true, true), 1);
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent event)
     {
         if (SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld()))
-            SkillAPI.schedule(new UpdateTask((Player) event.getPlayer(), false), 1);
+            SkillAPI.schedule(new UpdateTask((Player) event.getPlayer(), false, false), 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -152,7 +160,7 @@ public class ItemListener extends SkillAPIListener
             && event.getPlayer().getItemInHand() != null
             && ARMOR_TYPES.contains(event.getPlayer().getItemInHand().getType()))
         {
-            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false), 1);
+            SkillAPI.schedule(new UpdateTask(event.getPlayer(), false, false), 1);
         }
     }
 
@@ -241,14 +249,16 @@ public class ItemListener extends SkillAPIListener
         private Player player;
 
         private boolean weaponOnly;
+        private boolean offhandSwap;
 
         /**
          * @param player player reference
          */
-        UpdateTask(Player player, boolean weaponOnly)
+        UpdateTask(Player player, boolean weaponOnly, boolean offhandSwap)
         {
             this.player = player;
             this.weaponOnly = weaponOnly;
+            this.offhandSwap = offhandSwap;
         }
 
         /**
@@ -257,10 +267,13 @@ public class ItemListener extends SkillAPIListener
         @Override
         public void run()
         {
-            if (weaponOnly)
-                SkillAPI.getPlayerData(player).getEquips().updateWeapon(player.getInventory());
-            else
-                SkillAPI.getPlayerData(player).getEquips().update(player);
+        	if (offhandSwap) SkillAPI.getPlayerData(player).getEquips().swapOffhand();
+        	else {
+	            if (weaponOnly)
+	                SkillAPI.getPlayerData(player).getEquips().updateWeapon(player.getInventory());
+	            else
+	                SkillAPI.getPlayerData(player).getEquips().update(player);
+        	}
         }
     }
 }

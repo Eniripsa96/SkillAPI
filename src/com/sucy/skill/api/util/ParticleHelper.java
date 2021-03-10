@@ -1,4 +1,4 @@
-/**
+/*
  * SkillAPI
  * com.sucy.skill.api.util.ParticleHelper
  *
@@ -26,19 +26,18 @@
  */
 package com.sucy.skill.api.util;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import com.google.common.collect.ImmutableSet;
-import com.rit.sucy.reflect.Particle;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.Direction;
-import com.sucy.skill.api.particle.SpigotParticles;
 import com.sucy.skill.log.Logger;
-import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -146,7 +145,7 @@ public class ParticleHelper {
      * @param loc      location to center the effect around
      * @param settings data to play the particles with
      */
-    public static void play(Location loc, Settings settings) {
+    public static void play(LivingEntity caster, Location loc, Settings settings) {
         String particle = settings.getString(PARTICLE_KEY, "invalid");
         if (settings.has(ARRANGEMENT_KEY)) {
             int level = settings.getInt(LEVEL, 1);
@@ -154,25 +153,29 @@ public class ParticleHelper {
             int amount = (int) settings.getAttr(PARTICLES_KEY, level, 10);
 
             String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
-            if (arrangement.equals("circle")) {
-                Direction dir = null;
-                if (settings.has(DIRECTION_KEY)) {
-                    try {
-                        dir = Direction.valueOf(settings.getString(DIRECTION_KEY));
-                    } catch (Exception ex) { /* Use default value */ }
-                }
-                if (dir == null) {
-                    dir = Direction.XZ;
-                }
+            switch (arrangement) {
+                case "circle":
+                    Direction dir = null;
+                    if (settings.has(DIRECTION_KEY)) {
+                        try {
+                            dir = Direction.valueOf(settings.getString(DIRECTION_KEY));
+                        } catch (Exception ex) { /* Use default value */ }
+                    }
+                    if (dir == null) {
+                        dir = Direction.XZ;
+                    }
 
-                fillCircle(loc, particle, settings, radius, amount, dir);
-            } else if (arrangement.equals("sphere")) {
-                fillSphere(loc, particle, settings, radius, amount);
-            } else if (arrangement.equals("hemisphere")) {
-                fillHemisphere(loc, particle, settings, radius, amount);
+                    fillCircle(caster, loc, particle, settings, radius, amount, dir);
+                    break;
+                case "sphere":
+                    fillSphere(caster, loc, particle, settings, radius, amount);
+                    break;
+                case "hemisphere":
+                    fillHemisphere(caster, loc, particle, settings, radius, amount);
+                    break;
             }
         } else {
-            play(loc, particle, settings);
+            play(caster, loc, particle, settings);
         }
     }
 
@@ -183,12 +186,18 @@ public class ParticleHelper {
      * @param particle particle to play
      * @param settings data to play the particle with
      */
-    public static void play(Location loc, final String particle, Settings settings) {
+    public static void play(LivingEntity caster, Location loc, final String particle, Settings settings) {
 //        particle = particle.toLowerCase().replace("_", " ");
-        final int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
-        final float dx = (float)settings.getDouble(DX_KEY, 0.0);
-        final float dy = (float)settings.getDouble(DY_KEY, 0.0);
-        final float dz = (float)settings.getDouble(DZ_KEY, 0.0);
+        int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
+
+        final boolean onlyCaster = settings.getBool("onlyCaster", false);
+
+//        if(onlyCaster)
+//            rad = 1;
+
+        final float dx = (float) settings.getDouble(DX_KEY, 0.0);
+        final float dy = (float) settings.getDouble(DY_KEY, 0.0);
+        final float dz = (float) settings.getDouble(DZ_KEY, 0.0);
         final int amount = settings.getInt(AMOUNT_KEY, 1);
         final float speed = (float) settings.getDouble(SPEED_KEY, 1.0);
         final Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
@@ -206,36 +215,37 @@ public class ParticleHelper {
 
             // v1.13 particles
             else if (VersionManager.isVersionAtLeast(11300)) {
+
+                ParticleBuilder builder = new ParticleBuilder(org.bukkit.Particle.valueOf(particle))
+                        .location(loc)
+                        .extra(speed)
+                        .offset(dx, dy, dz)
+                        .count(amount);
+
                 if (particle.startsWith("block")) {
-                    SpigotParticles.playBlock(loc, particle, dx, dy, dz, amount, speed, rad, mat);
-                } else if (particle.startsWith("icon")) {
-                    SpigotParticles.playItem(loc, particle, dx, dy, dz, amount, speed, rad, mat);
-                } else {
-                    SpigotParticles.play(loc, particle, dx, dy, dz, amount, speed, rad);
+                    builder.data(mat.createBlockData());
                 }
-            }
 
-            // Reflection particles
-            else if (REFLECT_PARTICLES.containsKey(particle)) {
-                Particle.play(REFLECT_PARTICLES.get(particle), loc, rad, dx, dy, dz, speed, amount);
-            }
+                if (particle.startsWith("icon")) {
+                    builder.data(new ItemStack(mat));
+                }
 
-            // Block break particle
-            else if (particle.equals("block crack")) {
-                Particle.playBlockCrack(mat, (short) settings.getInt(TYPE_KEY, 0), loc, rad, speed);
-            }
+                if (particle.equalsIgnoreCase("redstone")) {
+                    final Color color = Color.fromRGB((int) (255 * (dx + 1)), (int) (255 * dy), (int) (255 * dz));
+                    builder.offset(0, 0, 0)
+                            .color(color);
+                }
 
-            // Icon break particle
-            else if (particle.equals("icon crack")) {
-                Particle.playIconCrack(mat, (short) settings.getInt(TYPE_KEY, 0), loc, rad, speed);
-            }
+                if (onlyCaster) {
+                    builder.receivers((Player) caster);
+                } else {
+                    builder.receivers(rad);
+                }
 
-            // 1.9+ particles
-            else {
-                Particle.play(particle, loc, rad, dx, dy, dz, speed, amount);
+                builder.spawn();
             }
         } catch (Exception ex) {
-        	ex.printStackTrace();
+            ex.printStackTrace();
             Logger.invalid(ex.getCause().getMessage());
         }
     }
@@ -250,6 +260,7 @@ public class ParticleHelper {
      * @param amount   amount of particles to play
      */
     public static void fillCircle(
+            LivingEntity caster,
             Location loc,
             String particle,
             Settings settings,
@@ -277,7 +288,7 @@ public class ParticleHelper {
                 continue;
             }
 
-            play(temp, particle, settings);
+            play(caster, temp, particle, settings);
             index++;
         }
     }
@@ -291,7 +302,7 @@ public class ParticleHelper {
      * @param radius   radius of the sphere
      * @param amount   amount of particles to use
      */
-    public static void fillSphere(Location loc, String particle, Settings settings, double radius, int amount) {
+    public static void fillSphere(LivingEntity caster, Location loc, String particle, Settings settings, double radius, int amount) {
         Location temp = loc.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
@@ -307,7 +318,7 @@ public class ParticleHelper {
                 continue;
             }
 
-            play(temp, particle, settings);
+            play(caster, temp, particle, settings);
             index++;
         }
     }
@@ -321,7 +332,7 @@ public class ParticleHelper {
      * @param radius   radius of the sphere
      * @param amount   amount of particles to use
      */
-    public static void fillHemisphere(Location loc, String particle, Settings settings, double radius, int amount) {
+    public static void fillHemisphere(LivingEntity caster, Location loc, String particle, Settings settings, double radius, int amount) {
         Location temp = loc.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
@@ -337,12 +348,12 @@ public class ParticleHelper {
                 continue;
             }
 
-            play(temp, particle, settings);
+            play(caster, temp, particle, settings);
             index++;
         }
     }
 
-    private static final HashMap<String, Effect> BUKKIT_EFFECTS = new HashMap<String, Effect>() {{
+    private static final HashMap<String, Effect> BUKKIT_EFFECTS = new HashMap<>() {{
         put("smoke", Effect.SMOKE);
         put("ender signal", Effect.ENDER_SIGNAL);
         put("mobspawner flames", Effect.MOBSPAWNER_FLAMES);
@@ -352,39 +363,4 @@ public class ParticleHelper {
     private static final Set<String> ENTITY_EFFECTS = ImmutableSet.of(
             "death", "hurt", "sheep eat", "wolf hearts", "wolf shake", "wolf smoke");
 
-    private static final HashMap<String, String> REFLECT_PARTICLES = new HashMap<String, String>() {{
-        put("angry villager", "angryVillager");
-        put("bubble", "bubble");
-        put("cloud", "cloud");
-        put("crit", "crit");
-        put("death suspend", "deathSuspend");
-        put("drip lava", "dripLava");
-        put("drip water", "dripWater");
-        put("enchantment table", "enchantmenttable");
-        put("explode", "explode");
-        put("firework spark", "fireworksSpark");
-        put("flame", "flame");
-        put("footstep", "footstep");
-        put("happy villager", "happyVillager");
-        put("heart", "heart");
-        put("huge explosion", "hugeexplosion");
-        put("instant spell", "instantSpell");
-        put("large explode", "largeexplode");
-        put("large smoke", "largesmoke");
-        put("lava", "lava");
-        put("magic crit", "magicCrit");
-        put("mob spell", "mobSpell");
-        put("mob spell ambient", "mobSpellAmbient");
-        put("note", "note");
-        put("portal", "portal");
-        put("red dust", "reddust");
-        put("slime", "slime");
-        put("snowball poof", "snowballpoof");
-        put("snow shovel", "snowshovel");
-        put("spell", "spell");
-        put("splash", "splash");
-        put("suspend", "suspend");
-        put("town aura", "townaura");
-        put("witch magic", "witchMagic");
-    }};
 }

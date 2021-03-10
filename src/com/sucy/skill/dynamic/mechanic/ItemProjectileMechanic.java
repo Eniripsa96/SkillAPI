@@ -222,7 +222,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
         if (hit == null) {
             hit = new TempEntity(projectile.getLocation());
         }
-        ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
+        ArrayList<LivingEntity> targets = new ArrayList<>();
         targets.add(hit);
         executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
         projectile.setCallback(null);

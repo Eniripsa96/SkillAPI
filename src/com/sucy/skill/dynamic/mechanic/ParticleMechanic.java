@@ -83,7 +83,7 @@ public class ParticleMechanic extends MechanicComponent
             Vector side = dir.clone().crossProduct(UP);
             loc.add(dir.multiply(forward)).add(0, upward, 0).add(side.multiply(right));
 
-            ParticleHelper.play(loc, copy);
+            ParticleHelper.play(caster, loc, copy);
         }
 
         return targets.size() > 0;

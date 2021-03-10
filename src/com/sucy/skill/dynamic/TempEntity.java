@@ -26,12 +26,23 @@
  */
 package com.sucy.skill.dynamic;
 
+import com.destroystokyo.paper.block.TargetBlockInfo;
+import com.destroystokyo.paper.entity.TargetEntityInfo;
 import com.google.common.collect.ImmutableList;
 import com.sucy.skill.api.particle.target.EffectTarget;
 import com.sucy.skill.api.particle.target.EntityTarget;
 import com.sucy.skill.api.particle.target.FixedTarget;
 import com.sucy.skill.api.util.Nearby;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.EntityEffect;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -46,16 +57,20 @@ import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityCategory;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.memory.MemoryKey;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -67,15 +82,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Temporary dummy entity used for targeting a location in the dynamic system
@@ -125,6 +131,35 @@ public class TempEntity implements LivingEntity {
         return null;
     }
 
+    @Override
+    public Block getTargetBlock(int i,
+        TargetBlockInfo.FluidMode fluidMode) {
+        return null;
+    }
+
+    @Override
+    public  BlockFace getTargetBlockFace(int i,
+         TargetBlockInfo.FluidMode fluidMode) {
+        return null;
+    }
+
+    @Override
+    public  TargetBlockInfo getTargetBlockInfo(int i,
+         TargetBlockInfo.FluidMode fluidMode) {
+        return null;
+    }
+
+    @Override
+    public  Entity getTargetEntity(int i, boolean b) {
+        return null;
+    }
+
+    @Override
+    public  TargetEntityInfo getTargetEntityInfo(int i,
+        boolean b) {
+        return null;
+    }
+
     public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hashSet, int i) {
         return null;
     }
@@ -158,6 +193,26 @@ public class TempEntity implements LivingEntity {
     }
 
     public void setMaximumAir(int i) {
+
+    }
+
+    @Override
+    public int getArrowCooldown() {
+        return 0;
+    }
+
+    @Override
+    public void setArrowCooldown(int i) {
+
+    }
+
+    @Override
+    public int getArrowsInBody() {
+        return 0;
+    }
+
+    @Override
+    public void setArrowsInBody(int i) {
 
     }
 
@@ -195,6 +250,11 @@ public class TempEntity implements LivingEntity {
 
     public Player getKiller() {
         return null;
+    }
+
+    @Override
+    public void setKiller( Player player) {
+
     }
 
     public boolean addPotionEffect(PotionEffect potionEffect) {
@@ -250,6 +310,16 @@ public class TempEntity implements LivingEntity {
     }
 
     public void setCustomName(String s) {
+
+    }
+
+    @Override
+    public  Component customName() {
+        return null;
+    }
+
+    @Override
+    public void customName( Component component) {
 
     }
 
@@ -351,12 +421,32 @@ public class TempEntity implements LivingEntity {
         return false;
     }
 
+    @Override
+    public void attack( Entity entity) {
+
+    }
+
+    @Override
+    public void swingMainHand() {
+
+    }
+
+    @Override
+    public void swingOffHand() {
+
+    }
+
     public void setCollidable(boolean b) {
 
     }
 
     public boolean isCollidable() {
         return false;
+    }
+
+    @Override
+    public  Set<UUID> getCollidableExemptions() {
+        return null;
     }
 
     public void damage(double v) {
@@ -446,6 +536,11 @@ public class TempEntity implements LivingEntity {
         return true;
     }
 
+    @Override
+    public boolean isInWater() {
+        return false;
+    }
+
     public World getWorld() {
         return target.getLocation().getWorld();
     }
@@ -507,6 +602,17 @@ public class TempEntity implements LivingEntity {
     }
 
     public void sendMessage(String[] strings) {
+
+    }
+
+    @Override
+    public void sendMessage( UUID uuid,  String s) {
+
+    }
+
+    @Override
+    public void sendMessage( UUID uuid,
+         String[] strings) {
 
     }
 
@@ -673,7 +779,12 @@ public class TempEntity implements LivingEntity {
         return null;
     }
 
-	@Override
+    @Override
+    public void registerAttribute( Attribute attribute) {
+
+    }
+
+    @Override
 	public double getAbsorptionAmount() {
 		return 0;
 	}
@@ -698,7 +809,67 @@ public class TempEntity implements LivingEntity {
 		return null;
 	}
 
-	@Override
+    @Override
+    public  Spigot spigot() {
+        return null;
+    }
+
+    @Override
+    public  Location getOrigin() {
+        return null;
+    }
+
+    @Override
+    public boolean fromMobSpawner() {
+        return false;
+    }
+
+    @Override
+    public  Chunk getChunk() {
+        return null;
+    }
+
+    @Override
+    public  CreatureSpawnEvent.SpawnReason getEntitySpawnReason() {
+        return null;
+    }
+
+    @Override
+    public boolean isInRain() {
+        return false;
+    }
+
+    @Override
+    public boolean isInBubbleColumn() {
+        return false;
+    }
+
+    @Override
+    public boolean isInWaterOrRain() {
+        return false;
+    }
+
+    @Override
+    public boolean isInWaterOrBubbleColumn() {
+        return false;
+    }
+
+    @Override
+    public boolean isInWaterOrRainOrBubbleColumn() {
+        return false;
+    }
+
+    @Override
+    public boolean isInLava() {
+        return false;
+    }
+
+    @Override
+    public boolean isTicking() {
+        return false;
+    }
+
+    @Override
 	public boolean isPersistent() {
 		return false;
 	}
@@ -757,4 +928,89 @@ public class TempEntity implements LivingEntity {
 	public <T> void setMemory(@Nonnull MemoryKey<T> arg0, @Nullable T arg1) {
 		
 	}
+
+    @Override
+    public  EntityCategory getCategory() {
+        return null;
+    }
+
+    @Override
+    public void setInvisible(boolean b) {
+
+    }
+
+    @Override
+    public boolean isInvisible() {
+        return false;
+    }
+
+    @Override
+    public int getArrowsStuck() {
+        return 0;
+    }
+
+    @Override
+    public void setArrowsStuck(int i) {
+
+    }
+
+    @Override
+    public int getShieldBlockingDelay() {
+        return 0;
+    }
+
+    @Override
+    public void setShieldBlockingDelay(int i) {
+
+    }
+
+    @Override
+    public  ItemStack getActiveItem() {
+        return null;
+    }
+
+    @Override
+    public void clearActiveItem() {
+
+    }
+
+    @Override
+    public int getItemUseRemainingTime() {
+        return 0;
+    }
+
+    @Override
+    public int getHandRaisedTime() {
+        return 0;
+    }
+
+    @Override
+    public boolean isHandRaised() {
+        return false;
+    }
+
+    @Override
+    public boolean isJumping() {
+        return false;
+    }
+
+    @Override
+    public void setJumping(boolean b) {
+
+    }
+
+    @Override
+    public void playPickupItemAnimation(Item item, int i) {
+
+    }
+
+    @Override
+    public float getHurtDirection() {
+        return 0;
+    }
+
+    @Override
+    public void setHurtDirection(float v) {
+
+    }
 }

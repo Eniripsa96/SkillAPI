@@ -29,6 +29,7 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.util.ParticleHelper;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -88,6 +89,7 @@ public class ParticleAnimationMechanic extends MechanicComponent
     {
 
         private List<LivingEntity> targets;
+        private final LivingEntity caster;
         private double[]           rots;
         private Vector             offset;
         private Vector             dir;
@@ -115,6 +117,7 @@ public class ParticleAnimationMechanic extends MechanicComponent
 
         ParticleTask(LivingEntity caster, List<LivingEntity> targets, int level, Settings settings)
         {
+            this.caster = caster;
             this.targets = targets;
             this.settings = settings;
 
@@ -169,7 +172,7 @@ public class ParticleAnimationMechanic extends MechanicComponent
 
                     rotate(offset, rots[j], rots[j + 1]);
                     loc.add(offset);
-                    ParticleHelper.play(loc, settings);
+                    ParticleHelper.play(caster, loc, settings);
                     loc.subtract(offset);
                     rotate(offset, rots[j++], -rots[j++]);
                 }

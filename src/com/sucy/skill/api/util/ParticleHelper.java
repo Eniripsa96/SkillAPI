@@ -349,7 +349,7 @@ public class ParticleHelper {
         }
     }
 
-    private static final HashMap<String, Effect> BUKKIT_EFFECTS = new HashMap<>() {{
+    private static final HashMap<String, Effect> BUKKIT_EFFECTS = new HashMap<String, Effect>() {{
         put("smoke", Effect.SMOKE);
         put("ender signal", Effect.ENDER_SIGNAL);
         put("mobspawner flames", Effect.MOBSPAWNER_FLAMES);

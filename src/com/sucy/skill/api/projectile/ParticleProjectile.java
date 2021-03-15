@@ -214,7 +214,7 @@ public class ParticleProjectile extends CustomProjectile
         if (count >= freq)
         {
             count = 0;
-            ParticleHelper.play(loc, settings);
+            ParticleHelper.play(getShooter(), loc, settings);
         }
 
         // Lifespan
@@ -243,7 +243,7 @@ public class ParticleProjectile extends CustomProjectile
     public static ArrayList<ParticleProjectile> spread(LivingEntity shooter, int level, Vector center, Location loc, Settings settings, double angle, int amount, ProjectileCallback callback)
     {
         ArrayList<Vector> dirs = calcSpread(center, angle, amount);
-        ArrayList<ParticleProjectile> list = new ArrayList<ParticleProjectile>();
+        ArrayList<ParticleProjectile> list = new ArrayList<>();
         for (Vector dir : dirs)
         {
             Location l = loc.clone();
@@ -273,7 +273,7 @@ public class ParticleProjectile extends CustomProjectile
     {
         Vector vel = new Vector(0, 1, 0);
         ArrayList<Location> locs = calcRain(center, radius, height, amount);
-        ArrayList<ParticleProjectile> list = new ArrayList<ParticleProjectile>();
+        ArrayList<ParticleProjectile> list = new ArrayList<>();
         for (Location l : locs)
         {
             l.setDirection(vel);

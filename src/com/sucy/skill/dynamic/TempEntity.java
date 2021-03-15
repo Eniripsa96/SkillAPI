@@ -131,30 +131,28 @@ public class TempEntity implements LivingEntity {
         return null;
     }
 
-    @Override
     public Block getTargetBlock(int i,
         TargetBlockInfo.FluidMode fluidMode) {
         return null;
     }
 
-    @Override
     public  BlockFace getTargetBlockFace(int i,
          TargetBlockInfo.FluidMode fluidMode) {
         return null;
     }
 
-    @Override
+
     public  TargetBlockInfo getTargetBlockInfo(int i,
          TargetBlockInfo.FluidMode fluidMode) {
         return null;
     }
 
-    @Override
+
     public  Entity getTargetEntity(int i, boolean b) {
         return null;
     }
 
-    @Override
+
     public  TargetEntityInfo getTargetEntityInfo(int i,
         boolean b) {
         return null;
@@ -196,22 +194,22 @@ public class TempEntity implements LivingEntity {
 
     }
 
-    @Override
+
     public int getArrowCooldown() {
         return 0;
     }
 
-    @Override
+
     public void setArrowCooldown(int i) {
 
     }
 
-    @Override
+
     public int getArrowsInBody() {
         return 0;
     }
 
-    @Override
+
     public void setArrowsInBody(int i) {
 
     }
@@ -252,7 +250,7 @@ public class TempEntity implements LivingEntity {
         return null;
     }
 
-    @Override
+
     public void setKiller( Player player) {
 
     }
@@ -313,12 +311,12 @@ public class TempEntity implements LivingEntity {
 
     }
 
-    @Override
+
     public  Component customName() {
         return null;
     }
 
-    @Override
+
     public void customName( Component component) {
 
     }
@@ -421,17 +419,17 @@ public class TempEntity implements LivingEntity {
         return false;
     }
 
-    @Override
+
     public void attack( Entity entity) {
 
     }
 
-    @Override
+
     public void swingMainHand() {
 
     }
 
-    @Override
+
     public void swingOffHand() {
 
     }
@@ -444,7 +442,7 @@ public class TempEntity implements LivingEntity {
         return false;
     }
 
-    @Override
+
     public  Set<UUID> getCollidableExemptions() {
         return null;
     }
@@ -536,7 +534,7 @@ public class TempEntity implements LivingEntity {
         return true;
     }
 
-    @Override
+
     public boolean isInWater() {
         return false;
     }
@@ -605,12 +603,12 @@ public class TempEntity implements LivingEntity {
 
     }
 
-    @Override
+
     public void sendMessage( UUID uuid,  String s) {
 
     }
 
-    @Override
+
     public void sendMessage( UUID uuid,
          String[] strings) {
 
@@ -779,12 +777,12 @@ public class TempEntity implements LivingEntity {
         return null;
     }
 
-    @Override
+
     public void registerAttribute( Attribute attribute) {
 
     }
 
-    @Override
+
 	public double getAbsorptionAmount() {
 		return 0;
 	}
@@ -809,67 +807,61 @@ public class TempEntity implements LivingEntity {
 		return null;
 	}
 
-    @Override
-    public  Spigot spigot() {
-        return null;
-    }
-
-    @Override
     public  Location getOrigin() {
         return null;
     }
 
-    @Override
+
     public boolean fromMobSpawner() {
         return false;
     }
 
-    @Override
+
     public  Chunk getChunk() {
         return null;
     }
 
-    @Override
+
     public  CreatureSpawnEvent.SpawnReason getEntitySpawnReason() {
         return null;
     }
 
-    @Override
+
     public boolean isInRain() {
         return false;
     }
 
-    @Override
+
     public boolean isInBubbleColumn() {
         return false;
     }
 
-    @Override
+
     public boolean isInWaterOrRain() {
         return false;
     }
 
-    @Override
+
     public boolean isInWaterOrBubbleColumn() {
         return false;
     }
 
-    @Override
+
     public boolean isInWaterOrRainOrBubbleColumn() {
         return false;
     }
 
-    @Override
+
     public boolean isInLava() {
         return false;
     }
 
-    @Override
+
     public boolean isTicking() {
         return false;
     }
 
-    @Override
+
 	public boolean isPersistent() {
 		return false;
 	}
@@ -929,87 +921,87 @@ public class TempEntity implements LivingEntity {
 		
 	}
 
-    @Override
+
     public  EntityCategory getCategory() {
         return null;
     }
 
-    @Override
+
     public void setInvisible(boolean b) {
 
     }
 
-    @Override
+
     public boolean isInvisible() {
         return false;
     }
 
-    @Override
+
     public int getArrowsStuck() {
         return 0;
     }
 
-    @Override
+
     public void setArrowsStuck(int i) {
 
     }
 
-    @Override
+
     public int getShieldBlockingDelay() {
         return 0;
     }
 
-    @Override
+
     public void setShieldBlockingDelay(int i) {
 
     }
 
-    @Override
+
     public  ItemStack getActiveItem() {
         return null;
     }
 
-    @Override
+
     public void clearActiveItem() {
 
     }
 
-    @Override
+
     public int getItemUseRemainingTime() {
         return 0;
     }
 
-    @Override
+
     public int getHandRaisedTime() {
         return 0;
     }
 
-    @Override
+
     public boolean isHandRaised() {
         return false;
     }
 
-    @Override
+
     public boolean isJumping() {
         return false;
     }
 
-    @Override
+
     public void setJumping(boolean b) {
 
     }
 
-    @Override
+
     public void playPickupItemAnimation(Item item, int i) {
 
     }
 
-    @Override
+
     public float getHurtDirection() {
         return 0;
     }
 
-    @Override
+
     public void setHurtDirection(float v) {
 
     }

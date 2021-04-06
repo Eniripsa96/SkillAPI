@@ -124,6 +124,7 @@ import com.sucy.skill.dynamic.target.SelfTarget;
 import com.sucy.skill.dynamic.target.SingleTarget;
 import com.sucy.skill.dynamic.trigger.BlockBreakTrigger;
 import com.sucy.skill.dynamic.trigger.BlockPlaceTrigger;
+import com.sucy.skill.dynamic.trigger.ClickComboTrigger;
 import com.sucy.skill.dynamic.trigger.CrouchTrigger;
 import com.sucy.skill.dynamic.trigger.DamageDeathTrigger;
 import com.sucy.skill.dynamic.trigger.DeathTrigger;
@@ -288,6 +289,7 @@ public class ComponentRegistry {
         register(new FlagSetTrigger());
         register(new PotionApplyTrigger());
         register(new DamageDeathTrigger());
+        register(new ClickComboTrigger());
 
         // Targets
         register(new AreaTarget());

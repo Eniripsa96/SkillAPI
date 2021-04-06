@@ -162,6 +162,7 @@ public class SkillAPI extends JavaPlugin {
             listen(new PacketListener(injector), true);
             listen(new ClickListener(), settings.isCombosEnabled());
         }
+        listen(new NeoComboListener(), true);
         listen(new ComboListener(), settings.isCombosEnabled());
         listen(new AttributeListener(), settings.isAttributesEnabled());
         listen(new CastListener(), settings.isUsingBars());

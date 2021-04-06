@@ -27,18 +27,18 @@
 package com.sucy.skill.listener;
 
 import com.sucy.skill.api.classes.Click;
-import com.sucy.skill.api.event.KeyPressEvent;
 import com.sucy.skill.api.event.KeyPressEvent.Key;
 import com.sucy.skill.api.event.NeoClickComboEvent;
 import com.sucy.skill.api.event.NeoClickComboEvent.ClickType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -92,6 +92,16 @@ public class NeoComboListener extends SkillAPIListener
     
     @EventHandler
     public void onLeave(PlayerKickEvent e) {
+    	lastClick.remove(e.getPlayer().getUniqueId());
+    }
+    
+    @EventHandler
+    public void onHotbarSwap(PlayerItemHeldEvent e) {
+    	lastClick.remove(e.getPlayer().getUniqueId());
+    }
+    
+    @EventHandler
+    public void onOffhandSwap(PlayerSwapHandItemsEvent e) {
     	lastClick.remove(e.getPlayer().getUniqueId());
     }
 }

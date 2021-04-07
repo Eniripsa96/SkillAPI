@@ -46,11 +46,13 @@ public class DamageDeathTrigger implements CustomTrigger<EntityDamageByEntityEve
 
 	@Override
 	public LivingEntity getCaster(EntityDamageByEntityEvent e) {
+		if (!(e.getEntity() instanceof LivingEntity)) return null;
 		return (LivingEntity) e.getEntity();
 	}
 
 	@Override
 	public LivingEntity getTarget(EntityDamageByEntityEvent e, Settings s) {
+		if (!(e.getEntity() instanceof LivingEntity)) return null;
 		return (LivingEntity) e.getEntity();
 	}
 

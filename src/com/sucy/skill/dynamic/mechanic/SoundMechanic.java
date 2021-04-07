@@ -29,6 +29,7 @@ package com.sucy.skill.dynamic.mechanic;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -73,7 +74,8 @@ public class SoundMechanic extends MechanicComponent {
             pitch = Math.min(2, Math.max(0.5f, pitch));
 
             if (onlyCaster) {
-                caster.getWorld().playSound(caster.getLocation(), sound, volume, pitch);
+            	Player p = (Player) caster;
+            	p.playSound(caster.getLocation(), sound, volume, pitch);
             } else {
                 for (LivingEntity target : targets) {
                     target.getWorld().playSound(target.getLocation(), sound, volume, pitch);

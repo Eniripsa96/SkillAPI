@@ -344,7 +344,7 @@ public abstract class EffectComponent {
             }
         }
         indicatorType = IndicatorType.getByKey(settings.getString(INDICATOR, "2D"));
-        onlyCaster = config.getBoolean(ONLYCASTER);
+        onlyCaster = config.getBoolean(ONLYCASTER, true);
 
         DataSection children = config.getSection("children");
         if (children != null) {

@@ -189,7 +189,7 @@ public class ParticleHelper {
     public static void play(LivingEntity caster, Location loc, final String particle, Settings settings) {
         int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
 
-        final boolean onlyCaster = settings.getBool("onlyCaster", true);
+        final boolean onlyCaster = settings.getBool("onlycaster", true);
 
         final float dx = (float) settings.getDouble(DX_KEY, 0.0);
         final float dy = (float) settings.getDouble(DY_KEY, 0.0);

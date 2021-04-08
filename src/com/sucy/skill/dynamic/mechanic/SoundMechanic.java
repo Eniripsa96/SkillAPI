@@ -63,7 +63,7 @@ public class SoundMechanic extends MechanicComponent {
         }
 
         String type = settings.getString(SOUND, settings.getString(SOUND2, "")).toUpperCase().replace(" ", "_");
-        boolean onlyCaster = settings.getBool("onlyCaster", true);
+        boolean onlyCaster = settings.getBool("onlycaster", true);
 
         try {
             Sound sound = Sound.valueOf(type);

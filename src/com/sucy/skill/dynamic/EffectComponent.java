@@ -71,6 +71,8 @@ public abstract class EffectComponent {
      * Type of indicators to show
      */
     protected IndicatorType indicatorType;
+    
+    protected boolean onlyCaster;
 
     /**
      * Whether or not the component has preview effects
@@ -305,6 +307,7 @@ public abstract class EffectComponent {
 
     private static final String TYPE      = "type";
     private static final String INDICATOR = "indicator";
+    private static final String ONLYCASTER = "onlycaster";
 
     /**
      * Saves the component and its children to the config
@@ -314,6 +317,7 @@ public abstract class EffectComponent {
     public void save(DataSection config) {
         config.set(TYPE, getType().name().toLowerCase());
         config.set(INDICATOR, indicatorType.getKey());
+        if (!onlyCaster) config.set(ONLYCASTER, onlyCaster);
         settings.save(config.createSection("data"));
         DataSection children = config.createSection("children");
         for (EffectComponent child : this.children) {
@@ -340,6 +344,7 @@ public abstract class EffectComponent {
             }
         }
         indicatorType = IndicatorType.getByKey(settings.getString(INDICATOR, "2D"));
+        onlyCaster = settings.getBool(ONLYCASTER, true);
 
         DataSection children = config.getSection("children");
         if (children != null) {

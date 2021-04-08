@@ -393,6 +393,7 @@ public class Settings {
             return;
         }
         for (String key : settings.keySet()) {
+        	if (key.equals("onlycaster")) continue;
             config.set(key, settings.get(key));
         }
     }

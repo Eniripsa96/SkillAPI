@@ -317,7 +317,7 @@ public abstract class EffectComponent {
     public void save(DataSection config) {
         config.set(TYPE, getType().name().toLowerCase());
         config.set(INDICATOR, indicatorType.getKey());
-        if (!onlyCaster) config.set(ONLYCASTER, onlyCaster);
+    	if (!onlyCaster) config.set(ONLYCASTER, onlyCaster);
         settings.save(config.createSection("data"));
         DataSection children = config.createSection("children");
         for (EffectComponent child : this.children) {
@@ -344,7 +344,7 @@ public abstract class EffectComponent {
             }
         }
         indicatorType = IndicatorType.getByKey(settings.getString(INDICATOR, "2D"));
-        onlyCaster = settings.getBool(ONLYCASTER, true);
+        onlyCaster = config.getBoolean(ONLYCASTER);
 
         DataSection children = config.getSection("children");
         if (children != null) {

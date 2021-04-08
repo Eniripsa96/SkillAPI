@@ -241,8 +241,8 @@ public class ParticleHelper {
                 builder.spawn();
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
-            Logger.invalid(ex.getCause().getMessage());
+        	System.out.println("ERROR: " + caster.getName());
+        	settings.dumpToConsole();
         }
     }
 

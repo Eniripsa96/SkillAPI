@@ -31,8 +31,15 @@ import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.Direction;
-import com.sucy.skill.log.Logger;
-import org.bukkit.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Random;
+import java.util.Set;
+import org.bukkit.Color;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,10 +47,6 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Set;
 
 /**
  * Helper class for playing particles via config strings in various ways.
@@ -189,6 +192,8 @@ public class ParticleHelper {
     public static void play(LivingEntity caster, Location loc, final String particle, Settings settings) {
         int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
 
+
+
         final boolean onlyCaster = settings.getBool("onlycaster", true);
 
         final float dx = (float) settings.getDouble(DX_KEY, 0.0);
@@ -218,11 +223,11 @@ public class ParticleHelper {
                         .offset(dx, dy, dz)
                         .count(amount);
 
-                if (particle.startsWith("block")) {
+                if (particle.toLowerCase().startsWith("block")) {
                     builder.data(mat.createBlockData());
                 }
 
-                if (particle.startsWith("icon")) {
+                if (particle.toLowerCase().startsWith("icon")) {
                     builder.data(new ItemStack(mat));
                 }
 

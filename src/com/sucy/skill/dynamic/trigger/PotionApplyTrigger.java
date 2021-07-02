@@ -33,7 +33,7 @@ public class PotionApplyTrigger implements CustomTrigger<EntityPotionEffectEvent
 	public List<EditorOption> getOptions() {
         return ImmutableList.of(
         		EditorOption.list("potions", "Potions", "Which potions to trigger with",
-        				ImmutableList.of("SPEED", "SLOW", "BLINDNESS", "POISON")));
+        				ImmutableList.of("SPEED", "SLOWNESS", "BLINDNESS", "POISON")));
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class PotionApplyTrigger implements CustomTrigger<EntityPotionEffectEvent
 	public List<EditorOption> getOptions() {
         return ImmutableList.of(
         		EditorOption.list("potions", "Potions", "Which potions to trigger with",
-        				ImmutableList.of("SPEED", "SLOWNESS", "BLINDNESS", "POISON")));
+        				ImmutableList.of("SPEED", "SLOW", "BLINDNESS", "POISON")));
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class PotionApplyTrigger implements CustomTrigger<EntityPotionEffectEvent
         if (!e.getAction().equals(Action.ADDED)) return false;
         final List<String> potions = s.getStringList("potions");
         for (String potion : potions) {
-        	if (e.getNewEffect().getType().toString().startsWith(potion)) return true;
+        	if (e.getNewEffect().getType().getName().startsWith(potion)) return true;
         }
         return false;
 	}

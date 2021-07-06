@@ -379,6 +379,7 @@ public class ComponentRegistry {
         register(new ParticleMechanic());
         register(new ParticleAnimationMechanic());
         register(new ParticleEffectMechanic());
+        register(new ParticleEffectMechanic());
         register(new ParticleProjectileMechanic());
         register(new PassiveMechanic());
         register(new PermissionMechanic());

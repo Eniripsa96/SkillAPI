@@ -45,6 +45,7 @@ import com.sucy.skill.dynamic.DynamicClass;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.gui.tool.GUITool;
 import com.sucy.skill.hook.BungeeHook;
+import com.sucy.skill.hook.PlaceholderAPIHook;
 import com.sucy.skill.hook.PluginChecker;
 import com.sucy.skill.listener.*;
 import com.sucy.skill.manager.*;
@@ -208,8 +209,9 @@ public class SkillAPI extends JavaPlugin {
             }
         }
 
-        ResourceManager.copyQuestsModule();
-        ResourceManager.copyPlaceholdersModule();
+        // Removed due des-use
+//        ResourceManager.copyQuestsModule();
+        PlaceholderAPIHook.registerPlaceholder(this);
 
         loaded = true;
     }

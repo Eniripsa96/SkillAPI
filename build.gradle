@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenLocal()
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.enginehub.org/repo/' }
+    maven { url = 'https://repo.dmulloy2.net/repository/public/' }
+    maven { url = 'https://repo.codemc.io/repository/nms-local/' }
+    maven { url = 'https://repo.md-5.net/content/groups/public/' }
+    maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
+    maven { url = 'https://papermc.io/repo/repository/maven-public/' }
+    maven { url = 'https://repo.md-5.net/content/repositories/releases/' }
+    maven { url = 'https://repo.md-5.net/content/repositories/snapshots/' }
+    maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+}
+
+dependencies {
+    compileOnly 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
+
+    // Hooks
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.16-R0.4-SNAPSHOT'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.0'
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.0.0'
+    compileOnly 'io.lumine.xikage:MythicMobs:4.2.0-SNAPSHOT'
+    compileOnly 'fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:4.6.0'
+    compileOnly fileTree(dir: 'libs', include: '*.jar')
+    compileOnly 'LibsDisguises:LibsDisguises:10.0.21'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
+    compileOnly 'me.clip:placeholderapi:2.10.9'
+}

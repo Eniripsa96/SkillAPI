@@ -1,0 +1,80 @@
+/* Builder styling */
+
+h3 {
+	padding: 5px;
+	border-radius: 5px;
+	background-color: transparent;
+	
+	transition: background-color 600ms;
+}
+
+h3:hover {
+	background-color: #666;
+	cursor: pointer;
+}
+
+.triggerLabel:before {
+	content: "Trigger: ";
+	color: red;
+}
+
+.conditionLabel:before {
+	content: "Condition: ";
+	color: blue;
+}
+
+.targetLabel:before {	
+	content: "Target: ";
+	color: #080;
+}
+
+.mechanicLabel:before {
+	content: "Mechanic: ";
+	color: #f0f;
+}
+
+.componentWrapper {
+    float: left;
+	max-width: calc(100% - 24px);
+}
+
+.component {
+	padding: 5px;
+	margin: 5px;
+	border: 2px solid #333;
+	border-radius: 10px;
+	font: 18px Sertig-Web;
+	background-color: #181818;
+    width: 260px;
+    height: 90px;
+}
+
+.componentChildren {
+    margin-left: 20px;
+}
+
+.builderButton {
+	float: left;
+	background-color: #043;
+	width: 90px;
+    height: 32px;
+	font: 16px Sertig-Web;
+	border-radius: 5px;
+	padding: 5px;
+	padding-left: 10px;
+	color: white;
+	cursor: pointer;
+	margin: 5px;
+	
+	transition: background-color 600ms;
+}
+
+.smallButton {
+    width: 32px;
+}
+
+.builderButton:hover {
+	background-color: #666;
+}
+
+/* Form styling */

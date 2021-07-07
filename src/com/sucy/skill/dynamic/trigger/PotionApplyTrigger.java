@@ -57,9 +57,9 @@ public class PotionApplyTrigger implements CustomTrigger<EntityPotionEffectEvent
 	}
 
 	@Override
-	public void setValues(EntityPotionEffectEvent arg0, Map<String, Object> arg1) {
+	public void setValues(EntityPotionEffectEvent e, Map<String, Object> data) {
+        data.put("api-potion", (double) e.getNewEffect().getAmplifier());
 		return;
-		
 	}
 
 	@Override

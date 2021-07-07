@@ -64,7 +64,7 @@ public class PotionApplyTrigger implements CustomTrigger<EntityPotionEffectEvent
 
 	@Override
 	public boolean shouldTrigger(EntityPotionEffectEvent e, final int level, Settings s) {
-        if (!e.getAction().equals(Action.ADDED)) return false;
+        if (!e.getAction().equals(Action.ADDED) && !e.getAction().equals(Action.CHANGED)) return false;
         final List<String> potions = s.getStringList("potions");
         for (String potion : potions) {
         	if (e.getNewEffect().getType().getName().startsWith(potion)) return true;

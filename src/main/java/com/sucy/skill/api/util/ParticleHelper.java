@@ -31,15 +31,7 @@ import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.Direction;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Set;
-import org.bukkit.Color;
-import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -47,6 +39,10 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.HashMap;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Helper class for playing particles via config strings in various ways.
@@ -192,8 +188,6 @@ public class ParticleHelper {
     public static void play(LivingEntity caster, Location loc, final String particle, Settings settings) {
         int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
 
-
-
         final boolean onlyCaster = settings.getBool("onlycaster", true);
 
         final float dx = (float) settings.getDouble(DX_KEY, 0.0);
@@ -232,9 +226,8 @@ public class ParticleHelper {
                 }
 
                 if (particle.equalsIgnoreCase("redstone")) {
-                    final Color color = Color.fromRGB((int) (255 * (dx + 1)), (int) (255 * dy), (int) (255 * dz));
-                    builder.offset(0, 0, 0)
-                            .color(color);
+                    final Color color = Color.fromRGB((int) (255 * dx), (int) (255 * dy), (int) (255 * dz));
+                    builder.color(color);
                 }
 
                 if (onlyCaster) {
@@ -246,8 +239,55 @@ public class ParticleHelper {
                 builder.spawn();
             }
         } catch (Exception ex) {
-        	System.out.println("ERROR: " + caster.getName());
-        	settings.dumpToConsole();
+            System.out.println("ERROR: " + caster.getName());
+            settings.dumpToConsole();
+        }
+    }
+
+    public static ParticleBuilder configureParticle(LivingEntity caster, Settings settings) {
+        String particle = settings.getString(PARTICLE_KEY, "invalid");
+        final boolean onlyCaster = settings.getBool("onlycaster", true);
+
+        int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
+        final float dx = (float) settings.getDouble(DX_KEY, 0.0);
+        final float dy = (float) settings.getDouble(DY_KEY, 0.0);
+        final float dz = (float) settings.getDouble(DZ_KEY, 0.0);
+        final int amount = settings.getInt(AMOUNT_KEY, 1);
+        final float speed = (float) settings.getDouble(SPEED_KEY, 1.0);
+        final Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
+
+        try {
+
+            ParticleBuilder builder = new ParticleBuilder(org.bukkit.Particle.valueOf(particle))
+                    .extra(speed)
+                    .offset(dx, dy, dz)
+                    .count(amount);
+
+            if (particle.toLowerCase().startsWith("block")) {
+                builder.data(mat.createBlockData());
+            }
+
+            if (particle.toLowerCase().startsWith("icon")) {
+                builder.data(new ItemStack(mat));
+            }
+
+            if (particle.equalsIgnoreCase("redstone")) {
+                final Color color = Color.fromRGB((int) (255 * dx), (int) (255 * dy), (int) (255 * dz));
+                builder.color(color);
+            }
+
+            if (onlyCaster) {
+                builder.receivers((Player) caster);
+            } else {
+                builder.receivers(rad);
+            }
+
+            return builder;
+
+        } catch (Exception ex) {
+            System.out.println("ERROR: " + caster.getName());
+            settings.dumpToConsole();
+            return null;
         }
     }
 

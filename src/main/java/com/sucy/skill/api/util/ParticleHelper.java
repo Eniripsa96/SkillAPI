@@ -27,27 +27,19 @@
 package com.sucy.skill.api.util;
 
 import com.destroystokyo.paper.ParticleBuilder;
-import com.google.common.collect.ImmutableSet;
-import com.rit.sucy.version.VersionManager;
+import com.sucy.skill.api.ParticleSettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.enums.Direction;
-import org.bukkit.*;
-import org.bukkit.entity.EntityType;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
-import java.util.HashMap;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Helper class for playing particles via config strings in various ways.
  */
 public class ParticleHelper {
+
     /**
      * Settings key for the arrangement type of particles
      */
@@ -119,33 +111,21 @@ public class ParticleHelper {
     public static final String DZ_KEY = "dz";
 
     /**
+     * Settings key for the colored particles' red color (default 0)
+     */
+    public static final String RGB_KEY = "rgb";
+
+    /**
      * Settings key for the reflection particles' "speed" value (default 1)
      */
     public static final String SPEED_KEY = "speed";
 
     private static final Random random = new Random();
 
-    /**
-     * Plays an entity effect at the given location
-     *
-     * @param loc    location to play the effect
-     * @param effect entity effect to play
-     */
-    public static void play(Location loc, EntityEffect effect) {
-        Wolf wolf = (Wolf) loc.getWorld().spawnEntity(loc, EntityType.WOLF);
-        wolf.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100, 100));
-        wolf.playEffect(effect);
-        wolf.remove();
-    }
+    public static void play(ParticleSettings particleSettings, Location loc) {
 
-    /**
-     * Plays particles about the given location using the given settings
-     *
-     * @param loc      location to center the effect around
-     * @param settings data to play the particles with
-     */
-    public static void play(LivingEntity caster, Location loc, Settings settings) {
-        String particle = settings.getString(PARTICLE_KEY, "invalid");
+        Settings settings = particleSettings.getOriginalSettings();
+
         if (settings.has(ARRANGEMENT_KEY)) {
             int level = settings.getInt(LEVEL, 1);
             double radius = settings.getAttr(RADIUS_KEY, level, 3.0);
@@ -164,151 +144,121 @@ public class ParticleHelper {
                         dir = Direction.XZ;
                     }
 
-                    fillCircle(caster, loc, particle, settings, radius, amount, dir);
+                    fillCircle(particleSettings, loc, radius, amount, dir);
                     break;
                 case "sphere":
-                    fillSphere(caster, loc, particle, settings, radius, amount);
+                    fillSphere(particleSettings, loc, radius, amount);
                     break;
                 case "hemisphere":
-                    fillHemisphere(caster, loc, particle, settings, radius, amount);
+                    fillHemisphere(particleSettings, loc, radius, amount);
                     break;
             }
         } else {
-            play(caster, loc, particle, settings);
+            particleSettings.spawn(loc);
+//            play(caster, loc, particle, settings);
         }
+    }
+
+    /**
+     * Plays particles about the given location using the given settings
+     *
+     * @param loc      location to center the effect around
+     * @param settings data to play the particles with
+     */
+    public static void play(LivingEntity caster, Location loc, Settings settings) {
+//        String particle = settings.getString(PARTICLE_KEY, "invalid");
+
+        ParticleSettings particleSettings = new ParticleSettings(caster, settings);
+        play(particleSettings, loc);
+
+//        if (settings.has(ARRANGEMENT_KEY)) {
+//            int level = settings.getInt(LEVEL, 1);
+//            double radius = settings.getAttr(RADIUS_KEY, level, 3.0);
+//            int amount = (int) settings.getAttr(PARTICLES_KEY, level, 10);
+//
+//            String arrangement = settings.getString(ARRANGEMENT_KEY).toLowerCase();
+//            switch (arrangement) {
+//                case "circle":
+//                    Direction dir = null;
+//                    if (settings.has(DIRECTION_KEY)) {
+//                        try {
+//                            dir = Direction.valueOf(settings.getString(DIRECTION_KEY));
+//                        } catch (Exception ex) { /* Use default value */ }
+//                    }
+//                    if (dir == null) {
+//                        dir = Direction.XZ;
+//                    }
+//
+//                    fillCircle(particleSettings, loc, radius, amount, dir);
+//                    break;
+//                case "sphere":
+//                    fillSphere(particleSettings, loc, radius, amount);
+//                    break;
+//                case "hemisphere":
+//                    fillHemisphere(particleSettings, loc, radius, amount);
+//                    break;
+//            }
+//        } else {
+//            particleSettings.spawn(loc);
+////            play(caster, loc, particle, settings);
+//        }
     }
 
     /**
      * Plays a particle at the given location based on the string
      *
-     * @param loc      location to play the effect
-     * @param particle particle to play
-     * @param settings data to play the particle with
+     * @param loc              location to play the effect
+     * @param caster           particle to play
+     * @param particleSettings data to play the particle with
      */
-    public static void play(LivingEntity caster, Location loc, final String particle, Settings settings) {
-        int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
+    private static void play(LivingEntity caster, Location loc, ParticleBuilder particleSettings) {
+//            , final String particle, Settings settings) {
+//        int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
+//
+//        final boolean onlyCaster = settings.getBool("onlycaster", true);
+//
+//        final float dx = (float) settings.getDouble(DX_KEY, 0.0);
+//        final float dy = (float) settings.getDouble(DY_KEY, 0.0);
+//        final float dz = (float) settings.getDouble(DZ_KEY, 0.0);
+//
+//
+//        final int amount = settings.getInt(AMOUNT_KEY, 1);
+//        final float speed = (float) settings.getDouble(SPEED_KEY, 1.0);
+//        final Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
 
-        final boolean onlyCaster = settings.getBool("onlycaster", true);
-
-        final float dx = (float) settings.getDouble(DX_KEY, 0.0);
-        final float dy = (float) settings.getDouble(DY_KEY, 0.0);
-        final float dz = (float) settings.getDouble(DZ_KEY, 0.0);
-        final int amount = settings.getInt(AMOUNT_KEY, 1);
-        final float speed = (float) settings.getDouble(SPEED_KEY, 1.0);
-        final Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
-
-        try {
-            // Normal bukkit effects
-            if (BUKKIT_EFFECTS.containsKey(particle)) {
-                loc.getWorld().playEffect(loc, BUKKIT_EFFECTS.get(particle), settings.getInt(DATA_KEY, 0));
-            }
-
-            // Entity effects
-            else if (ENTITY_EFFECTS.contains(particle)) {
-                play(loc, EntityEffect.valueOf(particle.toUpperCase().replace(' ', '_')));
-            }
-
-            // v1.13 particles
-            else if (VersionManager.isVersionAtLeast(11300)) {
-
-                ParticleBuilder builder = new ParticleBuilder(org.bukkit.Particle.valueOf(particle))
-                        .location(loc)
-                        .extra(speed)
-                        .offset(dx, dy, dz)
-                        .count(amount);
-
-                if (particle.toLowerCase().startsWith("block")) {
-                    builder.data(mat.createBlockData());
-                }
-
-                if (particle.toLowerCase().startsWith("icon")) {
-                    builder.data(new ItemStack(mat));
-                }
-
-                if (particle.equalsIgnoreCase("redstone")) {
-                    final Color color = Color.fromRGB((int) (255 * dx), (int) (255 * dy), (int) (255 * dz));
-                    builder.color(color);
-                }
-
-                if (onlyCaster) {
-                    builder.receivers((Player) caster);
-                } else {
-                    builder.receivers(rad);
-                }
-
-                builder.spawn();
-            }
-        } catch (Exception ex) {
-            System.out.println("ERROR: " + caster.getName());
-            settings.dumpToConsole();
-        }
-    }
-
-    public static ParticleBuilder configureParticle(LivingEntity caster, Settings settings) {
-        String particle = settings.getString(PARTICLE_KEY, "invalid");
-        final boolean onlyCaster = settings.getBool("onlycaster", true);
-
-        int rad = settings.getInt(VISIBLE_RADIUS_KEY, 25);
-        final float dx = (float) settings.getDouble(DX_KEY, 0.0);
-        final float dy = (float) settings.getDouble(DY_KEY, 0.0);
-        final float dz = (float) settings.getDouble(DZ_KEY, 0.0);
-        final int amount = settings.getInt(AMOUNT_KEY, 1);
-        final float speed = (float) settings.getDouble(SPEED_KEY, 1.0);
-        final Material mat = Material.valueOf(settings.getString(MATERIAL_KEY, "DIRT").toUpperCase().replace(" ", "_"));
-
-        try {
-
-            ParticleBuilder builder = new ParticleBuilder(org.bukkit.Particle.valueOf(particle))
-                    .extra(speed)
-                    .offset(dx, dy, dz)
-                    .count(amount);
-
-            if (particle.toLowerCase().startsWith("block")) {
-                builder.data(mat.createBlockData());
-            }
-
-            if (particle.toLowerCase().startsWith("icon")) {
-                builder.data(new ItemStack(mat));
-            }
-
-            if (particle.equalsIgnoreCase("redstone")) {
-                final Color color = Color.fromRGB((int) (255 * dx), (int) (255 * dy), (int) (255 * dz));
-                builder.color(color);
-            }
-
-            if (onlyCaster) {
-                builder.receivers((Player) caster);
-            } else {
-                builder.receivers(rad);
-            }
-
-            return builder;
-
-        } catch (Exception ex) {
-            System.out.println("ERROR: " + caster.getName());
-            settings.dumpToConsole();
-            return null;
-        }
+//        try {
+//            // Normal bukkit effects
+//            if (BUKKIT_EFFECTS.containsKey(particle)) {
+//                loc.getWorld().playEffect(loc, BUKKIT_EFFECTS.get(particle), settings.getInt(DATA_KEY, 0));
+//            }
+//
+//            // Entity effects
+//            else if (ENTITY_EFFECTS.contains(particle)) {
+//                play(loc, EntityEffect.valueOf(particle.toUpperCase().replace(' ', '_')));
+//            }
+//
+//            // v1.13 particles
+//            else if (VersionManager.isVersionAtLeast(11300)) {
+//
+//                particleSettings.location(loc).spawn();
+//            }
+//        } catch (Exception ex) {
+//            System.out.println("ERROR: " + caster.getName());
+//            settings.dumpToConsole();
+//        }
     }
 
     /**
      * Plays several of a particle type randomly within a circle
      *
-     * @param loc      center location of the circle
-     * @param particle particle to play
-     * @param settings data to play the particle with
-     * @param radius   radius of the circle
-     * @param amount   amount of particles to play
+     * @param center           center location of the circle
+     * @param particleSettings data to play the particle with
+     * @param radius           radius of the circle
+     * @param amount           amount of particles to play
+     * @param direction        direction of the particle
      */
-    public static void fillCircle(
-            LivingEntity caster,
-            Location loc,
-            String particle,
-            Settings settings,
-            double radius,
-            int amount,
-            Direction direction) {
-        Location temp = loc.clone();
+    public static void fillCircle(ParticleSettings particleSettings, Location center, double radius, int amount, Direction direction) {
+        Location temp = center.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
         int index = 0;
@@ -316,20 +266,21 @@ public class ParticleHelper {
         // Play the particles
         while (index < amount) {
             if (direction == Direction.XY || direction == Direction.XZ) {
-                temp.setX(loc.getX() + random.nextDouble() * twoRadius - radius);
+                temp.setX(center.getX() + random.nextDouble() * twoRadius - radius);
             }
             if (direction == Direction.XY || direction == Direction.YZ) {
-                temp.setY(loc.getY() + random.nextDouble() * twoRadius - radius);
+                temp.setY(center.getY() + random.nextDouble() * twoRadius - radius);
             }
             if (direction == Direction.XZ || direction == Direction.YZ) {
-                temp.setZ(loc.getZ() + random.nextDouble() * twoRadius - radius);
+                temp.setZ(center.getZ() + random.nextDouble() * twoRadius - radius);
             }
 
-            if (temp.distanceSquared(loc) > rSquared) {
+            if (temp.distanceSquared(center) > rSquared) {
                 continue;
             }
 
-            play(caster, temp, particle, settings);
+            particleSettings.spawn(temp);
+//            play(caster, temp, particle, settings);
             index++;
         }
     }
@@ -337,29 +288,29 @@ public class ParticleHelper {
     /**
      * Randomly plays particle effects within the sphere
      *
-     * @param loc      location to center the effect around
-     * @param particle the string value for the particle
-     * @param settings data to play the particle with
-     * @param radius   radius of the sphere
-     * @param amount   amount of particles to use
+     * @param particleSettings data to play the particle with
+     * @param center           location to center the effect around
+     * @param radius           radius of the sphere
+     * @param amount           amount of particles to use
      */
-    public static void fillSphere(LivingEntity caster, Location loc, String particle, Settings settings, double radius, int amount) {
-        Location temp = loc.clone();
+    public static void fillSphere(ParticleSettings particleSettings, Location center, double radius, int amount) {
+        Location temp = center.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
         int index = 0;
 
         // Play the particles
         while (index < amount) {
-            temp.setX(loc.getX() + random.nextDouble() * twoRadius - radius);
-            temp.setY(loc.getY() + random.nextDouble() * twoRadius - radius);
-            temp.setZ(loc.getZ() + random.nextDouble() * twoRadius - radius);
+            temp.setX(center.getX() + random.nextDouble() * twoRadius - radius);
+            temp.setY(center.getY() + random.nextDouble() * twoRadius - radius);
+            temp.setZ(center.getZ() + random.nextDouble() * twoRadius - radius);
 
-            if (temp.distanceSquared(loc) > rSquared) {
+            if (temp.distanceSquared(center) > rSquared) {
                 continue;
             }
 
-            play(caster, temp, particle, settings);
+            particleSettings.spawn(temp);
+//            play(caster, temp, particle, settings);
             index++;
         }
     }
@@ -367,13 +318,12 @@ public class ParticleHelper {
     /**
      * Randomly plays particle effects within the hemisphere
      *
-     * @param loc      location to center the effect around
-     * @param particle the string value for the particle
-     * @param settings data to play the particle with
-     * @param radius   radius of the sphere
-     * @param amount   amount of particles to use
+     * @param loc              location to center the effect around
+     * @param particleSettings data to play the particle with
+     * @param radius           radius of the sphere
+     * @param amount           amount of particles to use
      */
-    public static void fillHemisphere(LivingEntity caster, Location loc, String particle, Settings settings, double radius, int amount) {
+    public static void fillHemisphere(ParticleSettings particleSettings, Location loc, double radius, int amount) {
         Location temp = loc.clone();
         double rSquared = radius * radius;
         double twoRadius = radius * 2;
@@ -389,19 +339,20 @@ public class ParticleHelper {
                 continue;
             }
 
-            play(caster, temp, particle, settings);
+            particleSettings.spawn(temp);
+//            play(caster, temp, particle, settings);
             index++;
         }
     }
 
-    private static final HashMap<String, Effect> BUKKIT_EFFECTS = new HashMap<String, Effect>() {{
-        put("smoke", Effect.SMOKE);
-        put("ender signal", Effect.ENDER_SIGNAL);
-        put("mobspawner flames", Effect.MOBSPAWNER_FLAMES);
-        put("potion break", Effect.POTION_BREAK);
-    }};
-
-    private static final Set<String> ENTITY_EFFECTS = ImmutableSet.of(
-            "death", "hurt", "sheep eat", "wolf hearts", "wolf shake", "wolf smoke");
+//    private static final HashMap<String, Effect> BUKKIT_EFFECTS = new HashMap<String, Effect>() {{
+//        put("smoke", Effect.SMOKE);
+//        put("ender signal", Effect.ENDER_SIGNAL);
+//        put("mobspawner flames", Effect.MOBSPAWNER_FLAMES);
+//        put("potion break", Effect.POTION_BREAK);
+//    }};
+//
+//    private static final Set<String> ENTITY_EFFECTS = ImmutableSet.of(
+//            "death", "hurt", "sheep eat", "wolf hearts", "wolf shake", "wolf smoke");
 
 }

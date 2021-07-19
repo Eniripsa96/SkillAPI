@@ -1,6 +1,6 @@
 package com.sucy.skill.dynamic.mechanic;
 
-import com.destroystokyo.paper.ParticleBuilder;
+import com.sucy.skill.api.ParticleSettings;
 import com.sucy.skill.api.Settings;
 import com.sucy.skill.api.util.ParticleHelper;
 import org.bukkit.Location;
@@ -36,10 +36,7 @@ public class ParticleLineMechanic extends MechanicComponent {
         Location startLocation = caster.getEyeLocation();
         Location endLocation = target.getEyeLocation();
 
-        ParticleBuilder particleBuilder = ParticleHelper.configureParticle(caster, copy);
-
-        if(particleBuilder == null)
-            return false;
+        ParticleSettings particleSettings = new ParticleSettings(caster, settings);
 
         Vector line = endLocation.clone().toVector().subtract(startLocation.toVector());
         double length = line.length();
@@ -47,7 +44,7 @@ public class ParticleLineMechanic extends MechanicComponent {
         for (double i = steps; i < length; i += steps) {
             line.multiply(i);
             startLocation.add(line);
-            particleBuilder.location(startLocation).spawn();
+            ParticleHelper.play(particleSettings, startLocation);
             startLocation.subtract(line);
             line.normalize();
         }

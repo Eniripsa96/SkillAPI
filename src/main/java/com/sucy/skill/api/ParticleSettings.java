@@ -3,10 +3,12 @@ package com.sucy.skill.api;
 import com.destroystokyo.paper.ParticleBuilder;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.util.ParticleHelper;
+import net.minecraft.server.v1_16_R3.Entity;
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
@@ -35,14 +37,9 @@ public class ParticleSettings {
         }
 
         if (entityEffect != null) {
-            ArmorStand armorStand = location.getWorld().spawn(location, ArmorStand.class);
-            armorStand.setSilent(true);
-            armorStand.setGravity(false);
-            armorStand.setMarker(true);
-            armorStand.setInvisible(true);
-            armorStand.setInvulnerable(true);
-            armorStand.playEffect(entityEffect);
-            armorStand.remove();
+            CraftWorld cw = (CraftWorld) location.getWorld();
+            Entity fake = cw.createEntity(location, Wolf.class);
+            cw.getHandle().broadcastEntityEffect(fake, entityEffect.getData());
         }
 
     }
@@ -68,13 +65,15 @@ public class ParticleSettings {
 
         try {
 
-            if (isValidEnum(Effect.class, particle)) {
+            boolean isParticle = isValidEnum(Particle.class, particle);
+
+            if (isValidEnum(Effect.class, particle) && !isParticle) {
                 effect = Effect.valueOf(particle);
-            } else if (isValidEnum(EntityEffect.class, particle)) {
+            } else if (isValidEnum(EntityEffect.class, particle) && !isParticle) {
                 entityEffect = EntityEffect.valueOf(particle);
             } else if (VersionManager.isVersionAtLeast(11300)) {
 
-                ParticleBuilder builder = new ParticleBuilder(org.bukkit.Particle.valueOf(particle))
+                ParticleBuilder builder = new ParticleBuilder(Particle.valueOf(particle))
                         .location(caster.getLocation())
                         .offset(dx, dy, dz)
                         .count(amount)
@@ -91,15 +90,14 @@ public class ParticleSettings {
                 if (particle.equalsIgnoreCase("redstone")) {
                     String hexColor = originalSettings.getString(ParticleHelper.RGB_KEY, null);
 
+                    builder.color(Color.RED);
+
                     if (hexColor != null) {
-
                         hexColor = hexColor.startsWith("#") ? hexColor : "#" + hexColor;
-
-                        java.awt.Color rgbColor = java.awt.Color.decode(hexColor);
-                        builder.color(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
+                        builder.color(Color.fromRGB(Integer.decode(hexColor)));
                     }
 
-                    builder.extra(Math.max(0.001, speed));
+                    builder.extra(speed == 0 ? 0.001 : speed);
                 }
 
                 if (onlyCaster) {

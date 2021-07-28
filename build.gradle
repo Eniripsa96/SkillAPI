@@ -5,6 +5,12 @@ plugins {
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
+configurations.compileClasspath {
+    exclude group: 'org.spigotmc', module: 'spigot'
+    exclude group: 'org.spigotmc', module: 'spigot-api'
+    exclude group: 'org.bukkit', module: 'bukkit'
+}
+
 repositories {
     mavenLocal()
     maven { url = 'https://jitpack.io' }

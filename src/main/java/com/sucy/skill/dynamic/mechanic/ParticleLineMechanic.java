@@ -12,6 +12,7 @@ import java.util.List;
 public class ParticleLineMechanic extends MechanicComponent {
 
     private static final String POINTS = "points";
+    private static final String UPWARD = "upward";
 
     @Override
     public String getKey() {
@@ -25,6 +26,9 @@ public class ParticleLineMechanic extends MechanicComponent {
         }
 
         double points = settings.getDouble(POINTS, 20);
+        double upward = settings.getDouble(UPWARD, 0);
+
+        Vector offset = new Vector(0, upward, 0);
 
         final Settings copy = new Settings(settings);
         copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
@@ -44,12 +48,18 @@ public class ParticleLineMechanic extends MechanicComponent {
         for (double i = steps; i < length; i += steps) {
             line.multiply(i);
             startLocation.add(line);
-            ParticleHelper.play(particleSettings, startLocation);
+            ParticleHelper.play(particleSettings, startLocation.clone().add(offset));
             startLocation.subtract(line);
             line.normalize();
         }
 
         return targets.size() > 0;
+    }
+
+    private void rotate(Vector vec, double cos, double sin) {
+        double x = vec.getX() * cos - vec.getZ() * sin;
+        vec.setZ(vec.getX() * sin + vec.getZ() * cos);
+        vec.setX(x);
     }
 
 }

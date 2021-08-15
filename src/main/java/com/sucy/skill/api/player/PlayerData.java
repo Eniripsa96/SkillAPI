@@ -586,6 +586,7 @@ public class PlayerData {
 		if (name == null) {
 			return null;
 		}
+		name = name.replace('?', ' ').trim();
 		return skills.get(name.toLowerCase());
 	}
 

@@ -32,7 +32,7 @@ dependencies {
     compileOnly 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
 
     // Hooks
-    compileOnly 'io.github.waterfallmc:waterfall-api:1.16-R0.4-SNAPSHOT'
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.17-R0.1-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.0'
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.0.0'
     compileOnly 'io.lumine.xikage:MythicMobs:4.2.0-SNAPSHOT'

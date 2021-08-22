@@ -711,6 +711,16 @@ public class SkillAPI extends JavaPlugin {
     }
 
     /**
+     * Schedules an async delayed task
+     *
+     * @param runnable the task to schedule
+     * @param delay    the delay in ticks
+     */
+    public static BukkitTask scheduleAsync(Runnable runnable, int delay) {
+        return Bukkit.getScheduler().runTaskLaterAsynchronously(singleton, runnable, delay);
+    }
+
+    /**
      * Schedules a repeating task
      *
      * @param runnable the task to schedule

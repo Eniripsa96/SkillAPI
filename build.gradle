@@ -13,7 +13,7 @@ configurations.compileClasspath {
 
 repositories {
     // NMS Paper Repo
-    maven { url = 'https://repo.codemc.io/repository/nms-local/' }
+    mavenCentral()
 
     // Hooks repos
     maven { url = 'https://jitpack.io' }

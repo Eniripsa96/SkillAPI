@@ -127,7 +127,6 @@ public class SQLIO extends IOManager
 		        SQLConnection connection = openConnection();
 		        saveSingle(connection, data);
 		        connection.database.closeConnection();
-		        System.out.println("Finished saving");
 			}
 		};
 		save.runTaskAsynchronously(api);

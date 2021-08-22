@@ -39,6 +39,7 @@ import com.sucy.skill.data.Settings;
 import com.sucy.skill.log.Logger;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,9 +122,15 @@ public class SQLIO extends IOManager
     @Override
     public void saveData(PlayerAccounts data)
     {
-        SQLConnection connection = openConnection();
-        saveSingle(connection, data);
-        connection.database.closeConnection();
+		BukkitRunnable save = new BukkitRunnable() {
+			public void run() {
+		        SQLConnection connection = openConnection();
+		        saveSingle(connection, data);
+		        connection.database.closeConnection();
+		        System.out.println("Finished saving");
+			}
+		};
+		save.runTaskAsynchronously(api);
     }
 
     @Override

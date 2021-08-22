@@ -70,6 +70,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
@@ -285,6 +286,11 @@ public class TempEntity implements LivingEntity {
     }
 
     public boolean hasLineOfSight(Entity entity) {
+        return false;
+    }
+
+    @Override
+    public boolean hasLineOfSight(@NotNull Location location) {
         return false;
     }
 
@@ -985,6 +991,11 @@ public class TempEntity implements LivingEntity {
 
     public boolean isHandRaised() {
         return false;
+    }
+
+    @Override
+    public @NotNull EquipmentSlot getHandRaised() {
+        return null;
     }
 
 

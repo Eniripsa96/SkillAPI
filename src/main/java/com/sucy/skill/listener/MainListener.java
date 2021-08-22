@@ -119,7 +119,7 @@ public class MainListener extends SkillAPIListener
 
         final int delay = SkillAPI.getSettings().getSqlDelay();
         if (SkillAPI.getSettings().isUseSql() && delay > 0) {
-            final BukkitTask task = SkillAPI.scheduleAsync(() -> {
+            final BukkitTask task = SkillAPI.schedule(() -> {
                 try {
                     SkillAPI.loadPlayerDataSQL(player);
                     init(player);

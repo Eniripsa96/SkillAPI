@@ -153,8 +153,6 @@ public class MainListener extends SkillAPIListener {
 				if (!loadingPlayerData.containsKey(player.getUniqueId())) {
 					init(player);
 					loadingPlayers.remove(player.getUniqueId());
-					System.out.println("Initializing now and calling event");
-					player.sendMessage("Initializing");
 					Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
 					this.cancel();
 				}

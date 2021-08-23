@@ -79,7 +79,7 @@ public class SkillAPI extends JavaPlugin {
 
     private final HashMap<String, Skill>          skills  = new HashMap<>();
     private final HashMap<String, RPGClass>       classes = new HashMap<>();
-    private final HashMap<String, PlayerAccounts> players = new HashMap<>();
+    public final HashMap<String, PlayerAccounts> players = new HashMap<>();
     private final ArrayList<String>               groups  = new ArrayList<>();
 
     private final List<SkillAPIListener> listeners = new ArrayList<>();
@@ -150,13 +150,13 @@ public class SkillAPI extends JavaPlugin {
         // Set up listeners
         listen(new BindListener(), true);
         listen(new BuffListener(), true);
-        listen(new MainListener(), true);
+        listen(new MainListener(this), true);
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);
         listen(new ToolListener(), true);
         listen(new KillListener(), true);
         listen(new AddonListener(), true);
-        listen(new ItemListener(), settings.isCheckLore());
+        listen(new ItemListener(this), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());
         if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
             final PacketInjector injector = new PacketInjector(this);
@@ -466,10 +466,10 @@ public class SkillAPI extends JavaPlugin {
      *
      * @return the class data of the player
      */
-    public static PlayerData getPlayerData(OfflinePlayer player) {
+	public static PlayerData getPlayerData(OfflinePlayer player) {
         if (player == null) { return null; }
-	PlayerAccounts account = getPlayerAccountData(player);
-	return account == null ? null : account.getActiveData();
+        PlayerAccounts account = getPlayerAccountData(player);
+        return account == null ? null : account.getActiveData();
     }
     
     public static PlayerAccounts loadPlayerDataSQL(OfflinePlayer player) {
@@ -535,6 +535,10 @@ public class SkillAPI extends JavaPlugin {
     public static void saveSingle(Player p) {
     	PlayerAccounts data = getPlayerAccountData(p);
     	singleton().io.saveData(data);
+    }
+    
+    public static boolean isLoaded(Player p) {
+    	return MainListener.loadingPlayers.containsKey(p.getUniqueId());
     }
 
     /**

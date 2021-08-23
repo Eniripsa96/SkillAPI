@@ -677,7 +677,7 @@ public class PlayerData {
 		int lastLevel = data.getLevel();
 		while (data.getData().canAutoLevel(lastLevel) && !data.isMaxed()
 				&& data.getLevelReq() <= data.getPlayerClass().getLevel()) {
-			upgradeSkill(skill);
+			upgradeSkill(skill, false);
 			if (lastLevel == data.getLevel()) {
 				break;
 			}
@@ -695,7 +695,7 @@ public class PlayerData {
 	 *
 	 * @return true if successfully was upgraded, false otherwise
 	 */
-	public boolean upgradeSkill(Skill skill) {
+	public boolean upgradeSkill(Skill skill, boolean runEvent) {
 		// Cannot be null
 		if (skill == null) {
 			return false;
@@ -718,9 +718,11 @@ public class PlayerData {
 		if (!data.isMaxed() && level >= data.getLevelReq() && points >= cost) {
 			// Upgrade event
 			PlayerSkillUpgradeEvent event = new PlayerSkillUpgradeEvent(this, data, cost);
-			Bukkit.getPluginManager().callEvent(event);
-			if (event.isCancelled()) {
-				return false;
+			if (runEvent) {
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					return false;
+				}
 			}
 
 			// Apply upgrade

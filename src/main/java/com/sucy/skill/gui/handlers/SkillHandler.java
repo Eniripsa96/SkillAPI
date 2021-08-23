@@ -43,7 +43,7 @@ public class SkillHandler extends GUIHolder<Skill> {
     @Override
     public void onClick(Skill type, int slot, boolean left, boolean shift) {
         if (left) {
-            if (player.upgradeSkill(type)) { setPage(page); }
+            if (player.upgradeSkill(type, true)) { setPage(page); }
         } else if ((SkillAPI.getSettings()
                 .isAllowDowngrade() || player.getSkillLevel(type.getKey()) > start.get(type.getKey()))
                 && player.downgradeSkill(type)) { setPage(page); }

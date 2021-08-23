@@ -29,6 +29,7 @@ package com.sucy.skill.listener;
 import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
+import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.data.PlayerEquips;
@@ -60,7 +61,13 @@ import java.util.Set;
  */
 public class ItemListener extends SkillAPIListener
 {
-    @Override
+    private static SkillAPI singleton;
+    
+    public ItemListener(SkillAPI api) {
+    	singleton = api;
+	}
+
+	@Override
     public void init() {
         MainListener.registerJoin(this::onJoin);
     }
@@ -267,13 +274,16 @@ public class ItemListener extends SkillAPIListener
         @Override
         public void run()
         {
-        	if (offhandSwap) SkillAPI.getPlayerData(player).getEquips().swapOffhand();
-        	else {
-	            if (weaponOnly)
-	                SkillAPI.getPlayerData(player).getEquips().updateWeapon(player.getInventory());
-	            else
-	                SkillAPI.getPlayerData(player).getEquips().update(player);
-        	}
+            String id = new VersionPlayer(player).getIdString();
+            if (singleton.players.containsKey(id)) {
+	        	if (offhandSwap) SkillAPI.getPlayerData(player).getEquips().swapOffhand();
+	        	else {
+		            if (weaponOnly)
+		                SkillAPI.getPlayerData(player).getEquips().updateWeapon(player.getInventory());
+		            else
+		                SkillAPI.getPlayerData(player).getEquips().update(player);
+	        	}
+            }
         }
     }
 }

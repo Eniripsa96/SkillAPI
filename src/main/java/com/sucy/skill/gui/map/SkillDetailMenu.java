@@ -106,7 +106,7 @@ public class SkillDetailMenu extends MapMenu
     @Override
     public void onUp(Player player)
     {
-        SkillAPI.getPlayerData(player).upgradeSkill(SkillListMenu.getSkill(player).getData());
+        SkillAPI.getPlayerData(player).upgradeSkill(SkillListMenu.getSkill(player).getData(), true);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class SkillDetailMenu extends MapMenu
         // Upgrade button
         else if (button == 1)
         {
-            SkillAPI.getPlayerData(player).upgradeSkill(SkillListMenu.getSkill(player).getData());
+            SkillAPI.getPlayerData(player).upgradeSkill(SkillListMenu.getSkill(player).getData(), true);
         }
 
         // Downgrade button

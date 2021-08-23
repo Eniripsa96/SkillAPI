@@ -76,6 +76,7 @@ public class MainListener extends SkillAPIListener {
 	private static SkillAPI singleton;
 
 	public static final Map<UUID, BukkitTask> loadingPlayers = new HashMap<>();
+	public static final Map<UUID, BukkitTask> loadingPlayerData = new HashMap<>();
 
 	public MainListener(SkillAPI skillAPI) {
 		singleton = skillAPI;
@@ -113,8 +114,10 @@ public class MainListener extends SkillAPIListener {
 			SkillAPI.initFakeData(player);
 			final BukkitTask task = SkillAPI.scheduleAsync(() -> {
 				SkillAPI.loadPlayerDataSQL(player);
+				loadingPlayerData.remove(player.getUniqueId());
 			}, delay);
 			loadingPlayers.put(player.getUniqueId(), task);
+			loadingPlayerData.put(player.getUniqueId(), task);
 		}
 		else if (SkillAPI.getSettings().isUseSql() && SkillAPI.getSettings().getSqlDelay() == 0)
 			SkillAPI.loadPlayerDataSQL(player);
@@ -134,9 +137,7 @@ public class MainListener extends SkillAPIListener {
 			return;
 
 		final int delay = SkillAPI.getSettings().getSqlDelay();
-		if (SkillAPI.getSettings().isUseSql() && delay > 0) {
-		}
-		else {
+		if (!SkillAPI.getSettings().isUseSql() && delay == 0) {
 			init(player);
 		}
 
@@ -149,12 +150,12 @@ public class MainListener extends SkillAPIListener {
 				if (player == null) {
 					this.cancel();
 				}
-				if (!loadingPlayers.containsKey(player.getUniqueId())) {
+				if (!loadingPlayerData.containsKey(player.getUniqueId())) {
 					init(player);
 					loadingPlayers.remove(player.getUniqueId());
-					Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
-					System.out.println("Initializing now");
+					System.out.println("Initializing now and calling event");
 					player.sendMessage("Initializing");
+					Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
 					this.cancel();
 				}
 				count++;

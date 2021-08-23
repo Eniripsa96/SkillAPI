@@ -62,6 +62,7 @@ import com.sucy.skill.dynamic.trigger.KillTrigger;
 import com.sucy.skill.dynamic.trigger.LandTrigger;
 import com.sucy.skill.dynamic.trigger.LaunchTrigger;
 import com.sucy.skill.dynamic.trigger.LeftClickTrigger;
+import com.sucy.skill.dynamic.trigger.LoadTrigger;
 import com.sucy.skill.dynamic.trigger.MoveTrigger;
 import com.sucy.skill.dynamic.trigger.PhysicalDealtTrigger;
 import com.sucy.skill.dynamic.trigger.PhysicalTakenTrigger;
@@ -218,6 +219,7 @@ public class ComponentRegistry {
         register(new PotionApplyTrigger());
         register(new DamageDeathTrigger());
         register(new ClickComboTrigger());
+        register(new LoadTrigger());
 
         // Targets
         register(new AreaTarget());

@@ -52,6 +52,7 @@ import com.sucy.skill.dynamic.target.SelfTarget;
 import com.sucy.skill.dynamic.target.SingleTarget;
 import com.sucy.skill.dynamic.trigger.BlockBreakTrigger;
 import com.sucy.skill.dynamic.trigger.BlockPlaceTrigger;
+import com.sucy.skill.dynamic.trigger.AccountChangeTrigger;
 import com.sucy.skill.dynamic.trigger.ClickComboTrigger;
 import com.sucy.skill.dynamic.trigger.CrouchTrigger;
 import com.sucy.skill.dynamic.trigger.DamageDeathTrigger;
@@ -220,6 +221,7 @@ public class ComponentRegistry {
         register(new DamageDeathTrigger());
         register(new ClickComboTrigger());
         register(new LoadTrigger());
+        register(new AccountChangeTrigger());
 
         // Targets
         register(new AreaTarget());

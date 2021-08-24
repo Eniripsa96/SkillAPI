@@ -29,6 +29,7 @@ import com.rit.sucy.config.CommentedLanguageConfig;
 import com.rit.sucy.version.VersionManager;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
+import com.sucy.skill.api.event.PlayerSaveEvent;
 import com.sucy.skill.api.particle.EffectManager;
 import com.sucy.skill.api.particle.Particle;
 import com.sucy.skill.api.player.PlayerAccounts;
@@ -535,6 +536,7 @@ public class SkillAPI extends JavaPlugin {
     public static void saveSingle(Player p) {
     	PlayerAccounts data = getPlayerAccountData(p);
     	singleton().io.saveData(data);
+    	Bukkit.getPluginManager().callEvent(new PlayerSaveEvent(p));
     }
     
     public static boolean isLoaded(Player p) {

@@ -126,6 +126,7 @@ public class SQLIO extends IOManager
     @Override
     public void saveData(PlayerAccounts data)
     {
+    	if (data.getPlayer() == null) return;
     	UUID uuid = data.getPlayer().getUniqueId();
 		long now = System.currentTimeMillis();
     	if (lastSaved.containsKey(uuid)) {

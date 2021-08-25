@@ -54,7 +54,7 @@ public class SQLIO extends IOManager
     public static final String DATA   = "data";
     public static final char   STRING = '\u221A';
     
-    private static HashMap<UUID, Long> lastSaved;
+    private static HashMap<PlayerAccounts, Long> lastSaved;
 
     /**
      * Initializes the SQL IO Manager
@@ -64,7 +64,7 @@ public class SQLIO extends IOManager
     public SQLIO(SkillAPI api)
     {
         super(api);
-    	lastSaved = new HashMap<UUID, Long>();
+    	lastSaved = new HashMap<PlayerAccounts, Long>();
     }
 
     private SQLConnection openConnection() {
@@ -126,15 +126,13 @@ public class SQLIO extends IOManager
     @Override
     public void saveData(PlayerAccounts data)
     {
-    	if (data.getPlayer() == null) return;
-    	UUID uuid = data.getPlayer().getUniqueId();
 		long now = System.currentTimeMillis();
-    	if (lastSaved.containsKey(uuid)) {
-    		if (lastSaved.get(uuid) + 10000 >= now) {
+    	if (lastSaved.containsKey(data)) {
+    		if (lastSaved.get(data) + 10000 >= now) {
     			return;
     		}
     	}
-    	lastSaved.put(uuid, now);
+    	lastSaved.put(data, now);
 		BukkitRunnable save = new BukkitRunnable() {
 			public void run() {
 		        SQLConnection connection = openConnection();

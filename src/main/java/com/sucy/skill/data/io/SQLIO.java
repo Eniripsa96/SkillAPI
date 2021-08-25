@@ -43,6 +43,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Loads player data from the SQL Database
@@ -52,6 +53,8 @@ public class SQLIO extends IOManager
     public static final String ID     = "id";
     public static final String DATA   = "data";
     public static final char   STRING = '\u221A';
+    
+    private static HashMap<UUID, Long> lastSaved;
 
     /**
      * Initializes the SQL IO Manager
@@ -61,6 +64,7 @@ public class SQLIO extends IOManager
     public SQLIO(SkillAPI api)
     {
         super(api);
+    	lastSaved = new HashMap<UUID, Long>();
     }
 
     private SQLConnection openConnection() {
@@ -122,6 +126,14 @@ public class SQLIO extends IOManager
     @Override
     public void saveData(PlayerAccounts data)
     {
+    	UUID uuid = data.getPlayer().getUniqueId();
+		long now = System.currentTimeMillis();
+    	if (lastSaved.containsKey(uuid)) {
+    		if (lastSaved.get(uuid) + 10000 >= now) {
+    			return;
+    		}
+    	}
+    	lastSaved.put(uuid, now);
 		BukkitRunnable save = new BukkitRunnable() {
 			public void run() {
 		        SQLConnection connection = openConnection();

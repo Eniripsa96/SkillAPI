@@ -34,6 +34,7 @@ import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.event.PlayerLoadCompleteEvent;
+import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.util.BuffManager;
@@ -75,8 +76,8 @@ public class MainListener extends SkillAPIListener {
 	private static final List<Consumer<Player>> CLEAR_HANDLERS = new ArrayList<>();
 	private static SkillAPI singleton;
 
-	public static final Map<UUID, BukkitTask> loadingPlayers = new HashMap<>();
-	public static final Map<UUID, BukkitTask> loadingPlayerData = new HashMap<>();
+	public static final Map<UUID, BukkitRunnable> loadingPlayers = new HashMap<>();
+	public static final Map<UUID, BukkitRunnable> loadingPlayerData = new HashMap<>();
 
 	public MainListener(SkillAPI skillAPI) {
 		singleton = skillAPI;
@@ -112,10 +113,23 @@ public class MainListener extends SkillAPIListener {
 
 		if (SkillAPI.getSettings().isUseSql() && delay > 0) {
 			SkillAPI.initFakeData(player);
-			final BukkitTask task = SkillAPI.scheduleAsync(() -> {
-				SkillAPI.loadPlayerDataSQL(player);
-				loadingPlayerData.remove(player.getUniqueId());
-			}, delay);
+			final BukkitRunnable task = new BukkitRunnable() {
+				int count = 0;
+				public void run() {
+					PlayerAccounts data = SkillAPI.loadPlayerDataSQL(player);
+					if (data != null) {
+						loadingPlayerData.remove(player.getUniqueId());
+						singleton.players.remove(player.getUniqueId().toString());
+						this.cancel();
+					}
+					
+					count++;
+					if (count > 3) {
+						this.cancel();
+					}
+				}
+			};
+			task.runTaskTimerAsynchronously(singleton, delay, delay);
 			loadingPlayers.put(player.getUniqueId(), task);
 			loadingPlayerData.put(player.getUniqueId(), task);
 		}

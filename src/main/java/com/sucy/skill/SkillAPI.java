@@ -502,7 +502,12 @@ public class SkillAPI extends JavaPlugin {
     private static PlayerAccounts doLoad(OfflinePlayer player) {
         // Load the data
         PlayerAccounts data = singleton.io.loadData(player);
-        singleton.players.put(player.getUniqueId().toString(), data);
+        
+        // Only place players if the data successfully loaded
+        // This stops saving null data if failed load
+        if (data != null) {
+            singleton.players.put(player.getUniqueId().toString(), data);
+        }
         return data;
     }
 
@@ -724,6 +729,15 @@ public class SkillAPI extends JavaPlugin {
      */
     public static BukkitTask scheduleAsync(Runnable runnable, int delay) {
         return Bukkit.getScheduler().runTaskLaterAsynchronously(singleton, runnable, delay);
+    }
+    /**
+     * Schedules an async delayed task
+     *
+     * @param runnable the task to schedule
+     * @param delay    the delay in ticks
+     */
+    public static BukkitTask scheduleAsyncRepeat(Runnable runnable, int delay) {
+        return Bukkit.getScheduler().runTaskTimerAsynchronously(singleton, runnable, delay, delay);
     }
 
     /**

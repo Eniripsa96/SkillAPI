@@ -109,19 +109,19 @@ public class SQLIO extends IOManager
     }
 
     private PlayerAccounts load(SQLConnection connection, OfflinePlayer player) {
+        String playerKey = new VersionPlayer(player).getIdString();
+        String data = connection.table.createEntry(playerKey).getString(DATA);
+        DataSection file = YAMLParser.parseText(data, STRING);
         try
         {
-            String playerKey = new VersionPlayer(player).getIdString();
-            DataSection file = YAMLParser.parseText(connection.table.createEntry(playerKey).getString(DATA), STRING);
             return load(player, file);
         }
         catch (Exception ex)
         {
             Logger.bug("Failed to load data for " + player.getName() + " from the SQL Database - " + ex.getMessage());
             ex.printStackTrace();
-            Logger.bug("Below is the SQL data that failed to load: ");
-            String playerKey = new VersionPlayer(player).getIdString();
-            System.out.println(connection.table.createEntry(playerKey).getString(DATA));
+            Logger.bug("Below is the SQL data that failed to load again: ");
+            System.out.println(data);
             return null;
         }
     }

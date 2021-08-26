@@ -156,7 +156,8 @@ public class BuffData
         // Ignore zeroed out values that shouldn't get buffs
         if (value <= 0) return value;
 
-        double multiplier = 1;
+        double posMult = 1;
+        double negMult = 1;
         double bonus = 0;
         Logger.log(LogType.BUFF, 1, "Buffs:");
         for (final String type : types) {
@@ -168,19 +169,25 @@ public class BuffData
             for (final Buff buff : typeBuffs.values()) {
                 if (buff.isPercent()) {
                     Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
-                    multiplier *= buff.getValue();
+                    double bVal = buff.getValue();
+                    if (bVal >= 1) {
+                    	posMult += bVal - 1;
+                    }
+                    else {
+                    	negMult *= bVal;
+                    }
                 } else {
                     Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
                     bonus += buff.getValue();
                 }
             }
         }
-        Logger.log(LogType.BUFF, 1, "Result: x" + multiplier + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * multiplier + bonus));
+        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * multiplier + bonus));
 
         // Negatives aren't well received by bukkit, so return 0 instead
-        if (multiplier <= 0) return 0;
+        if (negMult <= 0) return 0;
 
-        return Math.max(0, value * multiplier + bonus);
+        return Math.max(0, value * (posMult * negMult) + bonus);
     }
 
     private double getFlatBonus(final String... types) {

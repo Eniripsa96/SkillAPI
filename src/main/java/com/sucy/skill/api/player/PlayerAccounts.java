@@ -29,6 +29,7 @@ package com.sucy.skill.api.player;
 import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerAccountChangeEvent;
+import com.sucy.skill.api.event.PlayerAttributeLoadEvent;
 import com.sucy.skill.listener.AttributeListener;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
@@ -222,6 +223,8 @@ public class PlayerAccounts {
                     getActiveData().getSkillBar().setup(player);
                 }
                 getActiveData().getEquips().update(player);
+                PlayerAttributeLoadEvent e = new PlayerAttributeLoadEvent(player);
+                Bukkit.getPluginManager().callEvent(e);
             } else {
                 active = event.getNewID();
             }

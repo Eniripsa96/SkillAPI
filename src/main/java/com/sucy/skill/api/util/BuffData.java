@@ -182,7 +182,7 @@ public class BuffData
                 }
             }
         }
-        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * multiplier + bonus));
+        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
 
         // Negatives aren't well received by bukkit, so return 0 instead
         if (negMult <= 0) return 0;

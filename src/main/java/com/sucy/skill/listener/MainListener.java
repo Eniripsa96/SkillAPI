@@ -32,6 +32,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.PlayerAttributeLoadEvent;
+import com.sucy.skill.api.event.PlayerAttributeUnloadEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.event.PlayerLoadCompleteEvent;
@@ -486,11 +487,11 @@ public class MainListener extends SkillAPIListener {
 			if (!SkillAPI.getSettings().getFoodBar().equalsIgnoreCase("none")) {
 				event.getPlayer().setFoodLevel(20);
 			}
+            Bukkit.getPluginManager().callEvent(new PlayerAttributeUnloadEvent(event.getPlayer()));
 		}
 		else if (!oldEnabled && newEnabled) {
 			init(event.getPlayer());
-            PlayerAttributeLoadEvent e = new PlayerAttributeLoadEvent(event.getPlayer());
-            Bukkit.getPluginManager().callEvent(e);
+            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(event.getPlayer()));
 		}
 	}
 

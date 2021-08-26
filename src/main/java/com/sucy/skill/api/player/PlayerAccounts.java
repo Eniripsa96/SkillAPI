@@ -223,8 +223,7 @@ public class PlayerAccounts {
                     getActiveData().getSkillBar().setup(player);
                 }
                 getActiveData().getEquips().update(player);
-                PlayerAttributeLoadEvent e = new PlayerAttributeLoadEvent(player);
-                Bukkit.getPluginManager().callEvent(e);
+                Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(player));
             } else {
                 active = event.getNewID();
             }

@@ -329,8 +329,9 @@ public abstract class IOManager
                 ArrayList<String> globalSkills = SkillAPI.getSettings().getGlobalSkills();
                 for (PlayerSkill skill : acc.getSkills())
                 {
-                	if (globalSkills.contains(skill.getData().getName().toLowerCase()))
+                	if (globalSkills.contains(skill.getData().getName())) {
                 		continue;
+                	}
                     DataSection skillSection = skills.createSection(skill.getData().getName());
                     skillSection.set(LEVEL, skill.getLevel());
                     skillSection.set(POINTS, skill.getPoints());

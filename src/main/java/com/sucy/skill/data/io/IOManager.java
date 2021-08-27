@@ -185,6 +185,16 @@ public abstract class IOManager
                     }
                 }
             }
+            
+            // Load global skills
+            for (String skillKey : SkillAPI.getSettings().getGlobalSkills()) {
+                PlayerSkill skillData = acc.getSkill(skillKey);
+                if (skillData != null)
+                {
+                    skillData.setLevel(1);
+                    skillData.setPoints(0);
+                }
+            }
 
             // Load skill bar
             if (SkillAPI.getSettings().isSkillBarEnabled() || SkillAPI.getSettings().isUsingCombat())
@@ -316,8 +326,11 @@ public abstract class IOManager
 
                 // Save skills
                 DataSection skills = account.createSection(SKILLS);
+                ArrayList<String> globalSkills = SkillAPI.getSettings().getGlobalSkills();
                 for (PlayerSkill skill : acc.getSkills())
                 {
+                	if (globalSkills.contains(skill.getData().getName().toLowerCase()))
+                		continue;
                     DataSection skillSection = skills.createSection(skill.getData().getName());
                     skillSection.set(LEVEL, skill.getLevel());
                     skillSection.set(POINTS, skill.getPoints());

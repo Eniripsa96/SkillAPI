@@ -114,6 +114,7 @@ public class Settings {
         loadTargetingSettings();
         loadWorldGuardSettings();
         loadIsInstance();
+        loadGlobalSkills();
     }
 
     ///////////////////////////////////////////////////////
@@ -1648,5 +1649,19 @@ public class Settings {
     
     public boolean isInstance() {
         return isInstance;
+    }
+    
+    // Global skills
+    private ArrayList<String> globalSkills;
+    private static final String GLOBAL_SKILLS = "global-skills";
+    private void loadGlobalSkills() {
+        this.globalSkills = (ArrayList<String>) config.getList(GLOBAL_SKILLS);
+        for (String skill : this.globalSkills) {
+        	skill = skill.toLowerCase();
+        }
+    }
+    
+    public ArrayList<String> getGlobalSkills() {
+    	return this.globalSkills;
     }
 }

@@ -1090,6 +1090,11 @@ public class PlayerData {
 			giveSkill(skill, classData);
 		}
 
+        // Load global skills
+        for (String skillKey : SkillAPI.getSettings().getGlobalSkills()) {
+        	giveSkill(SkillAPI.getSkill(skillKey), classData);
+        }
+
 		updateHealthAndMana(getPlayer());
 		updateScoreboard();
 		return classes.get(rpgClass.getGroup());

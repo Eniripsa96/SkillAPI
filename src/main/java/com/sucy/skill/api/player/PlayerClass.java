@@ -87,6 +87,11 @@ public class PlayerClass
         {
             player.giveSkill(skill, this);
         }
+        
+        // Load global skills
+        for (String skillKey : SkillAPI.getSettings().getGlobalSkills()) {
+        	player.giveSkill(SkillAPI.getSkill(skillKey), this);
+        }
     }
 
     ///////////////////////////////////////////////////////

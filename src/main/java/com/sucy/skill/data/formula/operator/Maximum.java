@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.formula.value.CustomValue
+ * com.sucy.skill.data.formula.operator.Addition
  *
  * The MIT License (MIT)
  *
@@ -24,58 +24,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data.formula.value;
+package com.sucy.skill.data.formula.operator;
 
-import com.sucy.skill.data.formula.IValue;
+import com.sucy.skill.data.formula.IOperator;
 
 /**
- * A custom defined value for a formula
+ * The addition operation used in formulas
  */
-public class CustomValue implements IValue
+public class Maximum implements IOperator
 {
-    private String token;
-    private int    index;
-
     /**
-     * A defined value used in formulas
+     * Performs the operation between the two values
      *
-     * @param token equation token
-     */
-    public CustomValue(String token)
-    {
-        this.token = token;
-    }
-
-    /**
-     * Sets the argument index for the value.
-     * This is handled by formulas so you shouldn't
-     * need to use this.
+     * @param a first value
+     * @param b second value
      *
-     * @param index argument index
+     * @return result
      */
-    public void setIndex(int index)
+    public double compute(double a, double b)
     {
-        this.index = index;
-    }
-
-    /**
-     * @return defining token
-     */
-    public String getToken()
-    {
-        return token;
-    }
-
-    /**
-     * Gets the value using the inputs
-     *
-     * @param input the input data
-     *
-     * @return result value
-     */
-    @Override
-    public double compute(double... input)
-    {
-        return input[index];
+        return a >= b ? b : a;
     }
 }

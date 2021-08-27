@@ -53,6 +53,8 @@ public class Formula implements IValue
         put('%', new Modulo());
         put('^', new Exponent());
         put('_', new Log());
+        put('<', new Minimum());
+        put('>', new Maximum());
     }};
 
     private static final HashMap<String, Class<? extends IValue>> FUNCS = new HashMap<String, Class<? extends IValue>>()

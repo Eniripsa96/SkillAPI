@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.data.formula.value.CustomValue
+ * com.sucy.skill.data.formula.func.Ceil
  *
  * The MIT License (MIT)
  *
@@ -24,46 +24,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.sucy.skill.data.formula.value;
+package com.sucy.skill.data.formula.func;
 
 import com.sucy.skill.data.formula.IValue;
 
 /**
- * A custom defined value for a formula
+ * Ceilings a number
  */
-public class CustomValue implements IValue
+public class Max implements IValue
 {
-    private String token;
-    private int    index;
+    private IValue formula;
 
     /**
-     * A defined value used in formulas
-     *
-     * @param token equation token
+     * @param formula wrapped formula
      */
-    public CustomValue(String token)
+    public Max(IValue formula)
     {
-        this.token = token;
-    }
-
-    /**
-     * Sets the argument index for the value.
-     * This is handled by formulas so you shouldn't
-     * need to use this.
-     *
-     * @param index argument index
-     */
-    public void setIndex(int index)
-    {
-        this.index = index;
-    }
-
-    /**
-     * @return defining token
-     */
-    public String getToken()
-    {
-        return token;
+        this.formula = formula;
     }
 
     /**
@@ -76,6 +53,6 @@ public class CustomValue implements IValue
     @Override
     public double compute(double... input)
     {
-        return input[index];
+        return Math.ceil(formula.compute(input));
     }
 }

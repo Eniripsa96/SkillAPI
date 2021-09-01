@@ -52,21 +52,20 @@ public class Particle {
 
     private static Field connection;
 
-    private static HashMap<String, Object> particleTypes = new HashMap<>();
-    
+    private static final HashMap<String, Object> particleTypes = new HashMap<>();
+
     /**
      * Initializes the SkillAPI particle utility
      */
     public static void init() {
         try {
             String version = Bukkit.getServer().getClass().getPackage().getName().substring(23);
-            String nms = "net.minecraft.server." + version + '.';
             String craft = "org.bukkit.craftbukkit." + version + '.';
             getHandle = Class.forName(craft + "entity.CraftPlayer").getMethod("getHandle");
-            connection = Class.forName(nms + "EntityPlayer").getDeclaredField("playerConnection");
-            sendPacket = Class.forName(nms + "PlayerConnection")
-                    .getDeclaredMethod("sendPacket", Class.forName(nms + "Packet"));
-            
+            connection = Class.forName("net.minecraft.server.level.EntityPlayer").getDeclaredField("b");
+            sendPacket = Class.forName("net.minecraft.server.network.PlayerConnection")
+                    .getDeclaredMethod("sendPacket", Class.forName("net.minecraft.network.protocol.Packet"));
+
             Class<?> packetClass;
             // 1.13+ Servers
             Class<?> particleEnum;
@@ -75,8 +74,8 @@ public class Particle {
             if (VersionManager.isVersionAtLeast(11500)) {
                 Class<?> craftParticle = Class.forName(craft + "CraftParticle");
                 toNms = craftParticle.getDeclaredMethod("toNMS", org.bukkit.Particle.class, Object.class);
-                particleEnum = Class.forName(nms + "ParticleParam");
-                packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
+                particleEnum = Class.forName("net.minecraft.core.particles.ParticleParam");
+                packetClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutWorldParticles");
                 packet = packetClass.getConstructor(
                         particleEnum,
                         boolean.class,
@@ -88,62 +87,9 @@ public class Particle {
                         float.class,
                         float.class,
                         int.class);
-            }
-            
-            else if (VersionManager.isVersionAtLeast(11300)) {
-                Class<?> craftParticle = Class.forName(craft + "CraftParticle");
-                toNms = craftParticle.getDeclaredMethod("toNMS", org.bukkit.Particle.class, Object.class);
-                particleEnum = Class.forName(nms + "ParticleParam");
-                packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
-                packet = packetClass.getConstructor(
-                        particleEnum,
-                        boolean.class,
-                        float.class,
-                        float.class,
-                        float.class,
-                        float.class,
-                        float.class,
-                        float.class,
-                        float.class,
-                        int.class);
-            }
-
-            // 1.8+ servers
-            else if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
-                particleEnum = Class.forName(nms + "EnumParticle");
-                for (Object value : particleEnum.getEnumConstants()) { particleTypes.put(value.toString(), value); }
-                packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
-                packet = packetClass.getConstructor(
-                        particleEnum,
-                        Boolean.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Integer.TYPE,
-                        int[].class);
-            }
-
-            // 1.7.x servers
-            else {
-                packetClass = Class.forName(nms + "PacketPlayOutWorldParticles");
-                packet = packetClass.getConstructor(
-                        String.class,
-                        Boolean.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Float.TYPE,
-                        Integer.TYPE);
             }
         } catch (Exception ex) {
-        	ex.printStackTrace();
+            ex.printStackTrace();
             System.out.println("Failed to set up particles, are you using Cauldron?");
         }
     }
@@ -153,13 +99,14 @@ public class Particle {
      *
      * @param player  player to send to
      * @param packets packets to send
-     *
      * @throws Exception
      */
     public static void send(Player player, List<Object> packets)
             throws Exception {
         Object network = connection.get(getHandle.invoke(player));
-        for (Object packet : packets) { sendPacket.invoke(network, packet); }
+        for (Object packet : packets) {
+            sendPacket.invoke(network, packet);
+        }
     }
 
     /**
@@ -167,13 +114,14 @@ public class Particle {
      *
      * @param player  player to send to
      * @param packets packets to send
-     *
      * @throws Exception when reflection fails
      */
     public static void send(Player player, Object[] packets)
             throws Exception {
         Object network = connection.get(getHandle.invoke(player));
-        for (Object packet : packets) { sendPacket.invoke(network, packet); }
+        for (Object packet : packets) {
+            sendPacket.invoke(network, packet);
+        }
     }
 
     /**
@@ -187,7 +135,9 @@ public class Particle {
             throws Exception {
         range *= range;
         for (Player player : loc.getWorld().getPlayers()) {
-            if (player.getLocation().distanceSquared(loc) < range) { send(player, packets); }
+            if (player.getLocation().distanceSquared(loc) < range) {
+                send(player, packets);
+            }
         }
     }
 
@@ -202,7 +152,9 @@ public class Particle {
             throws Exception {
         range *= range;
         for (Player player : loc.getWorld().getPlayers()) {
-            if (player.getLocation().distanceSquared(loc) < range) { send(player, packets); }
+            if (player.getLocation().distanceSquared(loc) < range) {
+                send(player, packets);
+            }
         }
     }
 
@@ -211,9 +163,7 @@ public class Particle {
      *
      * @param settings particle details
      * @param loc      location to play at
-     *
      * @return particle object or null if invalid
-     *
      * @throws Exception
      */
     public static Object make(ParticleSettings settings, Location loc)
@@ -228,14 +178,14 @@ public class Particle {
      * @param x        X coordinate
      * @param y        Y coordinate
      * @param z        Z coordinate
-     *
      * @return particle object or null if invalid
-     *
      * @throws Exception
      */
     public static Object make(ParticleSettings settings, double x, double y, double z) throws Exception {
         // Invalid particle settings
-        if (settings == null || settings.type == null) { return null; }
+        if (settings == null || settings.type == null) {
+            return null;
+        }
 
         return make(
                 settings.type.name(),
@@ -264,8 +214,8 @@ public class Particle {
             Material material,
             int data) throws Exception {
 
-        
-    	// 1.15+ servers
+
+        // 1.15+ servers
         if (VersionManager.isVersionAtLeast(11500)) {
             Object obj = data;
             final org.bukkit.Particle bukkit = org.bukkit.Particle.valueOf(name);
@@ -285,13 +235,13 @@ public class Particle {
                 case FALLING_DUST:
                     obj = material.createBlockData();
             }
-        	if(toNms == null)
-            	init();
+            if (toNms == null)
+                init();
             final Object particle = toNms.invoke(null, bukkit, obj);
             return packet.newInstance(particle, true, x, y, z, dx, dy, dz, speed, amount);
         }
-        
-    	// 1.13+ servers
+
+        // 1.13+ servers
         else if (VersionManager.isVersionAtLeast(11300)) {
             Object obj = data;
             final org.bukkit.Particle bukkit = org.bukkit.Particle.valueOf(name);
@@ -311,8 +261,8 @@ public class Particle {
                 case FALLING_DUST:
                     obj = material.createBlockData();
             }
-        	if(toNms == null)
-            	init();
+            if (toNms == null)
+                init();
             final Object particle = toNms.invoke(null, bukkit, obj);
             return packet.newInstance(particle, true, (float) x, (float) y, (float) z, dx, dy, dz, speed, amount);
         }
@@ -331,7 +281,7 @@ public class Particle {
                     dz,
                     speed,
                     amount,
-                    material == null ? new int[0] : new int[] { material.ordinal(), data });
+                    material == null ? new int[0] : new int[]{material.ordinal(), data});
         }
 
         // 1.7.x servers just use a string for the type,

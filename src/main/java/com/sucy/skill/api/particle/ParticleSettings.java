@@ -158,7 +158,7 @@ public class ParticleSettings {
      *
      * @return packet instance
      *
-     * @throws Exception
+     * @throws Exception thrown
      */
     public Object instance(double x, double y, double z)
             throws Exception {

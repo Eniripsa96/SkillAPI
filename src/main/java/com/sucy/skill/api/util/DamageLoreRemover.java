@@ -61,10 +61,10 @@ public class DamageLoreRemover
 
         try
         {
-            NBT_BASE = Reflection.getNMSClass("NBTBase");
-            NBT_COMPOUND = Reflection.getNMSClass("NBTTagCompound");
-            NBT_LIST = Reflection.getNMSClass("NBTTagList");
-            NMS_ITEM = Reflection.getNMSClass("ItemStack");
+            NBT_BASE = Reflection.getClass("net.minecraft.nbt.NBTBase");
+            NBT_COMPOUND = Reflection.getClass("net.minecraft.nbt.NBTTagCompound");
+            NBT_LIST = Reflection.getClass("net.minecraft.nbt.NBTTagList");
+            NMS_ITEM = Reflection.getClass("net.minecraft.world.item.ItemStack");
             CRAFT_ITEM = Reflection.getCraftClass("inventory.CraftItemStack");
 
             AS_NMS = CRAFT_ITEM.getMethod("asNMSCopy", ItemStack.class);

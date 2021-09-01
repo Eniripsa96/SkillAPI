@@ -74,12 +74,12 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
 
     static {
         try {
-            Class<?> aabbClass = Reflection.getNMSClass("AxisAlignedBB");
-            Class<?> entityClass = Reflection.getNMSClass("Entity");
+            Class<?> aabbClass = Reflection.getClass("net.minecraft.world.phys.AxisAlignedBB");
+            Class<?> entityClass = Reflection.getClass("net.minecraft.world.entity.Entity");
             aabbConstructor = aabbClass.getConstructor(double.class, double.class, double.class, double.class, double.class, double.class);
             getBukkitEntity = entityClass.getDeclaredMethod("getBukkitEntity");
             getHandle = Reflection.getCraftClass("CraftWorld").getDeclaredMethod("getHandle");
-            Class<?> worldClass = Reflection.getNMSClass("World");
+            Class<?> worldClass = Reflection.getClass("net.minecraft.world.level.World");
             try {
                 getEntities = worldClass.getDeclaredMethod("getEntities", entityClass, aabbClass, Predicate.class);
             } catch (Exception e) {

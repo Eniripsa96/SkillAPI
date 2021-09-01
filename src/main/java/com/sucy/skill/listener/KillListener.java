@@ -63,7 +63,7 @@ public class KillListener extends SkillAPIListener
     {
         try
         {
-            Class<?> living = Reflection.getNMSClass("EntityLiving");
+            Class<?> living = Reflection.getNMSClass("net.minecraft.world.entity.EntityLiving");
             handle = Reflection.getCraftClass("entity.CraftEntity").getDeclaredMethod("getHandle");
             killer = living.getDeclaredField("killer");
             damageTime = living.getDeclaredField("lastDamageByPlayerTime");

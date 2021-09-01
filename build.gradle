@@ -2,9 +2,6 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
 configurations.compileClasspath {
     exclude group: 'org.spigotmc', module: 'spigot'
     exclude group: 'org.spigotmc', module: 'spigot-api'
@@ -13,7 +10,7 @@ configurations.compileClasspath {
 
 repositories {
     // NMS Paper Repo
-    mavenCentral()
+    mavenLocal()
 
     // Hooks repos
     maven { url = 'https://jitpack.io' }
@@ -29,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper:1.17.1-R0.1-SNAPSHOT'
 
     // Hooks
     compileOnly 'io.github.waterfallmc:waterfall-api:1.17-R0.1-SNAPSHOT'

@@ -216,6 +216,26 @@ public class TempEntity implements LivingEntity {
 
     }
 
+    @Override
+    public int getBeeStingerCooldown() {
+        return 0;
+    }
+
+    @Override
+    public void setBeeStingerCooldown(int i) {
+
+    }
+
+    @Override
+    public int getBeeStingersInBody() {
+        return 0;
+    }
+
+    @Override
+    public void setBeeStingersInBody(int i) {
+
+    }
+
     public int getMaximumNoDamageTicks() {
         return 0;
     }
@@ -590,6 +610,36 @@ public class TempEntity implements LivingEntity {
 
     }
 
+    @Override
+    public void setVisualFire(boolean bl) {
+
+    }
+
+    @Override
+    public boolean isVisualFire() {
+        return false;
+    }
+
+    @Override
+    public int getFreezeTicks() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxFreezeTicks() {
+        return 0;
+    }
+
+    @Override
+    public void setFreezeTicks(int i) {
+
+    }
+
+    @Override
+    public boolean isFrozen() {
+        return false;
+    }
+
     public void remove() {
 
     }
@@ -918,7 +968,12 @@ public class TempEntity implements LivingEntity {
 		return false;
 	}
 
-	@Override
+    @Override
+    public boolean isClimbing() {
+        return false;
+    }
+
+    @Override
 	public @Nullable RayTraceResult rayTraceBlocks(double arg0) {
 		return null;
 	}

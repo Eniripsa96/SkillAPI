@@ -10,13 +10,12 @@ configurations.compileClasspath {
 
 repositories {
     // NMS Paper Repo
-    mavenLocal()
+    maven { url = 'https://repo.codemc.io/repository/nms-local/' }
 
     // Hooks repos
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://maven.enginehub.org/repo/' }
     maven { url = 'https://repo.dmulloy2.net/repository/public/' }
-    maven { url = 'https://repo.codemc.io/repository/nms-local/' }
     maven { url = 'https://repo.md-5.net/content/groups/public/' }
     maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
     maven { url = 'https://papermc.io/repo/repository/maven-public/' }

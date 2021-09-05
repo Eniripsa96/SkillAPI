@@ -30,7 +30,6 @@ import com.sucy.skill.api.event.KeyPressEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
@@ -55,10 +54,5 @@ public class ClickListener extends SkillAPIListener {
         else if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
             Bukkit.getServer().getPluginManager().callEvent(new KeyPressEvent(event.getPlayer(), KeyPressEvent.Key.RIGHT));
         }
-    }
-
-    @EventHandler
-    public void onDrop(final PlayerDropItemEvent event) {
-        Bukkit.getServer().getPluginManager().callEvent(new KeyPressEvent(event.getPlayer(), KeyPressEvent.Key.Q));
     }
 }

@@ -159,10 +159,10 @@ public class SkillAPI extends JavaPlugin {
         listen(new AddonListener(), true);
         listen(new ItemListener(this), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());
+        listen(new ClickListener(), true);
         if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
             final PacketInjector injector = new PacketInjector(this);
             listen(new PacketListener(injector), true);
-            listen(new ClickListener(), settings.isCombosEnabled());
         }
         listen(new NeoComboListener(), true);
         listen(new ComboListener(), settings.isCombosEnabled());

@@ -36,6 +36,6 @@ public class PhysicalDealtTrigger extends PhysicalTrigger {
     public void setValues(final PhysicalDamageEvent event, final Map<String, Object> data) {
         Player p = (Player) event.getDamager();
         data.put("api-dealt", event.getDamage());
-        data.put("api-attackcooldown", p.getAttackCooldown());
+        data.put("api-attackcooldown", (double) p.getAttackCooldown());
     }
 }

@@ -26,6 +26,7 @@
  */
 package com.sucy.skill.api.event;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -41,7 +42,7 @@ public class SkillHealEvent extends Event implements Cancellable
 
     private LivingEntity healer;
     private LivingEntity target;
-    private double       damage;
+    private double       amount;
     private boolean      cancelled;
 
     /**
@@ -51,11 +52,11 @@ public class SkillHealEvent extends Event implements Cancellable
      * @param target entity receiving the damage
      * @param damage the amount of damage dealt
      */
-    public SkillHealEvent(LivingEntity healer, LivingEntity target, double damage)
+    public SkillHealEvent(LivingEntity healer, LivingEntity target, double amount)
     {
         this.healer = healer;
         this.target = target;
-        this.damage = damage;
+        this.amount = amount;
         this.cancelled = false;
     }
 
@@ -67,6 +68,13 @@ public class SkillHealEvent extends Event implements Cancellable
     public LivingEntity getHealer()
     {
         return healer;
+    }
+    
+    public double getEffectiveHeal() {
+    	double current = this.target.getHealth();
+    	double max = this.target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+    	double result = current + this.amount > max ? max : current + this.amount;
+    	return result - current;
     }
 
     /**
@@ -86,7 +94,7 @@ public class SkillHealEvent extends Event implements Cancellable
      */
     public double getAmount()
     {
-        return damage;
+        return amount;
     }
 
     /**
@@ -96,7 +104,7 @@ public class SkillHealEvent extends Event implements Cancellable
      */
     public void setAmount(double amount)
     {
-        damage = amount;
+        amount = amount;
     }
 
     /**

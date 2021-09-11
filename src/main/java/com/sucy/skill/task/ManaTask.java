@@ -29,6 +29,7 @@ package com.sucy.skill.task;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.listener.MainListener;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.thread.RepeatThreadTask;
@@ -63,6 +64,7 @@ public class ManaTask extends RepeatThreadTask
         Logger.log(LogType.MANA, 1, "Applying mana regen for " + players.length + " players");
         for (Player player : players)
         {
+        	if (MainListener.loadingPlayerData.containsKey(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
             if(data != null)
                 data.regenMana();

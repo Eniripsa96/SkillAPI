@@ -46,6 +46,7 @@ import com.sucy.skill.data.Permissions;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.dynamic.mechanic.ImmunityMechanic;
 import com.sucy.skill.hook.CitizensHook;
+import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.ClassBoardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -118,15 +119,20 @@ public class MainListener extends SkillAPIListener {
 			final BukkitRunnable task = new BukkitRunnable() {
 				int count = 0;
 				public void run() {
-					PlayerAccounts data = SkillAPI.loadPlayerDataSQL(player);
-					if (data != null) {
-						loadingPlayerData.remove(player.getUniqueId());
-						singleton.players.remove(player.getUniqueId().toString());
-						this.cancel();
+					count++;
+					if (count > 1) {
+			            Logger.bug("Load task for " + player.getName() + " is on attempt " + count);
+						if (count > 4) {
+				            Logger.bug("Cancelling load task for " + player.getName() + ", count = " + count);
+							this.cancel();
+						}
 					}
 					
-					count++;
-					if (count > 3) {
+					PlayerAccounts data = SkillAPI.loadPlayerDataSQL(player);
+					if (data != null) {
+						Logger.log("Successfully loaded player " + player.getName());
+						loadingPlayerData.remove(player.getUniqueId());
+						singleton.players.remove(player.getUniqueId().toString());
 						this.cancel();
 					}
 				}
@@ -166,16 +172,20 @@ public class MainListener extends SkillAPIListener {
 				if (player == null) {
 					this.cancel();
 				}
-				if (!loadingPlayerData.containsKey(player.getUniqueId())) {
-					init(player);
-	                SkillAPI.getPlayerData(player).getEquips().update(player);
-					loadingPlayers.remove(player.getUniqueId());
-					Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
-					this.cancel();
-				}
-				count++;
 				if (count > 5) {
 					this.cancel();
+				}
+				try {
+					if (!loadingPlayerData.containsKey(player.getUniqueId())) {
+						init(player);
+		                SkillAPI.getPlayerData(player).getEquips().update(player);
+						loadingPlayers.remove(player.getUniqueId());
+						Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
+						this.cancel();
+					}
+				}
+				catch (Exception e) {
+					count++;
 				}
 			}
 		};

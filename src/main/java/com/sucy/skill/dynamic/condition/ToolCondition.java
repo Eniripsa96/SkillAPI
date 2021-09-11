@@ -39,7 +39,7 @@ public class ToolCondition extends ConditionComponent {
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
         final String material = settings.getString(MATERIAL, "").toUpperCase();
-        final String tool = "_" + settings.getString(TOOL, "").toUpperCase().replace("SHOVEL", "SPADE");
+        final String tool = settings.getString(TOOL, "").toUpperCase().replace("SHOVEL", "SPADE");
 
         final EntityEquipment equipment = target.getEquipment();
         if (equipment == null || equipment.getItemInHand() == null) return false;
@@ -47,13 +47,13 @@ public class ToolCondition extends ConditionComponent {
         final String hand = equipment.getItemInHand().getType().name();
         
         // Custom tools
-        if (tool.equalsIgnoreCase("_BOW")) {
+        if (tool.equalsIgnoreCase("BOW")) {
         	return hand.equalsIgnoreCase("Bow") || hand.equalsIgnoreCase("Crossbow");
         }
-        if (tool.equalsIgnoreCase("_WEAPON")) {
+        else if (tool.equalsIgnoreCase("WEAPON")) {
         	return hand.contains("AXE") || hand.contains("SWORD") || hand.contains("TRIDENT");
         }
-        if (tool.equalsIgnoreCase("_HEAVY")) {
+        else if (tool.equalsIgnoreCase("HEAVY")) {
         	return hand.contains("AXE") || hand.contains("TRIDENT");
         }
         return (material.equals("ANY") || hand.contains(material)) && (tool.equals("_ANY") || hand.contains(tool));

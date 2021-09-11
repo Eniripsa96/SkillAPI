@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -52,7 +53,8 @@ public class LeftClickTrigger implements CustomTrigger<PlayerInteractEvent> {
 	}
 
 	@Override
-	public void setValues(PlayerInteractEvent arg0, Map<String, Object> arg1) {
+	public void setValues(PlayerInteractEvent e, Map<String, Object> data) {
+        data.put("api-leftclickcooldown", (double) e.getPlayer().getAttackCooldown());
 		return;
 		
 	}

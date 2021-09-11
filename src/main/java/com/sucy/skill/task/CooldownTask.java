@@ -29,6 +29,7 @@ package com.sucy.skill.task;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
+import com.sucy.skill.listener.MainListener;
 import com.sucy.skill.thread.RepeatThreadTask;
 
 import me.mrmaurice.cts.CrossTownyServer;
@@ -67,6 +68,7 @@ public class CooldownTask extends RepeatThreadTask
         for (Player player : VersionManager.getOnlinePlayers())
         {
         	if (hasCts && cts.hasManager(player)) continue;
+        	if (MainListener.loadingPlayers.containsKey(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
             if (data.hasClass())
             {

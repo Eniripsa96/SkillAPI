@@ -33,6 +33,7 @@ import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.util.ActionBar;
 import com.sucy.skill.dynamic.DynamicSkill;
+import com.sucy.skill.listener.MainListener;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.thread.RepeatThreadTask;
@@ -110,6 +111,7 @@ public class GUITask extends RepeatThreadTask
         {
             if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld())) continue;
         	if (hasCts && cts.hasManager(player)) continue;
+        	if (MainListener.loadingPlayers.containsKey(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
 
             // Health scale

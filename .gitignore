@@ -226,3 +226,4 @@ pip-log.txt
 build
 /MCCore.jar
 /Spigot.jar
+/spigot-api-1.16.1-R0.1-SNAPSHOT-shaded.jar

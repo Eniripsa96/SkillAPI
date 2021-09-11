@@ -224,3 +224,5 @@ pip-log.txt
 
 # Ignore Gradle build output directory
 build
+/MCCore.jar
+/Spigot.jar

@@ -52,6 +52,7 @@ public class ClassBoardManager
      *
      * @deprecated use clearPrefix(VersionPlayer) instead
      */
+	@Deprecated
     public static void clear(String player)
     {
         clear(new VersionPlayer(player));

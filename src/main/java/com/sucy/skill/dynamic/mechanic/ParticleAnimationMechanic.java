@@ -43,6 +43,7 @@ import java.util.List;
 public class ParticleAnimationMechanic extends MechanicComponent
 {
     private static final String FORWARD  = "forward";
+    private static final String FORWARD_SCALE  = "forward-scale";
     private static final String UPWARD   = "upward";
     private static final String RIGHT    = "right";
     private static final String STEPS    = "steps";
@@ -121,7 +122,7 @@ public class ParticleAnimationMechanic extends MechanicComponent
             this.targets = targets;
             this.settings = settings;
 
-            this.forward = settings.getDouble(FORWARD, 0);
+            this.forward = settings.getDouble(FORWARD, 0) + (settings.getDouble(FORWARD_SCALE, 0) * level);
             this.upward = settings.getDouble(UPWARD, 0);
             this.right = settings.getDouble(RIGHT, 0);
 

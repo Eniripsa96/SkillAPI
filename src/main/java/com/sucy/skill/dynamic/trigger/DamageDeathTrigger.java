@@ -66,7 +66,7 @@ public class DamageDeathTrigger implements CustomTrigger<EntityDamageByEntityEve
 	public boolean shouldTrigger(EntityDamageByEntityEvent e, final int level, Settings s) {
 		if (e.getEntity() != null && e.getCause() != null && e.getEntity() instanceof LivingEntity) {
 			LivingEntity le = (LivingEntity) e.getEntity();
-			return !e.isCancelled() && le.getHealth() <= e.getFinalDamage() && e.getCause().equals(DamageCause.CUSTOM);
+			return !e.isCancelled() && le.getHealth() <= e.getFinalDamage();
 		}
         return false;
 	}

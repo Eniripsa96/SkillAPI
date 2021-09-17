@@ -33,6 +33,7 @@ import com.sucy.skill.listener.MechanicListener;
 import com.sucy.skill.task.RemoveTask;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.AbstractArrow.PickupStatus;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
@@ -136,6 +137,9 @@ public class ProjectileMechanic extends MechanicComponent
                 for (Location loc : locs)
                 {
                     Projectile p = caster.launchProjectile(type);
+                    if (type == Arrow.class) {
+                    	((Arrow) p).setPickupStatus(PickupStatus.DISALLOWED);
+                    }
                     p.setVelocity(new Vector(0, speed, 0));
                     p.teleport(loc);
                     SkillAPI.setMeta(p, LEVEL, level);
@@ -167,6 +171,9 @@ public class ProjectileMechanic extends MechanicComponent
                     if (type != Arrow.class)
                     {
                         p.teleport(target.getLocation().add(looking).add(0, upward + 0.5, 0).add(p.getVelocity()).setDirection(d));
+                    }
+                    else {
+                        ((Arrow) p).setPickupStatus(PickupStatus.DISALLOWED);
                     }
                     p.setVelocity(d.multiply(speed));
                     SkillAPI.setMeta(p, MechanicListener.P_CALL, this);

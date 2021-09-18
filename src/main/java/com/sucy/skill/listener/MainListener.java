@@ -497,7 +497,6 @@ public class MainListener extends SkillAPIListener {
 			if (!SkillAPI.getSettings().getFoodBar().equalsIgnoreCase("none")) {
 				event.getPlayer().setFoodLevel(20);
 			}
-            Bukkit.getPluginManager().callEvent(new PlayerAttributeUnloadEvent(event.getPlayer()));
 		}
 		else if (!oldEnabled && newEnabled) {
 			init(event.getPlayer());

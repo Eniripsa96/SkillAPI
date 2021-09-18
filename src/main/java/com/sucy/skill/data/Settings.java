@@ -57,6 +57,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1644,7 +1645,12 @@ public class Settings {
     private boolean      isInstance;
     private static final String IS_INSTANCE = "is-instance";
     private void loadIsInstance() {
-    	isInstance = config.getBoolean(IS_INSTANCE);
+		if (new File(plugin.getDataFolder(), "instance").exists()) {
+			isInstance = true;
+		}
+		else {
+			isInstance = false;
+		}
     }
     
     public boolean isInstance() {

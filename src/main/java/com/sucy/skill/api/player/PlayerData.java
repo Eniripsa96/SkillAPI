@@ -1576,7 +1576,8 @@ public class PlayerData {
 	 * Clears bonus health/mana
 	 */
 	public void clearBonuses() {
-        Bukkit.getPluginManager().callEvent(new PlayerAttributeUnloadEvent(player));
+		Player p = Bukkit.getPlayer(player.getName());
+        Bukkit.getPluginManager().callEvent(new PlayerAttributeUnloadEvent(p));
 		bonusMana = 0;
 		bonusHealth = 0;
 		bonusAttrib.clear();

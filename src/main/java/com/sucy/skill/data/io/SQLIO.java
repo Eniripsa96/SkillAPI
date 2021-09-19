@@ -120,8 +120,6 @@ public class SQLIO extends IOManager
         {
             Logger.bug("Failed to load data for " + player.getName() + " from the SQL Database - " + ex.getMessage());
             ex.printStackTrace();
-            Logger.bug("Below is the SQL data that failed to load again: ");
-            System.out.println(data);
             return null;
         }
     }

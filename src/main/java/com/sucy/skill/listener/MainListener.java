@@ -129,8 +129,8 @@ public class MainListener extends SkillAPIListener {
 					}
 					
 					PlayerAccounts data = SkillAPI.loadPlayerDataSQL(player);
-					if (data != null) {
-						Logger.log("Successfully loaded player " + player.getName());
+					if (data != null && data.getActiveData() != null) {
+						Logger.log("Successfully loaded " + player.getName() + " after " + count + " attempts");
 						loadingPlayerData.remove(player.getUniqueId());
 						singleton.players.remove(player.getUniqueId().toString());
 						this.cancel();
@@ -158,6 +158,7 @@ public class MainListener extends SkillAPIListener {
 		if (player.hasMetadata("NPC"))
 			return;
 
+		// Not used by MLMC
 		final int delay = SkillAPI.getSettings().getSqlDelay();
 		if (!SkillAPI.getSettings().isUseSql() && delay == 0) {
 			init(player);

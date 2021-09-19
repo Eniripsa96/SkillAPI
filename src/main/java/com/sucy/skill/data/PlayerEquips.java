@@ -33,6 +33,8 @@ import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
+import com.sucy.skill.listener.MainListener;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -129,7 +131,7 @@ public class PlayerEquips
         if (weapon && to.isArmor) {
             return to;
         }
-        else if (!to.isMet())
+        else if (!to.isMet() && !MainListener.loadingPlayers.containsKey(player.getUUID()))
         {
             if (SkillAPI.getSettings().isDropWeapon() || !weapon) {
                 inv.setItem(index, TEMP);

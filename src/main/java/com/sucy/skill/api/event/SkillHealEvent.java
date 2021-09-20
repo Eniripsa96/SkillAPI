@@ -74,7 +74,7 @@ public class SkillHealEvent extends Event implements Cancellable
     	double current = this.target.getHealth();
     	double max = this.target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
     	double result = current + this.amount > max ? max : current + this.amount;
-    	return result - current;
+    	return result - current > 0 ? result - current : 0;
     }
 
     /**

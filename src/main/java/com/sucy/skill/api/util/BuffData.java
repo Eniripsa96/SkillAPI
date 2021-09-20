@@ -187,7 +187,7 @@ public class BuffData
         // Negatives aren't well received by bukkit, so return 0 instead
         if (negMult <= 0) return 0;
 
-        return Math.max(0, value * (posMult * negMult) + bonus);
+        return Math.max(1, value * (posMult * negMult) + bonus);
     }
 
     private double getFlatBonus(final String... types) {

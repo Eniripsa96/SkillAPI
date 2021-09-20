@@ -54,7 +54,16 @@ public class LeftClickTrigger implements CustomTrigger<PlayerInteractEvent> {
 
 	@Override
 	public void setValues(PlayerInteractEvent e, Map<String, Object> data) {
-        data.put("api-leftclickcooldown", (double) e.getPlayer().getAttackCooldown());
+    	if (data.containsKey("cd-leftclickcooldown")) {
+    		// Only change the attack cooldown data value if it's been at least 50 ms (To get through every trigger usually takes 4ms)
+    		if ((long) data.get("cd-leftclickcooldown") + 50 < System.currentTimeMillis()) {
+                data.put("api-leftclickcooldown", (double) e.getPlayer().getAttackCooldown());
+    		}
+    	}
+    	else {
+            data.put("api-leftclickcooldown", (double) e.getPlayer().getAttackCooldown());
+    	}
+    	data.put("cd-leftclickcooldown", System.currentTimeMillis());
 		return;
 		
 	}

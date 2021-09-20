@@ -36,6 +36,15 @@ public class PhysicalDealtTrigger extends PhysicalTrigger {
     public void setValues(final PhysicalDamageEvent event, final Map<String, Object> data) {
         Player p = (Player) event.getDamager();
         data.put("api-dealt", event.getDamage());
-        data.put("api-attackcooldown", (double) p.getAttackCooldown());
+    	if (data.containsKey("cd-attackcooldown")) {
+    		// Only change the attack cooldown data value if it's been at least 50 ms (To get through every trigger usually takes 4ms)
+    		if ((long) data.get("cd-attackcooldown") + 50 < System.currentTimeMillis()) {
+    	        data.put("api-attackcooldown", (double) p.getAttackCooldown());
+    		}
+    	}
+    	else {
+            data.put("api-attackcooldown", (double) p.getAttackCooldown());
+    	}
+    	data.put("cd-attackcooldown", System.currentTimeMillis());
     }
 }

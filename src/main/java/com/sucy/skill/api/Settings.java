@@ -396,6 +396,10 @@ public class Settings {
             config.set(key, settings.get(key));
         }
     }
+    
+    public HashMap<String, Object> getHashMap() {
+    	return settings;
+    }
 
     /**
      * <p>Loads attributes from a configuration section</p>

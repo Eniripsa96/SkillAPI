@@ -27,7 +27,11 @@
 package com.sucy.skill.dynamic.mechanic;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import com.sucy.skill.SkillAPI;
+import com.sucy.skill.log.Logger;
 
 import java.util.List;
 
@@ -81,7 +85,15 @@ public class LaunchMechanic extends MechanicComponent {
             dir.multiply(forward);
             dir.add(nor.multiply(right)).setY(upward);
 
-            target.setVelocity(dir);
+            try {
+            	target.setVelocity(dir);
+            }
+            catch (IllegalArgumentException e) {
+            	Logger.bug("Illegal Argument Exception from player " + caster.getName());
+            	Player p = (Player) caster;
+            	Logger.bug("Caster class is " + SkillAPI.getPlayerData(p).getClass("class"));
+            	e.printStackTrace();
+            }
         }
         return targets.size() > 0;
     }

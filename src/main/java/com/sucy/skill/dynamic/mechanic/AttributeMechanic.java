@@ -125,7 +125,7 @@ public class AttributeMechanic extends MechanicComponent {
             if (!stopped) {
                 stopped = true;
                 run();
-                if (running) {
+                if (!running) {
                     cancel();
                 }
             }

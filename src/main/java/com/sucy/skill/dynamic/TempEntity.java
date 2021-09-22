@@ -609,6 +609,16 @@ public class TempEntity implements LivingEntity {
     public void setFireTicks(int i) {
 
     }
+    
+    @Override
+    public Component name() {
+    	return null;
+    }
+    
+    @Override
+    public Component teamDisplayName() {
+    	return null;
+    }
 
     @Override
     public void setVisualFire(boolean bl) {

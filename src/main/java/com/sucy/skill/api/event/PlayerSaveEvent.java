@@ -26,6 +26,8 @@
  */
 package com.sucy.skill.api.event;
 
+import java.util.UUID;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -37,15 +39,21 @@ public class PlayerSaveEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
     private Player p;
+    private UUID uuid;
 
     public PlayerSaveEvent(Player player)
     {
         this.p = player;
+        this.uuid = player.getUniqueId();
     }
 
     public Player getPlayer()
     {
         return this.p;
+    }
+    
+    public UUID getUUID() {
+    	return this.uuid;
     }
 
     /**

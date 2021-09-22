@@ -91,7 +91,7 @@ public class LaunchMechanic extends MechanicComponent {
             catch (IllegalArgumentException e) {
             	Logger.bug("Illegal Argument Exception from player " + caster.getName());
             	Player p = (Player) caster;
-            	Logger.bug("Caster class is " + SkillAPI.getPlayerData(p).getClass("class"));
+            	Logger.bug("Caster class is " + SkillAPI.getPlayerData(p).getClass("class").getData().getName());
             	e.printStackTrace();
             }
         }

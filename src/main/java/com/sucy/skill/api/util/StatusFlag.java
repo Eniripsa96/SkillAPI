@@ -32,6 +32,7 @@ package com.sucy.skill.api.util;
 public class StatusFlag
 {
     public static final String STUN       = "stun";
+    public static final String CHARM      = "charm";
     public static final String ROOT       = "root";
     public static final String INVINCIBLE = "invincible";
     public static final String ABSORB     = "absorb";
@@ -45,7 +46,7 @@ public class StatusFlag
     };
 
     public static final String[] NEGATIVE = new String[] {
-        STUN, ROOT, DISARM, SILENCE
+        STUN, ROOT, DISARM, SILENCE, CHARM
     };
 
     public static final String[] POSITIVE = new String[] {

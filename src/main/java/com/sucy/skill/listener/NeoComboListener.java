@@ -32,8 +32,11 @@ import com.sucy.skill.api.event.NeoClickComboEvent;
 import com.sucy.skill.api.event.NeoClickComboEvent.ClickType;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -55,6 +58,25 @@ public class NeoComboListener extends SkillAPIListener
     	lastClick = new HashMap<UUID, Click>();
     }
     
+    @EventHandler
+    public void onHitEntity(EntityDamageByEntityEvent e) {
+        // Left clicks
+    	if (e.getDamager() instanceof Player) {
+    		Player p = (Player) e.getDamager();
+	    	UUID uuid = p.getUniqueId();
+	    	Key key = Key.LEFT;
+	    	if (lastClick.containsKey(uuid)) {
+	    		Click prev = lastClick.get(uuid);
+	    		if (prev.getTime() + 500 > System.currentTimeMillis()) {
+	    			if (prev.getKey().equals(Key.RIGHT)) {
+	    				Bukkit.getPluginManager().callEvent(new NeoClickComboEvent(p, ClickType.RL));
+	    			}
+	    		}
+	    	}
+	    	lastClick.put(uuid, new Click(System.currentTimeMillis(), key));
+    	}
+    }
+    
     @EventHandler(ignoreCancelled=false)
     public void onClick(PlayerInteractEvent e) {
         // Left clicks
@@ -67,7 +89,7 @@ public class NeoComboListener extends SkillAPIListener
         else if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
         	key = Key.RIGHT;
         }
-        
+
         if (key != null) {
         	UUID uuid = e.getPlayer().getUniqueId();
         	if (lastClick.containsKey(uuid)) {

@@ -76,8 +76,9 @@ public class PlayerEquips
         other = new EquipData[SkillAPI.getSettings().getSlots().length];
         for (int i = 0; i < other.length; i++) {
             other[i] = empty;
-            if (SkillAPI.getSettings().getSlots()[i] == 40)
+            if (SkillAPI.getSettings().getSlots()[i] == 40) {
                 offhand = i;
+            }
         }
     }
 
@@ -103,8 +104,12 @@ public class PlayerEquips
     {
         PlayerInventory inv = player.getInventory();
         weapon = swap(inv, inv.getHeldItemSlot(), weapon, true);
-        for (int i = 0; i < other.length; i++)
+        for (int i = 0; i < other.length; i++) {
             other[i] = swap(inv, SkillAPI.getSettings().getSlots()[i], other[i], i == offhand);
+        	if (i == offhand) {
+        		offweapon = new EquipData(inv.getItemInOffHand());
+        	}
+        }
     }
 
     /**

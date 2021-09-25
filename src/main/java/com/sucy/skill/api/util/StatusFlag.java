@@ -33,6 +33,7 @@ public class StatusFlag
 {
     public static final String STUN       = "stun";
     public static final String CHARM      = "charm";
+    public static final String CURSE      = "curse";
     public static final String ROOT       = "root";
     public static final String INVINCIBLE = "invincible";
     public static final String ABSORB     = "absorb";
@@ -42,11 +43,11 @@ public class StatusFlag
     public static final String CHANNEL    = "channel";
 
     public static final String[] ALL = new String[] {
-        STUN, ROOT, INVINCIBLE, ABSORB, DISARM, SILENCE, CHANNELING
+        STUN, ROOT, CHARM, CURSE, INVINCIBLE, ABSORB, DISARM, SILENCE, CHANNELING
     };
 
     public static final String[] NEGATIVE = new String[] {
-        STUN, ROOT, DISARM, SILENCE, CHARM
+        STUN, ROOT, DISARM, SILENCE, CHARM, CURSE
     };
 
     public static final String[] POSITIVE = new String[] {

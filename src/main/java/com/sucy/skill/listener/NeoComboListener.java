@@ -30,6 +30,7 @@ import com.sucy.skill.api.classes.Click;
 import com.sucy.skill.api.event.KeyPressEvent.Key;
 import com.sucy.skill.api.event.NeoClickComboEvent;
 import com.sucy.skill.api.event.NeoClickComboEvent.ClickType;
+import com.sucy.skill.api.event.PhysicalDamageEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -59,9 +60,9 @@ public class NeoComboListener extends SkillAPIListener
     }
     
     @EventHandler
-    public void onHitEntity(EntityDamageByEntityEvent e) {
+    public void onHitEntity(PhysicalDamageEvent e) {
         // Left clicks
-    	if (e.getDamager() instanceof Player) {
+    	if (e.getDamager() instanceof Player && !e.isProjectile()) {
     		Player p = (Player) e.getDamager();
 	    	UUID uuid = p.getUniqueId();
 	    	Key key = Key.LEFT;

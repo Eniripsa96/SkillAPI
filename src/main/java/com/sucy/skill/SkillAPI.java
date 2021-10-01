@@ -97,7 +97,6 @@ public class SkillAPI extends JavaPlugin {
 
     private MainThread mainThread;
     private BukkitTask regenTask;
-    private BukkitTask regenTask;
 
     private boolean loaded = false;
     private boolean disabling = false;

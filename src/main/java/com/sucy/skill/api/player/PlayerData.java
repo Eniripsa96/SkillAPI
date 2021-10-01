@@ -57,6 +57,9 @@ import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.AttributeManager;
 import com.sucy.skill.task.ScoreboardTask;
+
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -1922,7 +1925,7 @@ public class PlayerData {
 					RPGFilter.MANA.setReplacement(getMana() + ""),
 					RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
 					RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + ""),
-					RPGFilter.MANANAME.setReplacement(this.getClass("class").getData().getManaName()));
+					RPGFilter.MANANAME.setReplacement(ChatColor.stripColor(this.getClass("class").getData().getManaName())));
 			return PlayerSkillCastFailedEvent.invoke(skill, NO_MANA);
 		}
 		else {

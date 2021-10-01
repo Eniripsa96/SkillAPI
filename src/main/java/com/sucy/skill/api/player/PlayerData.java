@@ -1921,7 +1921,8 @@ public class PlayerData {
 					RPGFilter.SKILL.setReplacement(skill.getData().getName()),
 					RPGFilter.MANA.setReplacement(getMana() + ""),
 					RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
-					RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + ""));
+					RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + ""),
+					RPGFilter.MANANAME.setReplacement(this.getClass("class").getData().getManaName()));
 			return PlayerSkillCastFailedEvent.invoke(skill, NO_MANA);
 		}
 		else {

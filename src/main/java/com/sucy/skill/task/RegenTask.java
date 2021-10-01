@@ -40,14 +40,14 @@ import org.bukkit.entity.Player;
  * <p>This task is run by the API and you should not
  * use this task yourself.</p>
  */
-public class ManaTask extends RepeatThreadTask
+public class RegenTask extends RepeatThreadTask
 {
     /**
      * Starts a new task for regenerating mana over time. The task is
      * started automatically so don't initialize this class unless wanting to
      * start a new task.
      */
-    public ManaTask()
+    public RegenTask()
     {
         super(
             SkillAPI.getSettings().getGainFreq(),
@@ -66,8 +66,10 @@ public class ManaTask extends RepeatThreadTask
         {
         	if (MainListener.loadingPlayerData.containsKey(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
-            if(data != null)
+            if(data != null) {
                 data.regenMana();
-        }
+                data.regenHealth(player);
+            }
+        }	
     }
 }

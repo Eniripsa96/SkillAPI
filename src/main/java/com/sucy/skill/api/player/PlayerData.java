@@ -1495,6 +1495,15 @@ public class PlayerData {
 			giveMana(amount, ManaSource.REGEN);
 		}
 	}
+	
+	// Only bring Player as param because playerdata only has offlineplayer
+	public void regenHealth(Player p) {
+		if (!p.isDead()) {
+			double regen = (attributes.getOrDefault("regen", 0) + bonusAttrib.getOrDefault("regen", 0)) * 0.1;
+	        double health = p.getHealth();
+	        p.setHealth(Math.min(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), health + regen));
+		}
+	}
 
 	/**
 	 * Sets the player's amount of mana without launching events

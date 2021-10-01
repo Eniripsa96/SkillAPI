@@ -53,7 +53,8 @@ import com.sucy.skill.manager.*;
 import com.sucy.skill.packet.PacketInjector;
 import com.sucy.skill.task.CooldownTask;
 import com.sucy.skill.task.GUITask;
-import com.sucy.skill.task.ManaTask;
+import com.sucy.skill.task.RegenTask;
+import com.sucy.skill.task.RegenTask;
 import com.sucy.skill.task.SaveTask;
 import com.sucy.skill.thread.MainThread;
 import org.bukkit.Bukkit;
@@ -95,7 +96,8 @@ public class SkillAPI extends JavaPlugin {
     private AttributeManager    attributeManager;
 
     private MainThread mainThread;
-    private BukkitTask manaTask;
+    private BukkitTask regenTask;
+    private BukkitTask regenTask;
 
     private boolean loaded = false;
     private boolean disabling = false;
@@ -199,14 +201,14 @@ public class SkillAPI extends JavaPlugin {
 	    // Non-task mana gain
         if (settings.isManaEnabled()) {
             if (VersionManager.isVersionAtLeast(11400)) {
-                manaTask = Bukkit.getScheduler().runTaskTimer(
+                regenTask = Bukkit.getScheduler().runTaskTimer(
                         this,
-                        new ManaTask(),
+                        new RegenTask(),
                         SkillAPI.getSettings().getGainFreq(),
                         SkillAPI.getSettings().getGainFreq()
                 );
             } else {
-                MainThread.register(new ManaTask());
+                MainThread.register(new RegenTask());
             }
         }
 
@@ -241,9 +243,9 @@ public class SkillAPI extends JavaPlugin {
         mainThread.disable();
         mainThread = null;
         
-        if (manaTask != null) {
-            manaTask.cancel();
-            manaTask = null;
+        if (regenTask != null) {
+            regenTask.cancel();
+            regenTask = null;
         }
 
 

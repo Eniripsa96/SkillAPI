@@ -1,7 +1,9 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 import java.util.List;
 
@@ -34,6 +36,11 @@ public class FoodMechanic extends MechanicComponent {
         for (LivingEntity target : targets) {
             if (target instanceof Player) {
                 Player player = (Player) target;
+                FoodLevelChangeEvent e = new FoodLevelChangeEvent(player, Math.min(20, Math.max(0, (int) food + player.getFoodLevel())));
+                Bukkit.getPluginManager().callEvent(e);
+                if (e.isCancelled()) {
+                	return targets.size() > 0;
+                }
                 player.setFoodLevel(Math.min(20, Math.max(0, (int) food + player.getFoodLevel())));
                 player.setSaturation(Math.min(
                         player.getFoodLevel(),

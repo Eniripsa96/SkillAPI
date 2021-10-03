@@ -99,7 +99,9 @@ public class BuffData
             conflict.task.cancel();
 
         typeBuffs.put(buff.getKey(), buff);
-        buff.task = SkillAPI.schedule(new BuffTask(type, buff.getKey()), ticks);
+        if (ticks >= 0) {
+            buff.task = SkillAPI.schedule(new BuffTask(type, buff.getKey()), ticks);
+        }
     }
 
     /** @deprecated use {@link BuffData#addBuff(BuffType, Buff, int)} instead */
@@ -250,7 +252,9 @@ public class BuffData
     public void clear() {
         for (final Map<String, Buff> typeBuffs : buffs.values()) {
             for (final Buff buff : typeBuffs.values()) {
-                buff.task.cancel();
+            	if (buff.task != null) {
+            		buff.task.cancel();
+            	}
             }
         }
         buffs.clear();

@@ -61,21 +61,16 @@ public class PotionMechanic extends MechanicComponent {
             return false;
         }
 
-        try {
-            PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption")
-                    .toUpperCase()
-                    .replace(' ', '_'));
-            int tier = (int) parseValues(caster, TIER, level, 1) - 1;
-            double seconds = parseValues(caster, SECONDS, level, 3.0);
-            boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
-            int ticks = (int) (seconds * 20);
-            for (LivingEntity target : targets) {
-            	target.removePotionEffect(potion);
-                target.addPotionEffect(new PotionEffect(potion, ticks, tier, ambient), true);
-            }
-            return targets.size() > 0;
-        } catch (Exception ex) {
-            return false;
+        PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption")
+                .toUpperCase()
+                .replace(' ', '_'));
+        int tier = (int) parseValues(caster, TIER, level, 1) - 1;
+        double seconds = parseValues(caster, SECONDS, level, 3.0);
+        boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
+        int ticks = (int) (seconds * 20);
+        for (LivingEntity target : targets) {
+			target.addPotionEffect(new PotionEffect(potion, ticks, tier, ambient));
         }
+        return targets.size() > 0;
     }
 }

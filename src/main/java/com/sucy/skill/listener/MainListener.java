@@ -437,7 +437,7 @@ public class MainListener extends SkillAPIListener {
 	 *
 	 * @param event event details
 	 */
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPhysicalDamage(EntityDamageByEntityEvent event) {
 		if (Skill.isSkillDamage() || event.getCause() == EntityDamageEvent.DamageCause.CUSTOM
 				|| event.getCause() == EntityDamageEvent.DamageCause.THORNS

@@ -95,7 +95,7 @@ public class BuffData
     private void doAddBuff(final String type, final Buff buff, final int ticks) {
         final Map<String, Buff> typeBuffs = buffs.computeIfAbsent(type, t -> new HashMap<>());
         final Buff conflict = typeBuffs.remove(buff.getKey());
-        if (conflict != null)
+        if (conflict != null && conflict.task != null)
             conflict.task.cancel();
 
         typeBuffs.put(buff.getKey(), buff);

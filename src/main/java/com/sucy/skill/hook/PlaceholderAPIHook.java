@@ -27,10 +27,15 @@ public class PlaceholderAPIHook {
     }
 
     public static void registerPlaceholder(SkillAPI skillAPI) {
-        new SkillAPIPlaceholders().register();
+        new SkillAPIPlaceholders(skillAPI).register();
     }
 
     public static class SkillAPIPlaceholders extends PlaceholderExpansion {
+    	SkillAPI skillAPI;
+    	
+    	public SkillAPIPlaceholders(SkillAPI skillAPI) {
+        	this.skillAPI = skillAPI;
+    	}
 
         @NotNull
         public String getIdentifier() {
@@ -61,6 +66,7 @@ public class PlaceholderAPIHook {
 
         @Override
         public String onPlaceholderRequest(Player player, String id) {
+        	if (!skillAPI.isLoaded(player)) return "Loading...";
             String key, param;
             int paramIndex = id.indexOf(':') + 1;
 
@@ -68,7 +74,6 @@ public class PlaceholderAPIHook {
                 param = id.substring(paramIndex);
                 key = id.substring(0, paramIndex);
             } else {
-
                 key = id;
                 param = null;
             }

@@ -7,6 +7,6 @@ import org.bukkit.entity.Entity;
  */
 public class CitizensHook {
     public static boolean isNPC(Entity entity) {
-        return entity.getClass().getName().equals("PlayerNPC");
+        return entity.getClass().getName().contains("PlayerNPC");
     }
 }

@@ -540,9 +540,11 @@ public class SkillAPI extends JavaPlugin {
     }
     
     public static void saveSingle(Player p) {
-    	PlayerAccounts data = getPlayerAccountData(p);
-    	singleton().io.saveData(data);
-    	Bukkit.getPluginManager().callEvent(new PlayerSaveEvent(p));
+    	if (p != null) {
+	    	PlayerAccounts data = getPlayerAccountData(p);
+	    	singleton().io.saveData(data);
+	    	Bukkit.getPluginManager().callEvent(new PlayerSaveEvent(p));
+    	}
     }
     
     public static boolean isLoaded(Player p) {

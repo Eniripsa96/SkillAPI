@@ -165,6 +165,7 @@ public class SQLIO extends IOManager
 
         try
         {
+			Logger.log("Successfully saved " + data.getPlayerName());
             String playerKey = new VersionPlayer(data.getOfflinePlayer()).getIdString();
             connection.table.createEntry(playerKey).set(DATA, file.toString(STRING));
         }

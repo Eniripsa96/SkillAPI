@@ -260,9 +260,10 @@ public class SkillAPI extends JavaPlugin {
         }
 
         // Only save on disable if not an instance
-        if (!settings.isInstance()) {
-            io.saveAll();
-        }
+        // Currently disabled because it takes so long
+        //if (!settings.isInstance()) {
+        //    io.saveAll();
+        //}
 
         skills.clear();
         classes.clear();

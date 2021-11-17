@@ -33,6 +33,7 @@ import com.sucy.skill.api.particle.target.EffectTarget;
 import com.sucy.skill.api.particle.target.EntityTarget;
 import com.sucy.skill.api.particle.target.FixedTarget;
 import com.sucy.skill.api.util.Nearby;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -234,6 +235,16 @@ public class TempEntity implements LivingEntity {
     @Override
     public void setBeeStingersInBody(int i) {
 
+    }
+    
+    @Override
+    public boolean spawnAt(Location loc, SpawnReason r) {
+    	return false;
+    }
+    
+    @Override
+    public Set<Player> getTrackedPlayers() {
+    	return null;
     }
 
     public int getMaximumNoDamageTicks() {

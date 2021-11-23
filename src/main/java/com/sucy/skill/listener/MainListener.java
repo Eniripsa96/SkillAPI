@@ -217,7 +217,7 @@ public class MainListener extends SkillAPIListener {
 	 * @param player player to unload
 	 */
 	public static void unload(Player player) {
-		if (CitizensHook.isNPC(player))
+		if (player.hasMetadata("NPC"))
 			return;
 
 		boolean skipSaving = false;

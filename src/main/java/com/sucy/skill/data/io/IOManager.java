@@ -203,7 +203,6 @@ public abstract class IOManager
                 final PlayerSkillBar bar = acc.getSkillBar();
                 if (skillBar != null && bar != null)
                 {
-                    boolean enabled = skillBar.getBoolean(ENABLED, true);
                     for (final String key : skillBar.keys())
                     {
                         final boolean[] locked = SkillAPI.getSettings().getLockedSlots();

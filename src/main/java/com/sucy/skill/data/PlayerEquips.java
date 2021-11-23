@@ -309,14 +309,21 @@ public class PlayerEquips
                             }
 
                             text = settings.getAttrGiveText(attr);
-                            if (lower.startsWith(text))
+                            if (lower.contains(text))
                             {
                                 if (attribs == null)
                                     attribs = new HashMap<>();
 
                                 String normalized = SkillAPI.getAttributeManager().normalize(attr);
                                 int current = attribs.containsKey(attr) ? attribs.get(attr) : 0;
-                                int extra = NumberParser.parseInt(lower.substring(text.length()).replace("%", ""));
+                                int extra = 0;
+                                if (lower.startsWith("[")) {
+                                	String num = lower.split(" ")[1];
+                                	extra = Integer.parseInt(num.substring(0, num.length() - 1));
+                                }
+                                else {
+                                	extra = NumberParser.parseInt(lower.substring(text.length()).replace("%", ""));
+                                }
                                 attribs.put(normalized, current + extra);
                                 break;
                             }

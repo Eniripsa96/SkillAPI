@@ -404,6 +404,9 @@ public class AttributeListener extends SkillAPIListener
         Player player = data.getPlayer();
         if (player != null)
         {
+        	if (key.equals("mana") && (data.getClass("class") != null && !data.getClass("class").getData().getManaName().contains("MP"))) {
+        		return 0;
+        	}
             String mapKey = player.getName() + ":" + key;
             double current = BONUSES.containsKey(mapKey) ? BONUSES.remove(mapKey) : 0;
             double updated = Math.max(min, Math.min(max, data.scaleStat(key, value - current) - value + current));

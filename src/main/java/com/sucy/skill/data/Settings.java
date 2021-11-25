@@ -575,6 +575,7 @@ public class Settings {
     private static final String CLASS_SHOW   = CLASS_BASE + "show-auto-skills";
     private static final String CLASS_ATTRIB = CLASS_BASE + "attributes-enabled";
     private static final String CLASS_REFUND = CLASS_BASE + "attributes-downgrade";
+    private static final String CLASS_CRIT   = CLASS_BASE + "dex-crit";
     private static final String CLASS_LEVEL  = CLASS_BASE + "level-up-skill";
 
     private boolean modifyHealth;
@@ -582,6 +583,7 @@ public class Settings {
     private boolean showAutoSkills;
     private boolean attributesEnabled;
     private boolean attributesDowngrade;
+    private double dexCrit;
     private String  levelUpSkill;
 
     /**
@@ -628,6 +630,10 @@ public class Settings {
     public boolean isAttributesDowngrade() {
         return attributesDowngrade;
     }
+    
+    public double getDexCrit() {
+    	return dexCrit;
+    }
 
     /**
      * Checks whether or not the plugin has a valid skill for
@@ -655,6 +661,7 @@ public class Settings {
         showAutoSkills = config.getBoolean(CLASS_SHOW);
         attributesEnabled = config.getBoolean(CLASS_ATTRIB);
         attributesDowngrade = config.getBoolean(CLASS_REFUND);
+        dexCrit = config.getDouble(CLASS_CRIT, 0.02);
         levelUpSkill = config.getString(CLASS_LEVEL);
     }
 

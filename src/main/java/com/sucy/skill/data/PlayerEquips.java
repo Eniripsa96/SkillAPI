@@ -316,14 +316,13 @@ public class PlayerEquips
 
                                 String normalized = SkillAPI.getAttributeManager().normalize(attr);
                                 int current = attribs.containsKey(attr) ? attribs.get(attr) : 0;
-                                int extra = 0;
-                                if (lower.startsWith("[")) {
-                                	String num = lower.split(" ")[1];
-                                	extra = Integer.parseInt(num.substring(0, num.length() - 1));
+                                
+                                int index = lower.indexOf('+');
+                                if (index == -1) {
+                                	index = lower.indexOf('-');
                                 }
-                                else {
-                                	extra = NumberParser.parseInt(lower.substring(text.length()).replace("%", ""));
-                                }
+                                lower = lower.substring(index);
+                                int extra = Integer.parseInt(lower.replaceAll("[^0-9-]", ""));
                                 attribs.put(normalized, current + extra);
                                 break;
                             }

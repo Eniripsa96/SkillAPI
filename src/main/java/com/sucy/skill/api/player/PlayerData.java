@@ -1865,6 +1865,8 @@ public class PlayerData {
 				try {
 					final boolean canAttack = !SkillAPI.getSettings().canAttack(p, target);
 					if (((TargetSkill) skill.getData()).cast(p, target, level, canAttack)) {
+                        PlayerSkillCastSuccessEvent success = new PlayerSkillCastSuccessEvent(this, skill, p);
+                        Bukkit.getPluginManager().callEvent(success);
 						return applyUse(p, skill, event.getManaCost());
 					}
 					else {

@@ -86,6 +86,7 @@ public abstract class Skill implements IconHolder
     private int          skillReqLevel;
     private boolean      needsPermission;
     private int          combo;
+    private double 		 critchance;
 
     /**
      * The settings for the skill which include configurable stats
@@ -180,6 +181,7 @@ public abstract class Skill implements IconHolder
         this.skillReq = skillReq;
         this.skillReqLevel = skillReqLevel;
         this.needsPermission = false;
+        this.critchance = 0;
 
         this.message = SkillAPI.getLanguage().getMessage(NotificationNodes.CAST, true, FilterType.COLOR).get(0);
         this.iconLore = SkillAPI.getLanguage().getMessage(SkillNodes.LAYOUT, true, FilterType.COLOR);
@@ -513,6 +515,10 @@ public abstract class Skill implements IconHolder
         }
         return true;
     }
+    
+    public double getCritChance() {
+    	return this.critchance;
+    }
 
     public boolean hasInvestedEnough(final PlayerData playerData) {
         final PlayerSkill skill = playerData.getSkill(name);
@@ -837,6 +843,7 @@ public abstract class Skill implements IconHolder
     private static final String DESC      = "desc";
     private static final String ATTR      = "attributes";
     private static final String COMBO     = "combo";
+    private static final String CRIT     = "crit-chance";
 
     /**
      * Saves the skill data to the configuration, overwriting all previous data
@@ -895,6 +902,7 @@ public abstract class Skill implements IconHolder
         message = TextFormatter.colorString(config.getString(MSG, message));
         needsPermission = config.getString(PERM, needsPermission + "").equalsIgnoreCase("true");
         combo = SkillAPI.getComboManager().parseCombo(config.getString(COMBO));
+        critchance = config.getDouble(CRIT, 0);
 
         if (config.isList(DESC))
         {

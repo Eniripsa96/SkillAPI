@@ -56,7 +56,7 @@ public class BiomeCondition extends ConditionComponent
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         return biomes.contains(target.getLocation().getBlock().getBiome().name()) == requiresIn;
     }
 }

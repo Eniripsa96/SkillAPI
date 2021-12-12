@@ -62,7 +62,7 @@ public class DisguiseMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         if (!PluginChecker.isDisguiseActive()) { return false; }
 
         String type = settings.getString(TYPE);

@@ -52,14 +52,14 @@ public class DelayMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
         if (targets.size() == 0) {
             return false;
         }
         double seconds = parseValues(caster, SECONDS, level, 2.0);
         Bukkit.getScheduler().runTaskLater(
                 Bukkit.getPluginManager().getPlugin("SkillAPI"),
-                () -> executeChildren(caster, level, targets),
+                () -> executeChildren(caster, level, targets, isCrit),
                 (long) (seconds * 20)
         );
         return true;

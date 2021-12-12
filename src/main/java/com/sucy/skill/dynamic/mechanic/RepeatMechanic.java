@@ -45,6 +45,7 @@ public class RepeatMechanic extends MechanicComponent {
     private static final String STOP_ON_FAIL = "stop-on-fail";
 
     private final Map<Integer, List<RepeatTask>> tasks = new HashMap<>();
+    private boolean isCrit;
 
     /**
      * Executes the component
@@ -56,8 +57,9 @@ public class RepeatMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         if (targets.size() > 0) {
+        	this.isCrit = isCrit;
             final int count = (int) parseValues(caster, REPETITIONS, level, 3.0);
             if (count <= 0) { return false; }
 
@@ -137,7 +139,7 @@ public class RepeatMechanic extends MechanicComponent {
             	cancel();
             	return;
             }
-            boolean success = executeChildren(caster, level, targets);
+            boolean success = executeChildren(caster, level, targets, isCrit);
 
             if (--count <= 0 || (!success && stopOnFail)) {
                 cancel();

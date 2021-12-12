@@ -53,7 +53,7 @@ public abstract class TargetComponent extends EffectComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         final List<LivingEntity> list = getTargets(caster, level, targets);
         Iterator<LivingEntity> iter = list.iterator();
         while (iter.hasNext()) {
@@ -62,7 +62,7 @@ public abstract class TargetComponent extends EffectComponent {
         		iter.remove();
         	}
         }
-        return (!list.isEmpty() && executeChildren(caster, level, list));
+        return (!list.isEmpty() && executeChildren(caster, level, list, isCrit));
     }
 
     @Override

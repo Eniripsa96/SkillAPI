@@ -70,6 +70,7 @@ public class ProjectileMechanic extends MechanicComponent
     private static final String RIGHT      = "right";
     private static final String UPWARD     = "upward";
     private static final String FORWARD    = "forward";
+    private boolean isCrit;
 
     @Override
     public String getKey() {
@@ -86,9 +87,10 @@ public class ProjectileMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
     {
         // Get common values
+    	this.isCrit = isCrit;
         int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
         double speed = parseValues(caster, SPEED, level, 2.0);
         double range = parseValues(caster, RANGE, level, 999);
@@ -201,7 +203,7 @@ public class ProjectileMechanic extends MechanicComponent
 
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
-        executeChildren((LivingEntity) projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
+        executeChildren((LivingEntity) projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets, isCrit);
         SkillAPI.removeMeta(projectile, MechanicListener.P_CALL);
         projectile.remove();
     }

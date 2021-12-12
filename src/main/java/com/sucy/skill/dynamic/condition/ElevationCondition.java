@@ -54,7 +54,7 @@ public class ElevationCondition extends ConditionComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         String type = settings.getString(TYPE).toLowerCase();
         double min = parseValues(caster, MIN, level, 0);
         double max = parseValues(caster, MAX, level, 255);
@@ -71,11 +71,11 @@ public class ElevationCondition extends ConditionComponent {
                 list.add(target);
             }
         }
-        return list.size() > 0 && executeChildren(caster, level, list);
+        return list.size() > 0 && executeChildren(caster, level, list, isCrit);
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final String type = settings.getString(TYPE);
         final double min = parseValues(caster, MIN, level, 0);
         final double max = parseValues(caster, MAX, level, 255);

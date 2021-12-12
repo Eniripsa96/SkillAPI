@@ -35,7 +35,7 @@ public class FireCondition extends ConditionComponent {
     private static final String TYPE = "type";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final boolean onFire = !settings.getString(TYPE, "on fire").toLowerCase().equals("not on fire");
         return (target.getFireTicks() > 0) == onFire;
     }

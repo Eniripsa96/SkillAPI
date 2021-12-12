@@ -60,7 +60,7 @@ public class LoreCondition extends ConditionComponent {
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final EntityEquipment items = target.getEquipment();
         if (items == null || items.getItemInHand() == null || !items.getItemInHand().hasItemMeta()) { return false; }
 

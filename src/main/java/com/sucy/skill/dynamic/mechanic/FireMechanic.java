@@ -51,7 +51,7 @@ public class FireMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         if (targets.size() == 0) {
             return false;
         }

@@ -57,6 +57,7 @@ public class PotionProjectileMechanic extends MechanicComponent
     private static final String POTION = "type";
     private static final String ALLY   = "group";
     private static final String LINGER = "linger";
+    private boolean isCrit;
 
     @Override
     public String getKey() {
@@ -73,9 +74,10 @@ public class PotionProjectileMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
     {
         // Get common values
+    	this.isCrit = isCrit;
         String potion = settings.getString(POTION, "slowness").toUpperCase().replace(" ", "_");
         boolean linger = settings.getString(LINGER, "false").toLowerCase().equals("true") && VersionManager.isVersionAtLeast(VersionManager.V1_9_0);
         PotionType type;
@@ -146,6 +148,6 @@ public class PotionProjectileMechanic extends MechanicComponent
             LivingEntity locTarget = new TempEntity(loc);
             targets.add(locTarget);
         }
-        executeChildren(caster, level, targets);
+        executeChildren(caster, level, targets, isCrit);
     }
 }

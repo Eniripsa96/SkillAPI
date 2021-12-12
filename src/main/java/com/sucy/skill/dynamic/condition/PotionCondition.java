@@ -43,7 +43,7 @@ public class PotionCondition extends ConditionComponent {
     private static final String MAX_RANK = "max-rank";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final boolean active = !settings.getString(TYPE, "active").toLowerCase().equals("not active");
         final Collection<PotionEffect> effects = target.getActivePotionEffects();
         if (effects.isEmpty()) {

@@ -40,7 +40,7 @@ public class StatusCondition extends ConditionComponent {
     private static final String STATUS = "status";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final boolean active = !settings.getString(TYPE, "active").equals("not active");
         final String status = settings.getString(STATUS).toLowerCase();
 

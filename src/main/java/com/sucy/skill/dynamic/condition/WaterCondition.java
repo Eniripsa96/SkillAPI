@@ -36,7 +36,7 @@ public class WaterCondition extends ConditionComponent {
     private static final String STATE = "state";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final boolean out = settings.getString(STATE).toLowerCase().equals("out of water");
         final Material block = target.getLocation().getBlock().getType();
         return out != (block.name().contains("WATER"));

@@ -70,7 +70,7 @@ public class WolfMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         if (!(caster instanceof Player)) {
             return false;
         }
@@ -137,7 +137,7 @@ public class WolfMechanic extends MechanicComponent {
 
         // Apply children to the wolves
         if (wolves.size() > 0) {
-            executeChildren(player, level, wolves);
+            executeChildren(player, level, wolves, isCrit);
             return true;
         }
         return false;

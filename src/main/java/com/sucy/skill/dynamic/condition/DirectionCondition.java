@@ -59,7 +59,7 @@ public class DirectionCondition extends ConditionComponent
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         return test.test(caster, target) == towards;
     }
 }

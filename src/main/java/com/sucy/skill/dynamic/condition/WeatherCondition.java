@@ -12,7 +12,7 @@ public class WeatherCondition extends ConditionComponent {
     private String TYPE = "type";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final String type = settings.getString(TYPE).toLowerCase();
         final World world = target.getWorld();
         final Location loc = target.getLocation();

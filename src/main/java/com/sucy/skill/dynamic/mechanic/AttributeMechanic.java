@@ -59,7 +59,7 @@ public class AttributeMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         String key = settings.getString(KEY, "");
         if (targets.size() == 0 || SkillAPI.getAttributeManager().getAttribute(key) == null) {
             return false;

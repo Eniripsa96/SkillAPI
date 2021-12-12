@@ -22,14 +22,14 @@ public abstract class ConditionComponent extends EffectComponent {
     /** {@inheritDoc} */
     @Override
     public boolean execute(
-            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+            final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
 
         final List<LivingEntity> filtered = targets.stream()
-                .filter(t -> test(caster, level, t))
+                .filter(t -> test(caster, level, t, isCrit))
                 .collect(Collectors.toList());
 
-        return filtered.size() > 0 && executeChildren(caster, level, filtered);
+        return filtered.size() > 0 && executeChildren(caster, level, filtered, isCrit);
     }
 
-    abstract boolean test(final LivingEntity caster, final int level, final LivingEntity target);
+    abstract boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit);
 }

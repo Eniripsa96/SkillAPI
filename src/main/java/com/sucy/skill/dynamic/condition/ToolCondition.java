@@ -37,7 +37,7 @@ public class ToolCondition extends ConditionComponent {
     private static final String TOOL     = "tool";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final String material = settings.getString(MATERIAL, "").toUpperCase();
         final String tool = settings.getString(TOOL, "").toUpperCase().replace("SHOVEL", "SPADE");
 

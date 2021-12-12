@@ -70,6 +70,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
 
     private static final String USE_EFFECT = "use-effect";
     private static final String EFFECT_KEY = "effect-key";
+    private boolean isCrit;
 
     /**
      * Creates the list of indicators for the skill
@@ -135,7 +136,8 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    	this.isCrit = isCrit;
         Material mat = Material.JACK_O_LANTERN;
         try {
             mat = Material.valueOf(settings.getString(ITEM).toUpperCase().replace(" ", "_"));
@@ -224,7 +226,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
         }
         ArrayList<LivingEntity> targets = new ArrayList<>();
         targets.add(hit);
-        executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
+        executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets, isCrit);
         projectile.setCallback(null);
     }
 }

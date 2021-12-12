@@ -57,7 +57,7 @@ public class ValueAttributeMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
     {
         if (!settings.has(KEY) || !settings.has(ATTR) || !(targets.get(0) instanceof Player))
         {

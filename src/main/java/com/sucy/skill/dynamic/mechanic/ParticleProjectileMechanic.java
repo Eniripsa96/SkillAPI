@@ -68,6 +68,7 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
 
     private static final String USE_EFFECT = "use-effect";
     private static final String EFFECT_KEY = "effect-key";
+    private boolean isCrit;
 
     /**
      * Creates the list of indicators for the skill
@@ -133,8 +134,9 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         // Get common values
+    	this.isCrit = isCrit;
         int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
@@ -218,6 +220,6 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
         }
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
-        executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets);
+        executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets, isCrit);
     }
 }

@@ -203,7 +203,7 @@ public abstract class EffectComponent {
      *
      * @return true if executed, false if conditions not met
      */
-    protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets) {
+    protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         if (targets.isEmpty()) {
             return false;
         }
@@ -211,7 +211,7 @@ public abstract class EffectComponent {
         boolean worked = false;
         for (EffectComponent child : children) {
             boolean counts = !child.settings.getString(COUNTS_KEY, "true").toLowerCase().equals("false");
-            passed = child.execute(caster, level, targets);
+            passed = child.execute(caster, level, targets, isCrit);
             worked = (passed && counts) || worked;
         }
         return worked;
@@ -289,7 +289,7 @@ public abstract class EffectComponent {
      *
      * @return true if executed, false if conditions not met
      */
-    public abstract boolean execute(LivingEntity caster, int level, List<LivingEntity> targets);
+    public abstract boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit);
 
     /**
      * Creates the list of indicators for the skill

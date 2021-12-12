@@ -41,12 +41,12 @@ public class ElseCondition extends ConditionComponent {
     }
 
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
-        return test(caster, level, null) && executeChildren(caster, level, targets);
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+        return test(caster, level, null, isCrit) && executeChildren(caster, level, targets, isCrit);
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         return !lastPassed();
     }
 }

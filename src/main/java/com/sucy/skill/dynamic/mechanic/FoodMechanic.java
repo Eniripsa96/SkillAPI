@@ -30,7 +30,7 @@ public class FoodMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         double food = parseValues(caster, FOOD, level, 1.0);
         double saturation = parseValues(caster, SATURATION, level, 1.0);
         for (LivingEntity target : targets) {

@@ -57,7 +57,7 @@ public class CombatCondition extends ConditionComponent
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         return target instanceof Player && Combat.isInCombat((Player) target, seconds) == combat;
     }
 }

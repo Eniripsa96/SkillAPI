@@ -38,7 +38,7 @@ public class ManaCondition extends ConditionComponent {
     private static final String MAX  = "max-value";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         if (!(target instanceof Player)) {
             return false;
         }

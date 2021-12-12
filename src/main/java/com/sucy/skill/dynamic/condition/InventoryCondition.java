@@ -35,7 +35,7 @@ import org.bukkit.entity.Player;
  */
 public class InventoryCondition extends ConditionComponent {
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         return target instanceof Player && ItemChecker.check((Player) target, level, this, false);
     }
 

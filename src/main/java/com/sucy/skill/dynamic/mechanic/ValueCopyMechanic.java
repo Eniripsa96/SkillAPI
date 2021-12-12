@@ -21,7 +21,7 @@ public class ValueCopyMechanic extends MechanicComponent {
 
     @Override
     public boolean execute(
-            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+            final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
 
         if (targets.size() == 0 || !settings.has(KEY)) {
             return false;

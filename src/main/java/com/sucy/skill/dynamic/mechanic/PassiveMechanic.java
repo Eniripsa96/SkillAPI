@@ -44,6 +44,7 @@ public class PassiveMechanic extends MechanicComponent {
     private static final String PERIOD = "seconds";
 
     private final Map<Integer, PassiveTask> tasks = new HashMap<>();
+    private boolean isCrit;
 
     /**
      * Executes the component
@@ -55,10 +56,11 @@ public class PassiveMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         if (tasks.containsKey(caster.getEntityId())) { return false; }
 
         if (targets.size() > 0) {
+        	this.isCrit = isCrit;
             final int period = (int) (parseValues(caster, PERIOD, level, 1.0) * 20);
             final PassiveTask task = new PassiveTask(caster, level, targets, period);
             tasks.put(caster.getEntityId(), task);
@@ -118,7 +120,7 @@ public class PassiveMechanic extends MechanicComponent {
                 }
             }
             level = skill.getActiveLevel(caster);
-            executeChildren(caster, level, targets);
+            executeChildren(caster, level, targets, isCrit);
 
             if (skill.checkCancelled()) {
                 cancel();

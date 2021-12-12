@@ -32,6 +32,7 @@ public class TriggerMechanic extends MechanicComponent {
     private TriggerHandler triggerHandler;
     private boolean once;
     private boolean stackable;
+    private boolean isCrit;
 
     @Override
     public void load(final DynamicSkill skill, final DataSection dataSection) {
@@ -57,7 +58,8 @@ public class TriggerMechanic extends MechanicComponent {
 
     @Override
     public boolean execute(
-            final LivingEntity caster, final int level, final List<LivingEntity> targets) {
+            final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
+    	this.isCrit = isCrit;
 
         final int ticks = (int)(20 * parseValues(caster, DURATION, level, 5));
 
@@ -115,7 +117,7 @@ public class TriggerMechanic extends MechanicComponent {
         }
 
         @Override
-        public boolean execute(final LivingEntity target, final int level, final List<LivingEntity> targets) {
+        public boolean execute(final LivingEntity target, final int level, final List<LivingEntity> targets, boolean isCrit) {
             if (!CASTER_MAP.containsKey(target.getEntityId())) return false;
 
             final List<Context> contexts;
@@ -129,7 +131,7 @@ public class TriggerMechanic extends MechanicComponent {
 
             for (final Context context : contexts) {
                 DynamicSkill.getCastData(context.caster).put("listen-target", targetList);
-                TriggerMechanic.this.executeChildren(context.caster, context.level, targets);
+                TriggerMechanic.this.executeChildren(context.caster, context.level, targets, isCrit);
             }
 
             return true;

@@ -57,7 +57,7 @@ public class ManaMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         boolean percent = settings.getString(TYPE, "mana").toLowerCase().equals("percent");
         double value = parseValues(caster, VALUE, level, 1.0);
 

@@ -62,8 +62,8 @@ public class LightningMechanic extends MechanicComponent {
             return false;
         }
         boolean damage = settings.getBool(DAMAGE, true);
-        double forward = parseValues(caster, FORWARD, level, 0);
-        double right = parseValues(caster, RIGHT, level, 0);
+        double forward = parseValues(caster, FORWARD, level, 0, false);
+        double right = parseValues(caster, RIGHT, level, 0, false);
         for (LivingEntity target : targets) {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();
             Vector nor = dir.clone().crossProduct(up);

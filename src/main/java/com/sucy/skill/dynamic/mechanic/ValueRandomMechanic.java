@@ -63,8 +63,8 @@ public class ValueRandomMechanic extends MechanicComponent {
 
         String key = settings.getString(KEY);
         boolean triangular = settings.getString(TYPE).toUpperCase().equals("triangular");
-        double min = parseValues(caster, MIN, level, 1);
-        double max = parseValues(caster, MAX, level, 1);
+        double min = parseValues(caster, MIN, level, 1, false);
+        double max = parseValues(caster, MAX, level, 1, false);
 
         HashMap<String, Object> data = DynamicSkill.getCastData(caster);
         double rand = triangular ? 0.5 * (Math.random() + Math.random()) : Math.random();

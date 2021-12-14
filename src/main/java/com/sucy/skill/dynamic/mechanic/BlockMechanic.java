@@ -89,23 +89,23 @@ public class BlockMechanic extends MechanicComponent {
         }
 
         boolean sphere = settings.getString(SHAPE, "sphere").toLowerCase().equals("sphere");
-        int ticks = (int) (20 * parseValues(caster, SECONDS, level, 5));
+        int ticks = (int) (20 * parseValues(caster, SECONDS, level, 5, false));
         byte data = (byte) settings.getInt(DATA, 0);
 
         String type = settings.getString(TYPE, "solid").toLowerCase();
         boolean solid = type.equals("solid");
         boolean air = type.equals("air");
 
-        double forward = parseValues(caster, FORWARD, level, 0);
-        double upward = parseValues(caster, UPWARD, level, 0);
-        double right = parseValues(caster, RIGHT, level, 0);
+        double forward = parseValues(caster, FORWARD, level, 0, false);
+        double upward = parseValues(caster, UPWARD, level, 0, false);
+        double right = parseValues(caster, RIGHT, level, 0, false);
 
         List<Block> blocks = new ArrayList<Block>();
         World w = caster.getWorld();
 
         // Grab blocks in a sphere
         if (sphere) {
-            double radius = parseValues(caster, RADIUS, level, 3);
+            double radius = parseValues(caster, RADIUS, level, 3, false);
             double x, y, z, dx, dy, dz;
             double rSq = radius * radius;
             for (LivingEntity t : targets) {
@@ -144,9 +144,9 @@ public class BlockMechanic extends MechanicComponent {
         // Grab blocks in a cuboid
         else {
             // Cuboid options
-            double width = (parseValues(caster, WIDTH, level, 5) - 1) / 2;
-            double height = (parseValues(caster, HEIGHT, level, 5) - 1) / 2;
-            double depth = (parseValues(caster, DEPTH, level, 5) - 1) / 2;
+            double width = (parseValues(caster, WIDTH, level, 5, false) - 1) / 2;
+            double height = (parseValues(caster, HEIGHT, level, 5, false) - 1) / 2;
+            double depth = (parseValues(caster, DEPTH, level, 5, false) - 1) / 2;
             double x, y, z;
 
             for (LivingEntity t : targets) {

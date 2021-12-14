@@ -51,8 +51,8 @@ public class PotionCondition extends ConditionComponent {
         }
 
         final String potion = settings.getString(POTION, "").toUpperCase().replace(' ', '_');
-        final int minRank = (int) parseValues(caster, MIN_RANK, level, 0);
-        final int maxRank = (int) parseValues(caster, MAX_RANK, level, 999);
+        final int minRank = (int) parseValues(caster, MIN_RANK, level, 0, false);
+        final int maxRank = (int) parseValues(caster, MAX_RANK, level, 999, false);
         try {
             final PotionEffectType type = PotionEffectType.getByName(potion);
             return has(target, type, minRank, maxRank) == active;

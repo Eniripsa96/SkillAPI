@@ -60,7 +60,7 @@ public class PermissionMechanic extends MechanicComponent {
         }
 
         String key = settings.getString(PERM);
-        double seconds = parseValues(caster, SECONDS, level, 3.0);
+        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
             if (!target.hasPermission(key)) {

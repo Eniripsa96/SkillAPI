@@ -80,10 +80,10 @@ public class WolfMechanic extends MechanicComponent {
         final Player player = (Player) caster;
 
         String color = settings.getString(COLOR);
-        double health = parseValues(player, HEALTH, level, 10.0);
+        double health = parseValues(player, HEALTH, level, 10.0, false);
         String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", player.getName()));
-        double damage = parseValues(player, DAMAGE, level, 3.0);
-        double amount = parseValues(player, AMOUNT, level, 1.0);
+        double damage = parseValues(player, DAMAGE, level, 3.0, false);
+        double amount = parseValues(player, AMOUNT, level, 1.0, false);
         boolean sitting = settings.getString(SITTING, "false").equalsIgnoreCase("true");
         List<String> skills = settings.getStringList(SKILLS);
 
@@ -94,7 +94,7 @@ public class WolfMechanic extends MechanicComponent {
             } catch (Exception ex) { /* Invalid color */ }
         }
 
-        double seconds = parseValues(player, SECONDS, level, 10.0);
+        double seconds = parseValues(player, SECONDS, level, 10.0, false);
         int ticks = (int) (seconds * 20);
         List<LivingEntity> wolves = new ArrayList<>();
         for (LivingEntity target : targets) {

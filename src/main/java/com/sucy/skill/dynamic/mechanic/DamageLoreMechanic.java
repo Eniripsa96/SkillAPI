@@ -65,7 +65,7 @@ public class DamageLoreMechanic extends MechanicComponent {
         String regex = settings.getString(REGEX, "Damage: {value}");
         regex = regex.replace("{value}", "([0-9]+)");
         Pattern pattern = Pattern.compile(regex);
-        double m = parseValues(caster, MULTIPLIER, level, 1.0);
+        double m = parseValues(caster, MULTIPLIER, level, 1.0, false);
         boolean worked = false;
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
                 && settings.getString(HAND).equalsIgnoreCase("offhand");

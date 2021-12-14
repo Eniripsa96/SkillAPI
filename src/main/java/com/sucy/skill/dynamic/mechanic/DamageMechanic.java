@@ -69,8 +69,7 @@ public class DamageMechanic extends MechanicComponent {
 		boolean missing = pString.equals("percent missing");
 		boolean left = pString.equals("percent left");
 		boolean trueDmg = settings.getBool(TRUE, false);
-		double critchance = parseValues(caster, CRITCHANCE, level, 0.0);
-		double damage = parseValues(caster, DAMAGE, level, 1.0);
+		double damage = parseValues(caster, DAMAGE, level, 1.0, isCrit);
 		String classification = settings.getString(CLASSIFIER, "default");
 		if (damage < 0) {
 			return false;
@@ -91,7 +90,7 @@ public class DamageMechanic extends MechanicComponent {
 				amount = damage * target.getHealth() / 100;
 			}
 			
-			if (gen.nextDouble() < critchance) {
+			/*if (gen.nextDouble() < critchance) {
 		        // Apply global modifiers
 				double critscale = 1.5;
 		        if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player) {
@@ -105,7 +104,7 @@ public class DamageMechanic extends MechanicComponent {
 					return false;
 				}
 				amount = e.getDamage();
-			}
+			}*/
 			
 			
 			if (trueDmg) {

@@ -517,7 +517,7 @@ public abstract class Skill implements IconHolder
     }
     
     public double getCritChance(int level) {
-        return (int) settings.getAttr(SkillAttribute.CRIT_CHANCE, level + 1);
+        return (int) settings.getAttr(SkillAttribute.CRIT_CHANCE, level);
     }
 
     public boolean hasInvestedEnough(final PlayerData playerData) {

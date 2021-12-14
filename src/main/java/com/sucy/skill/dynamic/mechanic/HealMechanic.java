@@ -57,7 +57,7 @@ public class HealMechanic extends MechanicComponent {
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         boolean percent = settings.getString(TYPE, "health").toLowerCase().equals("percent");
-        double value = parseValues(caster, VALUE, level, 1.0);
+        double value = parseValues(caster, VALUE, level, 1.0, false);
         if (value < 0) { return false; }
         for (LivingEntity target : targets) {
             if (target.isDead()) { continue; }

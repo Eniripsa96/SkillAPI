@@ -53,7 +53,7 @@ public class HeldItemMechanic extends MechanicComponent
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
     {
-        int slot = (int) parseValues(caster, SLOT, level, 0);
+        int slot = (int) parseValues(caster, SLOT, level, 0, false);
 
         boolean worked = false;
         for (LivingEntity target : targets)

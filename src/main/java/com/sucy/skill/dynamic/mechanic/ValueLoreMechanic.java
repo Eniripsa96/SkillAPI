@@ -61,7 +61,7 @@ public class ValueLoreMechanic extends MechanicComponent {
         if (targets.size() == 0 || !settings.has(KEY)) { return false; }
 
         String key = settings.getString(KEY);
-        double multiplier = parseValues(caster, MULTIPLIER, level, 1);
+        double multiplier = parseValues(caster, MULTIPLIER, level, 1, false);
         boolean offhand = settings.getString(HAND, "").equalsIgnoreCase("offhand");
         String regex = settings.getString(REGEX, "Damage: {value}");
 

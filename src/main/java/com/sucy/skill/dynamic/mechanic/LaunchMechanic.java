@@ -67,9 +67,9 @@ public class LaunchMechanic extends MechanicComponent {
             return false;
         }
 
-        double forward = parseValues(caster, FORWARD, level, 0);
-        double upward = parseValues(caster, UPWARD, level, 0);
-        double right = parseValues(caster, RIGHT, level, 0);
+        double forward = parseValues(caster, FORWARD, level, 0, false);
+        double upward = parseValues(caster, UPWARD, level, 0, false);
+        double right = parseValues(caster, RIGHT, level, 0, false);
         String relative = settings.getString(RELATIVE, "target").toLowerCase();
         for (LivingEntity target : targets) {
             final Vector dir;

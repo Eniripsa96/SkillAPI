@@ -64,8 +64,8 @@ public class PotionMechanic extends MechanicComponent {
         PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption")
                 .toUpperCase()
                 .replace(' ', '_'));
-        int tier = (int) parseValues(caster, TIER, level, 1) - 1;
-        double seconds = parseValues(caster, SECONDS, level, 3.0);
+        int tier = (int) parseValues(caster, TIER, level, 1, false) - 1;
+        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
         boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {

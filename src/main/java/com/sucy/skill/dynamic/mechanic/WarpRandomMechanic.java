@@ -67,7 +67,7 @@ public class WarpRandomMechanic extends MechanicComponent {
         // Get the world
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
         boolean horizontal = !settings.getString(HORIZONTAL, "true").toLowerCase().equals("false");
-        double distance = parseValues(caster, DISTANCE, level, 3.0);
+        double distance = parseValues(caster, DISTANCE, level, 3.0, false);
 
         for (LivingEntity target : targets) {
             Location loc;

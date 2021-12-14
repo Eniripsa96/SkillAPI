@@ -3,7 +3,10 @@ package com.sucy.skill.dynamic.trigger;
 import com.sucy.skill.dynamic.ComponentType;
 import com.sucy.skill.dynamic.EffectComponent;
 import com.sucy.skill.util.Lists;
+
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Random;
@@ -38,7 +41,10 @@ public class TriggerComponent extends EffectComponent {
     public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
         try {
             running = true;
-            isCrit = this.skill.getCritChance() > gen.nextDouble();
+            isCrit = this.skill.getCritChance(level) > gen.nextDouble();
+            if (isCrit) {
+            	((Player) caster).playSound(caster.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0F, 1.0F);
+            }
             return executeChildren(caster, level, targets, isCrit);
         } finally {
             running = false;

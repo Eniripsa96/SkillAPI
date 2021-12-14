@@ -63,8 +63,8 @@ public class ImmunityMechanic extends MechanicComponent {
         }
 
         String key = settings.getString(TYPE);
-        double seconds = parseValues(caster, SECONDS, level, 3.0);
-        double multiplier = parseValues(caster, MULTIPLIER, level, 0);
+        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
+        double multiplier = parseValues(caster, MULTIPLIER, level, 0, false);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
             FlagManager.addFlag(target, "immune:" + key.toUpperCase().replace(" ", "_"), ticks);

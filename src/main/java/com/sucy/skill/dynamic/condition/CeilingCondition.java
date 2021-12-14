@@ -11,7 +11,7 @@ public class CeilingCondition extends ConditionComponent
     @Override
     boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
         final boolean atLeast = settings.getBool(AT_LEAST, true);
-        final int distance = (int) parseValues(caster, DISTANCE, level, 5);
+        final int distance = (int) parseValues(caster, DISTANCE, level, 5, false);
 
         final Block block = target.getLocation().getBlock();
         boolean ceiling = false;

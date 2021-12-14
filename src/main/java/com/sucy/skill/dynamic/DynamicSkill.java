@@ -322,7 +322,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             final String[] path = key.split("\\.");
             final String attr = path[1].toLowerCase();
             if (attribKeys.containsKey(path[0]) && attribKeys.get(path[0]).settings.has(attr)) {
-                return format(attribKeys.get(path[0]).parseValues(caster, attr, level, 0));
+                return format(attribKeys.get(path[0]).parseValues(caster, attr, level, 0, false));
             } else { return 0; }
         }
 

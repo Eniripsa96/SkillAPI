@@ -321,21 +321,23 @@ public class AttributeManager {
          *
          * @param component component to modify for
          * @param key       key of the value to modify
-         * @param value     base value
+         * @param base     base value
          * @param amount    amount of attribute points
          *
          * @return modified value
          */
-        public double modify(EffectComponent component, String key, double value, int amount) {
+        public double modify(EffectComponent component, String key, double base, int amount) {
             key = component.getKey() + "-" + key.toLowerCase();
             final Map<String, AttributeValue[]> map = dynamicModifiers.get(component.getType());
             if (map.containsKey(key)) {
                 AttributeValue[] list = map.get(key);
                 for (AttributeValue attribValue : list) {
-                    if (attribValue.passes(component)) { return attribValue.apply(value, amount); }
+                    if (attribValue.passes(component)) {
+                    	return attribValue.apply(base, amount) - base;
+                	}
                 }
             }
-            return value;
+            return 0;
         }
 
         /**

@@ -67,8 +67,8 @@ public class SoundMechanic extends MechanicComponent {
 
         try {
             Sound sound = Sound.valueOf(type);
-            float volume = (float) parseValues(caster, VOLUME, level, 100.0) / 100;
-            float pitch = (float) parseValues(caster, PITCH, level, 0.0);
+            float volume = (float) parseValues(caster, VOLUME, level, 100.0, false) / 100;
+            float pitch = (float) parseValues(caster, PITCH, level, 0.0, false);
 
             volume = Math.max(0, volume);
             pitch = Math.min(2, Math.max(0.5f, pitch));

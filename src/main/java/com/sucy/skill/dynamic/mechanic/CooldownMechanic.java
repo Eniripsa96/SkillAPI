@@ -62,7 +62,7 @@ public class CooldownMechanic extends MechanicComponent {
 
         String skill = settings.getString(SKILL, "");
         String type = settings.getString(TYPE, "all").toLowerCase();
-        double value = parseValues(caster, VALUE, level, 0);
+        double value = parseValues(caster, VALUE, level, 0, false);
 
         PlayerData playerData = SkillAPI.getPlayerData((Player) caster);
 

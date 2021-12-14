@@ -44,16 +44,16 @@ public class ConeTarget extends TargetComponent {
     /** {@inheritDoc} */
     @Override
     void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
-        double range = parseValues(caster, RANGE, level, 3.0);
-        double angle = parseValues(caster, ANGLE, level, 90.0);
+        double range = parseValues(caster, RANGE, level, 3.0, false);
+        double angle = parseValues(caster, ANGLE, level, 90.0, false);
         makeConeIndicator(list, target, range, angle);
     }
 
     /** {@inheritDoc} */
     @Override
     List<LivingEntity> getTargets(LivingEntity caster, int level, List<LivingEntity> targets) {
-        double range = parseValues(caster, RANGE, level, 3.0);
-        double angle = parseValues(caster, ANGLE, level, 90.0);
+        double range = parseValues(caster, RANGE, level, 3.0, false);
+        double angle = parseValues(caster, ANGLE, level, 90.0, false);
         return determineTargets(caster, level, targets, t -> TargetHelper.getConeTargets(t, angle, range));
     }
 

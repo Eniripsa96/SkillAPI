@@ -135,7 +135,7 @@ public abstract class TargetComponent extends EffectComponent {
             final List<LivingEntity> from,
             final Function<LivingEntity, List<LivingEntity>> conversion) {
 
-        final double max = parseValues(caster, MAX, level, 99);
+        final double max = parseValues(caster, MAX, level, 99, false);
 
         final List<LivingEntity> list = new ArrayList<>();
         from.forEach(target -> {

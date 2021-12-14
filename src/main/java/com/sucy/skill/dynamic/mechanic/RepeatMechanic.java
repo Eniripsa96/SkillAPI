@@ -60,7 +60,7 @@ public class RepeatMechanic extends MechanicComponent {
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         if (targets.size() > 0) {
         	this.isCrit = isCrit;
-            final int count = (int) parseValues(caster, REPETITIONS, level, 3.0);
+            final int count = (int) parseValues(caster, REPETITIONS, level, 3.0, false);
             if (count <= 0) { return false; }
 
             final int delay = (int) (settings.getDouble(DELAY, 0.0) * 20);

@@ -61,7 +61,7 @@ public class TriggerMechanic extends MechanicComponent {
             final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
     	this.isCrit = isCrit;
 
-        final int ticks = (int)(20 * parseValues(caster, DURATION, level, 5));
+        final int ticks = (int)(20 * parseValues(caster, DURATION, level, 5, false));
 
         boolean worked = false;
         for (final LivingEntity target : targets) {

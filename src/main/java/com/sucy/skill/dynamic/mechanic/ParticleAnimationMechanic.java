@@ -79,8 +79,8 @@ public class ParticleAnimationMechanic extends MechanicComponent
         }
 
         final Settings copy = new Settings(settings);
-        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
-        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0), 0);
+        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1, false), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0, false), 0);
         copy.set("level", level);
         new ParticleTask(caster, targets, level, copy);
         return targets.size() > 0;
@@ -130,10 +130,10 @@ public class ParticleAnimationMechanic extends MechanicComponent
             this.freq = (int) (settings.getDouble(FREQ, 1.0) * 20);
             this.angle = settings.getInt(ANGLE, 0);
             this.startAngle = settings.getInt(START, 0);
-            this.duration = steps * (int) (20 * parseValues(caster, DURATION, level, 3.0));
+            this.duration = steps * (int) (20 * parseValues(caster, DURATION, level, 3.0, false));
             this.life = 0;
-            this.ht = parseValues(caster, H_TRANS, level, 0);
-            this.vt = parseValues(caster, V_TRANS, level, 0);
+            this.ht = parseValues(caster, H_TRANS, level, 0, false);
+            this.vt = parseValues(caster, V_TRANS, level, 0, false);
             this.hc = settings.getInt(H_CYCLES, 1);
             this.vc = settings.getInt(V_CYCLES, 1);
             this.hl = duration / hc;

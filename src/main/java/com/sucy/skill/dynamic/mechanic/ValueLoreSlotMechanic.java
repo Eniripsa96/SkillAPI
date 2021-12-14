@@ -58,7 +58,7 @@ public class ValueLoreSlotMechanic extends MechanicComponent {
         if (targets.size() == 0 || !settings.has(KEY) || !(caster instanceof Player)) { return false; }
 
         String key = settings.getString(KEY);
-        double multiplier = parseValues(caster, MULTIPLIER, level, 1);
+        double multiplier = parseValues(caster, MULTIPLIER, level, 1, false);
         int slot = settings.getInt(SLOT);
         String regex = settings.getString(REGEX, "Damage: {value}");
 

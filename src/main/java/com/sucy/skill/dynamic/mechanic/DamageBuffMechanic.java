@@ -62,8 +62,8 @@ public class DamageBuffMechanic extends MechanicComponent {
 
         boolean skill = settings.getString(SKILL, "false").equalsIgnoreCase("true");
         boolean percent = settings.getString(TYPE, "flat").toLowerCase().equals("multiplier");
-        double value = parseValues(caster, VALUE, level, 1.0);
-        double seconds = parseValues(caster, SECONDS, level, 3.0);
+        double value = parseValues(caster, VALUE, level, 1.0, false);
+        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
             BuffManager.addBuff(

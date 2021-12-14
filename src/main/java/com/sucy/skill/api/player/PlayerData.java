@@ -509,24 +509,38 @@ public class PlayerData {
 	 *
 	 * @return the modified value
 	 */
-	public double scaleDynamic(EffectComponent component, String key, double value) {
+	public double scaleDynamic(EffectComponent component, String key, double base) {
 		final AttributeManager manager = SkillAPI.getAttributeManager();
 		if (manager == null) {
-			return value;
+			return 0;
 		}
 
 		final List<AttributeManager.Attribute> matches = manager.forComponent(component, key);
 		if (matches == null) {
-			return value;
+			return 0;
 		}
 
+		double value = 0;
 		for (final AttributeManager.Attribute attribute : matches) {
 			int amount = getAttribute(attribute.getKey());
 			if (amount > 0) {
-				value = attribute.modify(component, key, value, amount);
+				value += attribute.modify(component, key, base, amount);
 			}
 		}
 		return value;
+	}
+
+	public double scaleCrit(EffectComponent component, String key, double base, double chance) {
+		final AttributeManager manager = SkillAPI.getAttributeManager();
+		if (manager == null) {
+			return 0;
+		}
+
+		// Max dex on any skill with crit chance gives 1.5x max str/int
+		double modifier = SkillAPI.getSettings().getDexCrit() / chance;
+		AttributeManager.Attribute attr = manager.getAttribute("dexterity");
+		int amount = getAttribute(attr.getKey());
+		return base * (1 + (modifier * amount));
 	}
 
 	/**

@@ -91,9 +91,9 @@ public class ProjectileMechanic extends MechanicComponent
     {
         // Get common values
     	this.isCrit = isCrit;
-        int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
-        double speed = parseValues(caster, SPEED, level, 2.0);
-        double range = parseValues(caster, RANGE, level, 999);
+        int amount = (int) parseValues(caster, AMOUNT, level, 1.0, false);
+        double speed = parseValues(caster, SPEED, level, 2.0, false);
+        double range = parseValues(caster, RANGE, level, 999, false);
         boolean flaming = settings.getString(FLAMING, "false").equalsIgnoreCase("true");
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
@@ -132,8 +132,8 @@ public class ProjectileMechanic extends MechanicComponent
             // Apply the spread type
             if (spread.equals("rain"))
             {
-                double radius = parseValues(caster, RADIUS, level, 2.0);
-                double height = parseValues(caster, HEIGHT, level, 8.0);
+                double radius = parseValues(caster, RADIUS, level, 2.0, false);
+                double height = parseValues(caster, HEIGHT, level, 8.0, false);
 
                 ArrayList<Location> locs = CustomProjectile.calcRain(target.getLocation(), radius, height, amount);
                 for (Location loc : locs)
@@ -157,10 +157,10 @@ public class ProjectileMechanic extends MechanicComponent
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = parseValues(caster, ANGLE, level, 30.0);
-                double right = parseValues(caster, RIGHT, level, 0);
-                double upward = parseValues(caster, UPWARD, level, 0);
-                double forward = parseValues(caster, FORWARD, level, 0);
+                double angle = parseValues(caster, ANGLE, level, 30.0, false);
+                double right = parseValues(caster, RIGHT, level, 0, false);
+                double upward = parseValues(caster, UPWARD, level, 0, false);
+                double forward = parseValues(caster, FORWARD, level, 0, false);
 
                 Vector looking = target.getLocation().getDirection().setY(0).normalize();
                 Vector normal = looking.clone().crossProduct(UP);

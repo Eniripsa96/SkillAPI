@@ -67,9 +67,9 @@ public class WarpMechanic extends MechanicComponent {
 
         // Get the world
         boolean throughWalls = settings.getString(WALL, "false").toLowerCase().equals("true");
-        double forward = parseValues(caster, FORWARD, level, 0.0);
-        double upward = parseValues(caster, UPWARD, level, 0.0);
-        double right = parseValues(caster, RIGHT, level, 0.0);
+        double forward = parseValues(caster, FORWARD, level, 0.0, false);
+        double upward = parseValues(caster, UPWARD, level, 0.0, false);
+        double right = parseValues(caster, RIGHT, level, 0.0, false);
 
         for (LivingEntity target : targets) {
             Vector dir = target.getLocation().getDirection();

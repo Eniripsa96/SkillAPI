@@ -59,7 +59,7 @@ public class StatusMechanic extends MechanicComponent {
         }
 
         String key = settings.getString(KEY, "stun").toLowerCase();
-        double seconds = parseValues(caster, DURATION, level, 3.0);
+        double seconds = parseValues(caster, DURATION, level, 3.0, false);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
             FlagManager.addFlag(target, key, ticks);

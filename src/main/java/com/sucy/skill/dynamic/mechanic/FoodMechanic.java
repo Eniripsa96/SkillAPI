@@ -31,8 +31,8 @@ public class FoodMechanic extends MechanicComponent {
      */
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
-        double food = parseValues(caster, FOOD, level, 1.0);
-        double saturation = parseValues(caster, SATURATION, level, 1.0);
+        double food = parseValues(caster, FOOD, level, 1.0, false);
+        double saturation = parseValues(caster, SATURATION, level, 1.0, false);
         for (LivingEntity target : targets) {
             if (target instanceof Player) {
                 Player player = (Player) target;

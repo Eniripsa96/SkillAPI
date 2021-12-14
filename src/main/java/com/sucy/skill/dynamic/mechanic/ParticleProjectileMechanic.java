@@ -82,20 +82,20 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
     public void makeIndicators(List<IIndicator> list, Player caster, List<LivingEntity> targets, int level) {
         targets.forEach(target -> {
             // Get common values
-            int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
-            double speed = parseValues(caster, "velocity", level, 1);
+            int amount = (int) parseValues(caster, AMOUNT, level, 1.0, false);
+            double speed = parseValues(caster, "velocity", level, 1, false);
             String spread = settings.getString(SPREAD, "cone").toLowerCase();
 
             // Apply the spread type
             if (spread.equals("rain")) {
-                double radius = parseValues(caster, RADIUS, level, 2.0);
+                double radius = parseValues(caster, RADIUS, level, 2.0, false);
 
                 if (indicatorType == IndicatorType.DIM_2) {
                     IIndicator indicator = new CircleIndicator(radius);
                     indicator.moveTo(target.getLocation().add(0, 0.1, 0));
                     list.add(indicator);
                 } else {
-                    double height = parseValues(caster, HEIGHT, level, 8.0);
+                    double height = parseValues(caster, HEIGHT, level, 8.0, false);
                     IIndicator indicator = new CylinderIndicator(radius, height);
                     indicator.moveTo(target.getLocation());
                     list.add(indicator);
@@ -106,7 +106,7 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = parseValues(caster, ANGLE, level, 30.0);
+                double angle = parseValues(caster, ANGLE, level, 30.0, false);
                 ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
                 Location loc = caster.getLocation().add(0, caster.getEyeHeight(), 0);
                 for (Vector d : dirs) {
@@ -137,15 +137,15 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
         // Get common values
     	this.isCrit = isCrit;
-        int amount = (int) parseValues(caster, AMOUNT, level, 1.0);
+        int amount = (int) parseValues(caster, AMOUNT, level, 1.0, false);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
         settings.set("level", level);
 
         final Settings copy = new Settings(settings);
-        copy.set(ParticleProjectile.SPEED, parseValues(caster, ParticleProjectile.SPEED, level, 1), 0);
-        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1), 0);
-        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0), 0);
+        copy.set(ParticleProjectile.SPEED, parseValues(caster, ParticleProjectile.SPEED, level, 1, false), 0);
+        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1, false), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0, false), 0);
 
         // Fire from each target
         for (LivingEntity target : targets) {
@@ -154,15 +154,15 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
             // Apply the spread type
             ArrayList<ParticleProjectile> list;
             if (spread.equals("rain")) {
-                double radius = parseValues(caster, RADIUS, level, 2.0);
-                double height = parseValues(caster, HEIGHT, level, 8.0);
+                double radius = parseValues(caster, RADIUS, level, 2.0, false);
+                double height = parseValues(caster, HEIGHT, level, 8.0, false);
                 list = ParticleProjectile.rain(caster, level, loc, copy, radius, height, amount, this);
             } else {
                 Vector dir = target.getLocation().getDirection();
 
-                double right = parseValues(caster, RIGHT, level, 0);
-                double upward = parseValues(caster, UPWARD, level, 0);
-                double forward = parseValues(caster, FORWARD, level, 0);
+                double right = parseValues(caster, RIGHT, level, 0, false);
+                double upward = parseValues(caster, UPWARD, level, 0, false);
+                double forward = parseValues(caster, FORWARD, level, 0, false);
 
                 Vector looking = dir.clone().setY(0).normalize();
                 Vector normal = looking.clone().crossProduct(UP);
@@ -172,7 +172,7 @@ public class ParticleProjectileMechanic extends MechanicComponent implements Pro
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = parseValues(caster, ANGLE, level, 30.0);
+                double angle = parseValues(caster, ANGLE, level, 30.0, false);
                 list = ParticleProjectile.spread(
                         caster,
                         level,

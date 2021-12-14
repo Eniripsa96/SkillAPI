@@ -132,18 +132,22 @@ public abstract class EffectComponent {
      *
      * @return the value with attribute modifications if applicable
      */
-    protected double parseValues(LivingEntity caster, String key, int level, double fallback) {
+    protected double parseValues(LivingEntity caster, String key, int level, double fallback, boolean isCrit) {
         double base = getNum(caster, key + "-base", fallback);
         double scale = getNum(caster, key + "-scale", 0);
-        double value = base + (level - 1) * scale;
+        double oldValue = base + (level - 1) * scale;
+        double newValue = oldValue;
 
         // Apply global modifiers
         if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player) {
             PlayerData data = SkillAPI.getPlayerData((Player) caster);
-            value = data.scaleDynamic(this, key, value);
+            newValue += data.scaleDynamic(this, key, oldValue);
+            if (isCrit) {
+                newValue += data.scaleCrit(this, key, oldValue, this.skill.getCritChance(level));
+            }
         }
 
-        return value;
+        return newValue;
     }
 
     /**

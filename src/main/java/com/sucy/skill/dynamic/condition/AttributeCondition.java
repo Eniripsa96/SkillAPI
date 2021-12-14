@@ -42,8 +42,8 @@ public class AttributeCondition extends ConditionComponent
         if (!(target instanceof Player)) return false;
 
         final String attr = settings.getString(ATTR, null);
-        final int min = (int) parseValues(caster, MIN, level, 0);
-        final int max = (int) parseValues(caster, MAX, level, 999);
+        final int min = (int) parseValues(caster, MIN, level, 0, false);
+        final int max = (int) parseValues(caster, MAX, level, 999, false);
 
         final PlayerData data = SkillAPI.getPlayerData((Player) target);
         final int value = data.getAttribute(attr);

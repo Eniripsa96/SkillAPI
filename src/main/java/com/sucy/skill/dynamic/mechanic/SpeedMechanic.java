@@ -57,8 +57,8 @@ public class SpeedMechanic extends MechanicComponent {
      */
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
-        float multiplier = (float) parseValues(caster, MULTIPLIER, level, 1.2);
-        double seconds = parseValues(caster, DURATION, level, 3.0);
+        float multiplier = (float) parseValues(caster, MULTIPLIER, level, 1.2, false);
+        double seconds = parseValues(caster, DURATION, level, 3.0, false);
         int ticks = (int) (seconds * 20);
         boolean worked = false;
         for (LivingEntity target : targets) {

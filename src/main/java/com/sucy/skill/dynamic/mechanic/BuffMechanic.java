@@ -39,7 +39,7 @@ public class BuffMechanic extends MechanicComponent {
         if (targets.size() == 0) return false;
 
         boolean immediate = settings.getString(IMMEDIATE, "false").equalsIgnoreCase("true");
-        double value = parseValues(caster, VALUE, level, 1.0);
+        double value = parseValues(caster, VALUE, level, 1.0, false);
         boolean percent = settings.getString(MODIFIER, "flat").equalsIgnoreCase("multiplier");
 
         if (immediate) {
@@ -48,7 +48,7 @@ public class BuffMechanic extends MechanicComponent {
         }
 
         BuffType buffType = BuffType.valueOf(settings.getString(TYPE, "DAMAGE"));
-        double seconds = parseValues(caster, SECONDS, level, 3.0);
+        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
         String category = settings.getString(CATEGORY, null);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {

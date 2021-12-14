@@ -61,7 +61,7 @@ public class PassiveMechanic extends MechanicComponent {
 
         if (targets.size() > 0) {
         	this.isCrit = isCrit;
-            final int period = (int) (parseValues(caster, PERIOD, level, 1.0) * 20);
+            final int period = (int) (parseValues(caster, PERIOD, level, 1.0, false) * 20);
             final PassiveTask task = new PassiveTask(caster, level, targets, period);
             tasks.put(caster.getEntityId(), task);
 

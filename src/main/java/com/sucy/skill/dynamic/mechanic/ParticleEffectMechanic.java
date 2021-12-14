@@ -46,7 +46,7 @@ public class ParticleEffectMechanic extends MechanicComponent
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
     {
         String key = settings.getString(KEY, skill.getName());
-        int duration = (int) (20 * parseValues(caster, DURATION, level, 5));
+        int duration = (int) (20 * parseValues(caster, DURATION, level, 5, false));
 
         EffectPlayer player = new EffectPlayer(settings);
         for (LivingEntity target : targets)

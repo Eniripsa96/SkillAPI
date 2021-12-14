@@ -56,7 +56,7 @@ public class DelayMechanic extends MechanicComponent {
         if (targets.size() == 0) {
             return false;
         }
-        double seconds = parseValues(caster, SECONDS, level, 2.0);
+        double seconds = parseValues(caster, SECONDS, level, 2.0, false);
         Bukkit.getScheduler().runTaskLater(
                 Bukkit.getPluginManager().getPlugin("SkillAPI"),
                 () -> executeChildren(caster, level, targets, isCrit),

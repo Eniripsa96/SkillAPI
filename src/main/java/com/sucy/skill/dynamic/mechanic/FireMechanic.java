@@ -55,7 +55,7 @@ public class FireMechanic extends MechanicComponent {
         if (targets.size() == 0) {
             return false;
         }
-        double seconds = parseValues(caster, SECONDS, level, 3.0);
+        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
             int newTicks = ticks <= 0 ? 0 : Math.max(ticks, target.getFireTicks());

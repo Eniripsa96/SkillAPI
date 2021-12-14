@@ -60,7 +60,7 @@ public class PushMechanic extends MechanicComponent {
             return false;
         }
 
-        final double speed = parseValues(caster, SPEED, level, 3.0);
+        final double speed = parseValues(caster, SPEED, level, 3.0, false);
         final String type = settings.getString("type", "scaled").toLowerCase();
 
         final List<LivingEntity> sources = RememberTarget.remember(caster, settings.getString(SOURCE, "_none"));

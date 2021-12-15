@@ -18,8 +18,8 @@ public class HealthSetMechanic extends MechanicComponent {
     }
 
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
-        final double health = Math.max(1, parseValues(caster, HEALTH, level, 1, false));
+    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets, double critChance) {
+        final double health = Math.max(1, parseValues(caster, HEALTH, level, 1, 0));
 
         for (final LivingEntity target : targets) {
             target.setHealth(Math.min(health, target.getMaxHealth()));

@@ -70,7 +70,7 @@ public class ProjectileMechanic extends MechanicComponent
     private static final String RIGHT      = "right";
     private static final String UPWARD     = "upward";
     private static final String FORWARD    = "forward";
-    private boolean isCrit;
+    private double critChance;
 
     @Override
     public String getKey() {
@@ -87,13 +87,13 @@ public class ProjectileMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance)
     {
         // Get common values
-    	this.isCrit = isCrit;
-        int amount = (int) parseValues(caster, AMOUNT, level, 1.0, false);
-        double speed = parseValues(caster, SPEED, level, 2.0, false);
-        double range = parseValues(caster, RANGE, level, 999, false);
+    	this.critChance = critChance;
+        int amount = (int) parseValues(caster, AMOUNT, level, 1.0, 0);
+        double speed = parseValues(caster, SPEED, level, 2.0, 0);
+        double range = parseValues(caster, RANGE, level, 999, 0);
         boolean flaming = settings.getString(FLAMING, "false").equalsIgnoreCase("true");
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         String projectile = settings.getString(PROJECTILE, "arrow").toLowerCase();
@@ -132,8 +132,8 @@ public class ProjectileMechanic extends MechanicComponent
             // Apply the spread type
             if (spread.equals("rain"))
             {
-                double radius = parseValues(caster, RADIUS, level, 2.0, false);
-                double height = parseValues(caster, HEIGHT, level, 8.0, false);
+                double radius = parseValues(caster, RADIUS, level, 2.0, 0);
+                double height = parseValues(caster, HEIGHT, level, 8.0, 0);
 
                 ArrayList<Location> locs = CustomProjectile.calcRain(target.getLocation(), radius, height, amount);
                 for (Location loc : locs)
@@ -157,10 +157,10 @@ public class ProjectileMechanic extends MechanicComponent
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = parseValues(caster, ANGLE, level, 30.0, false);
-                double right = parseValues(caster, RIGHT, level, 0, false);
-                double upward = parseValues(caster, UPWARD, level, 0, false);
-                double forward = parseValues(caster, FORWARD, level, 0, false);
+                double angle = parseValues(caster, ANGLE, level, 30.0, 0);
+                double right = parseValues(caster, RIGHT, level, 0, 0);
+                double upward = parseValues(caster, UPWARD, level, 0, 0);
+                double forward = parseValues(caster, FORWARD, level, 0, 0);
 
                 Vector looking = target.getLocation().getDirection().setY(0).normalize();
                 Vector normal = looking.clone().crossProduct(UP);
@@ -203,7 +203,7 @@ public class ProjectileMechanic extends MechanicComponent
 
         ArrayList<LivingEntity> targets = new ArrayList<LivingEntity>();
         targets.add(hit);
-        executeChildren((LivingEntity) projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets, isCrit);
+        executeChildren((LivingEntity) projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets, critChance);
         SkillAPI.removeMeta(projectile, MechanicListener.P_CALL);
         projectile.remove();
     }

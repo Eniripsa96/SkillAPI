@@ -20,7 +20,7 @@ public class ParticleLineMechanic extends MechanicComponent {
     }
 
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0) {
             return false;
         }
@@ -31,8 +31,8 @@ public class ParticleLineMechanic extends MechanicComponent {
         Vector offset = new Vector(0, upward, 0);
 
         final Settings copy = new Settings(settings);
-        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1, false), 0);
-        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0, false), 0);
+        copy.set(ParticleHelper.PARTICLES_KEY, parseValues(caster, ParticleHelper.PARTICLES_KEY, level, 1, 0), 0);
+        copy.set(ParticleHelper.RADIUS_KEY, parseValues(caster, ParticleHelper.RADIUS_KEY, level, 0, 0), 0);
         copy.set("level", level);
 
         LivingEntity target = targets.get(0);

@@ -68,7 +68,7 @@ public class ItemChecker
     {
         final Settings settings = component.getSettings();
 
-        int count = (int) component.parseValues(player, AMOUNT, level, 1, false);
+        int count = (int) component.parseValues(player, AMOUNT, level, 1, 0);
 
         // Checks to do
         boolean mat = settings.getBool(CHECK_MAT, true);

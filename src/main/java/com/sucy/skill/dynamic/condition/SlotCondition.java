@@ -36,7 +36,7 @@ public class SlotCondition extends ConditionComponent
     private static final String SLOT = "slot";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         if (!(target instanceof Player)) return false;
 
         final PlayerInventory inventory = ((Player) target).getInventory();

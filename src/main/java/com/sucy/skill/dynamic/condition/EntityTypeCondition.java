@@ -53,7 +53,7 @@ public class EntityTypeCondition extends ConditionComponent {
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         return types.contains(target.getType().name());
     }
 }

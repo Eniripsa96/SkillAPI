@@ -45,8 +45,8 @@ public class SingleTarget extends TargetComponent {
     /** {@inheritDoc} */
     @Override
     public void makeIndicators(List<IIndicator> list, Player caster, LivingEntity target, int level) {
-        double range = parseValues(caster, RANGE, level, 3.0, false);
-        double angle = parseValues(caster, TOLERANCE, level, 4.0, false);
+        double range = parseValues(caster, RANGE, level, 3.0, 0);
+        double angle = parseValues(caster, TOLERANCE, level, 4.0, 0);
         makeConeIndicator(list, target, range, angle);
     }
 
@@ -55,8 +55,8 @@ public class SingleTarget extends TargetComponent {
     List<LivingEntity> getTargets(
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
 
-        double range = parseValues(caster, RANGE, level, 5.0, false);
-        double tolerance = parseValues(caster, TOLERANCE, level, 4.0, false);
+        double range = parseValues(caster, RANGE, level, 5.0, 0);
+        double tolerance = parseValues(caster, TOLERANCE, level, 4.0, 0);
         return determineTargets(caster, level, targets, t -> {
             final LivingEntity target = TargetHelper.getLivingTarget(t, range, tolerance);
             return target == null ? ImmutableList.of() : ImmutableList.of(target);

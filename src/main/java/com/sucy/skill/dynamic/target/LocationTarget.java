@@ -58,7 +58,7 @@ public class LocationTarget extends TargetComponent {
     @Override
     List<LivingEntity> getTargets(
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
-        final double range = parseValues(caster, RANGE, level, 5.0, false);
+        final double range = parseValues(caster, RANGE, level, 5.0, 0);
         final boolean groundOnly = !settings.getString(GROUND, "true").toLowerCase().equals("false");
         return determineTargets(caster, level, targets, t -> getTargetLoc(caster, t, range, groundOnly));
     }

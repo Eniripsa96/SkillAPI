@@ -42,12 +42,12 @@ public class SkillLevelCondition extends ConditionComponent {
     }
 
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
-        return test(caster, level, null, isCrit) && executeChildren(caster, level, targets, isCrit);
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
+        return test(caster, level, null, critChance) && executeChildren(caster, level, targets, critChance);
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         final int min = settings.getInt(MIN_LEVEL, 1);
         final int max = settings.getInt(MAX_LEVEL, 99);
 

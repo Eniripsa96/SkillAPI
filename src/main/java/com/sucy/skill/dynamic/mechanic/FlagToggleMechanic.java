@@ -53,7 +53,7 @@ public class FlagToggleMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance)
     {
         if (targets.size() == 0 || !settings.has(KEY))
         {

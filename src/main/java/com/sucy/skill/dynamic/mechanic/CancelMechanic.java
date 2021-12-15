@@ -49,7 +49,7 @@ public class CancelMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         skill.cancelTrigger();
         return true;
     }

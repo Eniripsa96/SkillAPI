@@ -70,7 +70,7 @@ public class WolfMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (!(caster instanceof Player)) {
             return false;
         }
@@ -80,10 +80,10 @@ public class WolfMechanic extends MechanicComponent {
         final Player player = (Player) caster;
 
         String color = settings.getString(COLOR);
-        double health = parseValues(player, HEALTH, level, 10.0, false);
+        double health = parseValues(player, HEALTH, level, 10.0, 0);
         String name = TextFormatter.colorString(settings.getString(NAME, "").replace("{player}", player.getName()));
-        double damage = parseValues(player, DAMAGE, level, 3.0, false);
-        double amount = parseValues(player, AMOUNT, level, 1.0, false);
+        double damage = parseValues(player, DAMAGE, level, 3.0, 0);
+        double amount = parseValues(player, AMOUNT, level, 1.0, 0);
         boolean sitting = settings.getString(SITTING, "false").equalsIgnoreCase("true");
         List<String> skills = settings.getStringList(SKILLS);
 
@@ -94,7 +94,7 @@ public class WolfMechanic extends MechanicComponent {
             } catch (Exception ex) { /* Invalid color */ }
         }
 
-        double seconds = parseValues(player, SECONDS, level, 10.0, false);
+        double seconds = parseValues(player, SECONDS, level, 10.0, 0);
         int ticks = (int) (seconds * 20);
         List<LivingEntity> wolves = new ArrayList<>();
         for (LivingEntity target : targets) {
@@ -137,7 +137,7 @@ public class WolfMechanic extends MechanicComponent {
 
         // Apply children to the wolves
         if (wolves.size() > 0) {
-            executeChildren(player, level, wolves, isCrit);
+            executeChildren(player, level, wolves, critChance);
             return true;
         }
         return false;

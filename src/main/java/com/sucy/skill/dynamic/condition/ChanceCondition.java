@@ -36,8 +36,8 @@ public class ChanceCondition extends ConditionComponent
     private static final Random random = new Random();
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
-        final double chance = parseValues(caster, CHANCE, level, 25, false) / 100.0;
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
+        final double chance = parseValues(caster, CHANCE, level, 25, 0) / 100.0;
         return random.nextDouble() < chance;
     }
 

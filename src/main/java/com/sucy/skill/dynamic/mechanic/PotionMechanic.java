@@ -56,7 +56,7 @@ public class PotionMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0) {
             return false;
         }
@@ -64,8 +64,8 @@ public class PotionMechanic extends MechanicComponent {
         PotionEffectType potion = PotionEffectType.getByName(settings.getString(POTION, "Absorption")
                 .toUpperCase()
                 .replace(' ', '_'));
-        int tier = (int) parseValues(caster, TIER, level, 1, false) - 1;
-        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
+        int tier = (int) parseValues(caster, TIER, level, 1, 0) - 1;
+        double seconds = parseValues(caster, SECONDS, level, 3.0, 0);
         boolean ambient = !settings.getString(AMBIENT, "true").equals("false");
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {

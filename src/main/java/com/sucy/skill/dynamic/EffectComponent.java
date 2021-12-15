@@ -129,10 +129,11 @@ public abstract class EffectComponent {
      * @param key      key of the value to grab
      * @param level    level of the skill
      * @param fallback default value for the attribute
+     * @param critChance If >0, crit happened, and this is the decimal chance
      *
      * @return the value with attribute modifications if applicable
      */
-    protected double parseValues(LivingEntity caster, String key, int level, double fallback, boolean isCrit) {
+    protected double parseValues(LivingEntity caster, String key, int level, double fallback, double critChance) {
         double base = getNum(caster, key + "-base", fallback);
         double scale = getNum(caster, key + "-scale", 0);
         double oldValue = base + (level - 1) * scale;
@@ -142,8 +143,8 @@ public abstract class EffectComponent {
         if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player) {
             PlayerData data = SkillAPI.getPlayerData((Player) caster);
             newValue += data.scaleDynamic(this, key, oldValue);
-            if (isCrit) {
-                newValue += data.scaleCrit(this, key, oldValue, this.skill.getCritChance(level));
+            if (critChance > 0) {
+                newValue += data.scaleCrit(this, key, oldValue, critChance);
             }
         }
 
@@ -207,7 +208,7 @@ public abstract class EffectComponent {
      *
      * @return true if executed, false if conditions not met
      */
-    protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    protected boolean executeChildren(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.isEmpty()) {
             return false;
         }
@@ -215,7 +216,7 @@ public abstract class EffectComponent {
         boolean worked = false;
         for (EffectComponent child : children) {
             boolean counts = !child.settings.getString(COUNTS_KEY, "true").toLowerCase().equals("false");
-            passed = child.execute(caster, level, targets, isCrit);
+            passed = child.execute(caster, level, targets, critChance);
             worked = (passed && counts) || worked;
         }
         return worked;
@@ -293,7 +294,7 @@ public abstract class EffectComponent {
      *
      * @return true if executed, false if conditions not met
      */
-    public abstract boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit);
+    public abstract boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance);
 
     /**
      * Creates the list of indicators for the skill

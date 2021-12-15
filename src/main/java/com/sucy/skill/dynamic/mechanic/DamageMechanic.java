@@ -63,13 +63,13 @@ public class DamageMechanic extends MechanicComponent {
 	 * @return true if applied to something, false otherwise
 	 */
 	@Override
-	public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+	public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
 		String pString = settings.getString(TYPE, "damage").toLowerCase();
 		boolean percent = pString.equals("multiplier") || pString.equals("percent");
 		boolean missing = pString.equals("percent missing");
 		boolean left = pString.equals("percent left");
 		boolean trueDmg = settings.getBool(TRUE, false);
-		double damage = parseValues(caster, DAMAGE, level, 1.0, isCrit);
+		double damage = parseValues(caster, DAMAGE, level, 1.0, critChance);
 		String classification = settings.getString(CLASSIFIER, "default");
 		if (damage < 0) {
 			return false;

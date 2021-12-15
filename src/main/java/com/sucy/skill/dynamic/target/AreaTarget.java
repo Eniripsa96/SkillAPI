@@ -50,7 +50,7 @@ public class AreaTarget extends TargetComponent {
     List<LivingEntity> getTargets(
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
 
-        final double radius = parseValues(caster, RADIUS, level, 3.0, false);
+        final double radius = parseValues(caster, RADIUS, level, 3.0, 0);
         final boolean random = settings.getBool(RANDOM, false);
         return determineTargets(caster, level, targets, t -> shuffle(Nearby.getLivingNearby(t.getLocation(), radius), random));
     }
@@ -58,7 +58,7 @@ public class AreaTarget extends TargetComponent {
     /** {@inheritDoc} */
     @Override
     void makeIndicators(final List<IIndicator> list, final Player caster, final LivingEntity target, final int level) {
-        makeCircleIndicator(list, target, parseValues(caster, RADIUS, level, 3.0, false));
+        makeCircleIndicator(list, target, parseValues(caster, RADIUS, level, 3.0, 0));
     }
 
     @Override

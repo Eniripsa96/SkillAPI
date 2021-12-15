@@ -53,7 +53,7 @@ public class ClassLevelCondition extends ConditionComponent
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         if (!(target instanceof Player)) return false;
 
         final PlayerClass playerClass = SkillAPI.getPlayerData((Player) target).getMainClass();

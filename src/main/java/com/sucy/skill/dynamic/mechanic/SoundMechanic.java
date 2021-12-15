@@ -57,7 +57,7 @@ public class SoundMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0) {
             return false;
         }
@@ -67,8 +67,8 @@ public class SoundMechanic extends MechanicComponent {
 
         try {
             Sound sound = Sound.valueOf(type);
-            float volume = (float) parseValues(caster, VOLUME, level, 100.0, false) / 100;
-            float pitch = (float) parseValues(caster, PITCH, level, 0.0, false);
+            float volume = (float) parseValues(caster, VOLUME, level, 100.0, 0) / 100;
+            float pitch = (float) parseValues(caster, PITCH, level, 0.0, 0);
 
             volume = Math.max(0, volume);
             pitch = Math.min(2, Math.max(0.5f, pitch));

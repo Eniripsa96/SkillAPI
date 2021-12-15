@@ -61,11 +61,11 @@ public class DamageLoreMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         String regex = settings.getString(REGEX, "Damage: {value}");
         regex = regex.replace("{value}", "([0-9]+)");
         Pattern pattern = Pattern.compile(regex);
-        double m = parseValues(caster, MULTIPLIER, level, 1.0, false);
+        double m = parseValues(caster, MULTIPLIER, level, 1.0, 0);
         boolean worked = false;
         boolean offhand = VersionManager.isVersionAtLeast(VersionManager.V1_9_0)
                 && settings.getString(HAND).equalsIgnoreCase("offhand");

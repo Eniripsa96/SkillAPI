@@ -37,6 +37,7 @@ import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.dynamic.trigger.TriggerComponent;
 import com.sucy.skill.log.Logger;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static com.sucy.skill.dynamic.ComponentRegistry.getTrigger;
 
@@ -58,6 +60,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
     private final Map<Integer, Integer>        active     = new HashMap<>();
 
     private static final HashMap<Integer, HashMap<String, Object>> castData   = new HashMap<>();
+    private static Random gen = new Random();
 
     private TriggerComponent castTrigger;
     private TriggerComponent initializeTrigger;
@@ -322,7 +325,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             final String[] path = key.split("\\.");
             final String attr = path[1].toLowerCase();
             if (attribKeys.containsKey(path[0]) && attribKeys.get(path[0]).settings.has(attr)) {
-                return format(attribKeys.get(path[0]).parseValues(caster, attr, level, 0, false));
+                return format(attribKeys.get(path[0]).parseValues(caster, attr, level, 0, 0));
             } else { return 0; }
         }
 
@@ -335,7 +338,14 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             final LivingEntity target,
             final int level,
             final TriggerComponent component) {
-        return component != null && component.trigger(user, target, level);
+    	if (component == null) return false;
+        double critChance = component.getSettings().getDouble("crit-chance", 0);
+        boolean isCrit = critChance > gen.nextDouble();
+        critChance = isCrit ? critChance : 0;
+        if (isCrit) {
+        	((Player) user).playSound(user.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0F, 1.0F);
+        }
+        return component.trigger(user, target, level, critChance);
     }
 
     /**

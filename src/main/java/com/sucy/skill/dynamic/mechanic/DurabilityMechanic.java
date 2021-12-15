@@ -24,7 +24,7 @@ public class DurabilityMechanic extends MechanicComponent {
 
     @Override
     public boolean execute(
-            final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
+            final LivingEntity caster, final int level, final List<LivingEntity> targets, double critChance) {
 
         if (!(caster instanceof Player)) {
             return false;
@@ -32,7 +32,7 @@ public class DurabilityMechanic extends MechanicComponent {
 
         final Player player = (Player) caster;
         final boolean offhand = settings.getBool(OFFHAND, false);
-        final short amount = (short) (parseValues(caster, AMOUNT, level, 1, false) * targets.size());
+        final short amount = (short) (parseValues(caster, AMOUNT, level, 1, 0) * targets.size());
 
         final ItemStack item;
         if (offhand && VersionManager.isVersionAtLeast(VersionManager.V1_9_0)) {

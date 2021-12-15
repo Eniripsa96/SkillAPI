@@ -45,8 +45,8 @@ public class LinearTarget extends TargetComponent {
     @Override
     List<LivingEntity> getTargets(
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
-        final double tolerance = parseValues(caster, TOLERANCE, level, 4.0, false);
-        final double range = parseValues(caster, RANGE, level, 5.0, false);
+        final double tolerance = parseValues(caster, TOLERANCE, level, 4.0, 0);
+        final double range = parseValues(caster, RANGE, level, 5.0, 0);
         return determineTargets(caster, level, targets, t -> TargetHelper.getLivingTargets(t, range, tolerance));
     }
 

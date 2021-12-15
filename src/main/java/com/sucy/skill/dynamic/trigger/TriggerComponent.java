@@ -17,14 +17,13 @@ import java.util.Random;
  */
 public class TriggerComponent extends EffectComponent {
     private boolean running = false;
-    private static Random gen = new Random();
 
     public boolean isRunning() {
         return running;
     }
 
-    public boolean trigger(final LivingEntity caster, final LivingEntity target, final int level) {
-        return execute(caster, level, Lists.asList(target), false);
+    public boolean trigger(final LivingEntity caster, final LivingEntity target, final int level, double critChance) {
+        return execute(caster, level, Lists.asList(target), critChance);
     }
 
     @Override
@@ -38,14 +37,10 @@ public class TriggerComponent extends EffectComponent {
     }
 
     @Override
-    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(final LivingEntity caster, final int level, final List<LivingEntity> targets, double critChance) {
         try {
             running = true;
-            isCrit = this.skill.getCritChance(level) > gen.nextDouble();
-            if (isCrit) {
-            	((Player) caster).playSound(caster.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0F, 1.0F);
-            }
-            return executeChildren(caster, level, targets, isCrit);
+            return executeChildren(caster, level, targets, critChance);
         } finally {
             running = false;
         }

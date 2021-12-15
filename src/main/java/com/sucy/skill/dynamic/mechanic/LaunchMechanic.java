@@ -62,14 +62,14 @@ public class LaunchMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0) {
             return false;
         }
 
-        double forward = parseValues(caster, FORWARD, level, 0, false);
-        double upward = parseValues(caster, UPWARD, level, 0, false);
-        double right = parseValues(caster, RIGHT, level, 0, false);
+        double forward = parseValues(caster, FORWARD, level, 0, 0);
+        double upward = parseValues(caster, UPWARD, level, 0, 0);
+        double right = parseValues(caster, RIGHT, level, 0, 0);
         String relative = settings.getString(RELATIVE, "target").toLowerCase();
         for (LivingEntity target : targets) {
             final Vector dir;

@@ -78,7 +78,7 @@ public class BlockMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0) { return false; }
 
         Material block = Material.ICE;
@@ -89,23 +89,23 @@ public class BlockMechanic extends MechanicComponent {
         }
 
         boolean sphere = settings.getString(SHAPE, "sphere").toLowerCase().equals("sphere");
-        int ticks = (int) (20 * parseValues(caster, SECONDS, level, 5, false));
+        int ticks = (int) (20 * parseValues(caster, SECONDS, level, 5, 0));
         byte data = (byte) settings.getInt(DATA, 0);
 
         String type = settings.getString(TYPE, "solid").toLowerCase();
         boolean solid = type.equals("solid");
         boolean air = type.equals("air");
 
-        double forward = parseValues(caster, FORWARD, level, 0, false);
-        double upward = parseValues(caster, UPWARD, level, 0, false);
-        double right = parseValues(caster, RIGHT, level, 0, false);
+        double forward = parseValues(caster, FORWARD, level, 0, 0);
+        double upward = parseValues(caster, UPWARD, level, 0, 0);
+        double right = parseValues(caster, RIGHT, level, 0, 0);
 
         List<Block> blocks = new ArrayList<Block>();
         World w = caster.getWorld();
 
         // Grab blocks in a sphere
         if (sphere) {
-            double radius = parseValues(caster, RADIUS, level, 3, false);
+            double radius = parseValues(caster, RADIUS, level, 3, 0);
             double x, y, z, dx, dy, dz;
             double rSq = radius * radius;
             for (LivingEntity t : targets) {
@@ -144,9 +144,9 @@ public class BlockMechanic extends MechanicComponent {
         // Grab blocks in a cuboid
         else {
             // Cuboid options
-            double width = (parseValues(caster, WIDTH, level, 5, false) - 1) / 2;
-            double height = (parseValues(caster, HEIGHT, level, 5, false) - 1) / 2;
-            double depth = (parseValues(caster, DEPTH, level, 5, false) - 1) / 2;
+            double width = (parseValues(caster, WIDTH, level, 5, 0) - 1) / 2;
+            double height = (parseValues(caster, HEIGHT, level, 5, 0) - 1) / 2;
+            double depth = (parseValues(caster, DEPTH, level, 5, 0) - 1) / 2;
             double x, y, z;
 
             for (LivingEntity t : targets) {

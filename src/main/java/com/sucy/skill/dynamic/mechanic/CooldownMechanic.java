@@ -57,12 +57,12 @@ public class CooldownMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (!(caster instanceof Player)) { return false; }
 
         String skill = settings.getString(SKILL, "");
         String type = settings.getString(TYPE, "all").toLowerCase();
-        double value = parseValues(caster, VALUE, level, 0, false);
+        double value = parseValues(caster, VALUE, level, 0, 0);
 
         PlayerData playerData = SkillAPI.getPlayerData((Player) caster);
 

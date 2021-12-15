@@ -54,7 +54,7 @@ public class FlagMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance)
     {
         if (targets.size() == 0 || !settings.has(KEY))
         {
@@ -62,7 +62,7 @@ public class FlagMechanic extends MechanicComponent
         }
 
         String key = settings.getString(KEY);
-        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
+        double seconds = parseValues(caster, SECONDS, level, 3.0, 0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {

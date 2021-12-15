@@ -55,9 +55,9 @@ public class TauntMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance)
     {
-        double amount = parseValues(caster, AMOUNT, level, 1, false);
+        double amount = parseValues(caster, AMOUNT, level, 1, 0);
         boolean taunted = false;
         for (LivingEntity entity : targets)
         {

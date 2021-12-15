@@ -59,15 +59,15 @@ public class AttributeMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         String key = settings.getString(KEY, "");
         if (targets.size() == 0 || SkillAPI.getAttributeManager().getAttribute(key) == null) {
             return false;
         }
 
         final Map<String, AttribTask> casterTasks = tasks.computeIfAbsent(caster.getEntityId(), HashMap::new);
-        final int amount = (int) parseValues(caster, AMOUNT, level, 5, false);
-        final double seconds = parseValues(caster, SECONDS, level, 3.0, false);
+        final int amount = (int) parseValues(caster, AMOUNT, level, 5, 0);
+        final double seconds = parseValues(caster, SECONDS, level, 3.0, 0);
         final boolean stackable = settings.getString(STACKABLE, "false").equalsIgnoreCase("true");
         final int ticks = (int) (seconds * 20);
 

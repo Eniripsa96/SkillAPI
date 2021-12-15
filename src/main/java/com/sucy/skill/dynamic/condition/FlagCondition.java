@@ -37,7 +37,7 @@ public class FlagCondition extends ConditionComponent {
     private static final String KEY  = "key";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         final String flag = settings.getString(KEY);
         final boolean set = !settings.getString(TYPE, "set").toLowerCase().equals("not set");
         return FlagManager.hasFlag(target, flag) == set;

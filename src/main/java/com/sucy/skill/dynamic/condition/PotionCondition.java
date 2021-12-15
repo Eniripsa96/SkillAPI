@@ -43,7 +43,7 @@ public class PotionCondition extends ConditionComponent {
     private static final String MAX_RANK = "max-rank";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         final boolean active = !settings.getString(TYPE, "active").toLowerCase().equals("not active");
         final Collection<PotionEffect> effects = target.getActivePotionEffects();
         if (effects.isEmpty()) {
@@ -51,8 +51,8 @@ public class PotionCondition extends ConditionComponent {
         }
 
         final String potion = settings.getString(POTION, "").toUpperCase().replace(' ', '_');
-        final int minRank = (int) parseValues(caster, MIN_RANK, level, 0, false);
-        final int maxRank = (int) parseValues(caster, MAX_RANK, level, 999, false);
+        final int minRank = (int) parseValues(caster, MIN_RANK, level, 0, 0);
+        final int maxRank = (int) parseValues(caster, MAX_RANK, level, 999, 0);
         try {
             final PotionEffectType type = PotionEffectType.getByName(potion);
             return has(target, type, minRank, maxRank) == active;

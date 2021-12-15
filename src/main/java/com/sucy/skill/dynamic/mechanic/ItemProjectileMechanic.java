@@ -70,7 +70,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
 
     private static final String USE_EFFECT = "use-effect";
     private static final String EFFECT_KEY = "effect-key";
-    private boolean isCrit;
+    private double critChance;
 
     /**
      * Creates the list of indicators for the skill
@@ -84,20 +84,20 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
     public void makeIndicators(List<IIndicator> list, Player caster, List<LivingEntity> targets, int level) {
         targets.forEach(target -> {
             // Get common values
-            int amount = (int) parseValues(caster, AMOUNT, level, 1.0, false);
-            double speed = parseValues(caster, "velocity", level, 1, false);
+            int amount = (int) parseValues(caster, AMOUNT, level, 1.0, 0);
+            double speed = parseValues(caster, "velocity", level, 1, 0);
             String spread = settings.getString(SPREAD, "cone").toLowerCase();
 
             // Apply the spread type
             if (spread.equals("rain")) {
-                double radius = parseValues(caster, RADIUS, level, 2.0, false);
+                double radius = parseValues(caster, RADIUS, level, 2.0, 0);
 
                 if (indicatorType == IndicatorType.DIM_2) {
                     IIndicator indicator = new CircleIndicator(radius);
                     indicator.moveTo(target.getLocation().add(0, 0.1, 0));
                     list.add(indicator);
                 } else {
-                    double height = parseValues(caster, HEIGHT, level, 8.0, false);
+                    double height = parseValues(caster, HEIGHT, level, 8.0, 0);
                     IIndicator indicator = new CylinderIndicator(radius, height);
                     indicator.moveTo(target.getLocation());
                     list.add(indicator);
@@ -108,7 +108,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
                     dir.setY(0);
                     dir.normalize();
                 }
-                double angle = parseValues(caster, ANGLE, level, 30.0, false);
+                double angle = parseValues(caster, ANGLE, level, 30.0, 0);
                 ArrayList<Vector> dirs = CustomProjectile.calcSpread(dir, angle, amount);
                 Location loc = caster.getLocation().add(0, caster.getEyeHeight(), 0);
                 for (Vector d : dirs) {
@@ -136,8 +136,8 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
-    	this.isCrit = isCrit;
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
+    	this.critChance = critChance;
         Material mat = Material.JACK_O_LANTERN;
         try {
             mat = Material.valueOf(settings.getString(ITEM).toUpperCase().replace(" ", "_"));
@@ -148,8 +148,8 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
         item.setDurability((short) settings.getInt(DATA, 0));
 
         // Get other common values
-        double speed = parseValues(caster, SPEED, level, 3.0, false);
-        int amount = (int) parseValues(caster, AMOUNT, level, 1.0, false);
+        double speed = parseValues(caster, SPEED, level, 3.0, 0);
+        int amount = (int) parseValues(caster, AMOUNT, level, 1.0, 0);
         String spread = settings.getString(SPREAD, "cone").toLowerCase();
         boolean ally = settings.getString(ALLY, "enemy").toLowerCase().equals("ally");
 
@@ -160,15 +160,15 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
             // Apply the spread type
             ArrayList<ItemProjectile> list;
             if (spread.equals("rain")) {
-                double radius = parseValues(caster, RADIUS, level, 2.0, false);
-                double height = parseValues(caster, HEIGHT, level, 8.0, false);
+                double radius = parseValues(caster, RADIUS, level, 2.0, 0);
+                double height = parseValues(caster, HEIGHT, level, 8.0, 0);
                 list = ItemProjectile.rain(caster, loc, item, radius, height, speed, amount, this);
             } else {
                 Vector dir = target.getLocation().getDirection();
 
-                double right = parseValues(caster, RIGHT, level, 0, false);
-                double upward = parseValues(caster, UPWARD, level, 0, false);
-                double forward = parseValues(caster, FORWARD, level, 0, false);
+                double right = parseValues(caster, RIGHT, level, 0, 0);
+                double upward = parseValues(caster, UPWARD, level, 0, 0);
+                double forward = parseValues(caster, FORWARD, level, 0, 0);
 
                 Vector looking = dir.clone().setY(0).normalize();
                 Vector normal = looking.clone().crossProduct(UP);
@@ -179,7 +179,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
                     dir.normalize();
                 }
                 dir.multiply(speed);
-                double angle = parseValues(caster, ANGLE, level, 30.0, false);
+                double angle = parseValues(caster, ANGLE, level, 30.0, 0);
                 list = ItemProjectile.spread(
                         caster,
                         dir,
@@ -226,7 +226,7 @@ public class ItemProjectileMechanic extends MechanicComponent implements Project
         }
         ArrayList<LivingEntity> targets = new ArrayList<>();
         targets.add(hit);
-        executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets, isCrit);
+        executeChildren(projectile.getShooter(), SkillAPI.getMetaInt(projectile, LEVEL), targets, critChance);
         projectile.setCallback(null);
     }
 }

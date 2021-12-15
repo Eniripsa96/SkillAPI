@@ -54,10 +54,10 @@ public class ElevationCondition extends ConditionComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         String type = settings.getString(TYPE).toLowerCase();
-        double min = parseValues(caster, MIN, level, 0, false);
-        double max = parseValues(caster, MAX, level, 255, false);
+        double min = parseValues(caster, MIN, level, 0, 0);
+        double max = parseValues(caster, MAX, level, 255, 0);
 
         ArrayList<LivingEntity> list = new ArrayList<LivingEntity>();
         for (LivingEntity target : targets) {
@@ -71,14 +71,14 @@ public class ElevationCondition extends ConditionComponent {
                 list.add(target);
             }
         }
-        return list.size() > 0 && executeChildren(caster, level, list, isCrit);
+        return list.size() > 0 && executeChildren(caster, level, list, critChance);
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         final String type = settings.getString(TYPE);
-        final double min = parseValues(caster, MIN, level, 0, false);
-        final double max = parseValues(caster, MAX, level, 255, false);
+        final double min = parseValues(caster, MIN, level, 0, 0);
+        final double max = parseValues(caster, MAX, level, 255, 0);
 
         double value;
         if (type.equalsIgnoreCase("difference")) {

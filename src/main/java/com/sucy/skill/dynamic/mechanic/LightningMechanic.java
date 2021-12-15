@@ -57,13 +57,13 @@ public class LightningMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0) {
             return false;
         }
         boolean damage = settings.getBool(DAMAGE, true);
-        double forward = parseValues(caster, FORWARD, level, 0, false);
-        double right = parseValues(caster, RIGHT, level, 0, false);
+        double forward = parseValues(caster, FORWARD, level, 0, 0);
+        double right = parseValues(caster, RIGHT, level, 0, 0);
         for (LivingEntity target : targets) {
             Vector dir = target.getLocation().getDirection().setY(0).normalize();
             Vector nor = dir.clone().crossProduct(up);

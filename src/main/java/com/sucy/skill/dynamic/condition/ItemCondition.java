@@ -34,7 +34,7 @@ import org.bukkit.entity.LivingEntity;
  */
 public class ItemCondition extends ConditionComponent {
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         return target.getEquipment() != null && ItemChecker.check(
                 target.getEquipment().getItemInHand(),
                 level,

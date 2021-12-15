@@ -6,6 +6,8 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.trigger.Trigger;
 import com.sucy.skill.dynamic.trigger.TriggerComponent;
+
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -15,6 +17,7 @@ import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Random;
 
 import static com.sucy.skill.dynamic.ComponentRegistry.getExecutor;
 
@@ -30,6 +33,7 @@ public class TriggerHandler implements Listener {
     private final String key;
     private final Trigger<?> trigger;
     private final TriggerComponent component;
+    private static Random gen = new Random();
 
     public TriggerHandler(
             final DynamicSkill skill,
@@ -114,19 +118,25 @@ public class TriggerHandler implements Listener {
             final PlayerSkill skill = data.getSkill(this.skill.getName());
             final boolean cd = component.getSettings().getBool("cooldown", false);
             final boolean mana = component.getSettings().getBool("mana", false);
+            double critChance = component.getSettings().getDouble("crit-chance", 0);
+            boolean isCrit = critChance > gen.nextDouble();
+            critChance = isCrit ? critChance : 0;
 
             if ((cd || mana) && !data.check(skill, cd, mana)) { return false; }
 
-            if (component.trigger(user, target, level)) {
+            if (component.trigger(user, target, level, critChance)) {
                 if (cd) { skill.startCooldown(); }
                 if (mana) { data.useMana(skill.getManaCost(), ManaCost.SKILL_CAST); }
+                if (isCrit) {
+                	((Player) user).playSound(user.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0F, 1.0F);
+                }
 
                 return true;
             } else {
                 return false;
             }
         } else {
-            return component.trigger(user, target, level);
+            return component.trigger(user, target, level, 0);
         }
     }
 }

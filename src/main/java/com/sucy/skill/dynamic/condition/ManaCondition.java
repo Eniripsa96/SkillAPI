@@ -38,14 +38,14 @@ public class ManaCondition extends ConditionComponent {
     private static final String MAX  = "max-value";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         if (!(target instanceof Player)) {
             return false;
         }
 
         final String type = settings.getString(TYPE).toLowerCase();
-        final double min = parseValues(caster, MIN, level, 0, false);
-        final double max = parseValues(caster, MAX, level, 99, false);
+        final double min = parseValues(caster, MIN, level, 0, 0);
+        final double max = parseValues(caster, MAX, level, 99, 0);
         final PlayerData data = SkillAPI.getPlayerData((Player) target);
         final PlayerSkill skill = getSkillData(caster);
         final double mana = data.getMana();

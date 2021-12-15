@@ -50,7 +50,7 @@ public class ForgetTargetsMechanic extends MechanicComponent
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit)
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance)
     {
         String key = settings.getString(KEY, "");
         DynamicSkill.getCastData(caster).remove(key);

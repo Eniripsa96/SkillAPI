@@ -42,15 +42,15 @@ public class ValueCondition extends ConditionComponent {
     }
 
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
-        return test(caster, level, null, isCrit) && executeChildren(caster, level, targets, isCrit);
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
+        return test(caster, level, null, critChance) && executeChildren(caster, level, targets, critChance);
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         final String key = settings.getString(KEY);
-        final double min = parseValues(caster, MIN, level, 1, false);
-        final double max = parseValues(caster, MAX, level, 999, false);
+        final double min = parseValues(caster, MIN, level, 1, 0);
+        final double max = parseValues(caster, MAX, level, 999, 0);
         final Object data = DynamicSkill.getCastData(caster).get(key);
 
         if (data != null) {

@@ -37,7 +37,7 @@ public class ClassCondition extends ConditionComponent {
     private static final String EXACT = "exact";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         if (!(target instanceof Player)) return false;
 
         final RPGClass rpgClass = SkillAPI.getClass(settings.getString(CLASS));

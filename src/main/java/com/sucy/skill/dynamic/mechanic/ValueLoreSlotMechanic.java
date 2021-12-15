@@ -54,11 +54,11 @@ public class ValueLoreSlotMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0 || !settings.has(KEY) || !(caster instanceof Player)) { return false; }
 
         String key = settings.getString(KEY);
-        double multiplier = parseValues(caster, MULTIPLIER, level, 1, false);
+        double multiplier = parseValues(caster, MULTIPLIER, level, 1, 0);
         int slot = settings.getInt(SLOT);
         String regex = settings.getString(REGEX, "Damage: {value}");
 

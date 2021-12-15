@@ -35,11 +35,11 @@ public class BuffMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0) return false;
 
         boolean immediate = settings.getString(IMMEDIATE, "false").equalsIgnoreCase("true");
-        double value = parseValues(caster, VALUE, level, 1.0, false);
+        double value = parseValues(caster, VALUE, level, 1.0, 0);
         boolean percent = settings.getString(MODIFIER, "flat").equalsIgnoreCase("multiplier");
 
         if (immediate) {
@@ -48,7 +48,7 @@ public class BuffMechanic extends MechanicComponent {
         }
 
         BuffType buffType = BuffType.valueOf(settings.getString(TYPE, "DAMAGE"));
-        double seconds = parseValues(caster, SECONDS, level, 3.0, false);
+        double seconds = parseValues(caster, SECONDS, level, 3.0, 0);
         String category = settings.getString(CATEGORY, null);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {

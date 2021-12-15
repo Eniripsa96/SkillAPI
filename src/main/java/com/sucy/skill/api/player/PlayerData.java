@@ -536,8 +536,8 @@ public class PlayerData {
 			return 0;
 		}
 
-		// Max dex on any skill with crit chance gives 1.5x max str/int
-		double modifier = SkillAPI.getSettings().getDexCrit() / chance;
+		// Max dex on any skill with crit chance gives (dexcrit)x max str/int
+		double modifier = SkillAPI.getSettings().getDexCrit() / (chance * 100);
 		AttributeManager.Attribute attr = manager.getAttribute("dexterity");
 		int amount = getAttribute(attr.getKey());
 		return base * (1 + (modifier * amount));

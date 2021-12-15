@@ -48,7 +48,7 @@ public class NearestTarget extends TargetComponent {
     List<LivingEntity> getTargets(
             final LivingEntity caster, final int level, final List<LivingEntity> targets) {
 
-        final double radius = parseValues(caster, RADIUS, level, 3.0, false);
+        final double radius = parseValues(caster, RADIUS, level, 3.0, 0);
         final List<LivingEntity> result = new ArrayList<>();
         for (LivingEntity target : targets) {
             final Comparator<LivingEntity> comparator = new DistanceComparator(target.getLocation());
@@ -63,7 +63,7 @@ public class NearestTarget extends TargetComponent {
     /** {@inheritDoc} */
     @Override
     void makeIndicators(final List<IIndicator> list, final Player caster, final LivingEntity target, final int level) {
-        makeCircleIndicator(list, target, parseValues(caster, RADIUS, level, 3.0, false));
+        makeCircleIndicator(list, target, parseValues(caster, RADIUS, level, 3.0, 0));
     }
 
     @Override

@@ -39,7 +39,7 @@ public class NameCondition extends ConditionComponent {
     private static final String STRING   = "str";
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         boolean contains = !settings.getString(CONTAINS, "true").toLowerCase().equals("false");
         boolean regex = settings.getString(REGEX, "false").toLowerCase().equals("true");
         String str = settings.getString(STRING, "");

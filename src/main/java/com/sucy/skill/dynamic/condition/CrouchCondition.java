@@ -48,7 +48,7 @@ public class CrouchCondition extends ConditionComponent {
     }
 
     @Override
-    boolean test(final LivingEntity caster, final int level, final LivingEntity target, boolean isCrit) {
+    boolean test(final LivingEntity caster, final int level, final LivingEntity target, double critChance) {
         return target instanceof Player && ((Player) target).isSneaking() == crouch;
     }
 }

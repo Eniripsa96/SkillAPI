@@ -55,12 +55,12 @@ public class PushMechanic extends MechanicComponent {
      * @return true if applied to something, false otherwise
      */
     @Override
-    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, boolean isCrit) {
+    public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         if (targets.size() == 0) {
             return false;
         }
 
-        final double speed = parseValues(caster, SPEED, level, 3.0, false);
+        final double speed = parseValues(caster, SPEED, level, 3.0, 0);
         final String type = settings.getString("type", "scaled").toLowerCase();
 
         final List<LivingEntity> sources = RememberTarget.remember(caster, settings.getString(SOURCE, "_none"));

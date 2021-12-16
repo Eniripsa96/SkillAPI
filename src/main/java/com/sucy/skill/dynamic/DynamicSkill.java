@@ -342,10 +342,11 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         double critChance = component.getSettings().getDouble("crit-chance", 0);
         boolean isCrit = critChance > gen.nextDouble();
         critChance = isCrit ? critChance : 0;
-        if (isCrit) {
+        boolean success = component.trigger(user, target, level, critChance);
+        if (success && isCrit) {
         	((Player) user).playSound(user.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0F, 1.0F);
         }
-        return component.trigger(user, target, level, critChance);
+        return success;
     }
 
     /**

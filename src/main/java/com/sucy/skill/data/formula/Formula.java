@@ -62,6 +62,7 @@ public class Formula implements IValue
         put("abs", Abs.class);
         put("ceil", Ceil.class);
         put("round", Round.class);
+        put("trunc", Trunc.class);
         put("cos", Cos.class);
         put("floor", Floor.class);
         put("sqrt", Root.class);

@@ -73,6 +73,7 @@ public class AttributeManager {
     public static final String EXPERIENCE         = "exp";
     public static final String HUNGER             = "hunger";
     public static final String HUNGER_HEAL        = "hunger-heal";
+    public static final String HEALING_RECEIVED   = "healing-received";
     public static final String COOLDOWN           = "cooldown";
     public static final String KNOCKBACK_RESIST   = "knockback-resist";
 

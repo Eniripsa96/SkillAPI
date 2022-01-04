@@ -1,10 +1,14 @@
 package com.sucy.skill.listener;
 
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
 import com.sucy.skill.api.event.SkillDamageEvent;
 import com.sucy.skill.api.event.SkillHealEvent;
 import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.BuffType;
+import com.sucy.skill.manager.AttributeManager;
+
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -70,13 +74,18 @@ public class BuffListener extends SkillAPIListener {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onHeal(final SkillHealEvent event) {
-        final double withBuff = BuffManager.apply(
+        double withBuff = BuffManager.apply(
                 event.getTarget(),
                 BuffType.HEALING,
                 event.getAmount());
 
         event.setAmount(withBuff);
-        if (withBuff <= 0) {
+        
+        double withAttr = withBuff;
+        if (event.getTarget() instanceof Player) {
+        	 withAttr = SkillAPI.getPlayerData((Player) event.getTarget()).scaleStat(AttributeManager.HEALING_RECEIVED, withAttr);
+        }
+        if (withAttr <= 0) {
             event.setCancelled(true);
         }
     }

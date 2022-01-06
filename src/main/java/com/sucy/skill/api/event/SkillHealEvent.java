@@ -104,7 +104,7 @@ public class SkillHealEvent extends Event implements Cancellable
      */
     public void setAmount(double amount)
     {
-        amount = amount;
+        this.amount = amount;
     }
 
     /**

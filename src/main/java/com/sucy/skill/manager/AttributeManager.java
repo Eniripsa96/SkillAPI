@@ -55,8 +55,10 @@ import java.util.*;
 public class AttributeManager {
     // Keys for supported stat modifiers
     public static final String HEALTH             = "health";
+    public static final String HEALTH_REGEN       = "health-regen";
     public static final String MANA               = "mana";
     public static final String MANA_REGEN         = "mana-regen";
+    public static final String MANA_GAIN          = "mana-gain";
     public static final String PHYSICAL_DAMAGE    = "physical-damage";
     public static final String MELEE_DAMAGE       = "melee-damage";
     public static final String PROJECTILE_DAMAGE  = "projectile-damage";

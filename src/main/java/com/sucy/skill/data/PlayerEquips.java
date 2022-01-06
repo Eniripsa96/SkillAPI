@@ -298,11 +298,13 @@ public class PlayerEquips
                         for (String attr : SkillAPI.getAttributeManager().getLookupKeys())
                         {
                             String text = settings.getAttrReqText(attr);
+                            System.out.println(attr);
                             if (lower.startsWith(text))
                             {
                                 if (attrReq == null)
                                     attrReq = new HashMap<>();
 
+                                System.out.println("Starts with: " + lower + "|" + text);
                                 String normalized = SkillAPI.getAttributeManager().normalize(attr);
                                 attrReq.put(normalized, NumberParser.parseInt(lower.substring(text.length())));
                                 break;
@@ -314,6 +316,7 @@ public class PlayerEquips
                                 if (attribs == null)
                                     attribs = new HashMap<>();
 
+                                System.out.println("Contains: " + lower + "|" + text);
                                 String normalized = SkillAPI.getAttributeManager().normalize(attr);
                                 int current = attribs.containsKey(attr) ? attribs.get(attr) : 0;
                                 

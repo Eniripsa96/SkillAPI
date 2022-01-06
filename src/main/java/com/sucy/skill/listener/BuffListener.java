@@ -78,13 +78,12 @@ public class BuffListener extends SkillAPIListener {
                 event.getTarget(),
                 BuffType.HEALING,
                 event.getAmount());
-
-        event.setAmount(withBuff);
-        
         double withAttr = withBuff;
         if (event.getTarget() instanceof Player) {
         	 withAttr = SkillAPI.getPlayerData((Player) event.getTarget()).scaleStat(AttributeManager.HEALING_RECEIVED, withAttr);
         }
+        
+        event.setAmount(withAttr);
         if (withAttr <= 0) {
             event.setCancelled(true);
         }

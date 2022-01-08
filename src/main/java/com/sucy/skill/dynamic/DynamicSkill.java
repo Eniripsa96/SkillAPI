@@ -30,12 +30,15 @@ import com.google.common.collect.ImmutableList;
 import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerCriticalCheckEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.dynamic.trigger.TriggerComponent;
 import com.sucy.skill.log.Logger;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
@@ -340,11 +343,20 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
             final TriggerComponent component) {
     	if (component == null) return false;
         double critChance = component.getSettings().getDouble("crit-chance", 0);
-        boolean isCrit = critChance > gen.nextDouble();
+        double augmentCritChance = critChance;
+        
+        if (user instanceof Player) {
+            PlayerCriticalCheckEvent e = new PlayerCriticalCheckEvent(SkillAPI.getPlayerData((Player) user), critChance);
+            Bukkit.getPluginManager().callEvent(e);
+            augmentCritChance = e.getChance();
+        }
+        
+        boolean isCrit = augmentCritChance > gen.nextDouble();
         critChance = isCrit ? critChance : 0;
         boolean success = component.trigger(user, target, level, critChance);
         if (success && isCrit) {
         	((Player) user).playSound(user.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0F, 1.0F);
+        	Bukkit.getPluginManager().callEvent(new PlayerCriticalCheckEvent(SkillAPI.getPlayerData((Player) user), critChance));
         }
         return success;
     }

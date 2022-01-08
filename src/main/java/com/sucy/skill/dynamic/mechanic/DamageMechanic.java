@@ -31,7 +31,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.event.PlayerCriticalEvent;
+import com.sucy.skill.api.event.PlayerCriticalCheckEvent;
+import com.sucy.skill.api.event.PlayerCriticalDamageEvent;
 import com.sucy.skill.api.player.PlayerData;
 
 import java.util.List;
@@ -74,11 +75,15 @@ public class DamageMechanic extends MechanicComponent {
 		if (damage < 0) {
 			return false;
 		}
+		
 		for (LivingEntity target : targets) {
 			if (target.isDead()) {
 				continue;
 			}
 
+			PlayerCriticalDamageEvent e = new PlayerCriticalDamageEvent(caster, target, damage);
+			Bukkit.getPluginManager().callEvent(e);
+			damage = e.getDamage();
 			double amount = damage;
 			if (percent) {
 				amount = damage * target.getMaxHealth() / 100;
@@ -89,23 +94,6 @@ public class DamageMechanic extends MechanicComponent {
 			else if (left) {
 				amount = damage * target.getHealth() / 100;
 			}
-			
-			/*if (gen.nextDouble() < critchance) {
-		        // Apply global modifiers
-				double critscale = 1.5;
-		        if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player) {
-		            PlayerData data = SkillAPI.getPlayerData((Player) caster);
-		            critscale += data.getAttribute("dexterity") * SkillAPI.getSettings().getDexCrit();
-		        }
-				amount *= critscale;
-				PlayerCriticalEvent e = new PlayerCriticalEvent((Player) caster, amount, targets);
-				Bukkit.getPluginManager().callEvent(e);
-				if (e.isCancelled()) {
-					return false;
-				}
-				amount = e.getDamage();
-			}*/
-			
 			
 			if (trueDmg) {
 				skill.trueDamage(target, amount, caster);

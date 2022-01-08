@@ -1,8 +1,11 @@
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.event.SkillBuffEvent;
 import com.sucy.skill.api.util.Buff;
 import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.BuffType;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -52,11 +55,18 @@ public class BuffMechanic extends MechanicComponent {
         String category = settings.getString(CATEGORY, null);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
-            BuffManager.getBuffData(target).addBuff(
-                    buffType,
-                    category,
-                    new Buff(this.skill.getName() + "-" + caster.getName(), value, percent),
-                    ticks);
+            SkillBuffEvent event = new SkillBuffEvent(caster, target, value, ticks, buffType, percent);
+            Bukkit.getPluginManager().callEvent(event);
+            
+            if (!event.isCancelled()) {
+            	value = event.getAmount();
+            	ticks = event.getTicks();
+                BuffManager.getBuffData(target).addBuff(
+                        buffType,
+                        category,
+                        new Buff(this.skill.getName() + "-" + caster.getName(), value, percent),
+                        ticks);
+            }
         }
         return targets.size() > 0;
     }

@@ -2,11 +2,13 @@ package com.sucy.skill.dynamic;
 
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ManaCost;
+import com.sucy.skill.api.event.PlayerCriticalCheckEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.dynamic.trigger.Trigger;
 import com.sucy.skill.dynamic.trigger.TriggerComponent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -119,7 +121,12 @@ public class TriggerHandler implements Listener {
             final boolean cd = component.getSettings().getBool("cooldown", false);
             final boolean mana = component.getSettings().getBool("mana", false);
             double critChance = component.getSettings().getDouble("crit-chance", 0);
-            boolean isCrit = critChance > gen.nextDouble();
+            
+            PlayerCriticalCheckEvent e = new PlayerCriticalCheckEvent(data, critChance);
+            Bukkit.getPluginManager().callEvent(e);
+            double augmentCritChance = e.getChance();
+            boolean isCrit = augmentCritChance > gen.nextDouble();
+            
             critChance = isCrit ? critChance : 0;
 
             if ((cd || mana) && !data.check(skill, cd, mana)) { return false; }
@@ -128,6 +135,7 @@ public class TriggerHandler implements Listener {
                 if (cd) { skill.startCooldown(); }
                 if (mana) { data.useMana(skill.getManaCost(), ManaCost.SKILL_CAST); }
                 if (isCrit) {
+                	Bukkit.getPluginManager().callEvent(new PlayerCriticalCheckEvent(data, critChance));
                 	((Player) user).playSound(user.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0F, 1.0F);
                 }
 

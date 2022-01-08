@@ -1514,8 +1514,14 @@ public class PlayerData {
 	public void regenHealth(Player p) {
 		if (!p.isDead()) {
 			double regen = Math.max(0, (SkillAPI.getPlayerData(p).scaleStat(AttributeManager.HEALTH_REGEN, 0)) * 0.1);
-	        double health = p.getHealth();
-	        p.setHealth(Math.min(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), health + regen));
+			
+			PlayerRegenEvent event = new PlayerRegenEvent(p, regen);
+			Bukkit.getPluginManager().callEvent(event);
+			if (!event.isCancelled()) {
+				regen = event.getAmount();
+		        double health = p.getHealth();
+		        p.setHealth(Math.min(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), health + regen));
+			}
 		}
 	}
 

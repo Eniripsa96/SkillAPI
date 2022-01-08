@@ -26,22 +26,19 @@
  */
 package com.sucy.skill.api.event;
 
-import java.util.List;
-
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import com.sucy.skill.api.player.PlayerData;
+
 /**
  * Event called when a flag is applied to an entity
  */
-public class PlayerCriticalEvent extends Event implements Cancellable {
+public class PlayerCriticalCheckEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
-	private Player p;
-	private double damage;
-	private List<LivingEntity> targets;
+	private PlayerData data;
+	private double chance;
 	private boolean cancelled;
 
 
@@ -51,26 +48,20 @@ public class PlayerCriticalEvent extends Event implements Cancellable {
 	 * @param entity the entity the flag was on
 	 * @param flag   the flag that is to be applied
 	 */
-	public PlayerCriticalEvent(Player p, double damage, List<LivingEntity> targets) {
-		this.p = p;
-		this.damage = damage;
-		this.targets = targets;
+	public PlayerCriticalCheckEvent(PlayerData data, double chance) {
+		this.data = data;
 	}
 
-	public Player getPlayer() {
-		return p;
+	public PlayerData getPlayerData() {
+		return data;
 	}
-
-	public double getDamage() {
-		return damage;
+	
+	public double getChance() {
+		return chance;
 	}
-
-	public void setDamage(double damage) {
-		this.damage = damage;
-	}
-
-	public List<LivingEntity> getTargets() {
-		return targets;
+	
+	public void setChance(double chance) {
+		this.chance = chance;
 	}
 	
 	@Override

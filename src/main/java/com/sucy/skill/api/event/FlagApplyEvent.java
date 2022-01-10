@@ -31,6 +31,8 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import com.sucy.skill.api.player.PlayerData;
+
 /**
  * Event called when a flag is applied to an entity
  */
@@ -38,6 +40,7 @@ public class FlagApplyEvent extends Event implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
     private LivingEntity entity;
+    private LivingEntity   caster;
     private String       flag;
     private boolean      cancelled;
     private int          ticks;
@@ -48,12 +51,17 @@ public class FlagApplyEvent extends Event implements Cancellable
      * @param entity the entity the flag was on
      * @param flag   the flag that is to be applied
      */
-    public FlagApplyEvent(LivingEntity entity, String flag, int ticks)
+    public FlagApplyEvent(LivingEntity caster, LivingEntity entity, String flag, int ticks)
     {
+    	this.caster = caster;
         this.entity = entity;
         this.flag = flag;
         this.ticks = ticks;
         this.cancelled = false;
+    }
+    
+    public LivingEntity getCaster() {
+    	return this.caster;
     }
 
     /**

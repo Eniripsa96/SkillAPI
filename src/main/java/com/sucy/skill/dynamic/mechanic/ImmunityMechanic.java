@@ -67,7 +67,7 @@ public class ImmunityMechanic extends MechanicComponent {
         double multiplier = parseValues(caster, MULTIPLIER, level, 0, 0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
-            FlagManager.addFlag(target, "immune:" + key.toUpperCase().replace(" ", "_"), ticks);
+            FlagManager.addFlag(caster, target, "immune:" + key.toUpperCase().replace(" ", "_"), ticks);
             SkillAPI.setMeta(target, META_KEY, multiplier);
         }
         return targets.size() > 0;

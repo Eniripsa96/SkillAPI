@@ -66,7 +66,7 @@ public class FlagMechanic extends MechanicComponent
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets)
         {
-            FlagManager.addFlag(target, key, ticks);
+            FlagManager.addFlag(caster, target, key, ticks);
         }
         return targets.size() > 0;
     }

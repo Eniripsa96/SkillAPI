@@ -61,7 +61,7 @@ public class ChannelMechanic extends MechanicComponent {
         }
         boolean still = settings.getBool(STILL);
         int ticks = (int) (20 * parseValues(caster, SECONDS, level, 2.0, 0));
-        if (still) { FlagManager.addFlag(caster, StatusFlag.CHANNELING, ticks + 2); }
+        if (still) { FlagManager.addFlag(caster, caster, StatusFlag.CHANNELING, ticks + 2); }
         Bukkit.getScheduler().runTaskLater(
                 Bukkit.getPluginManager().getPlugin("SkillAPI"), () -> {
                     if (FlagManager.hasFlag(caster, StatusFlag.CHANNEL)) {
@@ -71,7 +71,7 @@ public class ChannelMechanic extends MechanicComponent {
                     }
                 }, ticks
         );
-        FlagManager.addFlag(caster, StatusFlag.CHANNEL, ticks + 2);
+        FlagManager.addFlag(caster, caster, StatusFlag.CHANNEL, ticks + 2);
         return true;
     }
 }

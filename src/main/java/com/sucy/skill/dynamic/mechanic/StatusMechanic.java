@@ -62,7 +62,7 @@ public class StatusMechanic extends MechanicComponent {
         double seconds = parseValues(caster, DURATION, level, 3.0, 0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
-            FlagManager.addFlag(target, key, ticks);
+            FlagManager.addFlag(caster, target, key, ticks);
         }
         return targets.size() > 0;
     }

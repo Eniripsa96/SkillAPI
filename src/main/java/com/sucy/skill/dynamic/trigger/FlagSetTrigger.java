@@ -45,7 +45,7 @@ public class FlagSetTrigger implements CustomTrigger<FlagApplyEvent> {
 
 	@Override
 	public LivingEntity getCaster(FlagApplyEvent e) {
-		return e.getEntity();
+		return e.getCaster();
 	}
 
 	@Override

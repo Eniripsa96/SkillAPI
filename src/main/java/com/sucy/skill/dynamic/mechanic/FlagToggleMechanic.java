@@ -69,7 +69,7 @@ public class FlagToggleMechanic extends MechanicComponent
             }
             else
             {
-                FlagManager.addFlag(target, key, -1);
+                FlagManager.addFlag(caster, target, key, -1);
             }
         }
         return targets.size() > 0;

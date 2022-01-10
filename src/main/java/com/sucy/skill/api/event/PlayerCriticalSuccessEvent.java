@@ -1,6 +1,6 @@
 /**
  * SkillAPI
- * com.sucy.skill.api.event.FlagApplyEvent
+ * com.sucy.skill.api.event
  *
  * The MIT License (MIT)
  *

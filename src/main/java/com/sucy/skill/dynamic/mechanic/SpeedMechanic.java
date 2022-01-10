@@ -65,7 +65,7 @@ public class SpeedMechanic extends MechanicComponent {
             if (!(target instanceof Player)) { continue; }
 
             AttributeListener.refreshSpeed((Player) target);
-            FlagManager.addFlag(target, MechanicListener.SPEED_KEY, ticks);
+            FlagManager.addFlag(caster, target, MechanicListener.SPEED_KEY, ticks);
             ((Player) target).setWalkSpeed(multiplier * ((Player) target).getWalkSpeed());
             worked = true;
         }

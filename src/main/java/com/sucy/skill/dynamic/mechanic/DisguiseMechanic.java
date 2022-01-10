@@ -102,7 +102,7 @@ public class DisguiseMechanic extends MechanicComponent {
         // Apply Flag duration
         int ticks = (int) (parseValues(caster, DURATION, level, -1, 0) * 20);
         for (LivingEntity target : targets) {
-            if (!(target instanceof TempEntity)) { FlagManager.addFlag(target, MechanicListener.DISGUISE_KEY, ticks); }
+            if (!(target instanceof TempEntity)) { FlagManager.addFlag(caster, target, MechanicListener.DISGUISE_KEY, ticks); }
         }
 
         return targets.size() > 0;

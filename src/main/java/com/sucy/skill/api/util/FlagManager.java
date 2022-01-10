@@ -28,6 +28,8 @@ package com.sucy.skill.api.util;
 
 import org.bukkit.entity.LivingEntity;
 
+import com.sucy.skill.api.player.PlayerData;
+
 import java.util.HashMap;
 
 /**
@@ -80,12 +82,12 @@ public class FlagManager
      * @param flag   the flag to add
      * @param ticks  the duration to add the flag for
      */
-    public static void addFlag(LivingEntity entity, String flag, int ticks)
+    public static void addFlag(LivingEntity caster, LivingEntity entity, String flag, int ticks)
     {
         FlagData data = getFlagData(entity, true);
         if (data != null)
         {
-            data.addFlag(flag, ticks);
+            data.addFlag(caster, flag, ticks);
         }
     }
 

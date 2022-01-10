@@ -28,6 +28,8 @@ package com.sucy.skill.api.util;
 
 import com.sucy.skill.api.event.FlagApplyEvent;
 import com.sucy.skill.api.event.FlagExpireEvent;
+import com.sucy.skill.api.player.PlayerData;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.Plugin;
@@ -64,9 +66,9 @@ public class FlagData
      * @param flag  flag to set
      * @param ticks number of ticks to set the flag for
      */
-    public void addFlag(String flag, int ticks)
+    public void addFlag(LivingEntity caster, String flag, int ticks)
     {
-        FlagApplyEvent event = new FlagApplyEvent(entity, flag, ticks);
+        FlagApplyEvent event = new FlagApplyEvent(caster, entity, flag, ticks);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
 

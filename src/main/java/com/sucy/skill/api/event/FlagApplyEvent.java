@@ -93,6 +93,10 @@ public class FlagApplyEvent extends Event implements Cancellable
     {
         return ticks;
     }
+    
+    public void setTicks(int ticks) {
+    	this.ticks = ticks;
+    }
 
     /**
      * Checks whether or not the event is cancelled

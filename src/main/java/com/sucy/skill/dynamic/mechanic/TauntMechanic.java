@@ -26,8 +26,11 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.event.PlayerTauntEvent;
 import com.sucy.skill.hook.MythicMobsHook;
 import com.sucy.skill.hook.PluginChecker;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
 
@@ -64,7 +67,9 @@ public class TauntMechanic extends MechanicComponent
             if (entity instanceof Creature && entity != caster)
             {
                 if (PluginChecker.isMythicMobsActive() && MythicMobsHook.isMonster(entity)) {
-                    MythicMobsHook.taunt(entity, caster, amount);
+                	PlayerTauntEvent e = new PlayerTauntEvent(caster, entity, amount);
+                	Bukkit.getPluginManager().callEvent(e);
+                    MythicMobsHook.taunt(entity, caster, e.getAmount());
                 }
                 else {
                     ((Creature) entity).setTarget(caster);

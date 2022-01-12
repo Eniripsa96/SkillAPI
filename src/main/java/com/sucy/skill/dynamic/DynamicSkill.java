@@ -31,6 +31,7 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.text.TextFormatter;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerCriticalCheckEvent;
+import com.sucy.skill.api.event.PlayerCriticalSuccessEvent;
 import com.sucy.skill.api.skills.PassiveSkill;
 import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
@@ -345,7 +346,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         double critChance = component.getSettings().getDouble("crit-chance", 0);
         double augmentCritChance = critChance;
         
-        if (user instanceof Player) {
+        if (user instanceof Player && critChance > 0) {
             PlayerCriticalCheckEvent e = new PlayerCriticalCheckEvent(SkillAPI.getPlayerData((Player) user), critChance);
             Bukkit.getPluginManager().callEvent(e);
             augmentCritChance = e.getChance();
@@ -356,7 +357,7 @@ public class DynamicSkill extends Skill implements SkillShot, PassiveSkill, List
         boolean success = component.trigger(user, target, level, critChance);
         if (success && isCrit) {
         	((Player) user).playSound(user.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 1.0F, 1.0F);
-        	Bukkit.getPluginManager().callEvent(new PlayerCriticalCheckEvent(SkillAPI.getPlayerData((Player) user), critChance));
+        	Bukkit.getPluginManager().callEvent(new PlayerCriticalSuccessEvent(SkillAPI.getPlayerData((Player) user), critChance));
         }
         return success;
     }

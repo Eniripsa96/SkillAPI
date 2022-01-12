@@ -28,13 +28,7 @@ package com.sucy.skill.dynamic.mechanic;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
-import com.sucy.skill.SkillAPI;
-import com.sucy.skill.api.event.PlayerCriticalCheckEvent;
 import com.sucy.skill.api.event.PlayerCriticalDamageEvent;
-import com.sucy.skill.api.player.PlayerData;
-
 import java.util.List;
 import java.util.Random;
 

@@ -26,9 +26,12 @@
  */
 package com.sucy.skill.dynamic.mechanic;
 
+import com.sucy.skill.api.event.SkillBuffEvent;
 import com.sucy.skill.api.util.Buff;
 import com.sucy.skill.api.util.BuffManager;
 import com.sucy.skill.api.util.BuffType;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -66,11 +69,14 @@ public class DamageBuffMechanic extends MechanicComponent {
         double seconds = parseValues(caster, SECONDS, level, 3.0, 0);
         int ticks = (int) (seconds * 20);
         for (LivingEntity target : targets) {
+        	BuffType type = skill ? BuffType.SKILL_DAMAGE : BuffType.DAMAGE;
+            SkillBuffEvent event = new SkillBuffEvent(caster, target, value, ticks, type, percent);
+            Bukkit.getPluginManager().callEvent(event);
             BuffManager.addBuff(
                     target,
-                    skill ? BuffType.SKILL_DAMAGE : BuffType.DAMAGE,
-                    new Buff(this.skill.getName(), value, percent),
-                    ticks);
+                    type,
+                    new Buff(this.skill.getName(), event.getAmount(), percent),
+                    event.getTicks());
         }
         return targets.size() > 0;
     }

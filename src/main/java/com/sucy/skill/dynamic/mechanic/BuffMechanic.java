@@ -59,13 +59,11 @@ public class BuffMechanic extends MechanicComponent {
             Bukkit.getPluginManager().callEvent(event);
             
             if (!event.isCancelled()) {
-            	value = event.getAmount();
-            	ticks = event.getTicks();
                 BuffManager.getBuffData(target).addBuff(
                         buffType,
                         category,
-                        new Buff(this.skill.getName() + "-" + caster.getName(), value, percent),
-                        ticks);
+                        new Buff(this.skill.getName() + "-" + caster.getName(), event.getAmount(), percent),
+                        event.getTicks());
             }
         }
         return targets.size() > 0;

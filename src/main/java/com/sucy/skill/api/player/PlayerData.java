@@ -1554,6 +1554,9 @@ public class PlayerData {
 	 * @param source source of the mana
 	 */
 	public void giveMana(double amount, ManaSource source) {
+		if (mana == maxMana) {
+			return;
+		}
 		PlayerManaGainEvent event = new PlayerManaGainEvent(this, amount, source);
 		Bukkit.getPluginManager().callEvent(event);
 

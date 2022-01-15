@@ -50,6 +50,7 @@ public class PlayerCriticalSuccessEvent extends Event implements Cancellable {
 	 */
 	public PlayerCriticalSuccessEvent(PlayerData data, double chance) {
 		this.data = data;
+		this.chance = chance;
 	}
 
 	public PlayerData getPlayerData() {

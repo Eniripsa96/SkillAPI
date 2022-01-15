@@ -50,6 +50,7 @@ public class PlayerCriticalCheckEvent extends Event implements Cancellable {
 	 */
 	public PlayerCriticalCheckEvent(PlayerData data, double chance) {
 		this.data = data;
+		this.chance = chance;
 	}
 
 	public PlayerData getPlayerData() {

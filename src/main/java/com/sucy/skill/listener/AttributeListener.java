@@ -182,13 +182,12 @@ public class AttributeListener extends SkillAPIListener
         if (event.getAmount() > 0) {
             double newAmount = event.getPlayerData().scaleStat(AttributeManager.MANA_GAIN, event.getAmount());
             Logger.log(LogType.MANA, 3, "Attributes scaled mana gain to " + newAmount);
-            event.setAmount(newAmount);
-        }
-        
-        if (event.getSource() == ManaSource.REGEN)
-        {
-            double newAmount = event.getPlayerData().scaleStat(AttributeManager.MANA_REGEN, event.getAmount());
-            Logger.log(LogType.MANA, 3, "Attributes scaled mana regen to " + newAmount);
+            
+            if (event.getSource() == ManaSource.REGEN)
+            {
+                newAmount = event.getPlayerData().scaleStat(AttributeManager.MANA_REGEN, event.getAmount());
+                Logger.log(LogType.MANA, 3, "Attributes scaled mana regen to " + newAmount);
+            }
             event.setAmount(newAmount);
         }
     }

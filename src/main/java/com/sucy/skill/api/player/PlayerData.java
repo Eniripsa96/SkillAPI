@@ -817,6 +817,10 @@ public class PlayerData {
 		}
 
 		int cost = skill.getCost(data.getLevel() - 1);
+		if (cost <= 0) {
+			return false;
+		}
+		
 		if (data.getLevel() > 0) {
 			// Upgrade event
 			PlayerSkillDowngradeEvent event = new PlayerSkillDowngradeEvent(this, data, cost);

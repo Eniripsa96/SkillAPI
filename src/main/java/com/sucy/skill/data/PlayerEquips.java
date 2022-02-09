@@ -40,6 +40,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import de.tr7zw.nbtapi.NBTItem;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -293,7 +294,8 @@ public class PlayerEquips
                     }
 
                     // Attribute requirements
-                    if (attributes && !done)
+                    NBTItem nbti = new NBTItem(item);
+                    if (attributes && !done && nbti.hasKey("gear"))
                     {
                         for (String attr : SkillAPI.getAttributeManager().getLookupKeys())
                         {

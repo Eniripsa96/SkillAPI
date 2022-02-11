@@ -40,7 +40,12 @@ import com.sucy.skill.data.TitleType;
 import com.sucy.skill.dynamic.DynamicSkill;
 import com.sucy.skill.language.NotificationNodes;
 import com.sucy.skill.language.RPGFilter;
+import com.sucy.skill.log.LogType;
+import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.TitleManager;
+
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -90,7 +95,13 @@ public class PlayerClass
         
         // Load global skills
         for (String skillKey : SkillAPI.getSettings().getGlobalSkills()) {
-        	player.giveSkill(SkillAPI.getSkill(skillKey), this);
+        	try {
+            	player.giveSkill(SkillAPI.getSkill(skillKey), this);
+        	}
+        	catch (Exception e){
+				Bukkit.getLogger().log(Level.WARNING, "Could not load skill: " + skillKey + " for player " + player.getPlayer().getName());
+				e.printStackTrace();
+        	}
         }
     }
 

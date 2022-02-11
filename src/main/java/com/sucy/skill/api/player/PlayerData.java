@@ -1517,7 +1517,7 @@ public class PlayerData {
 	// Only bring Player as param because playerdata only has offlineplayer
 	public void regenHealth(Player p) {
 		if (!p.isDead() && p.getHealth() != p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) {
-			double regen = Math.max(0, (SkillAPI.getPlayerData(p).scaleStat(AttributeManager.HEALTH_REGEN, 0)) * 0.1);
+			double regen = Math.max(0, (SkillAPI.getPlayerData(p).scaleStat(AttributeManager.HEALTH_REGEN, 0)));
 			
 			if (regen > 0) {
 				PlayerRegenEvent event = new PlayerRegenEvent(p, regen);

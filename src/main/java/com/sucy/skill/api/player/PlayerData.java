@@ -540,7 +540,7 @@ public class PlayerData {
 		double modifier = SkillAPI.getSettings().getDexCrit() / (chance * 100);
 		AttributeManager.Attribute attr = manager.getAttribute("dexterity");
 		int amount = getAttribute(attr.getKey());
-		return base * (1 + (modifier * amount));
+		return base * (modifier * amount);
 	}
 
 	/**

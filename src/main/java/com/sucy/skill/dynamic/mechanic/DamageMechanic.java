@@ -64,7 +64,7 @@ public class DamageMechanic extends MechanicComponent {
 		boolean missing = pString.equals("percent missing");
 		boolean left = pString.equals("percent left");
 		boolean trueDmg = settings.getBool(TRUE, false);
-		critChance = pString.equals("Damage") ? critChance : 0;
+		critChance = pString.equalsIgnoreCase("damage") ? critChance : 0;
 		double damage = parseValues(caster, DAMAGE, level, 1.0, critChance);
 		String classification = settings.getString(CLASSIFIER, "default");
 		if (damage < 0) {

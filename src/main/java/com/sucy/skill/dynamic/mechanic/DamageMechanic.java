@@ -28,9 +28,10 @@ package com.sucy.skill.dynamic.mechanic;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
+
+import com.sucy.skill.api.event.PlayerCalculateDamageEvent;
 import com.sucy.skill.api.event.PlayerCriticalDamageEvent;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Deals damage to each target
@@ -38,10 +39,8 @@ import java.util.Random;
 public class DamageMechanic extends MechanicComponent {
 	private static final String TYPE = "type";
 	private static final String DAMAGE = "value";
-	private static final String CRITCHANCE = "critchance";
 	private static final String TRUE = "true";
 	private static final String CLASSIFIER = "classifier";
-	private static Random gen = new Random();
 
 	@Override
 	public String getKey() {
@@ -76,9 +75,15 @@ public class DamageMechanic extends MechanicComponent {
 				continue;
 			}
 
-			PlayerCriticalDamageEvent e = new PlayerCriticalDamageEvent(caster, target, damage);
-			Bukkit.getPluginManager().callEvent(e);
-			damage = e.getDamage();
+			PlayerCalculateDamageEvent de = new PlayerCalculateDamageEvent(caster, target, damage, classification, pString);
+			Bukkit.getPluginManager().callEvent(de);
+			damage = de.getDamage();
+			// Crit chance = 0 if no crit happened
+			if (critChance > 0) {
+				PlayerCriticalDamageEvent e = new PlayerCriticalDamageEvent(caster, target, de.getDamage());
+				Bukkit.getPluginManager().callEvent(e);
+				damage = e.getDamage();
+			}
 			double amount = damage;
 			if (percent) {
 				amount = damage * target.getMaxHealth() / 100;

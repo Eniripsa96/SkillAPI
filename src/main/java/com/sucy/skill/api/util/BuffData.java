@@ -165,32 +165,30 @@ public class BuffData
         double posMult = 1;
         double negMult = 1;
         double bonus = 0;
-        if (BuffManager.getBuffData(entity, false) != null) {
-	        Logger.log(LogType.BUFF, 1, "Buffs:");
-	        for (final String type : types) {
-	            final Map<String, Buff> typeBuffs = buffs.get(type);
-	            if (typeBuffs == null) {
-	                continue;
-	            }
-	
-	            for (final Buff buff : typeBuffs.values()) {
-	                if (buff.isPercent()) {
-	                    Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
-	                    double bVal = buff.getValue();
-	                    if (bVal >= 1) {
-	                    	posMult += bVal - 1;
-	                    }
-	                    else {
-	                    	negMult *= bVal;
-	                    }
-	                } else {
-	                    Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
-	                    bonus += buff.getValue();
-	                }
-	            }
-	        }
-	        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
+        Logger.log(LogType.BUFF, 1, "Buffs:");
+        for (final String type : types) {
+            final Map<String, Buff> typeBuffs = buffs.get(type);
+            if (typeBuffs == null) {
+                continue;
+            }
+
+            for (final Buff buff : typeBuffs.values()) {
+                if (buff.isPercent()) {
+                    Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
+                    double bVal = buff.getValue();
+                    if (bVal >= 1) {
+                    	posMult += bVal - 1;
+                    }
+                    else {
+                    	negMult *= bVal;
+                    }
+                } else {
+                    Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
+                    bonus += buff.getValue();
+                }
+            }
         }
+        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
 
         PlayerCalculateDamageEvent e = new PlayerCalculateDamageEvent(entity, target, value, posMult, negMult, bonus, types);
         Bukkit.getPluginManager().callEvent(e);

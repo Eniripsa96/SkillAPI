@@ -83,7 +83,7 @@ public class DamageMechanic extends MechanicComponent {
 	        if (critChance > 0) {
 	            PlayerData data = SkillAPI.getPlayerData((Player) caster);
 	            critDamage = data.getCritBonus(this, basedamage, critChance);
-	    		PlayerCriticalDamageEvent e = new PlayerCriticalDamageEvent(caster, target, damage);
+	    		PlayerCriticalDamageEvent e = new PlayerCriticalDamageEvent(caster, target, critDamage);
 	    		Bukkit.getPluginManager().callEvent(e);
 	    		critDamage = e.getDamage();
 	        }

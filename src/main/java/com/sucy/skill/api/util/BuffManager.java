@@ -144,10 +144,10 @@ public class BuffManager
      *
      * @return modified number
      */
-    public static double apply(final LivingEntity entity, final BuffType type, final double amount)
+    public static double apply(final LivingEntity entity, final LivingEntity target, final BuffType type, final double amount)
     {
         final BuffData data = getBuffData(entity, false);
-        return data == null ? amount : data.apply(type, amount);
+        return data.apply(entity, target, type, amount);
     }
 
     /**
@@ -161,33 +161,33 @@ public class BuffManager
      *
      * @return modified number
      */
-    public static double apply(final LivingEntity entity, final BuffType type, final String category, final double amount)
+    public static double apply(final LivingEntity entity, final LivingEntity target, final BuffType type, final String category, final double amount)
     {
         final BuffData data = getBuffData(entity, false);
-        return data == null ? amount : data.apply(type, category, amount);
+        return data.apply(entity, target, type, category, amount);
     }
 
     /** @deprecated use {@link BuffManager#apply(LivingEntity, BuffType, double)} instead */
     @Deprecated
-    public static double modifyDealtDamage(final LivingEntity entity, final double damage) {
-        return apply(entity, BuffType.DAMAGE, damage);
+    public static double modifyDealtDamage(final LivingEntity entity, final LivingEntity target, final double damage) {
+        return apply(entity, target, BuffType.DAMAGE, damage);
     }
 
     /** @deprecated use {@link BuffManager#apply(LivingEntity, BuffType, double)} instead */
     @Deprecated
-    public static double modifyTakenDefense(final LivingEntity entity, final double damage) {
-        return apply(entity, BuffType.DEFENSE, damage);
+    public static double modifyTakenDefense(final LivingEntity entity, final LivingEntity target, final double damage) {
+        return apply(entity, target, BuffType.DEFENSE, damage);
     }
 
     /** @deprecated use {@link BuffManager#apply(LivingEntity, BuffType, double)} instead */
     @Deprecated
-    public static double modifySkillDealtDamage(LivingEntity entity, double damage) {
-        return apply(entity, BuffType.SKILL_DAMAGE, damage);
+    public static double modifySkillDealtDamage(LivingEntity entity, final LivingEntity target, double damage) {
+        return apply(entity, target, BuffType.SKILL_DAMAGE, damage);
     }
 
     /** @deprecated use {@link BuffManager#apply(LivingEntity, BuffType, double)} instead */
     @Deprecated
-    public static double modifySkillTakenDefense(LivingEntity entity, double damage) {
-        return apply(entity, BuffType.SKILL_DEFENSE, damage);
+    public static double modifySkillTakenDefense(LivingEntity entity, final LivingEntity target, double damage) {
+        return apply(entity, target, BuffType.SKILL_DEFENSE, damage);
     }
 }

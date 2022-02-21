@@ -28,9 +28,12 @@ package com.sucy.skill.dynamic.mechanic;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
-import com.sucy.skill.api.event.PlayerCalculateDamageEvent;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerCriticalDamageEvent;
+import com.sucy.skill.api.player.PlayerData;
+
 import java.util.List;
 
 /**
@@ -64,27 +67,28 @@ public class DamageMechanic extends MechanicComponent {
 		boolean left = pString.equals("percent left");
 		boolean trueDmg = settings.getBool(TRUE, false);
 		critChance = pString.equalsIgnoreCase("damage") ? critChance : 0;
+		double basedamage = getValue(caster, DAMAGE, level, 1.0);
 		double damage = parseValues(caster, DAMAGE, level, 1.0, critChance);
 		String classification = settings.getString(CLASSIFIER, "default");
 		if (damage < 0) {
 			return false;
 		}
 		
+        
 		for (LivingEntity target : targets) {
 			if (target.isDead()) {
 				continue;
 			}
+			double critDamage = 0;
+	        if (critChance > 0) {
+	            PlayerData data = SkillAPI.getPlayerData((Player) caster);
+	            critDamage = data.getCritBonus(this, basedamage, critChance);
+	    		PlayerCriticalDamageEvent e = new PlayerCriticalDamageEvent(caster, target, damage);
+	    		Bukkit.getPluginManager().callEvent(e);
+	    		critDamage = e.getDamage();
+	        }
 
-			PlayerCalculateDamageEvent de = new PlayerCalculateDamageEvent(caster, target, damage, classification, pString);
-			Bukkit.getPluginManager().callEvent(de);
-			damage = de.getDamage();
-			// Crit chance = 0 if no crit happened
-			if (critChance > 0) {
-				PlayerCriticalDamageEvent e = new PlayerCriticalDamageEvent(caster, target, de.getDamage());
-				Bukkit.getPluginManager().callEvent(e);
-				damage = e.getDamage();
-			}
-			double amount = damage;
+			double amount = damage + critDamage;
 			if (percent) {
 				amount = damage * target.getMaxHealth() / 100;
 			}

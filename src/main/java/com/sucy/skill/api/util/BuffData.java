@@ -27,8 +27,11 @@
 package com.sucy.skill.api.util;
 
 import com.sucy.skill.SkillAPI;
+import com.sucy.skill.api.event.PlayerCalculateDamageEvent;
 import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -135,8 +138,8 @@ public class BuffData
      * @param value value to modify
      * @return value after all buff applications
      */
-    public double apply(final BuffType type, final double value) {
-        return doApply(value, type.name());
+    public double apply(final LivingEntity entity, final LivingEntity target, final BuffType type, final double value) {
+        return doApply(entity, target, value, type.name());
     }
 
     /**
@@ -147,45 +150,53 @@ public class BuffData
      * @param value value to modify
      * @return value after all buff applications
      */
-    public double apply(final BuffType type, final String category, final double value) {
+    public double apply(final LivingEntity entity, final LivingEntity target, final BuffType type, final String category, final double value) {
         return category == null || category.length() == 0
-            ? doApply(value, type.name())
-            : doApply(value, type.name(), type.name() + category);
+            ? doApply(entity, target, value, type.name())
+            : doApply(entity, target, value, type.name(), type.name() + category);
     }
 
-    private double doApply(final double value, final String... types) {
+    private double doApply(final LivingEntity caster, final LivingEntity target, final double value, final String... types) {
 
         // Ignore zeroed out values that shouldn't get buffs
         if (value <= 0) return value;
-
+        
+        // Skip buff calculation on entities without buffs
         double posMult = 1;
         double negMult = 1;
         double bonus = 0;
-        Logger.log(LogType.BUFF, 1, "Buffs:");
-        for (final String type : types) {
-            final Map<String, Buff> typeBuffs = buffs.get(type);
-            if (typeBuffs == null) {
-                continue;
-            }
-
-            for (final Buff buff : typeBuffs.values()) {
-                if (buff.isPercent()) {
-                    Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
-                    double bVal = buff.getValue();
-                    if (bVal >= 1) {
-                    	posMult += bVal - 1;
-                    }
-                    else {
-                    	negMult *= bVal;
-                    }
-                } else {
-                    Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
-                    bonus += buff.getValue();
-                }
-            }
+        if (BuffManager.getBuffData(entity, false) != null) {
+	        Logger.log(LogType.BUFF, 1, "Buffs:");
+	        for (final String type : types) {
+	            final Map<String, Buff> typeBuffs = buffs.get(type);
+	            if (typeBuffs == null) {
+	                continue;
+	            }
+	
+	            for (final Buff buff : typeBuffs.values()) {
+	                if (buff.isPercent()) {
+	                    Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
+	                    double bVal = buff.getValue();
+	                    if (bVal >= 1) {
+	                    	posMult += bVal - 1;
+	                    }
+	                    else {
+	                    	negMult *= bVal;
+	                    }
+	                } else {
+	                    Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
+	                    bonus += buff.getValue();
+	                }
+	            }
+	        }
+	        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
         }
-        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
 
+        PlayerCalculateDamageEvent e = new PlayerCalculateDamageEvent(entity, target, posMult, negMult, bonus, types);
+        Bukkit.getPluginManager().callEvent(e);
+        posMult = e.getPosmult();
+        negMult = e.getNegmult();
+        bonus = e.getFlat();
         // Negatives aren't well received by bukkit, so return 0 instead
         if (negMult <= 0) return 0;
 
@@ -220,30 +231,30 @@ public class BuffData
 
     /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */
     @Deprecated
-    public double modifyDealtDamage(double damage)
+    public double modifyDealtDamage(LivingEntity entity, LivingEntity target, double damage)
     {
-        return apply(BuffType.DAMAGE, damage);
+        return apply(entity, target, BuffType.DAMAGE, damage);
     }
 
     /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */
     @Deprecated
-    public double modifyTakenDamage(double damage)
+    public double modifyTakenDamage(LivingEntity entity, LivingEntity target, double damage)
     {
-        return apply(BuffType.DEFENSE, damage);
+        return apply(entity, target, BuffType.DEFENSE, damage);
     }
 
     /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */
     @Deprecated
-    public double modifySkillDealtDamage(double damage)
+    public double modifySkillDealtDamage(LivingEntity entity, LivingEntity target, double damage)
     {
-        return apply(BuffType.SKILL_DAMAGE, damage);
+        return apply(entity, target, BuffType.SKILL_DAMAGE, damage);
     }
 
     /** @deprecated use {@link BuffData#apply(BuffType, double)} instead */
     @Deprecated
-    public double modifySkillTakenDamage(double damage)
+    public double modifySkillTakenDamage(LivingEntity entity, LivingEntity target, double damage)
     {
-        return apply(BuffType.SKILL_DEFENSE, damage);
+        return apply(entity, target, BuffType.SKILL_DEFENSE, damage);
     }
 
     /**

@@ -530,7 +530,7 @@ public class PlayerData {
 		return value;
 	}
 
-	public double scaleCrit(EffectComponent component, String key, double base, double chance) {
+	public double getCritBonus(EffectComponent component, double base, double chance) {
 		final AttributeManager manager = SkillAPI.getAttributeManager();
 		if (manager == null) {
 			return 0;

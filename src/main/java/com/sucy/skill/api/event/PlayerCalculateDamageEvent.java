@@ -37,17 +37,10 @@ public class PlayerCalculateDamageEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 	private LivingEntity caster;
 	private LivingEntity target;
-	private String classification;
-	private String type;
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	private double damage;
+	private String[] types;
+	private double posmult;
+	private double negmult;
+	private double flat;
 
 
 	/**
@@ -56,12 +49,15 @@ public class PlayerCalculateDamageEvent extends Event {
 	 * @param entity the entity the flag was on
 	 * @param flag   the flag that is to be applied
 	 */
-	public PlayerCalculateDamageEvent(LivingEntity caster, LivingEntity target, double damage, String classification, String type) {
+	public PlayerCalculateDamageEvent(LivingEntity caster, LivingEntity target, double posmult, double negmult, double flat, String[] types) {
 		this.caster = caster;
 		this.target = target;
-		this.damage = damage;
-		this.classification = classification;
-		this.type = type;
+		this.posmult = posmult;
+		this.flat = flat;
+		this.types = types;
+	}
+	public String[] getTypes() {
+		return types;
 	}
 	
 	public LivingEntity getTarget() {
@@ -72,14 +68,27 @@ public class PlayerCalculateDamageEvent extends Event {
 		this.target = target;
 	}
 
-	public double getDamage() {
-		return damage;
+	public double getPosmult() {
+		return posmult;
 	}
-
-	public void setDamage(double damage) {
-		this.damage = damage;
+	public void setPosmult(double posmult) {
+		this.posmult = posmult;
 	}
-
+	public double getNegmult() {
+		return negmult;
+	}
+	public void setNegmult(double negmult) {
+		this.negmult = negmult;
+	}
+	public double getFlat() {
+		return flat;
+	}
+	public void setFlat(double flat) {
+		this.flat = flat;
+	}
+	public void setTypes(String[] types) {
+		this.types = types;
+	}
 	public LivingEntity getCaster() {
 		return caster;
 	}
@@ -98,15 +107,6 @@ public class PlayerCalculateDamageEvent extends Event {
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-
-	public String getClassification() {
-		return classification;
-	}
-
-	public void setClassification(String classification) {
-		this.classification = classification;
-	}
-
 	public void setCaster(LivingEntity caster) {
 		this.caster = caster;
 	}

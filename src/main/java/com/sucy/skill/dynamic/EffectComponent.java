@@ -30,11 +30,14 @@ import com.rit.sucy.config.parse.DataSection;
 import com.rit.sucy.mobs.MobManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.Settings;
+import com.sucy.skill.api.event.PlayerCriticalDamageEvent;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.player.PlayerSkill;
 import com.sucy.skill.cast.IIndicator;
 import com.sucy.skill.cast.IndicatorType;
 import com.sucy.skill.log.Logger;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -143,12 +146,15 @@ public abstract class EffectComponent {
         if (SkillAPI.getSettings().isAttributesEnabled() && caster instanceof Player) {
             PlayerData data = SkillAPI.getPlayerData((Player) caster);
             newValue += data.scaleDynamic(this, key, oldValue);
-            if (critChance > 0) {
-                newValue += data.scaleCrit(this, key, oldValue, critChance);
-            }
         }
 
         return newValue;
+    }
+    
+    protected double getValue(LivingEntity caster, String key, int level, double fallback) {
+        double base = getNum(caster, key + "-base", fallback);
+        double scale = getNum(caster, key + "-scale", 0);
+        return base + (level - 1) * scale;
     }
 
     /**

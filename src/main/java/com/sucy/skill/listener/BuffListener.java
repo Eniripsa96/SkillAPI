@@ -24,10 +24,12 @@ public class BuffListener extends SkillAPIListener {
     public void onPhysical(final PhysicalDamageEvent event) {
         final double withDamageBuffs = BuffManager.apply(
                 event.getDamager(),
+                event.getTarget(),
                 BuffType.DAMAGE,
                 event.getDamage());
         final double withDefenseBuffs = BuffManager.apply(
                 event.getTarget(),
+                event.getDamager(),
                 BuffType.DEFENSE,
                 withDamageBuffs);
 
@@ -42,10 +44,12 @@ public class BuffListener extends SkillAPIListener {
         if (event.getClassification().equalsIgnoreCase(PHYSICAL)) {
             final double withDamageBuffs = BuffManager.apply(
                     event.getDamager(),
+                    event.getTarget(),
                     BuffType.DAMAGE,
                     event.getDamage());
             final double withDefenseBuffs = BuffManager.apply(
                     event.getTarget(),
+                    event.getDamager(),
                     BuffType.DEFENSE,
                     withDamageBuffs);
 
@@ -56,11 +60,13 @@ public class BuffListener extends SkillAPIListener {
         } else {
             final double withDamageBuffs = BuffManager.apply(
                     event.getDamager(),
+                    event.getTarget(),
                     BuffType.SKILL_DAMAGE,
                     event.getClassification(),
                     event.getDamage());
             final double withDefenseBuffs = BuffManager.apply(
                     event.getTarget(),
+                    event.getDamager(),
                     BuffType.SKILL_DEFENSE,
                     event.getClassification(),
                     withDamageBuffs);
@@ -75,6 +81,7 @@ public class BuffListener extends SkillAPIListener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onHeal(final SkillHealEvent event) {
         double withBuff = BuffManager.apply(
+                event.getHealer(),
                 event.getTarget(),
                 BuffType.HEALING,
                 event.getAmount());

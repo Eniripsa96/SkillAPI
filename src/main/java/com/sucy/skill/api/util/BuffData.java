@@ -192,7 +192,7 @@ public class BuffData
 	        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
         }
 
-        PlayerCalculateDamageEvent e = new PlayerCalculateDamageEvent(entity, target, posMult, negMult, bonus, types);
+        PlayerCalculateDamageEvent e = new PlayerCalculateDamageEvent(entity, target, value, posMult, negMult, bonus, types);
         Bukkit.getPluginManager().callEvent(e);
         posMult = e.getPosmult();
         negMult = e.getNegmult();

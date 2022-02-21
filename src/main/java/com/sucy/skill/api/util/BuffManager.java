@@ -27,6 +27,7 @@
 package com.sucy.skill.api.util;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -146,8 +147,8 @@ public class BuffManager
      */
     public static double apply(final LivingEntity entity, final LivingEntity target, final BuffType type, final double amount)
     {
-        final BuffData data = getBuffData(entity, false);
-        return data.apply(entity, target, type, amount);
+        final BuffData data = getBuffData(entity, entity instanceof Player);
+        return data == null ? amount : data.apply(entity, target, type, amount);
     }
 
     /**
@@ -163,8 +164,8 @@ public class BuffManager
      */
     public static double apply(final LivingEntity entity, final LivingEntity target, final BuffType type, final String category, final double amount)
     {
-        final BuffData data = getBuffData(entity, false);
-        return data.apply(entity, target, type, category, amount);
+        final BuffData data = getBuffData(entity, entity instanceof Player);
+        return data == null ? amount : data.apply(entity, target, type, category, amount);
     }
 
     /** @deprecated use {@link BuffManager#apply(LivingEntity, BuffType, double)} instead */

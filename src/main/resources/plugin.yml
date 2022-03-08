@@ -3,7 +3,7 @@ main: com.sucy.skill.SkillAPI
 version: 1.90
 author: Eniripsa96
 depend: [MCCore]
-softdepend: [Vault, MythicMobs]
+softdepend: [Vault, MythicMobs, NeoMythicExtension]
 loadbefore: [Quests]
 api-version: 1.13
 

@@ -44,6 +44,7 @@ public class SkillHealEvent extends Event implements Cancellable
     private LivingEntity target;
     private double       amount;
     private boolean      cancelled;
+    private boolean ignoreCurse;
 
     /**
      * Initializes a new event
@@ -52,12 +53,13 @@ public class SkillHealEvent extends Event implements Cancellable
      * @param target entity receiving the damage
      * @param damage the amount of damage dealt
      */
-    public SkillHealEvent(LivingEntity healer, LivingEntity target, double amount)
+    public SkillHealEvent(LivingEntity healer, LivingEntity target, double amount, boolean ignoreCurse)
     {
         this.healer = healer;
         this.target = target;
         this.amount = amount;
         this.cancelled = false;
+        this.ignoreCurse = ignoreCurse;
     }
 
     /**
@@ -105,6 +107,10 @@ public class SkillHealEvent extends Event implements Cancellable
     public void setAmount(double amount)
     {
         this.amount = amount;
+    }
+    
+    public boolean ignoresCurse() {
+    	return ignoreCurse;
     }
 
     /**

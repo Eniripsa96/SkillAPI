@@ -57,6 +57,7 @@ public class HealMechanic extends MechanicComponent {
     @Override
     public boolean execute(LivingEntity caster, int level, List<LivingEntity> targets, double critChance) {
         boolean percent = settings.getString(TYPE, "health").toLowerCase().equals("percent");
+        boolean ignoreCurse = settings.getBool("ignores-curse", false);
         double value = parseValues(caster, VALUE, level, 1.0, 0);
         if (value < 0) { return false; }
         for (LivingEntity target : targets) {
@@ -67,7 +68,7 @@ public class HealMechanic extends MechanicComponent {
                 amount = target.getMaxHealth() * value / 100;
             }
 
-            SkillHealEvent event = new SkillHealEvent(caster, target, amount);
+            SkillHealEvent event = new SkillHealEvent(caster, target, amount, ignoreCurse);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 VersionManager.heal(target, event.getAmount());

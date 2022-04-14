@@ -156,7 +156,7 @@ public class BuffData
             : doApply(entity, target, value, type.name(), type.name() + category);
     }
 
-    private double doApply(final LivingEntity caster, final LivingEntity target, final double value, final String... types) {
+    private double doApply(final LivingEntity caster, final LivingEntity target, double value, final String... types) {
 
         // Ignore zeroed out values that shouldn't get buffs
         if (value <= 0) return value;
@@ -195,8 +195,10 @@ public class BuffData
         posMult = e.getPosmult();
         negMult = e.getNegmult();
         bonus = e.getFlat();
+        value = e.getDamage();
         // Negatives aren't well received by bukkit, so return 0 instead
         if (negMult <= 0) return 0;
+        if (value <= 0) return 0;
 
         return Math.max(1, value * (posMult * negMult) + bonus);
     }

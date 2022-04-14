@@ -87,6 +87,9 @@ public class PlayerCalculateDamageEvent extends Event {
 	public void setNegmult(double negmult) {
 		this.negmult = negmult;
 	}
+	public void setDamage(double damage) {
+		this.damage = damage;
+	}
 	public double getFlat() {
 		return flat;
 	}

@@ -48,15 +48,4 @@ public class BungeeHook implements Listener {
     {
         api.getServer().getPluginManager().registerEvents(new BungeeHook(), api);
     }
-
-    @EventHandler
-    public void onKick(ServerKickEvent event)
-    {
-        MainListener.unload(VersionManager.getPlayer(event.getPlayer().getName()));
-    }
-
-    @EventHandler
-    public void serverConnect(ServerConnectEvent event) {
-        MainListener.unload(VersionManager.getPlayer(event.getPlayer().getName()));
-    }
 }

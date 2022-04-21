@@ -18,6 +18,5 @@ public class ItemCheckerTest {
         final Pattern compiled = Pattern.compile(pattern);
         final Matcher matcher = compiled.matcher("Test prefix -123,456 and suffix");
         Assert.assertEquals(matcher.find(), true);
-        System.out.println(matcher.group(1));
     }
 }

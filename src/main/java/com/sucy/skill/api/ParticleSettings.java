@@ -12,6 +12,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
+import java.util.logging.Level;
 
 public class ParticleSettings {
 
@@ -110,7 +111,7 @@ public class ParticleSettings {
             }
 
         } catch (Exception ex) {
-            System.out.println("ERROR: " + caster.getName());
+        	Bukkit.getLogger().log(Level.INFO, "SkillAPI Error: " + caster.getName());
             originalSettings.dumpToConsole();
         }
     }

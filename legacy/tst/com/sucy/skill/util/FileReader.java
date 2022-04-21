@@ -34,7 +34,7 @@ public class FileReader {
             try {
                 stream.close();
             } catch (final IOException ex) {
-                System.out.println("Failed to close stream");
+            	ex.printStackTrace();
             }
         }
     }

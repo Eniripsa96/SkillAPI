@@ -90,7 +90,6 @@ public class Particle {
                         int.class);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
             Bukkit.getLogger().log(Level.WARNING,
             		"Failed to set up particles, are you using Cauldron?");
         }

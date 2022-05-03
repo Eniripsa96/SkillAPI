@@ -52,7 +52,7 @@ public class SQLIO extends IOManager
 {
     public static final String ID     = "id";
     public static final String DATA   = "data";
-    public static final char   STRING = '\u221A';
+    public static final char QUOTE = '\'';
     
     private static HashMap<PlayerAccounts, Long> lastSaved;
 
@@ -113,7 +113,7 @@ public class SQLIO extends IOManager
         String data = connection.table.createEntry(playerKey).getString(DATA);
         try
         {
-        	DataSection file = YAMLParser.parseText(data, STRING);
+        	DataSection file = YAMLParser.parseText(data, QUOTE);
             return load(player, file);
         }
         catch (Exception ex)
@@ -167,7 +167,7 @@ public class SQLIO extends IOManager
         {
 			Logger.log("Successfully saved " + data.getPlayerName());
             String playerKey = new VersionPlayer(data.getOfflinePlayer()).getIdString();
-            connection.table.createEntry(playerKey).set(DATA, file.toString(STRING));
+            connection.table.createEntry(playerKey).set(DATA, file.toString(QUOTE));
         }
         catch (Exception ex)
         {

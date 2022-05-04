@@ -218,27 +218,26 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     private List<LivingEntity> getColliding() {
         // Reflection for nms collision
         List<LivingEntity> result = new ArrayList<LivingEntity>(1);
-        try {
-            Object nmsWorld = getHandle.invoke(getLocation().getWorld());
-            Object predicate = getEntities == null ? GUAVA_PREDICATE : JAVA_PREDICATE;
-            Object list = (getEntities == null ? getEntitiesGuava : getEntities)
-                    .invoke(nmsWorld, null, getBoundingBox(), predicate);
-            for (Object item : (List) list) {
-                result.add((LivingEntity) getBukkitEntity.invoke(item));
-            }
-        }
+        //try {
+        //    Object nmsWorld = getHandle.invoke(getLocation().getWorld());
+        //    Object predicate = getEntities == null ? GUAVA_PREDICATE : JAVA_PREDICATE;
+        //    Object list = (getEntities == null ? getEntitiesGuava : getEntities)
+        //            .invoke(nmsWorld, null, getBoundingBox(), predicate);
+        //    for (Object item : (List) list) {
+        //        result.add((LivingEntity) getBukkitEntity.invoke(item));
+        //    }
+        //}
         // Fallback when reflection fails
-        catch (Exception ex) {
-            double radiusSq = getCollisionRadius();
-            radiusSq *= radiusSq;
-            for (LivingEntity entity : getNearbyEntities()) {
-                if (entity == thrower) {
-                    continue;
-                }
-
-                if (getLocation().distanceSquared(entity.getLocation()) < radiusSq) {
-                    result.add(entity);
-                }
+        //catch (Exception ex) {
+        // Fallback when reflection fails
+        double radiusSq = getCollisionRadius();
+        radiusSq *= radiusSq;
+        for (LivingEntity entity : getNearbyEntities()) {
+            if (entity == thrower) {
+                continue;
+            }
+            if (getLocation().distanceSquared(entity.getLocation()) < radiusSq) {
+                result.add(entity);
             }
         }
         return result;

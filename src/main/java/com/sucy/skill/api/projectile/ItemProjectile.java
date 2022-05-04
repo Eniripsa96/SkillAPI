@@ -134,7 +134,7 @@ public class ItemProjectile extends CustomProjectile
     @Override
     protected double getCollisionRadius()
     {
-        return item.getVelocity().length() / 2;
+        return item.getVelocity().length();
     }
 
     @Override

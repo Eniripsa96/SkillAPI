@@ -106,11 +106,7 @@ public class MainListener extends SkillAPIListener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onLogin(AsyncPlayerPreLoginEvent event) {
-		final OfflinePlayer player;
-		if (VersionManager.isVersionAtLeast(VersionManager.V1_7_5))
-			player = Bukkit.getOfflinePlayer(event.getUniqueId());
-		else
-			player = VersionManager.getOfflinePlayer(event.getName());
+		final OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
 
 		int delay = SkillAPI.getSettings().getSqlDelay();
 

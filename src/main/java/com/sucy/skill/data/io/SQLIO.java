@@ -109,8 +109,7 @@ public class SQLIO extends IOManager
     }
 
     private PlayerAccounts load(SQLConnection connection, OfflinePlayer player) {
-        String playerKey = new VersionPlayer(player).getIdString();
-        String data = connection.table.createEntry(playerKey).getString(DATA);
+        String data = connection.table.createEntry(player.getUniqueId().toString()).getString(DATA);
         try
         {
         	DataSection file = YAMLParser.parseText(data, QUOTE);
@@ -166,8 +165,7 @@ public class SQLIO extends IOManager
         try
         {
 			Logger.log("Successfully saved " + data.getPlayerName());
-            String playerKey = new VersionPlayer(data.getOfflinePlayer()).getIdString();
-            connection.table.createEntry(playerKey).set(DATA, file.toString(QUOTE));
+            connection.table.createEntry(data.getPlayer().getUniqueId().toString()).set(DATA, file.toString(QUOTE));
         }
         catch (Exception ex)
         {

@@ -140,7 +140,7 @@ public class SkillAPI extends JavaPlugin {
         cmd = new CmdManager(this);
         io = settings.isUseSql() ? new SQLIO(this) : new ConfigIO(this);
         PlayerStats.init();
-        ClassBoardManager.registerText();
+        // ClassBoardManager.registerText();
         if (settings.isAttributesEnabled()) { attributeManager = new AttributeManager(this); }
 
         // Load classes and skills
@@ -252,7 +252,7 @@ public class SkillAPI extends JavaPlugin {
         listeners.clear();
 
         // Clear scoreboards
-        ClassBoardManager.clearAll();
+        // ClassBoardManager.clearAll();
 
         // Clear skill bars and stop passives before disabling
         for (Player player : VersionManager.getOnlinePlayers()) {
@@ -674,7 +674,7 @@ public class SkillAPI extends JavaPlugin {
         rpgClass = registrationManager.validate(rpgClass);
         if (rpgClass != null) {
             classes.put(rpgClass.getName().toLowerCase(), rpgClass);
-            ClassBoardManager.registerClass(rpgClass);
+            // ClassBoardManager.registerClass(rpgClass);
             if (!groups.contains(rpgClass.getGroup())) { groups.add(rpgClass.getGroup()); }
         }
     }
@@ -689,7 +689,7 @@ public class SkillAPI extends JavaPlugin {
         String key;
         if (rpgClass != null && !classes.containsKey(key = rpgClass.getName().toLowerCase())) {
             classes.put(key, rpgClass);
-            ClassBoardManager.registerClass(rpgClass);
+            // ClassBoardManager.registerClass(rpgClass);
             if (!groups.contains(rpgClass.getGroup())) { groups.add(rpgClass.getGroup()); }
         }
     }

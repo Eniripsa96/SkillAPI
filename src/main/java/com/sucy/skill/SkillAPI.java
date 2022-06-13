@@ -199,16 +199,12 @@ public class SkillAPI extends JavaPlugin {
 
 	    // Non-task mana gain
         if (settings.isManaEnabled()) {
-            if (VersionManager.isVersionAtLeast(11400)) {
-                regenTask = Bukkit.getScheduler().runTaskTimer(
-                        this,
-                        new RegenTask(),
-                        SkillAPI.getSettings().getGainFreq(),
-                        SkillAPI.getSettings().getGainFreq()
-                );
-            } else {
-                MainThread.register(new RegenTask());
-            }
+            regenTask = Bukkit.getScheduler().runTaskTimer(
+                    this,
+                    new RegenTask(),
+                    SkillAPI.getSettings().getGainFreq(),
+                    SkillAPI.getSettings().getGainFreq()
+            );
         }
 
         // Removed due des-use

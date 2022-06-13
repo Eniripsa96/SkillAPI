@@ -34,6 +34,7 @@ import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.thread.RepeatThreadTask;
 import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 /**
  * <p>Restores mana to all players over time.</p>
@@ -60,9 +61,8 @@ public class RegenTask extends RepeatThreadTask
      */
     public void run()
     {
-        Player[] players = VersionManager.getOnlinePlayers();
-        Logger.log(LogType.MANA, 1, "Applying mana regen for " + players.length + " players");
-        for (Player player : players)
+        Logger.log(LogType.MANA, 1, "Applying mana regen for " + Bukkit.getOnlinePlayers().size() + " players");
+        for (Player player : Bukkit.getOnlinePlayers())
         {
         	if (MainListener.loadingPlayerData.containsKey(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);

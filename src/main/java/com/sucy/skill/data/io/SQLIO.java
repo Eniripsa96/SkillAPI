@@ -170,6 +170,7 @@ public class SQLIO extends IOManager
         catch (Exception ex)
         {
             Logger.bug("Failed to save data for invalid player");
+            ex.printStackTrace();
         }
     }
 

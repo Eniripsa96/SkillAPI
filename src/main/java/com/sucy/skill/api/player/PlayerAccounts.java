@@ -90,7 +90,7 @@ public class PlayerAccounts {
      * @return Bukkit player object or null if offline/dead
      */
     public Player getPlayer() {
-		return new VersionPlayer(player).getPlayer();
+		return player.getPlayer();
     }
 
     /**

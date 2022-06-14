@@ -136,7 +136,7 @@ public class PlayerData {
 	 * @return Bukkit player object of the owner or null if offline
 	 */
 	public Player getPlayer() {
-		return new VersionPlayer(player).getPlayer();
+		return player.getPlayer();
 	}
 
 	/**

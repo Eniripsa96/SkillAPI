@@ -57,6 +57,7 @@ import com.sucy.skill.task.RegenTask;
 import com.sucy.skill.task.RegenTask;
 import com.sucy.skill.task.SaveTask;
 import com.sucy.skill.thread.MainThread;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -138,6 +139,7 @@ public class SkillAPI extends JavaPlugin {
         comboManager = new ComboManager();
         registrationManager = new RegistrationManager(this);
         cmd = new CmdManager(this);
+		this.getCommand("class").setExecutor(cmd);
         io = settings.isUseSql() ? new SQLIO(this) : new ConfigIO(this);
         PlayerStats.init();
         // ClassBoardManager.registerText();

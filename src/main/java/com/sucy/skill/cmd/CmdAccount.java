@@ -86,7 +86,7 @@ public class CmdAccount implements IFunction
                 if (player.getAccountLimit() >= id && id > 0)
                 {
                 	if (player.getActiveId() == id) {
-                		sender.sendMessage("§cYou're already on this account!");
+                		sender.sendMessage("Â§cYou're already on this account!");
                 		return;
                 	}
                     player.setAccount(id);

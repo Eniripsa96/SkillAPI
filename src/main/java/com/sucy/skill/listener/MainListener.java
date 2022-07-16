@@ -510,14 +510,14 @@ public class MainListener extends SkillAPIListener {
 			handleClear(event.getPlayer());
 		}
 		else if (event.getMessage().startsWith("/clear ")) {
-			handleClear(VersionManager.getPlayer(event.getMessage().substring(7)));
+			handleClear(Bukkit.getPlayer(event.getMessage().substring(7)));
 		}
 	}
 
 	@EventHandler
 	public void onCommand(final ServerCommandEvent event) {
 		if (event.getCommand().startsWith("clear ")) {
-			handleClear(VersionManager.getPlayer(event.getCommand().substring(6)));
+			handleClear(Bukkit.getPlayer(event.getCommand().substring(6)));
 		}
 	}
 

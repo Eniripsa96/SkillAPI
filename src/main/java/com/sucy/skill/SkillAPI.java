@@ -253,7 +253,7 @@ public class SkillAPI extends JavaPlugin {
         // ClassBoardManager.clearAll();
 
         // Clear skill bars and stop passives before disabling
-        for (Player player : VersionManager.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             MainListener.unload(player);
         }
 

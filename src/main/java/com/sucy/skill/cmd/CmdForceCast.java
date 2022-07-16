@@ -37,6 +37,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.Bukkit;
 
 import java.util.regex.Pattern;
 
@@ -70,7 +71,7 @@ public class CmdForceCast implements IFunction
         }
         else
         {
-            Player player = VersionManager.getPlayer(args[0]);
+            Player player = Bukkit.getPlayer(args[0]);
             if (player == null)
             {
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");

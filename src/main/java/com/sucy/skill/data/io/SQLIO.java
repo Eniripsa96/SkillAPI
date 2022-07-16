@@ -44,6 +44,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 
 /**
  * Loads player data from the SQL Database
@@ -85,7 +86,7 @@ public class SQLIO extends IOManager
         SQLConnection connection = openConnection();
 
         HashMap<String, PlayerAccounts> result = new HashMap<String, PlayerAccounts>();
-        for (Player player : VersionManager.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             result.put(new VersionPlayer(player).getIdString(), load(connection, player));
         }
 

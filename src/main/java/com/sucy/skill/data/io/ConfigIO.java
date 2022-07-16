@@ -39,6 +39,8 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
+
 /**
  * IO manager that saves/loads to a .yml configuration file
  */
@@ -56,7 +58,7 @@ public class ConfigIO extends IOManager
 
     public HashMap<String, PlayerAccounts> loadAll() {
         HashMap<String, PlayerAccounts> result = new HashMap<String, PlayerAccounts>();
-        for (Player player : VersionManager.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             result.put(new VersionPlayer(player).getIdString(), loadData(player));
         }
         return result;

@@ -27,6 +27,7 @@
 package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.CommandManager;
+import org.bukkit.Bukkit;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
@@ -70,7 +71,7 @@ public class CmdForceAttr implements IFunction
         }
 
         // Grab the player data
-        OfflinePlayer player = VersionManager.getOfflinePlayer(args[0], false);
+        OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
         if (player == null)
         {
             cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");

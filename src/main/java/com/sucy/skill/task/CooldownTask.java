@@ -27,6 +27,7 @@
 package com.sucy.skill.task;
 
 import com.rit.sucy.version.VersionManager;
+import org.bukkit.Bukkit;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.listener.MainListener;
@@ -65,7 +66,7 @@ public class CooldownTask extends RepeatThreadTask
     @Override
     public void run()
     {
-        for (Player player : VersionManager.getOnlinePlayers())
+        for (Player player : Bukkit.getOnlinePlayers())
         {
         	if (hasCts && cts.hasManager(player)) continue;
         	if (MainListener.loadingPlayers.containsKey(player.getUniqueId())) continue;

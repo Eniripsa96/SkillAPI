@@ -422,5 +422,15 @@ public class PlayerEquips
 
             return false;
         }
+        
+        @Override
+        public String toString() {
+        	if (this.item.hasItemMeta()) {
+        		return this.item.getItemMeta().getDisplayName();	
+        	}
+        	else {
+        		return this.item.getType();
+        	}
+        }
     }
 }

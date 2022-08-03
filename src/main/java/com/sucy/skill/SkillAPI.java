@@ -57,6 +57,7 @@ import com.sucy.skill.task.RegenTask;
 import com.sucy.skill.task.RegenTask;
 import com.sucy.skill.task.SaveTask;
 import com.sucy.skill.thread.MainThread;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -138,9 +139,10 @@ public class SkillAPI extends JavaPlugin {
         comboManager = new ComboManager();
         registrationManager = new RegistrationManager(this);
         cmd = new CmdManager(this);
+		this.getCommand("class").setExecutor(cmd);
         io = settings.isUseSql() ? new SQLIO(this) : new ConfigIO(this);
         PlayerStats.init();
-        ClassBoardManager.registerText();
+        // ClassBoardManager.registerText();
         if (settings.isAttributesEnabled()) { attributeManager = new AttributeManager(this); }
 
         // Load classes and skills
@@ -156,15 +158,15 @@ public class SkillAPI extends JavaPlugin {
         listen(new MechanicListener(), true);
         listen(new StatusListener(), true);
         listen(new ToolListener(), true);
-        listen(new KillListener(), true);
+        // listen(new KillListener(), true);
         listen(new AddonListener(), true);
         listen(new ItemListener(this), settings.isCheckLore());
         listen(new BarListener(), settings.isSkillBarEnabled());
         listen(new ClickListener(), true);
-        if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
-            final PacketInjector injector = new PacketInjector(this);
-            listen(new PacketListener(injector), true);
-        }
+        //if (VersionManager.isVersionAtLeast(VersionManager.V1_8_0)) {
+        //    final PacketInjector injector = new PacketInjector(this);
+        //    listen(new PacketListener(injector), true);
+        //}
         listen(new NeoComboListener(), true);
         listen(new ComboListener(), settings.isCombosEnabled());
         listen(new AttributeListener(), settings.isAttributesEnabled());
@@ -199,16 +201,12 @@ public class SkillAPI extends JavaPlugin {
 
 	    // Non-task mana gain
         if (settings.isManaEnabled()) {
-            if (VersionManager.isVersionAtLeast(11400)) {
-                regenTask = Bukkit.getScheduler().runTaskTimer(
-                        this,
-                        new RegenTask(),
-                        SkillAPI.getSettings().getGainFreq(),
-                        SkillAPI.getSettings().getGainFreq()
-                );
-            } else {
-                MainThread.register(new RegenTask());
-            }
+            regenTask = Bukkit.getScheduler().runTaskTimer(
+                    this,
+                    new RegenTask(),
+                    SkillAPI.getSettings().getGainFreq(),
+                    SkillAPI.getSettings().getGainFreq()
+            );
         }
 
         // Removed due des-use
@@ -252,10 +250,10 @@ public class SkillAPI extends JavaPlugin {
         listeners.clear();
 
         // Clear scoreboards
-        ClassBoardManager.clearAll();
+        // ClassBoardManager.clearAll();
 
         // Clear skill bars and stop passives before disabling
-        for (Player player : VersionManager.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             MainListener.unload(player);
         }
 
@@ -674,7 +672,7 @@ public class SkillAPI extends JavaPlugin {
         rpgClass = registrationManager.validate(rpgClass);
         if (rpgClass != null) {
             classes.put(rpgClass.getName().toLowerCase(), rpgClass);
-            ClassBoardManager.registerClass(rpgClass);
+            // ClassBoardManager.registerClass(rpgClass);
             if (!groups.contains(rpgClass.getGroup())) { groups.add(rpgClass.getGroup()); }
         }
     }
@@ -689,7 +687,7 @@ public class SkillAPI extends JavaPlugin {
         String key;
         if (rpgClass != null && !classes.containsKey(key = rpgClass.getName().toLowerCase())) {
             classes.put(key, rpgClass);
-            ClassBoardManager.registerClass(rpgClass);
+            // ClassBoardManager.registerClass(rpgClass);
             if (!groups.contains(rpgClass.getGroup())) { groups.add(rpgClass.getGroup()); }
         }
     }

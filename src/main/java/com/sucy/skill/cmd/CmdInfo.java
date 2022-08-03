@@ -27,6 +27,7 @@
 package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.ConfigurableCommand;
+import org.bukkit.Bukkit;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.text.TextFormatter;
@@ -77,7 +78,7 @@ public class CmdInfo implements IFunction
         // Only can show info of a player so console needs to provide a name
         else if (sender instanceof Player || args.length >= 1)
         {
-            OfflinePlayer target = args.length == 0 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
+            OfflinePlayer target = args.length == 0 ? (OfflinePlayer) sender : Bukkit.getOfflinePlayer(args[0]);
             if (target == null)
             {
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");

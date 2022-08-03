@@ -630,6 +630,7 @@ public abstract class Skill implements IconHolder
             catch (Exception ex)
             {
                 Logger.invalid("Skill icon filter for the skill \"" + name + "\" is invalid (Line = \"" + line + "\") - " + ex.getMessage());
+                ex.printStackTrace();
             }
         }
 

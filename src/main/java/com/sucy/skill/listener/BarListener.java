@@ -27,6 +27,7 @@
 package com.sucy.skill.listener;
 
 import com.rit.sucy.gui.MapData;
+import org.bukkit.Bukkit;
 import com.rit.sucy.gui.MapMenu;
 import com.rit.sucy.gui.MapMenuManager;
 import com.rit.sucy.version.VersionManager;
@@ -78,7 +79,7 @@ public class BarListener extends SkillAPIListener
     {
         MainListener.registerJoin(this::onJoin);
         MainListener.registerClear(this::handleClear);
-        for (Player player : VersionManager.getOnlinePlayers())
+        for (Player player : Bukkit.getOnlinePlayers())
         {
             if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
                 PlayerData data = SkillAPI.getPlayerData(player);

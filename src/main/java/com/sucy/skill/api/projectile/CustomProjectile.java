@@ -83,7 +83,12 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
             try {
                 getEntities = worldClass.getDeclaredMethod("getEntities", entityClass, aabbClass, Predicate.class);
             } catch (Exception e) {
-                getEntitiesGuava = worldClass.getDeclaredMethod("getEntities", entityClass, aabbClass, com.google.common.base.Predicate.class);
+            	try {
+            		getEntitiesGuava = worldClass.getDeclaredMethod("getEntities", entityClass, aabbClass, com.google.common.base.Predicate.class);
+            	}
+            	catch (Exception exc) {
+            		
+            	}
             }
         } catch (Exception ex) {
             Logger.log("Unable to use reflection for accurate collision - will resort to simple radius check");
@@ -213,25 +218,26 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
     private List<LivingEntity> getColliding() {
         // Reflection for nms collision
         List<LivingEntity> result = new ArrayList<LivingEntity>(1);
-        try {
-            Object nmsWorld = getHandle.invoke(getLocation().getWorld());
-            Object predicate = getEntities == null ? GUAVA_PREDICATE : JAVA_PREDICATE;
-            Object list = (getEntities == null ? getEntitiesGuava : getEntities)
-                    .invoke(nmsWorld, null, getBoundingBox(), predicate);
-            for (Object item : (List) list) {
-                result.add((LivingEntity) getBukkitEntity.invoke(item));
-            }
-        }
+        //try {
+        //    Object nmsWorld = getHandle.invoke(getLocation().getWorld());
+        //    Object predicate = getEntities == null ? GUAVA_PREDICATE : JAVA_PREDICATE;
+        //    Object list = (getEntities == null ? getEntitiesGuava : getEntities)
+        //            .invoke(nmsWorld, null, getBoundingBox(), predicate);
+        //    for (Object item : (List) list) {
+        //        result.add((LivingEntity) getBukkitEntity.invoke(item));
+        //    }
+        //}
         // Fallback when reflection fails
-        catch (Exception ex) {
-            double radiusSq = getCollisionRadius();
-            radiusSq *= radiusSq;
-            for (LivingEntity entity : getNearbyEntities()) {
-                if (entity == thrower)
-                    continue;
-
-                if (getLocation().distanceSquared(entity.getLocation()) < radiusSq)
-                    result.add(entity);
+        //catch (Exception ex) {
+        // Fallback when reflection fails
+        double radiusSq = getCollisionRadius();
+        radiusSq *= radiusSq;
+        for (LivingEntity entity : getNearbyEntities()) {
+            if (entity == thrower) {
+                continue;
+            }
+            if (getLocation().distanceSquared(entity.getLocation()) < radiusSq) {
+                result.add(entity);
             }
         }
         return result;
@@ -261,10 +267,12 @@ public abstract class CustomProjectile extends BukkitRunnable implements Metadat
         int minZ = (int) (loc.getZ() - radius) >> 4;
         int maxZ = (int) (loc.getZ() + radius) >> 4;
         for (int i = minX; i <= maxX; i++)
-            for (int j = minZ; j < maxZ; j++)
-                for (Entity entity : loc.getWorld().getChunkAt(i, j).getEntities())
+            for (int j = minZ; j <= maxZ; j++) {
+                for (Entity entity : loc.getWorld().getChunkAt(i, j).getEntities()) {
                     if (entity instanceof LivingEntity)
                         list.add((LivingEntity) entity);
+                }
+            }
         return list;
     }
 

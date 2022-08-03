@@ -156,7 +156,7 @@ public class BuffData
             : doApply(entity, target, value, type.name(), type.name() + category);
     }
 
-    private double doApply(final LivingEntity caster, final LivingEntity target, final double value, final String... types) {
+    private double doApply(final LivingEntity caster, final LivingEntity target, double value, final String... types) {
 
         // Ignore zeroed out values that shouldn't get buffs
         if (value <= 0) return value;
@@ -165,40 +165,40 @@ public class BuffData
         double posMult = 1;
         double negMult = 1;
         double bonus = 0;
-        if (BuffManager.getBuffData(entity, false) != null) {
-	        Logger.log(LogType.BUFF, 1, "Buffs:");
-	        for (final String type : types) {
-	            final Map<String, Buff> typeBuffs = buffs.get(type);
-	            if (typeBuffs == null) {
-	                continue;
-	            }
-	
-	            for (final Buff buff : typeBuffs.values()) {
-	                if (buff.isPercent()) {
-	                    Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
-	                    double bVal = buff.getValue();
-	                    if (bVal >= 1) {
-	                    	posMult += bVal - 1;
-	                    }
-	                    else {
-	                    	negMult *= bVal;
-	                    }
-	                } else {
-	                    Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
-	                    bonus += buff.getValue();
-	                }
-	            }
-	        }
-	        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
-        }
+        Logger.log(LogType.BUFF, 1, "Buffs:");
+        for (final String type : types) {
+            final Map<String, Buff> typeBuffs = buffs.get(type);
+            if (typeBuffs == null) {
+                continue;
+            }
 
-        PlayerCalculateDamageEvent e = new PlayerCalculateDamageEvent(entity, target, posMult, negMult, bonus, types);
+            for (final Buff buff : typeBuffs.values()) {
+                if (buff.isPercent()) {
+                    Logger.log(LogType.BUFF, 1, "  - x" + buff.getValue());
+                    double bVal = buff.getValue();
+                    if (bVal >= 1) {
+                    	posMult += bVal - 1;
+                    }
+                    else {
+                    	negMult *= bVal;
+                    }
+                } else {
+                    Logger.log(LogType.BUFF, 1, "  - +" + buff.getValue());
+                    bonus += buff.getValue();
+                }
+            }
+        }
+        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
+
+        PlayerCalculateDamageEvent e = new PlayerCalculateDamageEvent(entity, target, value, posMult, negMult, bonus, types);
         Bukkit.getPluginManager().callEvent(e);
         posMult = e.getPosmult();
         negMult = e.getNegmult();
         bonus = e.getFlat();
+        value = e.getDamage();
         // Negatives aren't well received by bukkit, so return 0 instead
         if (negMult <= 0) return 0;
+        if (value <= 0) return 0;
 
         return Math.max(1, value * (posMult * negMult) + bonus);
     }

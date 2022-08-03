@@ -1,6 +1,5 @@
 package com.sucy.skill.api;
 
-import com.destroystokyo.paper.ParticleBuilder;
 import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.api.util.ParticleHelper;
 import net.minecraft.world.entity.Entity;
@@ -12,6 +11,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
+import java.util.logging.Level;
 
 public class ParticleSettings {
 
@@ -83,21 +83,21 @@ public class ParticleSettings {
                     builder.data(mat.createBlockData());
                 }
 
-                if (particle.toLowerCase().startsWith("icon")) {
+                else if (particle.toLowerCase().startsWith("icon")) {
                     builder.data(new ItemStack(mat));
                 }
 
-                if (particle.equalsIgnoreCase("redstone")) {
+                else if (particle.equalsIgnoreCase("redstone")) {
                     String hexColor = originalSettings.getString(ParticleHelper.RGB_KEY, null);
 
-                    builder.color(Color.RED);
+                    builder.data(Color.RED);
 
                     if (hexColor != null) {
                         hexColor = hexColor.startsWith("#") ? hexColor : "#" + hexColor;
-                        builder.color(Color.fromRGB(Integer.decode(hexColor)));
+                        builder.data(Color.fromRGB(Integer.decode(hexColor)));
                     }
 
-                    builder.extra(speed == 0 ? 0.001 : speed);
+                    builder.extra(speed == 0 ? 0.001F : speed);
                 }
 
                 if (onlyCaster) {
@@ -110,7 +110,7 @@ public class ParticleSettings {
             }
 
         } catch (Exception ex) {
-            System.out.println("ERROR: " + caster.getName());
+        	Bukkit.getLogger().log(Level.INFO, "SkillAPI Error: " + caster.getName());
             originalSettings.dumpToConsole();
         }
     }

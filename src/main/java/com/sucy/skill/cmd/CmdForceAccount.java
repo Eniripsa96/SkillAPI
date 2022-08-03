@@ -27,6 +27,7 @@
 package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.ConfigurableCommand;
+import org.bukkit.Bukkit;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.version.VersionManager;
@@ -69,7 +70,7 @@ public class CmdForceAccount implements IFunction
         // Switch accounts if valid number
         else
         {
-            OfflinePlayer player = VersionManager.getOfflinePlayer(args[0], false);
+            OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
 
             if (player == null)
             {

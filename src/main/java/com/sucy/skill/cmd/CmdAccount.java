@@ -85,6 +85,10 @@ public class CmdAccount implements IFunction
 
                 if (player.getAccountLimit() >= id && id > 0)
                 {
+                	if (player.getActiveId() == id) {
+                		sender.sendMessage("§cYou're already on this account!");
+                		return;
+                	}
                     player.setAccount(id);
                     command.sendMessage(sender, CHANGED, ChatColor.DARK_GREEN + "Your account has been changed");
                     return;
@@ -92,7 +96,7 @@ public class CmdAccount implements IFunction
             }
             catch (Exception ex)
             {
-                // Invalid ID
+            	ex.printStackTrace();
             }
 
             command.sendMessage(sender, NOT_ACCOUNT, ChatColor.RED + "That is not a valid account ID");

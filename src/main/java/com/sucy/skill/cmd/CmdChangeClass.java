@@ -1,6 +1,7 @@
 package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.ConfigurableCommand;
+import org.bukkit.Bukkit;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
 import com.rit.sucy.version.VersionManager;
@@ -40,7 +41,7 @@ public class CmdChangeClass implements IFunction {
             String className = args[2];
             for (int i = 3; i < args.length; i++) className += ' ' + args[i];
 
-            final Player player = VersionManager.getPlayer(playerName);
+            final Player player = Bukkit.getPlayer(playerName);
             if (player == null) {
                 cmd.sendMessage(sender, INVALID_PLAYER, ChatColor.DARK_RED + "{player} is not online",
                         Filter.PLAYER.setReplacement(playerName));

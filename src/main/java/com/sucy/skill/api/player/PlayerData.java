@@ -136,7 +136,7 @@ public class PlayerData {
 	 * @return Bukkit player object of the owner or null if offline
 	 */
 	public Player getPlayer() {
-		return new VersionPlayer(player).getPlayer();
+		return player.getPlayer();
 	}
 
 	/**
@@ -1566,7 +1566,7 @@ public class PlayerData {
 
 		if (!event.isCancelled()) {
 			Logger.log(LogType.MANA, 2,
-					getPlayerName() + " gained " + amount + " mana due to " + event.getSource().name());
+					getPlayerName() + " gained " + event.getAmount() + " mana due to " + event.getSource().name());
 
 			mana += event.getAmount();
 			if (mana > maxMana) {
@@ -1604,7 +1604,7 @@ public class PlayerData {
 
 		if (!event.isCancelled()) {
 			Logger.log(LogType.MANA, 2,
-					getPlayerName() + " used " + amount + " mana due to " + event.getSource().name());
+					getPlayerName() + " used " + event.getAmount() + " mana due to " + event.getSource().name());
 
 			mana -= event.getAmount();
 			if (mana < 0) {

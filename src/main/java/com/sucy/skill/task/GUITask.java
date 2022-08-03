@@ -106,8 +106,8 @@ public class GUITask extends RepeatThreadTask
     @Override
     public void run()
     {
-        Logger.log(LogType.GUI, 1, "Updating GUI (" + VersionManager.getOnlinePlayers().length + " players)...");
-        for (Player player : VersionManager.getOnlinePlayers())
+        Logger.log(LogType.GUI, 1, "Updating GUI (" + Bukkit.getOnlinePlayers().size() + " players)...");
+        for (Player player : Bukkit.getOnlinePlayers())
         {
             if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld())) continue;
         	if (hasCts && cts.hasManager(player)) continue;

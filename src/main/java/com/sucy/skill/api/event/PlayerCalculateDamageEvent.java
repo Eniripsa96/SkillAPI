@@ -38,6 +38,7 @@ public class PlayerCalculateDamageEvent extends Event {
 	private LivingEntity caster;
 	private LivingEntity target;
 	private String[] types;
+	private double damage;
 	private double posmult;
 	private double negmult;
 	private double flat;
@@ -49,10 +50,12 @@ public class PlayerCalculateDamageEvent extends Event {
 	 * @param entity the entity the flag was on
 	 * @param flag   the flag that is to be applied
 	 */
-	public PlayerCalculateDamageEvent(LivingEntity caster, LivingEntity target, double posmult, double negmult, double flat, String[] types) {
+	public PlayerCalculateDamageEvent(LivingEntity caster, LivingEntity target, double damage, double posmult, double negmult, double flat, String[] types) {
 		this.caster = caster;
 		this.target = target;
+		this.damage = damage;
 		this.posmult = posmult;
+		this.negmult = negmult;
 		this.flat = flat;
 		this.types = types;
 	}
@@ -67,6 +70,10 @@ public class PlayerCalculateDamageEvent extends Event {
 	public void setTarget(LivingEntity target) {
 		this.target = target;
 	}
+	
+	public double getDamage() {
+		return damage;
+	}
 
 	public double getPosmult() {
 		return posmult;
@@ -79,6 +86,9 @@ public class PlayerCalculateDamageEvent extends Event {
 	}
 	public void setNegmult(double negmult) {
 		this.negmult = negmult;
+	}
+	public void setDamage(double damage) {
+		this.damage = damage;
 	}
 	public double getFlat() {
 		return flat;

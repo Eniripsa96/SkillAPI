@@ -26,6 +26,10 @@
  */
 package com.sucy.skill.manager;
 
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.Command;
+
 import com.rit.sucy.commands.CommandManager;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.SenderType;
@@ -36,7 +40,7 @@ import com.sucy.skill.data.Permissions;
 /**
  * Sets up commands for the plugin
  */
-public class CmdManager
+public class CmdManager implements CommandExecutor
 {
     public static ConfigurableCommand PROFESS_COMMAND;
 
@@ -52,6 +56,17 @@ public class CmdManager
     {
         this.api = api;
         this.initialize();
+    }
+    
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        ConfigurableCommand cmd = CommandManager.getCommand(command.getName());
+        if (cmd != null)
+        {
+            cmd.execute(sender, args);
+            return true;
+        }
+        return true;
     }
 
     /**

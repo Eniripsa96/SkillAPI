@@ -29,6 +29,8 @@ package com.sucy.skill.api.util;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.rit.sucy.reflect.Reflection;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -42,6 +44,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 // Based on the thread https://bukkit.org/threads/help-with-serialized-nbttagcompounds.116335/
 public class ItemSerializer {
@@ -104,7 +107,8 @@ public class ItemSerializer {
             nbtCompressedStreamTools_read = nbtCompressedStreamTools.getDeclaredMethod("a", DataInputStream.class);
         }
         catch (Exception ex) {
-            System.out.println("Server doesn't support NBT serialization - resorting to a less complete implementation");
+        	Bukkit.getLogger().log(Level.WARNING,
+        			"Server doesn't support NBT serialization - resorting to a less complete implementation");
         }
     }
 

@@ -84,6 +84,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.bukkit.entity.SpawnCategory;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -216,34 +217,9 @@ public class TempEntity implements LivingEntity {
     public void setArrowsInBody(int i) {
 
     }
-
-    @Override
-    public int getBeeStingerCooldown() {
-        return 0;
-    }
-
-    @Override
-    public void setBeeStingerCooldown(int i) {
-
-    }
-
-    @Override
-    public int getBeeStingersInBody() {
-        return 0;
-    }
-
-    @Override
-    public void setBeeStingersInBody(int i) {
-
-    }
     
     @Override
-    public boolean spawnAt(Location loc, SpawnReason r) {
-    	return false;
-    }
-    
-    @Override
-    public Set<Player> getTrackedPlayers() {
+    public SpawnCategory getSpawnCategory() {
     	return null;
     }
 
@@ -317,11 +293,6 @@ public class TempEntity implements LivingEntity {
     }
 
     public boolean hasLineOfSight(Entity entity) {
-        return false;
-    }
-
-    @Override
-    public boolean hasLineOfSight(@NotNull Location location) {
         return false;
     }
 
@@ -619,16 +590,6 @@ public class TempEntity implements LivingEntity {
 
     public void setFireTicks(int i) {
 
-    }
-    
-    @Override
-    public Component name() {
-    	return null;
-    }
-    
-    @Override
-    public Component teamDisplayName() {
-    	return null;
     }
 
     @Override
@@ -1067,11 +1028,6 @@ public class TempEntity implements LivingEntity {
 
     public boolean isHandRaised() {
         return false;
-    }
-
-    @Override
-    public @NotNull EquipmentSlot getHandRaised() {
-        return null;
     }
 
 

@@ -27,6 +27,7 @@
 package com.sucy.skill.cmd;
 
 import com.rit.sucy.commands.CommandManager;
+import org.bukkit.Bukkit;
 import com.rit.sucy.commands.ConfigurableCommand;
 import com.rit.sucy.commands.IFunction;
 import com.rit.sucy.config.Filter;
@@ -75,7 +76,7 @@ public class CmdMana implements IFunction
         else if (args.length >= 1 && (args.length >= 2 || sender instanceof Player))
         {
             // Get the player data
-            OfflinePlayer target = args.length == 1 ? (OfflinePlayer) sender : VersionManager.getOfflinePlayer(args[0], false);
+            OfflinePlayer target = args.length == 1 ? (OfflinePlayer) sender : Bukkit.getOfflinePlayer(args[0]);
             if (target == null)
             {
                 cmd.sendMessage(sender, NOT_PLAYER, ChatColor.RED + "That is not a valid player name");

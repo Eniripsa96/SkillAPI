@@ -243,7 +243,6 @@ public class ParticleHelper {
 //                particleSettings.location(loc).spawn();
 //            }
 //        } catch (Exception ex) {
-//            System.out.println("ERROR: " + caster.getName());
 //            settings.dumpToConsole();
 //        }
     }

@@ -33,6 +33,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import java.util.logging.Level;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -89,8 +90,8 @@ public class Particle {
                         int.class);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Failed to set up particles, are you using Cauldron?");
+            Bukkit.getLogger().log(Level.WARNING,
+            		"Failed to set up particles, are you using Cauldron?");
         }
     }
 

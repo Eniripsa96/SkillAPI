@@ -44,6 +44,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 
 /**
  * Loads player data from the SQL Database
@@ -52,7 +53,7 @@ public class SQLIO extends IOManager
 {
     public static final String ID     = "id";
     public static final String DATA   = "data";
-    public static final char   STRING = '\u221A';
+    public static final char QUOTE = '\'';
     
     private static HashMap<PlayerAccounts, Long> lastSaved;
 
@@ -85,7 +86,7 @@ public class SQLIO extends IOManager
         SQLConnection connection = openConnection();
 
         HashMap<String, PlayerAccounts> result = new HashMap<String, PlayerAccounts>();
-        for (Player player : VersionManager.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             result.put(new VersionPlayer(player).getIdString(), load(connection, player));
         }
 
@@ -109,11 +110,10 @@ public class SQLIO extends IOManager
     }
 
     private PlayerAccounts load(SQLConnection connection, OfflinePlayer player) {
-        String playerKey = new VersionPlayer(player).getIdString();
-        String data = connection.table.createEntry(playerKey).getString(DATA);
+        String data = connection.table.createEntry(player.getUniqueId().toString()).getString(DATA);
         try
         {
-        	DataSection file = YAMLParser.parseText(data, STRING);
+        	DataSection file = YAMLParser.parseText(data, QUOTE);
             return load(player, file);
         }
         catch (Exception ex)
@@ -166,12 +166,12 @@ public class SQLIO extends IOManager
         try
         {
 			Logger.log("Successfully saved " + data.getPlayerName());
-            String playerKey = new VersionPlayer(data.getOfflinePlayer()).getIdString();
-            connection.table.createEntry(playerKey).set(DATA, file.toString(STRING));
+            connection.table.createEntry(data.getPlayer().getUniqueId().toString()).set(DATA, file.toString(QUOTE));
         }
         catch (Exception ex)
         {
             Logger.bug("Failed to save data for invalid player");
+            ex.printStackTrace();
         }
     }
 

@@ -90,7 +90,7 @@ public class PlayerAccounts {
      * @return Bukkit player object or null if offline/dead
      */
     public Player getPlayer() {
-        return player.getPlayer();
+		return player.getPlayer();
     }
 
     /**
@@ -209,7 +209,7 @@ public class PlayerAccounts {
             }
 
             if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {
-                ClassBoardManager.clear(new VersionPlayer(player));
+                // ClassBoardManager.clear(new VersionPlayer(player));
                 getActiveData().stopPassives(player);
                 AttributeListener.clearBonuses(player);
                 getActiveData().clearBonuses();

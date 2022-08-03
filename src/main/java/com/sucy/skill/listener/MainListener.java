@@ -106,11 +106,7 @@ public class MainListener extends SkillAPIListener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onLogin(AsyncPlayerPreLoginEvent event) {
-		final OfflinePlayer player;
-		if (VersionManager.isVersionAtLeast(VersionManager.V1_7_5))
-			player = Bukkit.getOfflinePlayer(event.getUniqueId());
-		else
-			player = VersionManager.getOfflinePlayer(event.getName());
+		final OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
 
 		int delay = SkillAPI.getSettings().getSqlDelay();
 
@@ -130,7 +126,7 @@ public class MainListener extends SkillAPIListener {
 					
 					PlayerAccounts data = SkillAPI.loadPlayerDataSQL(player);
 					if (data != null && data.getActiveData() != null) {
-						Logger.log("Successfully loaded " + player.getName() + " after " + count + " attempts");
+						Logger.log("Successfully loaded " + event.getUniqueId() + " after " + count + " attempts");
 						loadingPlayerData.remove(player.getUniqueId());
 						singleton.players.remove(player.getUniqueId().toString());
 						this.cancel();
@@ -197,7 +193,7 @@ public class MainListener extends SkillAPIListener {
 		final PlayerData data = SkillAPI.getPlayerData(player);
 		data.init(player);
 		data.autoLevel();
-		data.updateScoreboard();
+		// data.updateScoreboard();
 		JOIN_HANDLERS.forEach(handler -> handler.accept(player));
 	}
 
@@ -365,7 +361,7 @@ public class MainListener extends SkillAPIListener {
 	@EventHandler
 	public void onLevelUp(final PlayerLevelUpEvent event) {
 		if (SkillAPI.getSettings().isShowClassLevel()) {
-			ClassBoardManager.updateLevel(event.getPlayerData());
+			// ClassBoardManager.updateLevel(event.getPlayerData());
 		}
 	}
 
@@ -382,7 +378,7 @@ public class MainListener extends SkillAPIListener {
 		PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
 		if (data.hasClass() && SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld())) {
 			data.startPassives(event.getPlayer());
-			data.updateScoreboard();
+			// data.updateScoreboard();
 		}
 	}
 
@@ -488,7 +484,7 @@ public class MainListener extends SkillAPIListener {
 			PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
 			data.clearBonuses();
 			data.stopPassives(event.getPlayer());
-			ClassBoardManager.clear(new VersionPlayer(event.getPlayer()));
+			// ClassBoardManager.clear(new VersionPlayer(event.getPlayer())); Doesn't work as of 1.19
 			event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());
 			event.getPlayer().setHealth(SkillAPI.getSettings().getDefaultHealth());
 			if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none")) {
@@ -514,14 +510,14 @@ public class MainListener extends SkillAPIListener {
 			handleClear(event.getPlayer());
 		}
 		else if (event.getMessage().startsWith("/clear ")) {
-			handleClear(VersionManager.getPlayer(event.getMessage().substring(7)));
+			handleClear(Bukkit.getPlayer(event.getMessage().substring(7)));
 		}
 	}
 
 	@EventHandler
 	public void onCommand(final ServerCommandEvent event) {
 		if (event.getCommand().startsWith("clear ")) {
-			handleClear(VersionManager.getPlayer(event.getCommand().substring(6)));
+			handleClear(Bukkit.getPlayer(event.getCommand().substring(6)));
 		}
 	}
 

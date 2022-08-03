@@ -6,6 +6,9 @@ depend: [MCCore]
 softdepend: [Vault, MythicMobs]
 loadbefore: [Quests]
 api-version: 1.13
+commands:
+   class:
+      description: Class command
 
 permissions:
   skillapi.basic:

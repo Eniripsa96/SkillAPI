@@ -34,7 +34,6 @@ dependencies {
     compileOnly 'io.github.waterfallmc:waterfall-api:1.17-R0.1-SNAPSHOT'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.0'
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.0.0'
-    compileOnly 'io.lumine.xikage:MythicMobs:4.2.0-SNAPSHOT'
     compileOnly 'fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT'
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.6.0'
     compileOnly fileTree(dir: 'libs', include: '*.jar')

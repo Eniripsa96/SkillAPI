@@ -107,9 +107,6 @@ public class PlayerEquips
         weapon = swap(inv, inv.getHeldItemSlot(), weapon, true);
         for (int i = 0; i < other.length; i++) {
             other[i] = swap(inv, SkillAPI.getSettings().getSlots()[i], other[i], i == offhand);
-        	if (i == offhand) {
-        		offweapon = new EquipData(inv.getItemInOffHand());
-        	}
         }
     }
 
@@ -125,18 +122,23 @@ public class PlayerEquips
     private EquipData swap(PlayerInventory inv, int index, EquipData from, boolean weapon)
     {
         EquipData to = make(inv.getItem(index));
+        // No change
         if (Objects.equal(from.item, to.item))
         {
             return to;
         }
 
+        // Old item gave attributes, new one doesn't
         if (from.isMet() && (!weapon || !from.isArmor)) {
             from.revert();
         }
 
+        // New item is an armor in the weapon slot
         if (weapon && to.isArmor) {
             return to;
         }
+        
+        // New item can't be equipped because of requirements
         else if (!to.isMet() && !MainListener.loadingPlayers.containsKey(player.getUUID()))
         {
             if (SkillAPI.getSettings().isDropWeapon() || !weapon) {
@@ -159,6 +161,7 @@ public class PlayerEquips
     	EquipData temp = weapon;
     	weapon = offweapon;
     	offweapon = temp;
+    	other[offhand] = temp;
     }
 
     private boolean isArmor(final ItemStack item) {
@@ -195,10 +198,12 @@ public class PlayerEquips
      */
     private EquipData make(ItemStack item)
     {
-        if (item == null)
+        if (item == null) {
             return empty;
-        else
+        }
+        else {
             return new EquipData(item);
+        }
     }
 
     /**
@@ -425,11 +430,14 @@ public class PlayerEquips
         
         @Override
         public String toString() {
-        	if (this.item.hasItemMeta()) {
+        	if (this.item == null) {
+        		return "null";
+        	}
+        	else if (this.item.hasItemMeta()) {
         		return this.item.getItemMeta().getDisplayName();	
         	}
         	else {
-        		return this.item.getType();
+        		return this.item.getType().toString();
         	}
         }
     }

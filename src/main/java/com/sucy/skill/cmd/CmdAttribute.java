@@ -63,9 +63,14 @@ public class CmdAttribute implements IFunction
         // Only plays have skills to view
         else if (sender instanceof Player)
         {
-            Player p = (Player) sender;
-            PlayerData data = SkillAPI.getPlayerData(p);
-            data.openAttributeMenu();
+        	try {
+                Player p = (Player) sender;
+                PlayerData data = SkillAPI.getPlayerData(p);
+                data.openAttributeMenu();
+        	}
+        	catch (Exception e) {
+        		e.printStackTrace();
+        	}
         }
 
         // Console doesn't have profession options

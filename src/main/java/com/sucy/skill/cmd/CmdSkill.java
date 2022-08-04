@@ -70,12 +70,17 @@ public class CmdSkill implements IFunction
         // Only plays have skills to view
         else if (sender instanceof Player)
         {
-            Player p = (Player) sender;
-            PlayerData data = SkillAPI.getPlayerData(p);
-            if (!data.showSkills(p))
-            {
-                cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");
-            }
+        	try {
+	            Player p = (Player) sender;
+	            PlayerData data = SkillAPI.getPlayerData(p);
+	            if (!data.showSkills(p))
+	            {
+	                cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");
+	            }
+        	}
+        	catch (Exception e) {
+        		e.printStackTrace();
+        	}
         }
 
         // Console doesn't have profession options

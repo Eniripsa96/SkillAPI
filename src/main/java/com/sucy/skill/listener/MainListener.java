@@ -178,6 +178,7 @@ public class MainListener extends SkillAPIListener {
 		                SkillAPI.getPlayerData(player).getEquips().update(player);
 						loadingPlayers.remove(player.getUniqueId());
 						Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
+			            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(player));
 						this.cancel();
 					}
 				}

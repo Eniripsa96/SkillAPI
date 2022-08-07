@@ -99,6 +99,10 @@ public class ConfigIO extends IOManager
     {
         try
         {
+            if (data.getData(1).getClass("class") == null || data.getData(1).getClass("class").getData().getName() == null) {
+            	Bukkit.getLogger().warning("[SkillAPI] Did not save " + data.getPlayerName() + ", class 1 was null");
+            	return;
+        	}
             CommentedConfig config = new CommentedConfig(api, "players/" + new VersionPlayer(data.getOfflinePlayer()).getIdString());
             config.clear();
 

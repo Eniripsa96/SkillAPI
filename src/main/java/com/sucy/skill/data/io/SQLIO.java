@@ -160,6 +160,10 @@ public class SQLIO extends IOManager
     private void saveSingle(SQLConnection connection, PlayerAccounts data)
     {
         if (data.getPlayer() != null && data.getPlayer().hasMetadata("NPC")) return;
+        if (data.getData(1).getClass("class") == null || data.getData(1).getClass("class").getData().getName() == null) {
+        	Bukkit.getLogger().warning("[SkillAPI] Did not save " + data.getPlayerName() + ", class 1 was null");
+        	return;
+    	}
         
         DataSection file = save(data);
 

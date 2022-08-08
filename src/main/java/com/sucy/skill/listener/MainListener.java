@@ -31,6 +31,7 @@ import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
+import com.sucy.skill.api.event.PlayerAfterLoadCompleteEvent;
 import com.sucy.skill.api.event.PlayerAttributeLoadEvent;
 import com.sucy.skill.api.event.PlayerAttributeUnloadEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
@@ -179,6 +180,7 @@ public class MainListener extends SkillAPIListener {
 						loadingPlayers.remove(player.getUniqueId());
 						Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
 			            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(player));
+			            Bukkit.getPluginManager().callEvent(new PlayerAfterLoadCompleteEvent(player));
 						this.cancel();
 					}
 				}

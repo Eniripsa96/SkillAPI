@@ -118,7 +118,8 @@ public abstract class IOManager
     {
         for (PlayerAccounts data : SkillAPI.getPlayerAccountData().values())
         {
-            if (!MainListener.loadingPlayers.containsKey(data.getOfflinePlayer().getUniqueId())) {
+            if (data.getPlayer() != null && data.getPlayer().isOnline() &&
+            		!MainListener.loadingPlayers.containsKey(data.getOfflinePlayer().getUniqueId())) {
                 saveData(data);
             }
         }

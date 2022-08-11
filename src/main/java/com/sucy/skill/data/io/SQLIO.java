@@ -152,7 +152,9 @@ public class SQLIO extends IOManager
         ArrayList<String> keys = new ArrayList<String>(data.keySet());
         for (String key : keys)
         {
-            saveSingle(connection, data.get(key));
+        	if (Bukkit.getPlayer(UUID.fromString(key)) != null) {
+                saveSingle(connection, data.get(key));
+        	}
         }
         connection.database.closeConnection();
     }

@@ -152,6 +152,7 @@ public class SQLIO extends IOManager
         ArrayList<String> keys = new ArrayList<String>(data.keySet());
         for (String key : keys)
         {
+        	// Only save online players
         	if (Bukkit.getPlayer(UUID.fromString(key)) != null) {
                 saveSingle(connection, data.get(key));
         	}

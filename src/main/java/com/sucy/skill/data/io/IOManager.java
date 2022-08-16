@@ -221,8 +221,11 @@ public abstract class IOManager
                         }
                         else if (SkillAPI.getSkill(key) != null)
                             bar.getData().put(skillBar.getInt(key), key);
+                        else if (key.equals("enabled")) {
+                        	boolean enabled = skillBar.getBoolean("enabled");
+                        	bar.setEnabled(enabled);
+                        }
                     }
-                    
                     bar.applySettings();
                 }
             }

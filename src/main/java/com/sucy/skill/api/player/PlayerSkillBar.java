@@ -183,6 +183,10 @@ public class PlayerSkillBar
             setup(player.getPlayer());
         }
     }
+    
+    public void setEnabled(boolean enabled) {
+    	this.enabled = enabled;
+    }
 
     /**
      * Toggles a slot between weapon and skill

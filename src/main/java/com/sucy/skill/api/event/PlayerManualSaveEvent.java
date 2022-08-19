@@ -35,13 +35,13 @@ import org.bukkit.event.HandlerList;
 /**
  * Event called when a player saves their class
  */
-public class PlayerSaveEvent extends Event
+public class PlayerManualSaveEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
     private Player p;
     private UUID uuid;
 
-    public PlayerSaveEvent(Player player)
+    public PlayerManualSaveEvent(Player player)
     {
         this.p = player;
         this.uuid = player.getUniqueId();

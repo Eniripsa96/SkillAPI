@@ -340,8 +340,6 @@ public class BarListener extends SkillAPIListener
         boolean enabled = SkillAPI.getSettings().isWorldEnabled(event.getPlayer().getWorld());
         if (data.hasClass() && data.getSkillBar().isSetup() && enabled)
             ignored.add(event.getPlayer().getUniqueId());
-        if (enabled)
-            data.getSkillBar().setup(event.getPlayer());
         else
             data.getSkillBar().clear(event.getPlayer());
     }

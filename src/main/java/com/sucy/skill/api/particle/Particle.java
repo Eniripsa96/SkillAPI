@@ -238,7 +238,7 @@ public class Particle {
             }
             if (toNms == null)
                 init();
-            final Object particle = toNms.invoke(null, bukkit, obj);
+            final Object particle = new Particle();
             return packet.newInstance(particle, true, x, y, z, dx, dy, dz, speed, amount);
         }
 

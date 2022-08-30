@@ -964,16 +964,25 @@ public class PlayerData {
 	public boolean showSkills(Player player) {
 		// Cannot show an invalid player, and cannot show no skills
 		if (player == null || classes.size() == 0 || skills.size() == 0) {
+            if (SkillAPI.debug) {
+            	Bukkit.getLogger().info("[SkillAPI Debug] /skills 2");
+            }
 			return false;
 		}
 
 		// Show list of classes that have skill trees
 		if (classes.size() > 1) {
+            if (SkillAPI.debug) {
+            	Bukkit.getLogger().info("[SkillAPI Debug] /skills 3");
+            }
 			return showDetails(player);
 		}
 
 		// Show only class's skill tree otherwise
 		else {
+            if (SkillAPI.debug) {
+            	Bukkit.getLogger().info("[SkillAPI Debug] /skills 4");
+            }
 			return showSkills(player, classes.values().iterator().next());
 		}
 	}
@@ -992,6 +1001,9 @@ public class PlayerData {
 			return false;
 		}
 
+        if (SkillAPI.debug) {
+        	Bukkit.getLogger().info("[SkillAPI Debug] /skills 4");
+        }
 		// Show skill tree of the class
 		this.menuClass = playerClass.getData().getName();
 		GUITool.getSkillTree(playerClass.getData()).show(new SkillHandler(), this,
@@ -1003,6 +1015,9 @@ public class PlayerData {
 								Filter.PLAYER.setReplacement(getPlayerName()))
 						.get(0),
 				playerClass.getData().getSkillMap());
+        if (SkillAPI.debug) {
+        	Bukkit.getLogger().info("[SkillAPI Debug] /skills 5");
+        }
 		return true;
 	}
 
@@ -1831,6 +1846,9 @@ public class PlayerData {
 	 * @return true if successfully cast the skill, false otherwise
 	 */
 	public boolean cast(PlayerSkill skill) {
+        if (SkillAPI.debug) {
+        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 1");
+        }
 		// Invalid skill
 		if (skill == null) {
 			throw new IllegalArgumentException("Skill cannot be null");
@@ -1839,6 +1857,9 @@ public class PlayerData {
 		int level = skill.getLevel();
 
 		// Not unlocked or on cooldown
+        if (SkillAPI.debug) {
+        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2");
+        }
 		if (!check(skill, true, true)) {
 			return false;
 		}
@@ -1853,18 +1874,30 @@ public class PlayerData {
 		if (p.getGameMode().name().equals("SPECTATOR")) {
 			return PlayerSkillCastFailedEvent.invoke(skill, SPECTATOR);
 		}
+        if (SkillAPI.debug) {
+        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 3");
+        }
 
 		// Skill Shots
         if (skill.getData() instanceof SkillShot) {
             PlayerCastSkillEvent event = new PlayerCastSkillEvent(this, skill, p);
             Bukkit.getPluginManager().callEvent(event);
+            if (SkillAPI.debug) {
+            	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " (skillshot) 4");
+            }
 
             // Make sure it isn't cancelled
             if (!event.isCancelled()) {
                 try {
                     if (((SkillShot) skill.getData()).cast(p, level)) {
+                        if (SkillAPI.debug) {
+                        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " (skillshot) 5");
+                        }
                         PlayerSkillCastSuccessEvent success = new PlayerSkillCastSuccessEvent(this, skill, p);
                         Bukkit.getPluginManager().callEvent(success);
+                        if (SkillAPI.debug) {
+                        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " (skillshot) 6");
+                        }
                         return applyUse(p, skill, event.getManaCost());
                     } else {
                         return PlayerSkillCastFailedEvent.invoke(skill, EFFECT_FAILED);

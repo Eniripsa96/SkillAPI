@@ -32,6 +32,8 @@ import com.rit.sucy.gui.MapMenuManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.gui.map.Menu;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -73,6 +75,9 @@ public class CmdSkill implements IFunction
         	try {
 	            Player p = (Player) sender;
 	            PlayerData data = SkillAPI.getPlayerData(p);
+	            if (SkillAPI.debug) {
+	            	Bukkit.getLogger().info("[SkillAPI Debug] /skills 1");
+	            }
 	            if (!data.showSkills(p))
 	            {
 	                cmd.sendMessage(sender, NO_SKILLS, ChatColor.RED + "You have no skills to view");

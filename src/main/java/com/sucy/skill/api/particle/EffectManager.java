@@ -61,7 +61,6 @@ public class EffectManager {
             if (key.equals("one-circle")) { formulas.get(key).getPoints(XZHandler.instance); }
         }
 
-        MainThread.register(new EffectTask());
     }
 
     public static void cleanUp() {

@@ -1002,7 +1002,7 @@ public class PlayerData {
 		}
 
         if (SkillAPI.debug) {
-        	Bukkit.getLogger().info("[SkillAPI Debug] /skills 4");
+        	Bukkit.getLogger().info("[SkillAPI Debug] /skills 4 1");
         }
 		// Show skill tree of the class
 		this.menuClass = playerClass.getData().getName();
@@ -1971,6 +1971,7 @@ public class PlayerData {
 	 */
 	public boolean check(PlayerSkill skill, boolean cooldown, boolean mana) {
 		if (skill == null || System.currentTimeMillis() < skillTimer) {
+			Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 1");
 			return false;
 		}
 
@@ -1980,6 +1981,7 @@ public class PlayerData {
 
 		// Not unlocked
 		if (level <= 0) {
+			Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 2");
 			return PlayerSkillCastFailedEvent.invoke(skill, NOT_UNLOCKED);
 		}
 
@@ -1988,6 +1990,7 @@ public class PlayerData {
 			SkillAPI.getLanguage().sendMessage(ErrorNodes.COOLDOWN, getPlayer(), FilterType.COLOR,
 					RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
 					RPGFilter.SKILL.setReplacement(skill.getData().getName()));
+			Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 3");
 			return PlayerSkillCastFailedEvent.invoke(skill, ON_COOLDOWN);
 		}
 
@@ -1999,6 +2002,7 @@ public class PlayerData {
 					RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
 					RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + ""),
 					RPGFilter.MANANAME.setReplacement(ChatColor.stripColor(this.getClass("class").getData().getManaName())));
+			Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 4");
 			return PlayerSkillCastFailedEvent.invoke(skill, NO_MANA);
 		}
 		else {

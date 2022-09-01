@@ -78,6 +78,7 @@ public class GUIData
 
     public void show(GUIHolder handler, PlayerData player, String title, HashMap<String, ? extends IconHolder> data)
     {
+    	Bukkit.getLogger().info("[SkillAPI Debug] Skills 10");
         Inventory inv = Bukkit.getServer().createInventory(handler, rows * 9, title);
         ItemStack[] contents = pageMap.get(0).instance(player, data);
         if (pages > 1)

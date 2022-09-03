@@ -111,7 +111,7 @@ public class StatusListener extends SkillAPIListener
     {
         if (((event.getPlayer()).isOnGround() || event.getTo().getY() > event.getFrom().getY()) && check(event, event.getPlayer(), event.getPlayer(), StatusFlag.STUN, StatusFlag.ROOT, StatusFlag.CHANNELING))
         {
-            event.getPlayer().setVelocity(ZERO);
+            event.setCancelled(true);
         }
     }
 

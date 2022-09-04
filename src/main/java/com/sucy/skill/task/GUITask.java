@@ -38,8 +38,6 @@ import com.sucy.skill.log.LogType;
 import com.sucy.skill.log.Logger;
 import com.sucy.skill.thread.RepeatThreadTask;
 
-import me.mrmaurice.cts.CrossTownyServer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -60,9 +58,6 @@ public class GUITask extends RepeatThreadTask
 
     private final boolean useAction;
     private final String  actionText;
-    
-    private final CrossTownyServer cts;
-    private boolean hasCts = false;
 
     /**
      * Sets up the task, running if any of the GUI options are enabled
@@ -72,11 +67,6 @@ public class GUITask extends RepeatThreadTask
     public GUITask(SkillAPI api)
     {
         super(5, 5);
-        
-        cts = (CrossTownyServer) Bukkit.getPluginManager().getPlugin("CrossTownyServer");
-        if (cts != null) {
-        	hasCts = true;
-        }
         
         String levelBar = SkillAPI.getSettings().getLevelBar().toLowerCase();
         levelMana = levelBar.equals("mana");
@@ -110,7 +100,6 @@ public class GUITask extends RepeatThreadTask
         for (Player player : Bukkit.getOnlinePlayers())
         {
             if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld())) continue;
-        	if (hasCts && cts.hasManager(player)) continue;
         	if (MainListener.loadingPlayers.containsKey(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
 

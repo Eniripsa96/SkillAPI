@@ -33,8 +33,6 @@ import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.listener.MainListener;
 import com.sucy.skill.thread.RepeatThreadTask;
 
-import me.mrmaurice.cts.CrossTownyServer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -43,8 +41,6 @@ import org.bukkit.entity.Player;
  */
 public class CooldownTask extends RepeatThreadTask
 {
-    private final CrossTownyServer cts;
-    private boolean hasCts = false;
     /**
      * Initializes a new cooldown task. This shouldn't be used by
      * other plugins as it is already set up by the API and additional
@@ -54,10 +50,6 @@ public class CooldownTask extends RepeatThreadTask
     {
         super(20, 20);
         
-        cts = (CrossTownyServer) Bukkit.getPluginManager().getPlugin("CrossTownyServer");
-        if (cts != null) {
-        	hasCts = true;
-        }
     }
 
     /**
@@ -68,7 +60,6 @@ public class CooldownTask extends RepeatThreadTask
     {
         for (Player player : Bukkit.getOnlinePlayers())
         {
-        	if (hasCts && cts.hasManager(player)) continue;
         	if (MainListener.loadingPlayers.containsKey(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
             if (data.hasClass())

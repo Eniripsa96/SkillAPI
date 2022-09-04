@@ -49,6 +49,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import me.neoblade298.neocore.NeoCore;
+import me.neoblade298.neocore.instancing.InstanceType;
+
 import static com.sucy.skill.listener.ItemListener.ARMOR_TYPES;
 
 /**
@@ -374,6 +377,12 @@ public class PlayerEquips
 
             PlayerClass main = player.getMainClass();
             String className = main == null ? "null" : main.getData().getName().toLowerCase();
+            
+            // Special to instances, all equipment is safe on id 13 (spectator account)
+            if (NeoCore.getInstanceType() == InstanceType.SESSIONS &&
+            		SkillAPI.getPlayerAccountData(player.getPlayer()).getActiveId() == 13) {
+            	return true;
+            }
             if ((levelReq > 0 && (main == null || main.getLevel() < levelReq))
                 || (classExc != null && main != null && classExc.contains(className))
                 || (classReq != null && (main == null || !classReq.contains(className))))

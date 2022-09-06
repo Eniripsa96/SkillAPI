@@ -27,6 +27,7 @@
 package com.sucy.skill.gui.tool;
 
 import com.rit.sucy.config.parse.DataSection;
+import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.tree.basic.InventoryTree;
 import org.bukkit.Bukkit;
@@ -78,7 +79,7 @@ public class GUIData
 
     public void show(GUIHolder handler, PlayerData player, String title, HashMap<String, ? extends IconHolder> data)
     {
-    	Bukkit.getLogger().info("[SkillAPI Debug] Skills 10");
+    	if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 10");
         Inventory inv = Bukkit.getServer().createInventory(handler, rows * 9, title);
         ItemStack[] contents = pageMap.get(0).instance(player, data);
         if (pages > 1)

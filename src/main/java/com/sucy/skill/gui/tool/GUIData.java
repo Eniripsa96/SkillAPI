@@ -80,13 +80,16 @@ public class GUIData
     public void show(GUIHolder handler, PlayerData player, String title, HashMap<String, ? extends IconHolder> data)
     {
     	if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 10");
-        Inventory inv = Bukkit.getServer().createInventory(handler, rows * 9, title);
+        Inventory inv = Bukkit.createInventory(handler, rows * 9, title);
         ItemStack[] contents = pageMap.get(0).instance(player, data);
         if (pages > 1)
             GUITool.addPageButtons(contents);
+    	if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 11");
         inv.setContents(contents);
         handler.set(this, player, inv, data);
+    	if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 12");
         player.getPlayer().openInventory(inv);
+    	if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 13");
     }
 
     public GUIPage getPage(int page)

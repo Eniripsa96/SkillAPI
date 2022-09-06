@@ -86,7 +86,6 @@ public abstract class GUIHolder<T extends IconHolder> implements InventoryHolder
         event.setCancelled(true);
     }
 
-    @SuppressWarnings("unchecked")
     public void handleClick(InventoryClickEvent event)
     {
         event.setCancelled(true);

@@ -1861,6 +1861,7 @@ public class PlayerData {
         	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2");
         }
 		if (!check(skill, true, true)) {
+        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill check failed " + skill.getData().getName());
 			return false;
 		}
 
@@ -1970,27 +1971,31 @@ public class PlayerData {
 	 * @return true if can use
 	 */
 	public boolean check(PlayerSkill skill, boolean cooldown, boolean mana) {
+		if (SkillAPI.debug)Bukkit.getLogger().info("[SkillAPI Debug] Check skill 0 " + skill.getData().getName());
 		if (skill == null || System.currentTimeMillis() < skillTimer) {
-			Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 1");
+			if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 1");
 			return false;
 		}
 
+		if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Check skill 1 " + skill.getData().getName());
 		SkillStatus status = skill.getStatus();
 		int level = skill.getLevel();
 		double cost = skill.getData().getManaCost(level);
+		if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Check skill 2 " + skill.getData().getName());
 
 		// Not unlocked
 		if (level <= 0) {
-			Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 2");
+			if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 2");
 			return PlayerSkillCastFailedEvent.invoke(skill, NOT_UNLOCKED);
 		}
+		if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Check skill 3 " + skill.getData().getName());
 
 		// On Cooldown
 		if (status == SkillStatus.ON_COOLDOWN && cooldown) {
+			if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 3");
 			SkillAPI.getLanguage().sendMessage(ErrorNodes.COOLDOWN, getPlayer(), FilterType.COLOR,
 					RPGFilter.COOLDOWN.setReplacement(skill.getCooldown() + ""),
 					RPGFilter.SKILL.setReplacement(skill.getData().getName()));
-			Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 3");
 			return PlayerSkillCastFailedEvent.invoke(skill, ON_COOLDOWN);
 		}
 
@@ -2002,10 +2007,11 @@ public class PlayerData {
 					RPGFilter.COST.setReplacement((int) Math.ceil(cost) + ""),
 					RPGFilter.MISSING.setReplacement((int) Math.ceil(cost - getMana()) + ""),
 					RPGFilter.MANANAME.setReplacement(ChatColor.stripColor(this.getClass("class").getData().getManaName())));
-			Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 4");
+			if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2 4");
 			return PlayerSkillCastFailedEvent.invoke(skill, NO_MANA);
 		}
 		else {
+			if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Check skill success " + skill.getData().getName());
 			return true;
 		}
 	}

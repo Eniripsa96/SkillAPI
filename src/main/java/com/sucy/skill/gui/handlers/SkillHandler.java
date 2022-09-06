@@ -32,12 +32,16 @@ import com.sucy.skill.gui.tool.GUIHolder;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
+
 public class SkillHandler extends GUIHolder<Skill> {
     private HashMap<String, Integer> start = new HashMap<String, Integer>();
 
     @Override
     public void onSetup() {
+		if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skill Map 1");
         for (String key : data.keySet()) { start.put(key, player.getSkillLevel(key)); }
+		if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skill Map 2");
     }
 
     @Override

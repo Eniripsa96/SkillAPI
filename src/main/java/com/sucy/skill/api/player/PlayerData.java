@@ -1861,7 +1861,9 @@ public class PlayerData {
         	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " 2");
         }
 		if (!check(skill, true, true)) {
-        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill check failed " + skill.getData().getName());
+	        if (SkillAPI.debug) {
+	        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill check failed " + skill.getData().getName());
+	        }
 			return false;
 		}
 

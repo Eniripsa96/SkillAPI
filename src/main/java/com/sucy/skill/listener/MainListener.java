@@ -181,6 +181,7 @@ public class MainListener extends SkillAPIListener {
 						Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
 			            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(player));
 			            Bukkit.getPluginManager().callEvent(new PlayerAfterLoadCompleteEvent(player));
+			            Logger.bug("Join task for " + player.getName() + " completed on attempt " + count);
 						this.cancel();
 					}
 				}

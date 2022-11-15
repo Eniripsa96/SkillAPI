@@ -148,7 +148,7 @@ public class MainListener extends SkillAPIListener {
 	/**
 	 * Starts passives and applies class data when a player logs in.
 	 */
-	@EventHandler(priority = EventPriority.MONITOR) // With EventPriority.Monitor we are being called last so we restore
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true) // With EventPriority.Monitor we are being called last so we restore
 													// here the bar
 	public void onJoin(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
@@ -163,7 +163,7 @@ public class MainListener extends SkillAPIListener {
 
 		// This is so init is not called async
 		BukkitRunnable load = new BukkitRunnable() {
-			int count = 0;
+			int count = 1;
 
 			@SuppressWarnings("unused")
 			public void run() {
@@ -181,7 +181,7 @@ public class MainListener extends SkillAPIListener {
 						Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
 			            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(player));
 			            Bukkit.getPluginManager().callEvent(new PlayerAfterLoadCompleteEvent(player));
-			            Logger.bug("Join task for " + player.getName() + " completed on attempt " + count);
+			            Logger.log("Join task for " + player.getName() + " completed on attempt " + count);
 						this.cancel();
 					}
 				}

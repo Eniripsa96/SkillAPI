@@ -188,7 +188,6 @@ public class BuffData
                 }
             }
         }
-        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " -> " + Math.max(0, value * (posMult * negMult) + bonus));
 
         PlayerCalculateDamageEvent e = new PlayerCalculateDamageEvent(entity, target, value, posMult, negMult, bonus, types);
         Bukkit.getPluginManager().callEvent(e);
@@ -196,6 +195,8 @@ public class BuffData
         negMult = e.getNegmult();
         bonus = e.getFlat();
         value = e.getDamage();
+
+        Logger.log(LogType.BUFF, 1, "Result: x" + posMult + "*" + negMult + ", +" + bonus + ", " + value + " = " + Math.max(0, value * (posMult * negMult) + bonus));
         // Negatives aren't well received by bukkit, so return 0 instead
         if (negMult <= 0) return 0;
         if (value <= 0) return 0;

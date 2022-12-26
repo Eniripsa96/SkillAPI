@@ -90,7 +90,7 @@ public class DamageMechanic extends MechanicComponent {
 
 			double amount = damage + critDamage;
 			if (target instanceof Player) {
-				amount *= 0.1; // classpvp damage limiting
+				amount *= 0.3; // classpvp damage limiting
 			}
 			
 			if (percent) {

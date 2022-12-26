@@ -61,6 +61,7 @@ import com.sucy.skill.task.ScoreboardTask;
 import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
@@ -1870,11 +1871,17 @@ public class PlayerData {
 		// Dead players can't cast skills
 		Player p = getPlayer();
 		if (p.isDead()) {
+	        if (SkillAPI.debug) {
+	        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " failed, player is dead");
+	        }
 			return PlayerSkillCastFailedEvent.invoke(skill, CASTER_DEAD);
 		}
 
 		// Disable casting in spectator mode
-		if (p.getGameMode().name().equals("SPECTATOR")) {
+		if (p.getGameMode() == GameMode.SPECTATOR) {
+	        if (SkillAPI.debug) {
+	        	Bukkit.getLogger().info("[SkillAPI Debug] Cast skill " + skill.getData().getName() + " failed, player is spectator");
+	        }
 			return PlayerSkillCastFailedEvent.invoke(skill, SPECTATOR);
 		}
         if (SkillAPI.debug) {

@@ -138,11 +138,6 @@ public class MainListener extends SkillAPIListener {
 			loadingPlayers.put(player.getUniqueId(), task);
 			loadingPlayerData.put(player.getUniqueId(), task);
 		}
-		else if (SkillAPI.getSettings().isUseSql() && SkillAPI.getSettings().getSqlDelay() == 0)
-			SkillAPI.loadPlayerDataSQL(player);
-		else {
-			SkillAPI.loadPlayerData(player);
-		}
 	}
 
 	/**

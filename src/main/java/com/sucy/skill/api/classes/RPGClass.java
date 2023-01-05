@@ -283,20 +283,16 @@ public abstract class RPGClass implements IconHolder
      */
     public HashMap<String, Skill> getSkillMap()
     {
-    	if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 6");
         if (skillMap.isEmpty())
         {
             RPGClass current = this;
-            if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 7");
             while (current != null)
             {
-            	if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 8");
                 for (Skill skill : current.skills)
                     skillMap.put(skill.getName().toLowerCase(), skill);
                 current = current.getParent();
             }
         }
-    	if (SkillAPI.debug) Bukkit.getLogger().info("[SkillAPI Debug] Skills 9");
         return skillMap;
     }
 

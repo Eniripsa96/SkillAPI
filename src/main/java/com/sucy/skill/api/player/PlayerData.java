@@ -965,25 +965,16 @@ public class PlayerData {
 	public boolean showSkills(Player player) {
 		// Cannot show an invalid player, and cannot show no skills
 		if (player == null || classes.size() == 0 || skills.size() == 0) {
-            if (SkillAPI.debug) {
-            	Bukkit.getLogger().info("[SkillAPI Debug] /skills 2");
-            }
 			return false;
 		}
 
 		// Show list of classes that have skill trees
 		if (classes.size() > 1) {
-            if (SkillAPI.debug) {
-            	Bukkit.getLogger().info("[SkillAPI Debug] /skills 3");
-            }
 			return showDetails(player);
 		}
 
 		// Show only class's skill tree otherwise
 		else {
-            if (SkillAPI.debug) {
-            	Bukkit.getLogger().info("[SkillAPI Debug] /skills 4");
-            }
 			return showSkills(player, classes.values().iterator().next());
 		}
 	}
@@ -1002,9 +993,6 @@ public class PlayerData {
 			return false;
 		}
 
-        if (SkillAPI.debug) {
-        	Bukkit.getLogger().info("[SkillAPI Debug] /skills 4 1");
-        }
 		// Show skill tree of the class
 		this.menuClass = playerClass.getData().getName();
 		GUITool.getSkillTree(playerClass.getData()).show(new SkillHandler(), this,

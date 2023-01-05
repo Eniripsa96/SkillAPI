@@ -52,6 +52,10 @@ public class Settings {
     public Settings(final Settings settings) {
         this.settings = new HashMap<>(settings.settings);
     }
+    
+    public String toString() {
+    	return settings.toString();
+    }
 
     /**
      * Sets the value for a setting. You should only provide a

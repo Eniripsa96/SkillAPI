@@ -556,9 +556,6 @@ public abstract class Skill implements IconHolder
 
         String attrChanging = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_CHANGING, true, FilterType.COLOR).get(0);
         String attrStatic = SkillAPI.getLanguage().getMessage(SkillNodes.ATTRIBUTE_NOT_CHANGING, true, FilterType.COLOR).get(0);
-        if (name.equalsIgnoreCase("Unstoppable")) {
-        	System.out.println("Created icon for unstoppable");
-        }
 
         for (String line : iconLore)
         {
@@ -579,19 +576,10 @@ public abstract class Skill implements IconHolder
                 // Attributes
                 while (line.contains("{attr:"))
                 {
-                    if (name.equalsIgnoreCase("Unstoppable") && line.contains("Shield yourself")) {
-                    	System.out.println("1 " + line);
-                    }
                     int start = line.indexOf("{attr:");
                     int end = line.indexOf("}", start);
                     String attr = line.substring(start + 6, end);
-                    if (name.equalsIgnoreCase("Unstoppable") && line.contains("Shield yourself")) {
-                    	System.out.println("HERE 1 BEFORE");
-                    }
                     Object currValue = getAttr(player, attr, Math.max(1, skillData.getLevel()));
-                    if (name.equalsIgnoreCase("Unstoppable") && line.contains("Shield yourself")) {
-                    	System.out.println("HERE 1 currValue = " + currValue);
-                    }
                     Object nextValue = getAttr(player, attr, Math.min(skillData.getLevel() + 1, maxLevel));
                     if (attr.equals("level") || attr.equals("cost"))
                     {
@@ -602,21 +590,10 @@ public abstract class Skill implements IconHolder
                     if (currValue.equals(nextValue) || brief)
                     {
                         line = line.replace("{attr:" + attr + "}", attrStatic.replace("{name}", getAttrName(attr)).replace("{value}", currValue.toString()));
-                        if (name.equalsIgnoreCase("Unstoppable") && line.contains("Shield yourself")) {
-                        	System.out.println("2 " + line);
-                        }
                     }
                     else
                     {
-                        if (name.equalsIgnoreCase("Unstoppable") && line.contains("Shield yourself")) {
-                        	System.out.println("4 " + attr);
-                        	System.out.println("5 " + attrChanging);
-                        	System.out.println("6 " + currValue);
-                        }
                         line = line.replace("{attr:" + attr + "}", attrChanging.replace("{name}", getAttrName(attr)).replace("{value}", currValue.toString()).replace("{new}", nextValue.toString()));
-                        if (name.equalsIgnoreCase("Unstoppable") && line.contains("Shield yourself")) {
-                        	System.out.println("3 " + line);
-                        }
                     }
                 }
 

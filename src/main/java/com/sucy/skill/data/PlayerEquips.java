@@ -49,8 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import me.neoblade298.neocore.NeoCore;
-import me.neoblade298.neocore.instancing.InstanceType;
+import me.neoblade298.neocore.bukkit.NeoCore;
+import me.neoblade298.neocore.bukkit.InstanceType;
 
 import static com.sucy.skill.listener.ItemListener.ARMOR_TYPES;
 

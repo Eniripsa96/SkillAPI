@@ -93,7 +93,7 @@ public class PlayerAccounts {
 		return player.getPlayer();
     }
     
-    public void setPlayer(Player p) {
+    public void setPlayer(OfflinePlayer p) {
     	this.player = p;
     }
 

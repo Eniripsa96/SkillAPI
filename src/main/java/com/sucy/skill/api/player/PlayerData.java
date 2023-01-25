@@ -140,8 +140,8 @@ public class PlayerData {
 		return player.getPlayer();
 	}
 	
-	public void setPlayer(Player p) {
-		this.player = player;
+	public void setPlayer(OfflinePlayer p) {
+		this.player = p;
 	}
 
 	/**

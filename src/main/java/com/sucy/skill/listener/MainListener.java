@@ -189,8 +189,9 @@ public class MainListener extends SkillAPIListener {
 
 	private void init(final Player player) {
 		final PlayerData data = SkillAPI.getPlayerData(player);
-		SkillAPI.getPlayerAccountData(player).setPlayer(player);
-		data.setPlayer(player);
+		OfflinePlayer op = Bukkit.getOfflinePlayer(player.getUniqueId());
+		SkillAPI.getPlayerAccountData(player).setPlayer(op);
+		data.setPlayer(op);
 		data.init(player);
 		data.autoLevel();
 		// data.updateScoreboard();

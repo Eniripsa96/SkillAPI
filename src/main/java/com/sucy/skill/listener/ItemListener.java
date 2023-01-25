@@ -29,7 +29,6 @@ package com.sucy.skill.listener;
 import com.google.common.collect.ImmutableSet;
 import com.rit.sucy.config.FilterType;
 import com.rit.sucy.version.VersionManager;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.data.PlayerEquips;
@@ -274,7 +273,7 @@ public class ItemListener extends SkillAPIListener
         @Override
         public void run()
         {
-            String id = new VersionPlayer(player).getIdString();
+            String id = player.getUniqueId().toString();
             if (singleton.players.containsKey(id)) {
 	        	if (offhandSwap) SkillAPI.getPlayerData(player).getEquips().swapOffhand();
 	        	else {

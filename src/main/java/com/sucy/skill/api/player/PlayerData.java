@@ -139,6 +139,10 @@ public class PlayerData {
 	public Player getPlayer() {
 		return player.getPlayer();
 	}
+	
+	public void setPlayer(Player p) {
+		this.player = player;
+	}
 
 	/**
 	 * Retrieves the name of the owner

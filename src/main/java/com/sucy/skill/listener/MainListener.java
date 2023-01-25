@@ -27,7 +27,6 @@
 package com.sucy.skill.listener;
 
 import com.rit.sucy.version.VersionManager;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
@@ -107,7 +106,7 @@ public class MainListener extends SkillAPIListener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onLogin(AsyncPlayerPreLoginEvent event) {
-		final OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+		OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
 
 		int delay = SkillAPI.getSettings().getSqlDelay();
 
@@ -190,6 +189,8 @@ public class MainListener extends SkillAPIListener {
 
 	private void init(final Player player) {
 		final PlayerData data = SkillAPI.getPlayerData(player);
+		SkillAPI.getPlayerAccountData(player).setPlayer(player);
+		data.setPlayer(player);
 		data.init(player);
 		data.autoLevel();
 		// data.updateScoreboard();
@@ -483,7 +484,6 @@ public class MainListener extends SkillAPIListener {
 			PlayerData data = SkillAPI.getPlayerData(event.getPlayer());
 			data.clearBonuses();
 			data.stopPassives(event.getPlayer());
-			// ClassBoardManager.clear(new VersionPlayer(event.getPlayer())); Doesn't work as of 1.19
 			event.getPlayer().setMaxHealth(SkillAPI.getSettings().getDefaultHealth());
 			event.getPlayer().setHealth(SkillAPI.getSettings().getDefaultHealth());
 			if (!SkillAPI.getSettings().getLevelBar().equalsIgnoreCase("none")) {

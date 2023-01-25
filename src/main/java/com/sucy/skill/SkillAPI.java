@@ -27,7 +27,6 @@ package com.sucy.skill;
 import com.rit.sucy.config.CommentedConfig;
 import com.rit.sucy.config.CommentedLanguageConfig;
 import com.rit.sucy.version.VersionManager;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.api.classes.RPGClass;
 import com.sucy.skill.api.event.PlayerSaveEvent;
 import com.sucy.skill.api.particle.EffectManager;
@@ -493,7 +492,7 @@ public class SkillAPI extends JavaPlugin {
         if (player == null) { return null; }
 
         // Already loaded for some reason, no need to load again
-        String id = new VersionPlayer(player).getIdString();
+        String id = player.getUniqueId().toString();
         if (singleton().players.containsKey(id)) { return singleton.players.get(id); }
         
         // Load the data
@@ -562,7 +561,7 @@ public class SkillAPI extends JavaPlugin {
      * @return true if has loaded data, false otherwise
      */
     public static boolean hasPlayerData(OfflinePlayer player) {
-        return singleton != null && player != null && singleton.players.containsKey(new VersionPlayer(player).getIdString());
+        return singleton != null && player != null && singleton.players.containsKey(player.getUniqueId().toString());
     }
 
     /**
@@ -576,14 +575,14 @@ public class SkillAPI extends JavaPlugin {
     }
     
     public static void unloadPlayerData(final OfflinePlayer player, final boolean skipSaving) {
-        if (singleton == null || player == null || singleton.disabling || !singleton.players.containsKey(new VersionPlayer(player).getIdString())) {
+        if (singleton == null || player == null || singleton.disabling || !singleton.players.containsKey(player.getUniqueId().toString())) {
             return;
         }
 
         singleton.getServer().getScheduler().runTaskAsynchronously(singleton, () -> {
             PlayerAccounts accounts = getPlayerAccountData(player);
         	singleton.io.saveData(accounts);
-            singleton.players.remove(new VersionPlayer(player).getIdString());
+            singleton.players.remove(player.getUniqueId().toString());
         });
     }
 
@@ -599,7 +598,7 @@ public class SkillAPI extends JavaPlugin {
     public static PlayerAccounts getPlayerAccountData(OfflinePlayer player) {
         if (player == null) { return null; }
 
-        String id = new VersionPlayer(player).getIdString();
+        String id = player.getUniqueId().toString();
         if (!singleton().players.containsKey(id)) {
             PlayerAccounts data = loadPlayerData(player);
             singleton.players.put(id, data);

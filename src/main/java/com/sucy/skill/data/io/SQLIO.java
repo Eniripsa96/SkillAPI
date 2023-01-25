@@ -32,7 +32,6 @@ import com.rit.sucy.sql.ColumnType;
 import com.rit.sucy.sql.direct.SQLDatabase;
 import com.rit.sucy.sql.direct.SQLTable;
 import com.rit.sucy.version.VersionManager;
-import com.rit.sucy.version.VersionPlayer;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.data.Settings;
@@ -87,7 +86,7 @@ public class SQLIO extends IOManager
 
         HashMap<String, PlayerAccounts> result = new HashMap<String, PlayerAccounts>();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            result.put(new VersionPlayer(player).getIdString(), load(connection, player));
+            result.put(player.getUniqueId().toString(), load(connection, player));
         }
 
         connection.database.closeConnection();

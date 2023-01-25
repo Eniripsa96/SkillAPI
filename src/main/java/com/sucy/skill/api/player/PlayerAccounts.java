@@ -92,6 +92,10 @@ public class PlayerAccounts {
     public Player getPlayer() {
 		return player.getPlayer();
     }
+    
+    public void setPlayer(Player p) {
+    	this.player = p;
+    }
 
     /**
      * Gets the Bukkit offline player object for the owner of the data

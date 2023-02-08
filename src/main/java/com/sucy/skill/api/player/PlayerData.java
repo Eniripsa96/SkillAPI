@@ -1316,6 +1316,7 @@ public class PlayerData {
 			}
 
 			Bukkit.getPluginManager().callEvent(new PlayerClassChangeEvent(current, previous, current.getData()));
+			AttributeListener.updatePlayer(this);
 			resetAttribs();
 			updateScoreboard();
 			return true;

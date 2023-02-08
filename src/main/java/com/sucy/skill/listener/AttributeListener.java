@@ -31,6 +31,7 @@ import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.enums.ManaSource;
 import com.sucy.skill.api.event.*;
+import com.sucy.skill.api.player.PlayerClass;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.hook.CitizensHook;
 import com.sucy.skill.log.LogType;
@@ -351,8 +352,20 @@ public class AttributeListener extends SkillAPIListener
             double change = updateStat(data, AttributeManager.HEALTH, player.getMaxHealth(), 0, Double.MAX_VALUE);
             data.addMaxHealth(change);
 
-            change = updateStat(data, AttributeManager.MANA, data.getMaxMana(), 0, Double.MAX_VALUE);
-            data.addMaxMana(change);
+            PlayerClass pc = data.getMainClass();
+            // Class uses mana
+            if (pc != null && pc.getData().getManaName().endsWith("MP")) {
+                change = updateStat(data, AttributeManager.MANA, data.getMaxMana(), 0, Double.MAX_VALUE);
+                data.addMaxMana(change);
+            }
+            // Class does not use mana, remove any bonus mana it has
+            else {
+            	String key = player.getName() + ":" + AttributeManager.MANA;
+            	if (BONUSES.containsKey(key)) {
+            		double amt = -BONUSES.remove(key);
+            		data.addMaxMana(amt);
+            	}
+            }
 
             change = updateStat(data, AttributeManager.MOVE_SPEED, player.getWalkSpeed(), -2, 1);
             player.setWalkSpeed(player.getWalkSpeed() + (float) change);
@@ -408,9 +421,6 @@ public class AttributeListener extends SkillAPIListener
         Player player = data.getPlayer();
         if (player != null)
         {
-        	if (key.equals("mana") && (data.getClass("class") != null && !data.getClass("class").getData().getManaName().contains("MP"))) {
-        		return 0;
-        	}
             String mapKey = player.getName() + ":" + key;
             double current = BONUSES.containsKey(mapKey) ? BONUSES.remove(mapKey) : 0;
             double updated = Math.max(min, Math.min(max, data.scaleStat(key, value - current) - value + current));

@@ -36,6 +36,8 @@ import com.sucy.skill.log.Logger;
 import com.sucy.skill.manager.ComboManager;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import me.neoblade298.neocore.bukkit.NeoCore;
+import me.neoblade298.neocore.bukkit.InstanceType; 
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,6 +74,7 @@ public abstract class IOManager
         COOLDOWN       = "cd",
         HUNGER         = "hunger",
         ATTRIB_POINTS  = "attrib-points";
+    private static boolean isSession = NeoCore.getInstanceType() == InstanceType.SESSIONS;
 
     /**
      * API reference
@@ -182,7 +185,9 @@ public abstract class IOManager
                     {
                         skillData.setLevel(skill.getInt(LEVEL));
                         skillData.setPoints(skill.getInt(POINTS));
-                        skillData.addCooldown(skill.getInt(COOLDOWN, 0));
+                        if (!isSession) {
+                            skillData.addCooldown(skill.getInt(COOLDOWN, 0));
+                        }
                     }
                 }
             }

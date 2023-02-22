@@ -79,8 +79,9 @@ public class MainListener extends SkillAPIListener {
 	private static final List<Consumer<Player>> CLEAR_HANDLERS = new ArrayList<>();
 	private static SkillAPI singleton;
 
-	public static final Map<UUID, BukkitRunnable> loadingPlayers = new HashMap<>();
-	public static final Map<UUID, BukkitRunnable> loadingPlayerData = new HashMap<>();
+	public static final Map<UUID, BukkitRunnable> loadingPlayers = new HashMap<>(); // Full load
+	public static final HashSet<UUID> loadingPlayerData = new HashSet<UUID>(); // Only preload
+	public static final HashSet<UUID> joiningPlayers = new HashSet<UUID>(); // Only load
 
 	public MainListener(SkillAPI skillAPI) {
 		singleton = skillAPI;
@@ -135,7 +136,7 @@ public class MainListener extends SkillAPIListener {
 			};
 			task.runTaskTimerAsynchronously(singleton, delay, delay);
 			loadingPlayers.put(player.getUniqueId(), task);
-			loadingPlayerData.put(player.getUniqueId(), task);
+			loadingPlayerData.add(player.getUniqueId());
 		}
 	}
 
@@ -154,6 +155,11 @@ public class MainListener extends SkillAPIListener {
 		if (!SkillAPI.getSettings().isUseSql() && delay == 0) {
 			init(player);
 		}
+		
+		// Don't double up on join tasks
+		UUID uuid = player.getUniqueId();
+		if (joiningPlayers.contains(uuid)) return;
+		joiningPlayers.add(uuid);
 
 		// This is so init is not called async
 		BukkitRunnable load = new BukkitRunnable() {
@@ -165,16 +171,18 @@ public class MainListener extends SkillAPIListener {
 					this.cancel();
 				}
 				if (count > 5) {
+					joiningPlayers.remove(uuid);
 					this.cancel();
 				}
 				try {
-					if (!loadingPlayerData.containsKey(player.getUniqueId())) {
+					if (!loadingPlayerData.contains(player.getUniqueId())) {
 						init(player);
 		                SkillAPI.getPlayerData(player).getEquips().update(player);
 						loadingPlayers.remove(player.getUniqueId());
 						Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
 			            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(player));
 			            Bukkit.getPluginManager().callEvent(new PlayerAfterLoadCompleteEvent(player));
+			            joiningPlayers.remove(uuid);
 			            Logger.log("Join task for " + player.getName() + " completed on attempt " + count);
 						this.cancel();
 					}

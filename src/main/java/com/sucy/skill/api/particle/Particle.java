@@ -235,6 +235,7 @@ public class Particle {
                 case BLOCK_DUST:
                 case FALLING_DUST:
                     obj = material.createBlockData();
+                default:
             }
             if (toNms == null)
                 init();

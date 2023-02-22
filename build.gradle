@@ -35,7 +35,6 @@ dependencies {
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.0'
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.0.0'
     compileOnly 'fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:4.6.0'
     compileOnly fileTree(dir: 'libs', include: '*.jar')
     compileOnly 'LibsDisguises:LibsDisguises:10.0.21'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'

@@ -161,6 +161,7 @@ public class SQLIO extends IOManager
 
     private void saveSingle(SQLConnection connection, PlayerAccounts data)
     {
+    	long start = System.currentTimeMillis();
         if (data.getPlayer() != null && data.getPlayer().hasMetadata("NPC")) return;
         if (data.getData(1).getClass("class") == null || data.getData(1).getClass("class").getData().getName() == null) {
         	Bukkit.getLogger().warning("[SkillAPI] Did not save " + data.getPlayerName() + ", class 1 was null");
@@ -171,12 +172,13 @@ public class SQLIO extends IOManager
 
         try
         {
-			Logger.log("Successfully saved " + data.getPlayerName());
             connection.table.createEntry(data.getPlayer().getUniqueId().toString()).set(DATA, file.toString(QUOTE));
+            long timer = System.currentTimeMillis() - start;
+			Logger.log("[SkillAPI] Successfully saved " + data.getPlayerName() + " in " + timer + "ms");
         }
         catch (Exception ex)
         {
-            Logger.bug("Failed to save data for invalid player");
+            Logger.bug("[SkillAPI] Failed to save data for invalid player");
             ex.printStackTrace();
         }
     }

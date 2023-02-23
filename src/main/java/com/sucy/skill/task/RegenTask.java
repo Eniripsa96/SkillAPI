@@ -64,7 +64,7 @@ public class RegenTask extends RepeatThreadTask
         Logger.log(LogType.MANA, 1, "Applying mana regen for " + Bukkit.getOnlinePlayers().size() + " players");
         for (Player player : Bukkit.getOnlinePlayers())
         {
-        	if (MainListener.loadingPlayerData.contains(player.getUniqueId())) continue;
+        	if (MainListener.loadingPlayers.contains(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
             if(data != null) {
                 data.regenMana();

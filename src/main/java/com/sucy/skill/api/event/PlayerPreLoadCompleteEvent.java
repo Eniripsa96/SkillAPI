@@ -25,27 +25,27 @@
  * THE SOFTWARE.
  */
 package com.sucy.skill.api.event;
+import java.util.UUID;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
  * Event called when a player changes classes
  */
-public class PlayerAfterLoadCompleteEvent extends Event
+public class PlayerPreLoadCompleteEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
-    private Player p;
+    private UUID uuid;
 
-    public PlayerAfterLoadCompleteEvent(Player player)
+    public PlayerPreLoadCompleteEvent(UUID uuid)
     {
-        this.p = player;
+        this.uuid = uuid;
     }
 
-    public Player getPlayer()
+    public UUID getUniqueId()
     {
-        return this.p;
+        return this.uuid;
     }
 
     /**

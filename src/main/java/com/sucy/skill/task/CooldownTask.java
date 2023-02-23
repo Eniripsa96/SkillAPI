@@ -60,7 +60,7 @@ public class CooldownTask extends RepeatThreadTask
     {
         for (Player player : Bukkit.getOnlinePlayers())
         {
-        	if (MainListener.loadingPlayers.containsKey(player.getUniqueId())) continue;
+        	if (MainListener.loadingPlayers.contains(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
             if (data.hasClass())
             {

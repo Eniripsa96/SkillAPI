@@ -141,7 +141,7 @@ public class PlayerEquips
         }
         
         // New item can't be equipped because of requirements
-        else if (!to.isMet() && !MainListener.loadingPlayers.containsKey(player.getUUID()))
+        else if (!to.isMet() && !MainListener.loadingPlayers.contains(player.getUUID()))
         {
             if (SkillAPI.getSettings().isDropWeapon() || !weapon) {
                 inv.setItem(index, TEMP);

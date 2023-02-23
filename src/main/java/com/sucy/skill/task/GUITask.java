@@ -100,7 +100,7 @@ public class GUITask extends RepeatThreadTask
         for (Player player : Bukkit.getOnlinePlayers())
         {
             if (!SkillAPI.getSettings().isWorldEnabled(player.getWorld())) continue;
-        	if (MainListener.loadingPlayers.containsKey(player.getUniqueId())) continue;
+        	if (MainListener.loadingPlayers.contains(player.getUniqueId())) continue;
             PlayerData data = SkillAPI.getPlayerData(player);
 
             // Health scale

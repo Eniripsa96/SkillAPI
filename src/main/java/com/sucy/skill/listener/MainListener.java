@@ -30,12 +30,12 @@ import com.rit.sucy.version.VersionManager;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.enums.ExpSource;
 import com.sucy.skill.api.event.PhysicalDamageEvent;
-import com.sucy.skill.api.event.PlayerAfterLoadCompleteEvent;
 import com.sucy.skill.api.event.PlayerAttributeLoadEvent;
 import com.sucy.skill.api.event.PlayerAttributeUnloadEvent;
 import com.sucy.skill.api.event.PlayerClassChangeEvent;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 import com.sucy.skill.api.event.PlayerLoadCompleteEvent;
+import com.sucy.skill.api.event.PlayerPreLoadCompleteEvent;
 import com.sucy.skill.api.player.PlayerAccounts;
 import com.sucy.skill.api.player.PlayerData;
 import com.sucy.skill.api.skills.Skill;
@@ -79,9 +79,8 @@ public class MainListener extends SkillAPIListener {
 	private static final List<Consumer<Player>> CLEAR_HANDLERS = new ArrayList<>();
 	private static SkillAPI singleton;
 
-	public static final Map<UUID, BukkitRunnable> loadingPlayers = new HashMap<>(); // Full load
-	public static final HashSet<UUID> loadingPlayerData = new HashSet<UUID>(); // Only preload
-	public static final HashSet<UUID> joiningPlayers = new HashSet<UUID>(); // Only load
+	public static final Map<UUID, BukkitTask> loadingTask = new HashMap<>(); // Holds the preload and load tasks
+	public static final HashSet<UUID> loadingPlayers = new HashSet<UUID>();
 
 	public MainListener(SkillAPI skillAPI) {
 		singleton = skillAPI;
@@ -113,86 +112,96 @@ public class MainListener extends SkillAPIListener {
 
 		if (SkillAPI.getSettings().isUseSql() && delay > 0) {
 			SkillAPI.initFakeData(player);
-			final BukkitRunnable task = new BukkitRunnable() {
+			final BukkitTask task = new BukkitRunnable() {
 				int count = 0;
 				public void run() {
 					count++;
 					if (count > 1) {
-			            Logger.bug("Load task for " + player.getName() + " is on attempt " + count);
+			            Logger.bug("[SkillAPI] Preload task for " + player.getName() + " is on attempt " + count);
 						if (count > 4) {
-				            Logger.bug("Cancelling load task for " + player.getName() + ", count = " + count);
+				            Logger.bug("[SkillAPI] Cancelling preload task for " + player.getName() + ", count = " + count);
+							loadingTask.remove(event.getUniqueId());
 							this.cancel();
 						}
 					}
 					
 					PlayerAccounts data = SkillAPI.loadPlayerDataSQL(player);
 					if (data != null && data.getActiveData() != null) {
-						Logger.log("Successfully loaded " + event.getUniqueId() + " after " + count + " attempts");
-						loadingPlayerData.remove(player.getUniqueId());
+						Logger.log("[SkillAPI] Successfully preloaded " + event.getUniqueId() + " after " + count + " attempts");
 						singleton.players.remove(player.getUniqueId().toString());
+						loadingTask.remove(event.getUniqueId());
 						this.cancel();
+						new BukkitRunnable() {
+							public void run() {
+								Bukkit.getPluginManager().callEvent(new PlayerPreLoadCompleteEvent(event.getUniqueId()));
+							}
+						}.runTask(singleton);
 					}
 				}
-			};
-			task.runTaskTimerAsynchronously(singleton, delay, delay);
-			loadingPlayers.put(player.getUniqueId(), task);
-			loadingPlayerData.add(player.getUniqueId());
+			}.runTaskTimerAsynchronously(singleton, delay, 20L);
+			loadingTask.put(player.getUniqueId(), task);
 		}
 	}
 
 	/**
 	 * Starts passives and applies class data when a player logs in.
 	 */
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true) // With EventPriority.Monitor we are being called last so we restore
-													// here the bar
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onJoin(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		if (player.hasMetadata("NPC"))
 			return;
 
-		// Not used by MLMC
-		final int delay = SkillAPI.getSettings().getSqlDelay();
-		if (!SkillAPI.getSettings().isUseSql() && delay == 0) {
-			init(player);
-		}
+		loadPlayer(player);
+	}
+	
+	@EventHandler
+	public void onPreLoadComplete(PlayerPreLoadCompleteEvent e) {
+		Player p = Bukkit.getPlayer(e.getUniqueId());
 		
-		// Don't double up on join tasks
-		UUID uuid = player.getUniqueId();
-		if (joiningPlayers.contains(uuid)) return;
-		joiningPlayers.add(uuid);
-
-		// This is so init is not called async
-		BukkitRunnable load = new BukkitRunnable() {
+		// Preload complete before player logged on
+		if (p == null) return; 
+		
+		loadPlayer(p);
+	}
+	
+	private void loadPlayer(Player p) {
+		UUID uuid = p.getUniqueId();
+		
+		if (loadingTask.containsKey(uuid)) return; 
+		
+		BukkitTask load = new BukkitRunnable() {
 			int count = 1;
 
 			@SuppressWarnings("unused")
 			public void run() {
-				if (player == null) {
+				if (p == null) {
+					loadingTask.remove(uuid);
+					loadingPlayers.remove(uuid);
 					this.cancel();
 				}
 				if (count > 5) {
-					joiningPlayers.remove(uuid);
+					loadingTask.remove(uuid);
+					loadingPlayers.remove(uuid);
+		            Logger.bug("[SkillAPI] Load task for " + p.getName() + " failed");
 					this.cancel();
 				}
 				try {
-					if (!loadingPlayerData.contains(player.getUniqueId())) {
-						init(player);
-		                SkillAPI.getPlayerData(player).getEquips().update(player);
-						loadingPlayers.remove(player.getUniqueId());
-						Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(player));
-			            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(player));
-			            Bukkit.getPluginManager().callEvent(new PlayerAfterLoadCompleteEvent(player));
-			            joiningPlayers.remove(uuid);
-			            Logger.log("Join task for " + player.getName() + " completed on attempt " + count);
-						this.cancel();
-					}
+					init(p);
+	                SkillAPI.getPlayerData(p).getEquips().update(p);
+		            Logger.log("[SkillAPI] Successfully loaded " + p.getName() + " on attempt " + count);
+					loadingTask.remove(uuid);
+					loadingPlayers.remove(uuid);
+					Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(p));
+		            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(p));
+					this.cancel();
 				}
 				catch (Exception e) {
 					count++;
 				}
 			}
-		};
-		load.runTaskTimer(singleton, delay + 40, 20);
+		}.runTask(singleton);
+		loadingTask.put(uuid, load);
 	}
 
 	private void init(final Player player) {
@@ -226,10 +235,12 @@ public class MainListener extends SkillAPIListener {
 			return;
 
 		boolean skipSaving = false;
-		if (loadingPlayers.containsKey(player.getUniqueId())) {
-			loadingPlayers.remove(player.getUniqueId()).cancel();
+		UUID uuid = player.getUniqueId();
+		if (loadingTask.containsKey(uuid)) {
+			loadingTask.remove(player.getUniqueId()).cancel();
 			skipSaving = true;
 		}
+		loadingPlayers.remove(uuid);
 
 		PlayerData data = SkillAPI.getPlayerData(player);
 		if (SkillAPI.getSettings().isWorldEnabled(player.getWorld())) {

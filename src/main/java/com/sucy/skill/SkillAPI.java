@@ -547,7 +547,7 @@ public class SkillAPI extends JavaPlugin {
     }
     
     public static boolean isLoaded(Player p) {
-    	return !MainListener.loadingPlayers.containsKey(p.getUniqueId());
+    	return !MainListener.loadingPlayers.contains(p.getUniqueId());
     }
 
     /**

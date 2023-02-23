@@ -80,6 +80,7 @@ public class MainListener extends SkillAPIListener {
 	private static SkillAPI singleton;
 
 	public static final Map<UUID, BukkitTask> loadingTask = new HashMap<>(); // Holds the preload and load tasks
+	public static final HashSet<UUID> preloadingPlayers = new HashSet<UUID>();
 	public static final HashSet<UUID> loadingPlayers = new HashSet<UUID>();
 
 	public MainListener(SkillAPI skillAPI) {
@@ -107,6 +108,8 @@ public class MainListener extends SkillAPIListener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onLogin(AsyncPlayerPreLoginEvent event) {
 		OfflinePlayer player = Bukkit.getOfflinePlayer(event.getUniqueId());
+		loadingPlayers.add(event.getUniqueId());
+		preloadingPlayers.add(event.getUniqueId());
 
 		int delay = SkillAPI.getSettings().getSqlDelay();
 
@@ -121,6 +124,7 @@ public class MainListener extends SkillAPIListener {
 						if (count > 4) {
 				            Logger.bug("[SkillAPI] Cancelling preload task for " + player.getName() + ", count = " + count);
 							loadingTask.remove(event.getUniqueId());
+							preloadingPlayers.remove(event.getUniqueId());
 							this.cancel();
 						}
 					}
@@ -130,6 +134,7 @@ public class MainListener extends SkillAPIListener {
 						Logger.log("[SkillAPI] Successfully preloaded " + event.getUniqueId() + " after " + count + " attempts");
 						singleton.players.remove(player.getUniqueId().toString());
 						loadingTask.remove(event.getUniqueId());
+						preloadingPlayers.remove(event.getUniqueId());
 						this.cancel();
 						new BukkitRunnable() {
 							public void run() {
@@ -188,10 +193,10 @@ public class MainListener extends SkillAPIListener {
 				}
 				try {
 					init(p);
-	                SkillAPI.getPlayerData(p).getEquips().update(p);
-		            Logger.log("[SkillAPI] Successfully loaded " + p.getName() + " on attempt " + count);
 					loadingTask.remove(uuid);
 					loadingPlayers.remove(uuid);
+	                SkillAPI.getPlayerData(p).getEquips().update(p);
+		            Logger.log("[SkillAPI] Successfully loaded " + p.getName() + " on attempt " + count);
 					Bukkit.getPluginManager().callEvent(new PlayerLoadCompleteEvent(p));
 		            Bukkit.getPluginManager().callEvent(new PlayerAttributeLoadEvent(p));
 					this.cancel();

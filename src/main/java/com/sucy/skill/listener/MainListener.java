@@ -132,7 +132,6 @@ public class MainListener extends SkillAPIListener {
 					PlayerAccounts data = SkillAPI.loadPlayerDataSQL(player);
 					if (data != null && data.getActiveData() != null) {
 						Logger.log("[SkillAPI] Successfully preloaded " + event.getUniqueId() + " after " + count + " attempts");
-						singleton.players.remove(player.getUniqueId().toString());
 						loadingTask.remove(event.getUniqueId());
 						preloadingPlayers.remove(event.getUniqueId());
 						this.cancel();

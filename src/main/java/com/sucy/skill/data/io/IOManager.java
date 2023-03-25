@@ -207,6 +207,7 @@ public abstract class IOManager
             {
                 final DataSection skillBar = account.getSection(SKILL_BAR);
                 final PlayerSkillBar bar = acc.getSkillBar();
+            	bar.setEnabled(true);
                 if (skillBar != null && bar != null)
                 {
                     for (final String key : skillBar.keys())
